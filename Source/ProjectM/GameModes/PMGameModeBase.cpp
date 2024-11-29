@@ -14,22 +14,26 @@ APMGameModeBase::APMGameModeBase(const FObjectInitializer& ObjectInitializer) : 
 
 void APMGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
+	Super::InitGame(MapName, Options, ErrorMessage);
 }
 
 void APMGameModeBase::InitGameState()
 {
+	Super::InitGameState();
 }
 
 UClass* APMGameModeBase::GetDefaultPawnClassForController_Implementation(AController* InController)
 {
-	return nullptr;
+	
+	return Super::GetDefaultPawnClassForController_Implementation(InController);
 }
 
 void APMGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 }
 
 APawn* APMGameModeBase::SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform)
 {
-	return nullptr;
+	return Super::SpawnDefaultPawnAtTransform_Implementation(NewPlayer, SpawnTransform);
 }
