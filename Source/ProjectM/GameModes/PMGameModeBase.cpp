@@ -1,7 +1,15 @@
 #include "PMGameModeBase.h"
+#include "../Character/PMCharacterBase.h"
+#include "PMGameStateBase.h"
+#include "../Player/PMPlayerControllerBase.h"
+#include "../Player/PMPlayerState.h"
 
 APMGameModeBase::APMGameModeBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	GameStateClass = APMGameStateBase::StaticClass();
+	DefaultPawnClass = APMCharacterBase::StaticClass();
+	PlayerControllerClass = APMPlayerControllerBase::StaticClass();
+	PlayerStateClass = APMPlayerState::StaticClass();
 }
 
 void APMGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
