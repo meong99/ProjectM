@@ -26,6 +26,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true, AllowedTypes = "Map"), Category = "ProjectM | Experience")
 	FPrimaryAssetId MapId;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true, AllowedTypes = "Map"), Category = "ProjectM | Experience")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true, AllowedTypes = "PMExperienceDefinition"), Category = "ProjectM | Experience")
 	FPrimaryAssetId ExperienceId;
 };
