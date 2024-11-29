@@ -11,9 +11,16 @@ class APMGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 
+/*
+* Engine Functions
+*/
 public:
 	APMGameModeBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+
+/*
+* Member Functions
+*/
 protected:
 	virtual void	InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void	InitGameState() override;
@@ -21,6 +28,9 @@ protected:
 	virtual void	HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) final;
 	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) final;
 
+/*
+* Member Variables
+*/
 public:
 	/*bool IsExperienceLoaded() const;
 	const UDDPawnData* GetPawnDataForController(const AController* InController) const;*/
