@@ -25,3 +25,4 @@ Saved
 *.gen.h
 *.gen.cpp
 *.generated.h
+*.pdb
