@@ -1,6 +1,7 @@
 Intermediate
 Saved
 .vs
+.vsconfig
 *.o
 *.lo
 *.la
