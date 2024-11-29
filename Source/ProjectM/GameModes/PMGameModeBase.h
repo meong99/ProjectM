@@ -6,6 +6,9 @@
 
 #include "PMGameModeBase.generated.h"
 
+class UPMPawnData;
+class UPMExperienceDefinition;
+
 UCLASS(Config = Game)
 class APMGameModeBase : public AGameModeBase
 {
@@ -17,11 +20,6 @@ class APMGameModeBase : public AGameModeBase
 public:
 	APMGameModeBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-
-/*
-* Member Functions
-*/
-protected:
 	virtual void	InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void	InitGameState() override;
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
@@ -29,14 +27,23 @@ protected:
 	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) final;
 
 /*
-* Member Variables
+* Member Functions
 */
 public:
-	/*bool IsExperienceLoaded() const;
-	const UDDPawnData* GetPawnDataForController(const AController* InController) const;*/
+	bool IsExperienceLoaded() const;
+	const UPMPawnData* GetPawnDataForController(const AController* InController) const;
 
 protected:
-	//void HandleMatchAssignmentIfNotExpectingOne();
-	//void OnMatchAssignmentGiven(const FPrimaryAssetId& ExperienceId);
-	//void OnExperienceLoaded(const UDDExperienceDefinition* CurrentExperience);
+	// 정해진 기준에 따라 ExperienceDefinotion을 찾아서 ExperienceManager에 세팅해준다.
+	void HandleMatchAssignmentIfNotExpectingOne();
+
+	// Experience Manager에 찾아낸 ExperienceDefinition을 설정해준다.
+	void OnMatchAssignmentGiven(const FPrimaryAssetId& ExperienceId);
+
+	void OnExperienceLoaded(const UPMExperienceDefinition* CurrentExperience);
+/*
+* Member Variables
+*/
+
+protected:
 };

@@ -3,6 +3,8 @@
 #include "GameFramework/GameStateBase.h"
 #include "PMGameStateBase.generated.h"
 
+class UPMExperienceManagerComponent;
+
 UCLASS()
 class PROJECTM_API APMGameStateBase : public AGameStateBase
 {
@@ -17,9 +19,12 @@ public:
 * Member Functions
 */
 public:
+	UPMExperienceManagerComponent* GetExperienceManagerComponent() const { return ExperienceManagerComponent; }
 
 /*
 * Member Variables
 */
-public:
+private:
+	UPROPERTY()
+	UPMExperienceManagerComponent* ExperienceManagerComponent;
 };

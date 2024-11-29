@@ -7,8 +7,11 @@ public class ProjectM : ModuleRules
 	public ProjectM(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-	
-		PublicDependencyModuleNames.AddRange(new string[] {
+
+        PrivateIncludePaths.Add("ProjectM");
+        PrivatePCHHeaderFile = "ProjectM.h";
+
+        PublicDependencyModuleNames.AddRange(new string[] {
 			"Core",
 			"CoreUObject",
 			"Engine",

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/DataAsset.h"
 #include "PMExperienceDefinition.generated.h"
 
 class UGameFeatureAction;
@@ -20,16 +21,16 @@ public:
 * Member Functions
 */
 public:
-
 /*
 * Member Variables
 */
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "ProjectM | Experience")
+	TArray<FString> GameFeaturesToEnable;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "ProjectM | Experience")
 	TObjectPtr<UPMPawnData> DefaultPawnData;
-
-	UPROPERTY(EditDefaultsOnly, Category = "ProjectM | Experience")
-	TArray<FString> GameFeatureToEnable;
 
 	/*UPROPERTY(EditDefaultsOnly, Category = "Experience")
 	TArray<TObjectPtr<UPMExperienceActionSet>> ActionSet;*/
