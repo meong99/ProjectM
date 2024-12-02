@@ -19,6 +19,7 @@ public class ProjectM : ModuleRules
 			"EnhancedInput",
             "GameFeatures",
             "ModularGameplay",
+            "GameplayTags",
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

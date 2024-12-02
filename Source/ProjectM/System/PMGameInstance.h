@@ -14,7 +14,10 @@ class PROJECTM_API UPMGameInstance : public UGameInstance
 public:
 	UPMGameInstance();
 
-/*
+
+	virtual void Init() override;
+
+	/*
 * Member Functions
 */
 public:
