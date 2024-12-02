@@ -21,6 +21,9 @@ public:
 * Member Functions
 */
 public:
+	UPMPawnData* GetDefaultPawnData() const { return DefaultPawnData; }
+
+
 /*
 * Member Variables
 */

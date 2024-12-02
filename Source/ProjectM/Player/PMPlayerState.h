@@ -23,6 +23,9 @@ public:
 */
 public:
 	void OnExperienceLoaded(const UPMExperienceDefinition* CurrentExperience);
+
+	template<class T>
+	const T* GetPawnData() const { return Cast<T>(PawnData); }
 	void SetPawnData(const UPMPawnData* InPawnData);
 /*
 * Member Variables

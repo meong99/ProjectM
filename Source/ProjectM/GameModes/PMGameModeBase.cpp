@@ -9,6 +9,7 @@
 #include "PMExperienceManagerComponent.h"
 #include "../Character/PMPawnData.h"
 #include "TimerManager.h"
+#include "../Character/PMPawnExtensionComponent.h"
 
 APMGameModeBase::APMGameModeBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -35,13 +36,101 @@ void APMGameModeBase::InitGameState()
 	ExperienceManagerComponent->CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
 }
 
+UClass* APMGameModeBase::GetDefaultPawnClassForController_Implementation(AController* InController)
+{
+	if (const UPMPawnData* PawnData = GetPawnDataForController(InController))
+	{
+		if (PawnData->GetPawnClass())
+		{
+			return PawnData->GetPawnClass();
+		}
+	}
+	return Super::GetDefaultPawnClassForController_Implementation(InController);
+}
+
+void APMGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	if (IsExperienceLoaded())
+	{
+		Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+	}
+}
+
+APawn* APMGameModeBase::SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform)
+{
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.Instigator = GetInstigator();
+	SpawnInfo.ObjectFlags |= RF_Transient;
+	SpawnInfo.bDeferConstruction = true;
+
+	UClass* PawnClass = GetDefaultPawnClassForController(NewPlayer);
+	if (IsValid(PawnClass) == false)
+	{
+		MCHAE_LOG("Pawn Class's invalid");
+		return nullptr;
+	}
+
+	APawn* SpawnedPawn = GetWorld()->SpawnActorDeferred<APawn>(PawnClass, SpawnTransform, NewPlayer, GetInstigator());
+	if (IsValid(SpawnedPawn) == false)
+	{
+		MCHAE_LOG("Pawn was not spawned");
+		return nullptr;
+	}
+
+	UPMPawnExtensionComponent* PawnExtComp = UPMPawnExtensionComponent::FindPawnExtensionComponent(SpawnedPawn);
+	if (IsValid(PawnExtComp) == false)
+	{
+		MCHAE_LOG("PawnExtComp's invalid");
+		return nullptr;
+	}
+
+	if (const UPMPawnData* PawnData = GetPawnDataForController(NewPlayer))
+	{
+		PawnExtComp->SetPawnData(PawnData);
+	}
+
+	SpawnedPawn->FinishSpawning(SpawnTransform);
+
+	return SpawnedPawn;
+}
+
 bool APMGameModeBase::IsExperienceLoaded() const
 {
-	return false;
+	check(GameState);
+
+	const UPMExperienceManagerComponent* ExperienceManagerComp = GameState->FindComponentByClass<UPMExperienceManagerComponent>();
+	check(ExperienceManagerComp);
+
+	return ExperienceManagerComp->IsExperienceLoaded();
 }
 
 const UPMPawnData* APMGameModeBase::GetPawnDataForController(const AController* InController) const
 {
+	if (IsValid(InController))
+	{
+		if (const APMPlayerState* PlayerState = InController->GetPlayerState<APMPlayerState>())
+		{
+			if (const UPMPawnData* PawnData = PlayerState->GetPawnData<UPMPawnData>())
+			{
+				return PawnData;
+			}
+		}
+	}
+
+	check(GameState);
+
+	const UPMExperienceManagerComponent* ExperienceManagerComp = GameState->FindComponentByClass<UPMExperienceManagerComponent>();
+	check(ExperienceManagerComp);
+
+	if (ExperienceManagerComp->IsExperienceLoaded())
+	{
+		const UPMExperienceDefinition* Experience = ExperienceManagerComp->GetCurrentExperienceChecked();
+		if (Experience && Experience->GetDefaultPawnData())
+		{
+			return Experience->GetDefaultPawnData();
+		}
+	}
+
 	return nullptr;
 }
 
@@ -79,20 +168,15 @@ void APMGameModeBase::OnMatchAssignmentGiven(const FPrimaryAssetId& ExperienceId
 
 void APMGameModeBase::OnExperienceLoaded(const UPMExperienceDefinition* CurrentExperience)
 {
-}
-
-UClass* APMGameModeBase::GetDefaultPawnClassForController_Implementation(AController* InController)
-{
-	
-	return Super::GetDefaultPawnClassForController_Implementation(InController);
-}
-
-void APMGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
-{
-	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
-}
-
-APawn* APMGameModeBase::SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform)
-{
-	return Super::SpawnDefaultPawnAtTransform_Implementation(NewPlayer, SpawnTransform);
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		APlayerController* PlayerController = Cast<APlayerController>(*Iterator);
+		if (PlayerController && PlayerController->GetPawn() == nullptr)
+		{
+			if (PlayerCanRestart(PlayerController))
+			{
+				RestartPlayer(PlayerController);
+			}
+		}
+	}
 }

@@ -102,3 +102,11 @@ void UPMExperienceManagerComponent::OnExperienceFullLoadCompleted()
 	OnExperienceLoaded.Broadcast(CurrentExperience);
 	OnExperienceLoaded.Clear();
 }
+
+const UPMExperienceDefinition* UPMExperienceManagerComponent::GetCurrentExperienceChecked() const
+{
+	check(LoadState == EPMExperienceLoadState::Loaded);
+	check(CurrentExperience != nullptr);
+
+	return CurrentExperience;
+}

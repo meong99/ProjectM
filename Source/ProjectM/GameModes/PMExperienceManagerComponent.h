@@ -39,7 +39,7 @@ public:
 	void CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate&& Delegate);
 
 	bool							IsExperienceLoaded() const { return LoadState == EPMExperienceLoadState::Loaded && CurrentExperience != nullptr; }
-	const UPMExperienceDefinition*	GetCurrentExperience() const { return CurrentExperience; }
+	const UPMExperienceDefinition*	GetCurrentExperienceChecked() const;
 	EPMExperienceLoadState			GetLoadState() const { return LoadState; }
 
 private:

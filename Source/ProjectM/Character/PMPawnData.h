@@ -17,7 +17,7 @@ public:
 * Member Functions
 */
 public:
-
+	const TSubclassOf<APawn>& GetPawnClass() const { return PawnClass; }
 /*
 * Member Variables
 */
