@@ -79,17 +79,17 @@ APawn* APMGameModeBase::SpawnDefaultPawnAtTransform_Implementation(AController* 
 		return nullptr;
 	}
 
-// 	UPMPawnExtensionComponent* PawnExtComp = UPMPawnExtensionComponent::FindPawnExtensionComponent(SpawnedPawn);
-// 	if (IsValid(PawnExtComp) == false)
-// 	{
-// 		MCHAE_LOG("PawnExtComp's invalid");
-// 		return nullptr;
-// 	}
-// 
-// 	if (const UPMPawnData* PawnData = GetPawnDataForController(NewPlayer))
-// 	{
-// 		PawnExtComp->SetPawnData(PawnData);
-// 	}
+	UPMPawnExtensionComponent* PawnExtComp = UPMPawnExtensionComponent::FindPawnExtensionComponent(SpawnedPawn);
+	if (IsValid(PawnExtComp) == false)
+	{
+		MCHAE_LOG("PawnExtComp's invalid");
+		return nullptr;
+	}
+
+	if (const UPMPawnData* PawnData = GetPawnDataForController(NewPlayer))
+	{
+		PawnExtComp->SetPawnData(PawnData);
+	}
 
 	SpawnedPawn->FinishSpawning(SpawnTransform);
 
