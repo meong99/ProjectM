@@ -25,6 +25,7 @@ void APMPlayerState::OnExperienceLoaded(const UPMExperienceDefinition* CurrentEx
 {
 	if (APMGameModeBase* GameMode = GetWorld()->GetAuthGameMode<APMGameModeBase>())
 	{
+		// PlayerState에 있는 PawnData를 사용해도 되지만 없을수도 있고, 기본적으로 PawnData를 가져오는 곳을 하나로 통일해서 관리를 수월하게 하기 위해 GameMode에서 관리한다.
 		const UPMPawnData* NewPawnData = GameMode->GetPawnDataForController(GetOwningController());
 		check(NewPawnData);
 

@@ -11,6 +11,8 @@
 #include "TimerManager.h"
 #include "../Character/PMPawnExtensionComponent.h"
 
+UE_DISABLE_OPTIMIZATION
+
 APMGameModeBase::APMGameModeBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	GameStateClass = APMGameStateBase::StaticClass();
@@ -77,17 +79,17 @@ APawn* APMGameModeBase::SpawnDefaultPawnAtTransform_Implementation(AController* 
 		return nullptr;
 	}
 
-	UPMPawnExtensionComponent* PawnExtComp = UPMPawnExtensionComponent::FindPawnExtensionComponent(SpawnedPawn);
-	if (IsValid(PawnExtComp) == false)
-	{
-		MCHAE_LOG("PawnExtComp's invalid");
-		return nullptr;
-	}
-
-	if (const UPMPawnData* PawnData = GetPawnDataForController(NewPlayer))
-	{
-		PawnExtComp->SetPawnData(PawnData);
-	}
+// 	UPMPawnExtensionComponent* PawnExtComp = UPMPawnExtensionComponent::FindPawnExtensionComponent(SpawnedPawn);
+// 	if (IsValid(PawnExtComp) == false)
+// 	{
+// 		MCHAE_LOG("PawnExtComp's invalid");
+// 		return nullptr;
+// 	}
+// 
+// 	if (const UPMPawnData* PawnData = GetPawnDataForController(NewPlayer))
+// 	{
+// 		PawnExtComp->SetPawnData(PawnData);
+// 	}
 
 	SpawnedPawn->FinishSpawning(SpawnTransform);
 
@@ -106,6 +108,7 @@ bool APMGameModeBase::IsExperienceLoaded() const
 
 const UPMPawnData* APMGameModeBase::GetPawnDataForController(const AController* InController) const
 {
+	// PlayerState에 캐싱되어있는 PawnData를 우선적으로 사용하도록 한다.
 	if (IsValid(InController))
 	{
 		if (const APMPlayerState* PlayerState = InController->GetPlayerState<APMPlayerState>())
@@ -119,6 +122,7 @@ const UPMPawnData* APMGameModeBase::GetPawnDataForController(const AController* 
 
 	check(GameState);
 
+	// PlayerState에 아직 캐싱되어있지 않은 상태라면 ExperienceManager에서 현재 Experience를 요청해 설정한다.
 	const UPMExperienceManagerComponent* ExperienceManagerComp = GameState->FindComponentByClass<UPMExperienceManagerComponent>();
 	check(ExperienceManagerComp);
 
@@ -180,3 +184,5 @@ void APMGameModeBase::OnExperienceLoaded(const UPMExperienceDefinition* CurrentE
 		}
 	}
 }
+
+UE_ENABLE_OPTIMIZATION
