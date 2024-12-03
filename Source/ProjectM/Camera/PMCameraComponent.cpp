@@ -9,12 +9,13 @@ void UPMCameraComponent::OnRegister()
 {
     Super::OnRegister();
 
-    if (CameraModeStack)
+    if (!CameraModeStack)
     {
         CameraModeStack = NewObject<UPMCameraModeStack>(this);
     }
 }
 
+UE_DISABLE_OPTIMIZATION
 void UPMCameraComponent::GetCameraView(float DeltaTime, FMinimalViewInfo& DesiredView)
 {
     check(CameraModeStack);
@@ -34,3 +35,4 @@ void UPMCameraComponent::UpdateCameraMode()
         }
     }
 }
+UE_ENABLE_OPTIMIZATION

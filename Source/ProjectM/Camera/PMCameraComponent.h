@@ -12,7 +12,7 @@ class UPMCameraModeStack;
 
 DECLARE_DELEGATE_RetVal(TSubclassOf<UPMCameraMode>, FPMCameraModeDelegate);
 
-UCLASS( Transient, Within=PMPlayerCameraManager)
+UCLASS()
 class UPMCameraComponent : public UCameraComponent
 {
 	GENERATED_BODY()

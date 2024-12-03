@@ -72,7 +72,7 @@ APawn* APMGameModeBase::SpawnDefaultPawnAtTransform_Implementation(AController* 
 		return nullptr;
 	}
 
-	APawn* SpawnedPawn = GetWorld()->SpawnActorDeferred<APawn>(PawnClass, SpawnTransform, NewPlayer, GetInstigator());
+	APawn* SpawnedPawn = GetWorld()->SpawnActor<APawn>(PawnClass, SpawnTransform, SpawnInfo);
 	if (IsValid(SpawnedPawn) == false)
 	{
 		MCHAE_LOG("Pawn was not spawned");
