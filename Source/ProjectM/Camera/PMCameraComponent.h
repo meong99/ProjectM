@@ -2,42 +2,46 @@
 
 #pragma once
 
-#include "PMPlayerCameraManager.h"
+#include "PMCameraMode.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/Actor.h"
 
 #include "PMCameraComponent.generated.h"
 
-class AActor;
-class AHUD;
-class APlayerController;
-class FDebugDisplayInfo;
-class UCanvas;
-class UObject;
+class UPMCameraModeStack;
+
+DECLARE_DELEGATE_RetVal(TSubclassOf<UPMCameraMode>, FPMCameraModeDelegate);
 
 UCLASS( Transient, Within=PMPlayerCameraManager)
-class UPMCameraComponent : public UActorComponent
+class UPMCameraComponent : public UCameraComponent
 {
 	GENERATED_BODY()
 
-public:
-	static UPMCameraComponent* GetComponent(APlayerController* PC);
-
+/*
+* Engine Functions
+*/
 public:
 	UPMCameraComponent();
-	virtual void InitializeComponent() override;
 
-	bool IsSettingViewTarget() const { return bUpdatingViewTarget; }
-	AActor* GetViewTarget() const { return ViewTarget; }
-	void SetViewTarget(AActor* InViewTarget, FViewTargetTransitionParams TransitionParams = FViewTargetTransitionParams());
+	virtual void OnRegister() override;
+	virtual void GetCameraView(float DeltaTime, FMinimalViewInfo& DesiredView) final;
 
-	bool NeedsToUpdateViewTarget() const;
-	void UpdateViewTarget(struct FTViewTarget& OutVT, float DeltaTime);
+/*
+* Member Functions
+*/
+public:
+	static UPMCameraComponent* FindCameraComponent(const AActor* Actor) { return Actor ? Actor->FindComponentByClass<UPMCameraComponent>() : nullptr; }
+	void UpdateCameraMode();
 
-	void OnShowDebugInfo(AHUD* HUD, UCanvas* Canvas, const FDebugDisplayInfo& DisplayInfo, float& YL, float& YPos);
+	UPMCameraModeStack* GetCameraModeStack() const { return CameraModeStack; }
+
+/*
+* Member Variables
+*/
+public:
+	FPMCameraModeDelegate DetermineCameraModeDelegate;
 
 private:
-	UPROPERTY(Transient)
-	TObjectPtr<AActor> ViewTarget;
-	
-	UPROPERTY(Transient)
-	bool bUpdatingViewTarget;
+	UPROPERTY()
+	TObjectPtr<UPMCameraModeStack> CameraModeStack = nullptr;
 };

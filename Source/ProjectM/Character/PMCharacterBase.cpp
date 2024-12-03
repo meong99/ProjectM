@@ -1,5 +1,6 @@
 #include "PMCharacterBase.h"
 #include "PMPawnExtensionComponent.h"
+#include "Camera/PMCameraComponent.h"
 
 APMCharacterBase::APMCharacterBase()
 {
@@ -7,7 +8,10 @@ APMCharacterBase::APMCharacterBase()
 	PrimaryActorTick.bStartWithTickEnabled = false;
 	PrimaryActorTick.bCanEverTick = false;
 
-	PawnExtComp = CreateDefaultSubobject<UPMPawnExtensionComponent>(TEXT("PawnExtensionComponent"));
+	PawnExtComp		= CreateDefaultSubobject<UPMPawnExtensionComponent>(TEXT("PawnExtensionComponent"));
+
+	CameraComponent = CreateDefaultSubobject<UPMCameraComponent>(TEXT("CameraComponent"));
+	CameraComponent->SetRelativeLocation(FVector(-300.f, 0.f, 75.f));
 }
 
 void APMCharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)

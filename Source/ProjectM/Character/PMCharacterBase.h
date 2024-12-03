@@ -4,6 +4,7 @@
 #include "PMCharacterBase.generated.h"
 
 class UPMPawnExtensionComponent;
+class UPMCameraComponent;
 
 UCLASS()
 class PROJECTM_API APMCharacterBase : public ACharacter
@@ -30,4 +31,7 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectM | Character")
 	TObjectPtr<UPMPawnExtensionComponent> PawnExtComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectM | Character")
+	TObjectPtr<UPMCameraComponent> CameraComponent;
 };

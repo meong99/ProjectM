@@ -1,31 +1,36 @@
 #include "PMCameraComponent.h"
+#include "PMCameraMode.h"
 
 UPMCameraComponent::UPMCameraComponent()
 {
 }
 
-UPMCameraComponent* UPMCameraComponent::GetComponent(APlayerController* PC)
+void UPMCameraComponent::OnRegister()
 {
-    return nullptr;
+    Super::OnRegister();
+
+    if (CameraModeStack)
+    {
+        CameraModeStack = NewObject<UPMCameraModeStack>(this);
+    }
 }
 
-void UPMCameraComponent::InitializeComponent()
+void UPMCameraComponent::GetCameraView(float DeltaTime, FMinimalViewInfo& DesiredView)
 {
+    check(CameraModeStack);
+
+    UpdateCameraMode();
 }
 
-void UPMCameraComponent::SetViewTarget(AActor* InViewTarget, FViewTargetTransitionParams TransitionParams)
+void UPMCameraComponent::UpdateCameraMode()
 {
-}
+    check(CameraModeStack);
 
-bool UPMCameraComponent::NeedsToUpdateViewTarget() const
-{
-    return false;
-}
-
-void UPMCameraComponent::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
-{
-}
-
-void UPMCameraComponent::OnShowDebugInfo(AHUD* HUD, UCanvas* Canvas, const FDebugDisplayInfo& DisplayInfo, float& YL, float& YPos)
-{
+    if (DetermineCameraModeDelegate.IsBound())
+    {
+        if (const TSubclassOf<UPMCameraMode> CameraMode = DetermineCameraModeDelegate.Execute())
+        {
+//             CameraModeStack->PushCameraMode(CameraMode);
+        }
+    }
 }
