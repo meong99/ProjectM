@@ -4,6 +4,7 @@
 #include "PMPawnData.generated.h"
 
 class UPMCameraMode;
+class UPMInputConfig;
 
 UCLASS()
 class PROJECTM_API UPMPawnData : public UPrimaryDataAsset
@@ -22,6 +23,7 @@ public:
 	const TSubclassOf<APawn>& GetPawnClass() const { return PawnClass; }
 	const TSubclassOf<UPMCameraMode>& GetDefaultCameraMode() const { return DefaultCameraMode; }
 
+	const UPMInputConfig* GetInputConfig() const { return InputConfig; }
 /*
 * Member Variables
 */
@@ -32,6 +34,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "ProjectM | Camera")
 	TSubclassOf<UPMCameraMode> DefaultCameraMode;
 
-// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "ProjectM | Input")
-// 	TObjectPtr<UPMInputConfig> InputConfig;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "ProjectM | Input")
+	TObjectPtr<UPMInputConfig> InputConfig;
 };

@@ -1,9 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PlayerMappableInputConfig.h"
 #include "PMMappableConfigPair.generated.h"
-
-class UPlayerMappableInputConfig;
 
 USTRUCT()
 struct FPMMappableConfigPair
