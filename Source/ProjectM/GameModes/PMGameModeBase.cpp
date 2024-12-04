@@ -145,11 +145,12 @@ void APMGameModeBase::HandleMatchAssignmentIfNotExpectingOne()
 	FPrimaryAssetId ExperienceId;
 	UWorld* World = GetWorld();
 
-	// Option으로 넘겨준 값을 이용해 ExperienceDefinition을 찾는다.
+	// Option으로 넘겨준 값을 이용해 ExperienceDefinition을 찾는다. 이 Option값은 레벨 이동하기 전 UserfacingExperience에서 세팅해주고 Travel을 한다.
+	// 그렇게 되면 GameMode의 OptionString이 채워지고, 우리는 그 OptionString을 이용해서 원하는 ExperienceDefinition을 가져오는 것이다.
 	if (ExperienceId.IsValid() == false && UGameplayStatics::HasOption(OptionsString, TEXT("Experience")))
 	{
 		const FString ExperienceFromOptions = UGameplayStatics::ParseOption(OptionsString, TEXT("Experience"));
-		ExperienceId = FPrimaryAssetId(FPrimaryAssetType(UPMExperienceDefinition::StaticClass()->GetFName()), FName(*ExperienceFromOptions));
+		ExperienceId = FPrimaryAssetId(FPrimaryAssetType(UPMExperienceDefinition::StaticClass()->GetFName()), FName(*ExperienceFromOptions/*얘가 ExperienceDefinition 이름*/));
 	}
 
 	// Experience를 마지막까지 못 찾는다면 기본값을 사용한다.

@@ -1,13 +1,14 @@
 #pragma once
 
 #include "Components/GameStateComponent.h"
+#include "GameFeaturePluginOperationResult.h"
 #include "PMExperienceManagerComponent.generated.h"
 
 enum class EPMExperienceLoadState
 {
 	Unloaded,
 	Loading,
-// 	LoadingGameFeatures,
+	LoadingGameFeatures,
 // 	ExecutingActions,
 	Loaded,
 	Deactivating,
@@ -43,8 +44,14 @@ public:
 	EPMExperienceLoadState			GetLoadState() const { return LoadState; }
 
 private:
+	// Experience Asset을 Load한다.
 	void StartExperienceLoad();
+
+	// GameFeature를 loading 후 활성화
 	void OnExperienceLoadComplete();
+	// GameFeature 시스템에 Loading 요청후 콜백
+	void OnGameFeaturePluginLoadComplete(const UE::GameFeatures::FResult& Result);
+
 	void OnExperienceFullLoadCompleted();
 /*
 * Member Variables

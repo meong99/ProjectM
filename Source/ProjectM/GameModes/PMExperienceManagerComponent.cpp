@@ -88,10 +88,50 @@ void UPMExperienceManagerComponent::StartExperienceLoad()
 
 void UPMExperienceManagerComponent::OnExperienceLoadComplete()
 {
+	static int32 OnExperienceLoadComplete_FrameNumber = GFrameNumber;
+
 	check(LoadState == EPMExperienceLoadState::Loading);
 	check(CurrentExperience);
 
-	OnExperienceFullLoadCompleted();
+	GameFeaturePluginURLs.Reset();
+
+	auto CollectGameFeaturePluginURLs = [This = this](const UPrimaryDataAsset* Context, const TArray<FString>& FeaturePluginList) -> void
+		{
+			for (const FString& PluginName : FeaturePluginList)
+			{
+				// ExperienceDefinition에 정의되어있는 활성화시키고싶은 Experience의 URL(파일단위)을 가져와주고, 저장한다.
+				FString PluginURL;
+				if (UGameFeaturesSubsystem::Get().GetPluginURLByName(PluginName, PluginURL))
+				{
+					This->GameFeaturePluginURLs.AddUnique(PluginURL);
+				}
+			}
+		};
+
+	CollectGameFeaturePluginURLs(CurrentExperience, CurrentExperience->GameFeaturesToEnable);
+
+	NumGameFeaturePluginsLoading = GameFeaturePluginURLs.Num();
+	if (NumGameFeaturePluginsLoading)
+	{
+		LoadState = EPMExperienceLoadState::LoadingGameFeatures;
+		for (const FString& PluginURL : GameFeaturePluginURLs)
+		{
+			UGameFeaturesSubsystem::Get().LoadAndActivateGameFeaturePlugin(PluginURL, FGameFeaturePluginLoadComplete::CreateUObject(this, &ThisClass::OnGameFeaturePluginLoadComplete));
+		}
+	}
+	else
+	{
+		OnExperienceFullLoadCompleted();
+	}
+}
+
+void UPMExperienceManagerComponent::OnGameFeaturePluginLoadComplete(const UE::GameFeatures::FResult& Result)
+{
+	--NumGameFeaturePluginsLoading;
+	if (NumGameFeaturePluginsLoading == 0)
+	{
+		OnExperienceFullLoadCompleted();
+	}
 }
 
 void UPMExperienceManagerComponent::OnExperienceFullLoadCompleted()
