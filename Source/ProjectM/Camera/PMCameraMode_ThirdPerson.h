@@ -3,6 +3,8 @@
 #include "PMCameraMode.h"
 #include "PMCameraMode_ThirdPerson.generated.h"
 
+class UCurveVector;
+
 UCLASS(Abstract, Blueprintable)
 class PROJECTM_API UPMCameraMode_ThirdPerson : public UPMCameraMode
 {
@@ -19,8 +21,13 @@ public:
 */
 public:
 
+private:
+	virtual void UpdateView(float DeltaTime) override;
+
 /*
 * Member Variables
 */
-public:
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "ProjectDD | ThirdPerson")
+	TObjectPtr<const UCurveVector> TargetOffsetCurve;
 };

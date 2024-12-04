@@ -52,7 +52,7 @@ public:
 public:
 	void UpdateCameraMode(float DeltaTime);
 
-private:
+protected:
 	virtual void	UpdateView(float DeltaTime);
 	void			UpdateBlending(float DeltaTime);
 
@@ -63,7 +63,7 @@ private:
 /*
 * Member Variables
 */
-private:
+protected:
 	FPMCameraModeView View;
 
 	UPROPERTY(EditDefaultsOnly, Category = "ProjectDD | View", Meta = (UIMin = "5.0", UIMax = "170.0", ClampMin = "5.0", ClampMax = "170.0"))

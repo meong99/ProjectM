@@ -3,6 +3,13 @@
 #include "PMCameraComponent.h"
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PMCameraMode)
 
+#pragma TODO("카메라 쪽 이해가 안 된다. 다시 한 번 공부해야한다.")
+/*
+* 1. 카메라는 왜 스택으로 구현했는가? Old Camera-> New Camera로 블렌딩하는 형태로 가면 안 되는 건가?
+* 2. 카메라 블렌딩하는 공식 및 로직이 이해가 확실히 안된다. 다시 진행하고 이해해야한다.
+* 3. 카메라 모드를 이용한 이점은 무엇인가? 카메라를 전환하는데 어떤 식으로 해야하는가?
+*/
+
 /*
 * FPMCameraModeView
 */
@@ -164,7 +171,6 @@ UPMCameraMode* UPMCameraModeStack::GetCameraModeInstance(const TSubclassOf<UPMCa
 
 void UPMCameraModeStack::PushCameraMode(const TSubclassOf<UPMCameraMode>& CameraModeClass)
 {
-#pragma TODO("이 부분 이해가 어렵다. 더 하고 넘어가야한다.")
 
 	if (!CameraModeClass)
 	{
