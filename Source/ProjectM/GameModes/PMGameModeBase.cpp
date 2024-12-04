@@ -50,6 +50,7 @@ UClass* APMGameModeBase::GetDefaultPawnClassForController_Implementation(AContro
 	return Super::GetDefaultPawnClassForController_Implementation(InController);
 }
 
+UE_DISABLE_OPTIMIZATION
 void APMGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
 	if (IsExperienceLoaded())
@@ -57,6 +58,7 @@ void APMGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* 
 		Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 	}
 }
+UE_ENABLE_OPTIMIZATION
 
 APawn* APMGameModeBase::SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform)
 {

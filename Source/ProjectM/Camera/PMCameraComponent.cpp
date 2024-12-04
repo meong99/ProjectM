@@ -21,6 +21,9 @@ void UPMCameraComponent::GetCameraView(float DeltaTime, FMinimalViewInfo& Desire
     check(CameraModeStack);
 
     UpdateCameraMode();
+
+    FPMCameraModeView CameraModeView;
+    CameraModeStack->EvaluateStack(DeltaTime, CameraModeView);
 }
 
 void UPMCameraComponent::UpdateCameraMode()
@@ -31,7 +34,7 @@ void UPMCameraComponent::UpdateCameraMode()
     {
         if (const TSubclassOf<UPMCameraMode> CameraMode = DetermineCameraModeDelegate.Execute())
         {
-//             CameraModeStack->PushCameraMode(CameraMode);
+            CameraModeStack->PushCameraMode(CameraMode);
         }
     }
 }

@@ -6,11 +6,11 @@ APMPlayerCameraManager::APMPlayerCameraManager(const FObjectInitializer& ObjectI
 	ViewPitchMin = CAMERA_DEFAULT_PITCH_MIN;
 	ViewPitchMax = CAMERA_DEFAULT_PITCH_MAX;
 }
-
-void APMPlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
-{
-}
-
-void APMPlayerCameraManager::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos)
-{
-}
+// 
+// void APMPlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
+// {
+// }
+// 
+// void APMPlayerCameraManager::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos)
+// {
+// }

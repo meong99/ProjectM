@@ -33,7 +33,8 @@ public:
 	static UPMCameraComponent* FindCameraComponent(const AActor* Actor) { return Actor ? Actor->FindComponentByClass<UPMCameraComponent>() : nullptr; }
 	void UpdateCameraMode();
 
-	UPMCameraModeStack* GetCameraModeStack() const { return CameraModeStack; }
+	UPMCameraModeStack*	GetCameraModeStack() const { return CameraModeStack; }
+	AActor*				GetTargetActor() const { return GetOwner(); }
 
 /*
 * Member Variables

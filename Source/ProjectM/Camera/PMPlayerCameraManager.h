@@ -25,7 +25,7 @@ public:
 
 protected:
 
-	virtual void UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime) override;
-
-	virtual void DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos) override;
+// 	virtual void UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime) override;
+// 
+// 	virtual void DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos) override;
 };
