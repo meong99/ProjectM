@@ -237,6 +237,7 @@ void UPMCharacterInitComponent::InitializePlayerInput(UInputComponent* PlayerInp
 		}
 	}
 
+	// GameFeatureAction_AddInputConfig의 HandlePawnExtion을 호출.
 	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APawn*>(Pawn), NAME_BindInputsNow);
 }
 

@@ -3,6 +3,8 @@
 #include "PMExperienceDefinition.h"
 #include "../../GameFeatures/Source/GameFeatures/Public/GameFeaturesSubsystemSettings.h"
 #include "../../GameFeatures/Source/GameFeatures/Public/GameFeaturesSubsystem.h"
+#include "../Plugins/Runtime/GameFeatures/Source/GameFeatures/Public/GameFeatureAction.h"
+#include "PMExperienceActionSet.h"
 
 UPMExperienceManagerComponent::UPMExperienceManagerComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -137,6 +139,38 @@ void UPMExperienceManagerComponent::OnGameFeaturePluginLoadComplete(const UE::Ga
 void UPMExperienceManagerComponent::OnExperienceFullLoadCompleted()
 {
 	check(LoadState != EPMExperienceLoadState::Loaded);
+
+	// 활성화 시키고싶은 GameFeature를 모두 활성화 시켰으니 이제 Action들을 적용시킨다
+	LoadState = EPMExperienceLoadState::ExecutingActions;
+
+	// GameFeatureSubsystem은 Engine Subsystem이다. 그 말은 즉, 게임이 시작되고 어떤 레벨을 이동하던지, PIE를 얼마나 켜고 끄던지 엔진이 살아있는동안 계속 살아있는다는 뜻이다.
+	// 그렇다는말은 GameFeature를 관리할 때 어떤 단위로 관리해야하는지 지정해줘야한다는 말인데 그걸 WorldContext로 지정해주는 것이다.
+	FGameFeatureActivatingContext Context;
+	const FWorldContext* ExistingWorldContext = GEngine->GetWorldContextFromWorld(GetWorld());
+	if (ExistingWorldContext)
+	{
+		Context.SetRequiredWorldContextHandle(ExistingWorldContext->ContextHandle);
+	}
+
+	auto ActivateListOfActions = [&Context](const TArray<UGameFeatureAction*>& ActionList) -> void
+		{
+			for (UGameFeatureAction* Action : ActionList)
+			{
+				if (Action)
+				{
+					Action->OnGameFeatureRegistering();
+					Action->OnGameFeatureLoading();
+					Action->OnGameFeatureActivating(Context);
+				}
+			}
+		};
+
+	ActivateListOfActions(CurrentExperience->GetActions());
+
+	for (const TObjectPtr<UPMExperienceActionSet>& ActionSet : CurrentExperience->GetActionSets())
+	{
+		ActivateListOfActions(ActionSet->Actions);
+	}
 
 	LoadState = EPMExperienceLoadState::Loaded;
 	OnExperienceLoaded.Broadcast(CurrentExperience);

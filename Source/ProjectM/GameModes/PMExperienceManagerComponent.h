@@ -9,7 +9,7 @@ enum class EPMExperienceLoadState
 	Unloaded,
 	Loading,
 	LoadingGameFeatures,
-// 	ExecutingActions,
+	ExecutingActions,
 	Loaded,
 	Deactivating,
 };

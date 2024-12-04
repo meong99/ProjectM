@@ -49,10 +49,11 @@ protected:
 /*
 * Member Variables
 */
-private:
+public:
 	static const FName NAME_ActorFeatureName;
 	static const FName NAME_BindInputsNow;
 
+private:
 	// 입력에 대한 단위
 	UPROPERTY(EditAnywhere)
 	TArray<FPMMappableConfigPair> DefaultInputConfigs;
