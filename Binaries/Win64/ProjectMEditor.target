@@ -34,6 +34,30 @@
 			"Type": "RequiredResource"
 		},
 		{
+			"Path": "$(ProjectDir)/Plugins/CommonUser/Binaries/Win64/UnrealEditor-CommonUser.dll",
+			"Type": "DynamicLibrary"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/CommonUser/Binaries/Win64/UnrealEditor-CommonUser.pdb",
+			"Type": "SymbolFile"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/CommonUser/Binaries/Win64/UnrealEditor.modules",
+			"Type": "RequiredResource"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/GameFeatures/ShooterCore/Binaries/Win64/UnrealEditor-ShooterCoreRuntime.dll",
+			"Type": "DynamicLibrary"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/GameFeatures/ShooterCore/Binaries/Win64/UnrealEditor-ShooterCoreRuntime.pdb",
+			"Type": "SymbolFile"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/GameFeatures/ShooterCore/Binaries/Win64/UnrealEditor.modules",
+			"Type": "RequiredResource"
+		},
+		{
 			"Path": "$(EngineDir)/Binaries/Win64/AgentInterface.dll",
 			"Type": "DynamicLibrary"
 		},
@@ -3635,6 +3659,14 @@
 		}
 	],
 	"RuntimeDependencies": [
+		{
+			"Path": "$(ProjectDir)/Plugins/CommonUser/CommonUser.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/GameFeatures/ShooterCore/ShooterCore.uplugin",
+			"Type": "UFS"
+		},
 		{
 			"Path": "$(ProjectDir)/ProjectM.uproject",
 			"Type": "UFS"
@@ -26725,6 +26757,7 @@
 		"ChunkDownloader",
 		"CmdLinkServer",
 		"CodeLiteSourceCodeAccess",
+		"CommonUser",
 		"ContentBrowserAssetDataSource",
 		"ContentBrowserClassDataSource",
 		"ContentBrowserFileDataSource",
@@ -26826,6 +26859,7 @@
 		"RigVM",
 		"SequencerAnimTools",
 		"SequencerScripting",
+		"ShooterCore",
 		"SignificanceManager",
 		"SkeletalReduction",
 		"SoundFields",

@@ -32,6 +32,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectM | Character")
 	TObjectPtr<UPMPawnExtensionComponent> PawnExtComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectM | Character")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Character")
 	TObjectPtr<UPMCameraComponent> CameraComponent;
 };

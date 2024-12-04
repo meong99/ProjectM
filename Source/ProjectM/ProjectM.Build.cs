@@ -20,6 +20,7 @@ public class ProjectM : ModuleRules
             "GameFeatures",
             "ModularGameplay",
             "GameplayTags",
+			"CommonUser",
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
