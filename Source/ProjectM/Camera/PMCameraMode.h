@@ -41,7 +41,7 @@ class PROJECTM_API UPMCameraMode : public UObject
 
 	friend UPMCameraModeStack;
 /*
-* Engine Functions
+* Overrided Function
 */
 public:
 	UPMCameraMode();
@@ -94,7 +94,7 @@ class UPMCameraModeStack : public UObject
 	GENERATED_BODY()
 
 /*
-* Engine Functions
+* Overrided Function
 */
 public:
 	UPMCameraModeStack();

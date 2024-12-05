@@ -11,7 +11,7 @@ class PROJECTM_API UGameFeatureAction_WorldActionBase : public UGameFeatureActio
 	GENERATED_BODY()
 
 /*
-* Engine Functions
+* Overrided Function
 */
 public:
 	UGameFeatureAction_WorldActionBase();

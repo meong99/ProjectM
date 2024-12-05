@@ -58,6 +58,18 @@
 			"Type": "RequiredResource"
 		},
 		{
+			"Path": "$(ProjectDir)/Plugins/ModularGameplayActors/Binaries/Win64/UnrealEditor-ModularGameplayActors.dll",
+			"Type": "DynamicLibrary"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/ModularGameplayActors/Binaries/Win64/UnrealEditor-ModularGameplayActors.pdb",
+			"Type": "SymbolFile"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/ModularGameplayActors/Binaries/Win64/UnrealEditor.modules",
+			"Type": "RequiredResource"
+		},
+		{
 			"Path": "$(EngineDir)/Binaries/Win64/AgentInterface.dll",
 			"Type": "DynamicLibrary"
 		},
@@ -3665,6 +3677,10 @@
 		},
 		{
 			"Path": "$(ProjectDir)/Plugins/GameFeatures/ShooterCore/ShooterCore.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/ModularGameplayActors/ModularGameplayActors.uplugin",
 			"Type": "UFS"
 		},
 		{
@@ -26823,6 +26839,7 @@
 		"MobilePatchingUtils",
 		"ModelingToolsEditorMode",
 		"ModularGameplay",
+		"ModularGameplayActors",
 		"MsQuic",
 		"N10XSourceCodeAccess",
 		"Niagara",

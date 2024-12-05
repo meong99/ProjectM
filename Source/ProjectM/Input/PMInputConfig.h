@@ -24,7 +24,7 @@ class PROJECTM_API UPMInputConfig : public UDataAsset
 	GENERATED_BODY()
 
 /*
-* Engine Functions
+* Overrided Function
 */
 public:
 	UPMInputConfig(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

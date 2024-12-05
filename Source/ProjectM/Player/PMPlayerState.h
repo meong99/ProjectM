@@ -12,7 +12,7 @@ class PROJECTM_API APMPlayerState : public APlayerState
 	GENERATED_BODY()
 
 /*
-* Engine Functions
+* Overrided Function
 */
 public:
 	APMPlayerState();

@@ -18,7 +18,7 @@ class PROJECTM_API UPMPawnExtensionComponent : public UPawnComponent, public IGa
 	GENERATED_BODY()
 
 	/*
-	* Engine Functions
+	* Overrided Function
 	*/
 public:
 	UPMPawnExtensionComponent(const FObjectInitializer& ObjectInitializer);

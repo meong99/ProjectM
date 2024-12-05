@@ -9,7 +9,7 @@ class PROJECTM_API UPMAssetManager : public UAssetManager
 	GENERATED_BODY()
 
 /*
-* Engine Functions
+* Overrided Function
 */
 public:
 	UPMAssetManager();

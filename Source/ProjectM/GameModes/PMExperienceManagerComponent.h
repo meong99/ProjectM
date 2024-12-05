@@ -24,7 +24,7 @@ class PROJECTM_API UPMExperienceManagerComponent : public UGameStateComponent
 	GENERATED_BODY()
 
 /*
-* Engine Functions
+* Overrided Function
 */
 public:
  UPMExperienceManagerComponent(const FObjectInitializer& ObjectInitializer);

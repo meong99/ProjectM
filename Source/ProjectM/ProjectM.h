@@ -27,7 +27,7 @@ DECLARE_LOG_CATEGORY_EXTERN(MCHAE_CATEGORY, Log, All);
 //	GENERATED_BODY()
 //
 ///*
-//* Engine Functions
+//* Overrided Functions
 //*/
 //public:
 //	PMGameStateBase();
@@ -40,5 +40,5 @@ DECLARE_LOG_CATEGORY_EXTERN(MCHAE_CATEGORY, Log, All);
 ///*
 //* Member Variables
 //*/
-//public:
+//private:
 //};

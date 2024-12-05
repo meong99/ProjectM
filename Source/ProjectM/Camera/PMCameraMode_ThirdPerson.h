@@ -11,7 +11,7 @@ class PROJECTM_API UPMCameraMode_ThirdPerson : public UPMCameraMode
 	GENERATED_BODY()
 
 /*
-* Engine Functions
+* Overrided Function
 */
 public:
 	UPMCameraMode_ThirdPerson();

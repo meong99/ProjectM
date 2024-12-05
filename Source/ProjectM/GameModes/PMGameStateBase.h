@@ -11,7 +11,7 @@ class PROJECTM_API APMGameStateBase : public AGameStateBase
 	GENERATED_BODY()
 
 /*
-* Engine Functions
+* Overrided Function
 */
 public:
 	APMGameStateBase();

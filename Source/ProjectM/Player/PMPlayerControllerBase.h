@@ -1,15 +1,15 @@
 #pragma once
 
-#include "GameFramework/PlayerController.h"
+#include "ModularPlayerController.h"
 #include "PMPlayerControllerBase.generated.h"
 
 UCLASS()
-class PROJECTM_API APMPlayerControllerBase : public APlayerController
+class PROJECTM_API APMPlayerControllerBase : public AModularPlayerController
 {
 	GENERATED_BODY()
 
 /*
-* Engine Functions
+* Overrided Function
 */
 public:
 	APMPlayerControllerBase();

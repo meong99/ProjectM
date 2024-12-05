@@ -21,7 +21,7 @@ class PROJECTM_API UPMCharacterInitComponent : public UPawnComponent, public IGa
 	GENERATED_BODY()
 
 /*
-* Engine Functions
+* Overrided Function
 */
 public:
 	UPMCharacterInitComponent(const FObjectInitializer& ObjectInitializer);

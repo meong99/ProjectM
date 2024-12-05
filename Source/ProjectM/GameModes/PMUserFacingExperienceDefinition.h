@@ -11,7 +11,7 @@ class PROJECTM_API UPMUserFacingExperienceDefinition : public UPrimaryDataAsset
 	GENERATED_BODY()
 
 /*
-* Engine Functions
+* Overrided Function
 */
 public:
 	UPMUserFacingExperienceDefinition();

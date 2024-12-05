@@ -1,18 +1,18 @@
 #pragma once
 
-#include "GameFramework/Character.h"
+#include "ModularCharacter.h"
 #include "PMCharacterBase.generated.h"
 
 class UPMPawnExtensionComponent;
 class UPMCameraComponent;
 
 UCLASS()
-class PROJECTM_API APMCharacterBase : public ACharacter
+class PROJECTM_API APMCharacterBase : public AModularCharacter
 {
 	GENERATED_BODY()
 
 /*
-* Engine Functions
+* Overrided Function
 */
 public:
 	APMCharacterBase();

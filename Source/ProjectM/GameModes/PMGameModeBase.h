@@ -15,7 +15,7 @@ class APMGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 /*
-* Engine Functions
+* Overrided Function
 */
 public:
 	APMGameModeBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

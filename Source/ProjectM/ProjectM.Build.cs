@@ -19,6 +19,7 @@ public class ProjectM : ModuleRules
 			"EnhancedInput",
             "GameFeatures",
             "ModularGameplay",
+            "ModularGameplayActors",
             "GameplayTags",
 			"CommonUser",
         });

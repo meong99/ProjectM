@@ -26,7 +26,7 @@ class PROJECTM_API UGameFeatureAction_AddInputConfig : public UGameFeatureAction
 	};
 
 /*
-* Engine Functions
+* Overrided Function
 */
 public:
 	UGameFeatureAction_AddInputConfig();

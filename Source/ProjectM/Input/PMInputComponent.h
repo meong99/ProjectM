@@ -12,7 +12,7 @@ class PROJECTM_API UPMInputComponent : public UEnhancedInputComponent
 	GENERATED_BODY()
 
 	/*
-	* Engine Functions
+	* Overrided Function
 	*/
 public:
 	UPMInputComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

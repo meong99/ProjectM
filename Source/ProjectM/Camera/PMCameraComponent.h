@@ -18,7 +18,7 @@ class UPMCameraComponent : public UCameraComponent
 	GENERATED_BODY()
 
 /*
-* Engine Functions
+* Overrided Function
 */
 public:
 	UPMCameraComponent();
