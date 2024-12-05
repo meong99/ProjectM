@@ -20,11 +20,13 @@ FPMCharacterPartHandle FPMCharacterPartList::AddEntry(FPMCharacterPart NewPart)
 
 		if (SpawnActorForEntry(NewEntry))
 		{
+			// Actor가 생성 및 적용되었으니 Animation 및 Physics를 Re-initialize한다
 			OwnerComponent->BroadcastChanged();
 		}
 	}
 	else
 	{
+		ensure(false);
 		MCHAE_WARNING("Something wrong with OwnerComponent! Check OwnerComponent!");
 	}
 
@@ -40,17 +42,22 @@ bool FPMCharacterPartList::SpawnActorForEntry(FPMAppliedCharacterPartEntry& Entr
 
 		if (USceneComponent* ComponentToAttachTo = OwnerComponent->GetSceneComponentToAttachTo())
 		{
-			const FTransform SpawnTransform = ComponentToAttachTo->GetSocketTransform(Entry.Part.SocketName);
+			//지금 사용은 안 함
+// 			const FTransform SpawnTransform = ComponentToAttachTo->GetSocketTransform(Entry.Part.SocketName);
 
 			UChildActorComponent* PartComponent = NewObject<UChildActorComponent>(OwnerComponent->GetOwner());
 			PartComponent->SetupAttachment(ComponentToAttachTo, Entry.Part.SocketName);
 			PartComponent->SetChildActorClass(Entry.Part.PartClass);
+
+			//Render World에 적용시킨다
 			PartComponent->RegisterComponent();
 
 			if (AActor* SpawnedActor = PartComponent->GetChildActor())
 			{
 				if (USceneComponent* SpawnedRootComponent = SpawnedActor->GetRootComponent())
 				{
+					//Tick이 도는 순서를 정하는 구간이다. 부모 틱이 먼저 돌 수 있도록 보장해준다.
+					// RootComponent -> CharactarPart의 순서를 지정하는 것
 					SpawnedRootComponent->AddTickPrerequisiteComponent(ComponentToAttachTo);
 				}
 			}

@@ -47,7 +47,9 @@ struct FPMCharacterPartList
 		: OwnerComponent(InOwnerComponent)
 	{}
 
+	// 실질적으로 CharacterPart가 저장, 적용되는 부분이다.
 	FPMCharacterPartHandle AddEntry(FPMCharacterPart NewPart);
+
 	bool SpawnActorForEntry(FPMAppliedCharacterPartEntry& Entry);
 
 	void RemoveEntry(FPMCharacterPartHandle Handle);
