@@ -5,6 +5,8 @@
 #include "PMPawnComponent_CharacterParts.h"
 #include "PMControllerComponent_CharacterParts.generated.h"
 
+class APMTaggedActor;
+
 /*
 * Controller가 보유하는 CharacterPart에 대한 데이터다.
 */
@@ -59,4 +61,9 @@ private:
 private:
 	UPROPERTY(EditAnywhere, Category = "Cosmetics")
 	TArray<FPMControllerCharacterPartEntry> CharacterParts;
+
+	// 이거 라이라에서는 캐릭터 붙이는거 BP에서 작업하는데 BP사용하기 싫어서 일단 BP클래스 가져와서 사용하기위해 존재한다.
+	// 추후 로직이 완성되고나서 BP 클래스를 Loading하는 부분을 추가하고나면 제거해야한다.
+	UPROPERTY(EditAnywhere, Category = "Cosmetics")
+	TSubclassOf<APMTaggedActor> DefaultTaggedActor;
 };

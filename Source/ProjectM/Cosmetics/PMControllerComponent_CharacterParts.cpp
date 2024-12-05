@@ -1,5 +1,6 @@
 #include "PMControllerComponent_CharacterParts.h"
 #include "PMPawnComponent_CharacterParts.h"
+#include "AbilitySystem/PMTaggedActor.h"
 
 UPMControllerComponent_CharacterParts::UPMControllerComponent_CharacterParts(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -15,6 +16,13 @@ void UPMControllerComponent_CharacterParts::BeginPlay()
 		{
 			OwningController->OnPossessedPawnChanged.AddDynamic(this, &ThisClass::OnPossessedPawnChanged);
 		}
+	}
+
+	// 이거 원래 BP에 있는데 나중에 제거해야함
+	{
+		FPMCharacterPart NewPart;
+		NewPart.PartClass = DefaultTaggedActor;
+		AddCharacterPart(NewPart);
 	}
 }
 

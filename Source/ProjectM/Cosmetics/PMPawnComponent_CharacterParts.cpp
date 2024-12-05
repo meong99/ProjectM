@@ -157,6 +157,8 @@ void UPMPawnComponent_CharacterParts::BroadcastChanged()
 
 	if (USkeletalMeshComponent* MeshComponent = GetParentMeshComponent())
 	{
+		// 여기서 원하는 태그를 넣으면 그 태그에 맞는 메쉬를 들고와서 설정을 진행한다.
+		// 하지만 지금은 태그를 사용하지 않고 기본 메쉬만 사용하기 때문에 우선은 아래와 같이 진행한다.
 		const FGameplayTagContainer MergedTags = GetCombinedTags(FGameplayTag{});
 		USkeletalMesh* DesiredMesh = BodyMeshes.SelectBestBodyStyle(MergedTags);
 

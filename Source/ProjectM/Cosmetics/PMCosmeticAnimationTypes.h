@@ -63,7 +63,7 @@ struct FPMAnimBodyStyleSelectionSet
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USkeletalMesh> DefaultMesh = nullptr;
 
-	// 모든 Physics Asset은 하나로 정해져있다. 모든 애니메이션은 동일한 Physics속성을 공유한다.
+	// 강제로 적용하고싶은 Physics. 만약 이게 존재하면 CharacterPart에 있는 Physics를 사용하지 않고 아래를 사용한다.
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UPhysicsAsset> ForcedPhysicsAsset = nullptr;
 };

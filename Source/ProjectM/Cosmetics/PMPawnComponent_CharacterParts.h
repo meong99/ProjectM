@@ -49,12 +49,13 @@ struct FPMCharacterPartList
 
 	// 실질적으로 CharacterPart가 저장, 적용되는 부분이다.
 	FPMCharacterPartHandle AddEntry(FPMCharacterPart NewPart);
-
+	// Actor를 Spawn하고 RootComponent에 붙여주고, 사전 세팅을 해주는 부분이다
 	bool SpawnActorForEntry(FPMAppliedCharacterPartEntry& Entry);
 
 	void RemoveEntry(FPMCharacterPartHandle Handle);
 	void DestroyActorForEntry(FPMAppliedCharacterPartEntry& Entry);
 
+	// TaggedActor에 맞는 Tag를 모두 가져온다. 지금은 Tagged Actor를 제대로 사용하지 않고 기본값만 사용하니 지금은 비어있는 값을 리턴한다.
 	FGameplayTagContainer CollectCombinedTags() const;
 
 	UPROPERTY()
@@ -87,12 +88,15 @@ public:
 */
 	USkeletalMeshComponent* GetParentMeshComponent() const;
 	USceneComponent* GetSceneComponentToAttachTo() const;
+
+	// 태그에 맞는 메쉬 및 피직스를 설정한다.
 	void BroadcastChanged();
 
 	FPMCharacterPartHandle AddCharacterPart(const FPMCharacterPart& NewPart);
 	void RemoveCharacterPart(FPMCharacterPartHandle Handle);
 
 private:
+	// 설정되어있는 CharacterPartList에 Tag에 맞는 TaggedActor의 Tag를 모두 가져와주는데 지금은 비어있다
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Cosmetics", meta = (AllowPrivateAccess = true))
 	FGameplayTagContainer GetCombinedTags(FGameplayTag RequiredPrefix) const;
 /*
