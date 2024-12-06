@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ControllerComponent.h"
+
 #include "PMQuickBarComponent.generated.h"
 
 class UPMInventoryItemInstance;
