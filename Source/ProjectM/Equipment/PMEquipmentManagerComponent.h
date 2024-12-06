@@ -66,6 +66,7 @@ public:
 * Member Variables
 */
 private:
+	// Pawn에게 장착되어있는 모든 장비에 대한 정보
 	UPROPERTY()
 	FPMEquipmentList EquipmentList;
 };

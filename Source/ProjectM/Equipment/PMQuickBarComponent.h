@@ -11,7 +11,7 @@ class UPMEquipmentInstance;
 class UPMEquipmentManagerComponent;
 
 /**
- *
+ * 
  */
 UCLASS()
 class PROJECTM_API UPMQuickBarComponent : public UControllerComponent
@@ -50,6 +50,7 @@ private:
 	UPROPERTY()
 	TArray<TObjectPtr<UPMInventoryItemInstance>> Slots;
 
+	// 현재 슬롯에서 장착중인 Index. 
 	UPROPERTY()
 	int32 ActiveSlotIndex = -1;
 

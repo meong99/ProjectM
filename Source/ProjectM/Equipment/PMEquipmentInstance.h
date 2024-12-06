@@ -50,8 +50,11 @@ public:
 * Member Variables
 */
 private:
+	// 어떤 InventoryItemInstance에 의해 활성화되었는가
+	UPROPERTY()
 	TObjectPtr<UObject> Instigator;
 
+	// EquipmentDefinition에 따라서 Instancing된 Actor들
 	UPROPERTY()
 	TArray<TObjectPtr<AActor>> SpawnedActors;
 };
