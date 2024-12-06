@@ -42,6 +42,10 @@ public:
 	virtual void	OnEquipped();
 	virtual void	OnUnequipped();
 
+	UObject*							GetInstigator() const { return Instigator; }
+	const TArray<TObjectPtr<AActor>>&	GetSpawnedActors() const { return SpawnedActors; }
+
+	void SetInstigator(UObject* InInstigator) { Instigator = InInstigator; }
 /*
 * Member Variables
 */

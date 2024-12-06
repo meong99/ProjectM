@@ -6,7 +6,6 @@
 #include "Components/GameFrameworkComponentManager.h"
 #include "Engine/GameInstance.h"
 
-UE_DISABLE_OPTIMIZATION
 UGameFeatureAction_AddInputConfig::UGameFeatureAction_AddInputConfig()
 {
 }
@@ -136,4 +135,3 @@ void UGameFeatureAction_AddInputConfig::Reset(FPerContextData& ActiveData)
 		}
 	}
 }
-UE_ENABLE_OPTIMIZATION

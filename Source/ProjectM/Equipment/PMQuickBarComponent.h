@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ControllerComponent.h"
+#include "Templates/SubclassOf.h"
 
 #include "PMQuickBarComponent.generated.h"
 
@@ -29,8 +30,8 @@ public:
 * Member Functions
 */
 public:
-// 	UFUNCTION(BlueprintCallable)
-// 	void AddItemToSlot(const int32 SlotIndex, UPMInventoryItemInstance* Item);
+	UFUNCTION(BlueprintCallable)
+	void AddItemToSlot(const int32 SlotIndex, UPMInventoryItemInstance* Item);
 
 	UFUNCTION(BlueprintCallable)
 	void SetActiveSlotIndex(const int32 NewIndex);
@@ -46,8 +47,8 @@ private:
 	UPROPERTY()
 	int32 NumSlots = 3;
 
-// 	UPROPERTY()
-// 	TArray<TObjectPtr<UPMInventoryItemInstance>> Slots;
+	UPROPERTY()
+	TArray<TObjectPtr<UPMInventoryItemInstance>> Slots;
 
 	UPROPERTY()
 	int32 ActiveSlotIndex = -1;

@@ -1,0 +1,50 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "UObject/Object.h"
+
+#include "PMInventoryItemDefinition.generated.h"
+
+/*
+* Item의 Component라고 이해하면 편하다.
+* 각 Item은 개별적인 능력들이 존재하는데 그걸 아이템에 종속시키지 않고 컴포넌트처럼 별도로 생성 후 아이템에 붙이는 형태로 간다.
+* 그렇게 하면 아이템의 능력들이 아이템에 종속되지 않아서 필요한 능력들을 원하는 대로 붙여서 새로운 아이템을 쉽게 만들어낼 수 있다.
+*/
+UCLASS(Abstract, DefaultToInstanced, EditInlineNew)
+class UPMInventoryItemFragment : public UObject
+{
+	GENERATED_BODY()
+
+public:
+};
+
+/**
+ *
+ */
+UCLASS()
+class PROJECTM_API UPMInventoryItemDefinition : public UObject
+{
+	GENERATED_BODY()
+
+/*
+* Overrided Functions
+*/
+public:
+	UPMInventoryItemDefinition(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+/*
+* Member Functions
+*/
+public:
+	const UPMInventoryItemFragment* FindFragmentByClass(TSubclassOf<UPMInventoryItemFragment> FragmentClass) const;
+
+/*
+* Member Variables
+*/
+private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Display")
+	FText DisplayName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, meta = (AllowPrivateAccess = true), Category = "Display")
+	TArray<TObjectPtr<UPMInventoryItemFragment>> Fragments;
+};
