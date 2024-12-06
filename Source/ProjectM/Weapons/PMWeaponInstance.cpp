@@ -10,5 +10,5 @@ TSubclassOf<UAnimInstance> UPMWeaponInstance::PickBestAnimLayer(bool bEquipped, 
 {
 	const FPMAnimInstanceSelectionSet& setToQuery = bEquipped ? EquippedAnimSet : UnEquippedAnimSet;
 
-	return setToQuery.SelectBestLayer(CosmeticTags);
+	return setToQuery.SelectBestAnimInstance(CosmeticTags);
 }

@@ -26,7 +26,7 @@ struct FPMAnimInstanceSelectionSet
 {
 	GENERATED_BODY()
 
-	TSubclassOf<UAnimInstance> SelectBestLayer(const FGameplayTagContainer& CosmeticTags) const;
+	TSubclassOf<UAnimInstance> SelectBestAnimInstance(const FGameplayTagContainer& CosmeticTags) const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FPMAnimInstanceSelectionEntry> AnimInstanceRules;

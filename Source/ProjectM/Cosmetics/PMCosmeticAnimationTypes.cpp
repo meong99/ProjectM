@@ -1,6 +1,6 @@
 #include "PMCosmeticAnimationTypes.h"
 
-TSubclassOf<UAnimInstance> FPMAnimInstanceSelectionSet::SelectBestLayer(const FGameplayTagContainer& CosmeticTags) const
+TSubclassOf<UAnimInstance> FPMAnimInstanceSelectionSet::SelectBestAnimInstance(const FGameplayTagContainer& CosmeticTags) const
 {
 	for (const FPMAnimInstanceSelectionEntry& Rule : AnimInstanceRules)
 	{
