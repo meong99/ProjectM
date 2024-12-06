@@ -17,6 +17,9 @@ DECLARE_LOG_CATEGORY_EXTERN(MCHAE_CATEGORY, Log, All);
 #define MCHAE_ERROR(Format, ...) UE_LOG(MCHAE_CATEGORY, Error, TEXT("%s, %s"), *MCHAE_CALLINFO, *FString::Printf(TEXT(Format), ##__VA_ARGS__))
 #define MCHAE_FETAL(Format, ...) UE_LOG(MCHAE_CATEGORY, Fatal, TEXT("%s, %s"), *MCHAE_CALLINFO, *FString::Printf(TEXT(Format), ##__VA_ARGS__))
 
+//Warning나중에 제거하자
+#pragma warning(disable:4996)
+
 //#pragma once
 //
 //#include "PMGameStateBase.generated.h"

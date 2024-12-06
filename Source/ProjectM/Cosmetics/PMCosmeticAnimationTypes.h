@@ -9,33 +9,34 @@ class UPhysicsAsset;
 class USkeletalMesh;
 
 USTRUCT(BlueprintType)
-struct FPMAnimLayerSelectionEntry
+struct FPMAnimInstanceSelectionEntry
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UAnimInstance> Layer;
+	TSubclassOf<UAnimInstance> AnimInstance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGameplayTagContainer RequireTags;
 };
 
+// 각 특성에 맞는 AnimInstance를 들고있는 곳
 USTRUCT(BlueprintType)
-struct FPMAnimLayerSelectionSet
+struct FPMAnimInstanceSelectionSet
 {
 	GENERATED_BODY()
 
 	TSubclassOf<UAnimInstance> SelectBestLayer(const FGameplayTagContainer& CosmeticTags) const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FPMAnimLayerSelectionEntry> LayerRules;
+	TArray<FPMAnimInstanceSelectionEntry> AnimInstanceRules;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UAnimInstance> DefaultLayer;
+	TSubclassOf<UAnimInstance> DefaultAnimInstance;
 };
 
 USTRUCT(BlueprintType)
-struct FPMAnimBodyStyleSelectionEntry
+struct FPMBodyStyleSelectionEntry
 {
 	GENERATED_BODY()
 
@@ -48,8 +49,9 @@ struct FPMAnimBodyStyleSelectionEntry
 	FGameplayTagContainer RequiredTags;
 };
 
+// 애니메이션을 지정하는게 아닌 메쉬를 지정하는 곳이다.
 USTRUCT(BlueprintType)
-struct FPMAnimBodyStyleSelectionSet
+struct FPMBodyStyleSelectionSet
 {
 	GENERATED_BODY()
 
@@ -57,7 +59,7 @@ struct FPMAnimBodyStyleSelectionSet
 
 	// 태그로 구분지어진 메쉬. 만약 여기서 적용시킬 메쉬를 못 찾는다면 Default
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FPMAnimBodyStyleSelectionEntry> MeshRules;
+	TArray<FPMBodyStyleSelectionEntry> MeshRules;
 
 	// 적용시킬 메쉬를 못 찾는다면 DefaultMesh를 적용
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -37,15 +37,10 @@ struct FPMCharacterPartList
 {
 	GENERATED_BODY()
 
-	FPMCharacterPartList()
-		: OwnerComponent(nullptr)
-	{
-	}
+	FPMCharacterPartList();
 
 	// CharacterPartList는 Owner가 꼭 필요하다!
-	FPMCharacterPartList(UPMPawnComponent_CharacterParts* InOwnerComponent)
-		: OwnerComponent(InOwnerComponent)
-	{}
+	FPMCharacterPartList(UPMPawnComponent_CharacterParts* InOwnerComponent);
 
 	// 실질적으로 CharacterPart가 저장, 적용되는 부분이다.
 	FPMCharacterPartHandle AddEntry(FPMCharacterPart NewPart);
@@ -77,10 +72,7 @@ class PROJECTM_API UPMPawnComponent_CharacterParts : public UPawnComponent
 * Overrided Functions
 */
 public:
-	UPMPawnComponent_CharacterParts(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get())
-	: Super(ObjectInitializer)
-	, CharacterPartList(this) // <-------------------- 이 부분이 중요하다!!! this로 CharacterPartList에게 Owner를 지정해줘야한다!
-	{}
+	UPMPawnComponent_CharacterParts(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 public:
 /*
@@ -110,5 +102,5 @@ private:
 
 	//애니메이션 적용을 위핸 메시와 연결고리
 	UPROPERTY(EditAnywhere, Category = "Cosmetics")
-	FPMAnimBodyStyleSelectionSet BodyMeshes;
+	FPMBodyStyleSelectionSet BodyMeshes;
 };

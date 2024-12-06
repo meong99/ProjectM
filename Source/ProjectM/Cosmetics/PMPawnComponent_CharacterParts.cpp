@@ -2,10 +2,29 @@
 #include "GameFramework/Character.h"
 #include "GameplayTagAssetInterface.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Engine/Engine.h"
 
 /*
 * FPMCharacterPartHandle
 */
+
+FPMCharacterPartList::FPMCharacterPartList()
+{
+	if (GEngine && GEngine->GetWorld() && GEngine->GetWorld()->GetGameInstance() &&
+		IsValid(OwnerComponent) == false)
+	{
+		MCHAE_FETAL("OwnerComponent must be set!!");
+	}
+}
+
+FPMCharacterPartList::FPMCharacterPartList(UPMPawnComponent_CharacterParts* InOwnerComponent)
+	: OwnerComponent(InOwnerComponent)
+{
+	if (IsValid(OwnerComponent) == false)
+	{
+		MCHAE_FETAL("OwnerComponent must be set!!");
+	}
+}
 
 FPMCharacterPartHandle FPMCharacterPartList::AddEntry(FPMCharacterPart NewPart)
 {
@@ -119,6 +138,10 @@ FGameplayTagContainer FPMCharacterPartList::CollectCombinedTags() const
 /*
 * UPMPawnComponent_CharacterParts
 */
+UPMPawnComponent_CharacterParts::UPMPawnComponent_CharacterParts(const FObjectInitializer& ObjectInitializer /*= FObjectInitializer::Get()*/)
+	: Super(ObjectInitializer)
+	, CharacterPartList(this) // <-------------------- 이 부분이 중요하다!!! this로 CharacterPartList에게 Owner를 지정해줘야한다!
+{}
 
 USkeletalMeshComponent* UPMPawnComponent_CharacterParts::GetParentMeshComponent() const
 {

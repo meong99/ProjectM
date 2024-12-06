@@ -1,21 +1,21 @@
 #include "PMCosmeticAnimationTypes.h"
 
-TSubclassOf<UAnimInstance> FPMAnimLayerSelectionSet::SelectBestLayer(const FGameplayTagContainer& CosmeticTags) const
+TSubclassOf<UAnimInstance> FPMAnimInstanceSelectionSet::SelectBestLayer(const FGameplayTagContainer& CosmeticTags) const
 {
-	for (const FPMAnimLayerSelectionEntry& Rule : LayerRules)
+	for (const FPMAnimInstanceSelectionEntry& Rule : AnimInstanceRules)
 	{
-		if (Rule.Layer != nullptr && CosmeticTags.HasAll(Rule.RequireTags))
+		if (Rule.AnimInstance != nullptr && CosmeticTags.HasAll(Rule.RequireTags))
 		{
-			return Rule.Layer;
+			return Rule.AnimInstance;
 		}
 	}
 
-	return DefaultLayer;
+	return DefaultAnimInstance;
 }
 
-USkeletalMesh* FPMAnimBodyStyleSelectionSet::SelectBestBodyStyle(const FGameplayTagContainer& CosmeticTags) const
+USkeletalMesh* FPMBodyStyleSelectionSet::SelectBestBodyStyle(const FGameplayTagContainer& CosmeticTags) const
 {
-	for (const FPMAnimBodyStyleSelectionEntry& Rule : MeshRules)
+	for (const FPMBodyStyleSelectionEntry& Rule : MeshRules)
 	{
 		if (Rule.Mesh && CosmeticTags.HasAll(CosmeticTags))
 		{
