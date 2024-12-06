@@ -10,6 +10,7 @@
 * 각 Item은 개별적인 능력들이 존재하는데 그걸 아이템에 종속시키지 않고 컴포넌트처럼 별도로 생성 후 아이템에 붙이는 형태로 간다.
 * 그렇게 하면 아이템의 능력들이 아이템에 종속되지 않아서 필요한 능력들을 원하는 대로 붙여서 새로운 아이템을 쉽게 만들어낼 수 있다.
 */
+#pragma NOTE("DefaultToInstanced, EditInlineNew, Instanced를 조합해서 BP CDO를 조작할 수 있다는 것. 생각해둬야한다.")
 UCLASS(Abstract, DefaultToInstanced, EditInlineNew)
 class UPMInventoryItemFragment : public UObject
 {
@@ -38,13 +39,17 @@ public:
 public:
 	const UPMInventoryItemFragment* FindFragmentByClass(TSubclassOf<UPMInventoryItemFragment> FragmentClass) const;
 
+	const FText&										GetDisplayName() const { return DisplayName; }
+	const TArray<TObjectPtr<UPMInventoryItemFragment>>&	GetFragments() const { return Fragments; }
 /*
 * Member Variables
 */
 private:
+	//아이템의 이름
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Display")
 	FText DisplayName;
 
+	// 아이템의 컴포넌트라고 생각할 수 있다.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, meta = (AllowPrivateAccess = true), Category = "Display")
 	TArray<TObjectPtr<UPMInventoryItemFragment>> Fragments;
 };

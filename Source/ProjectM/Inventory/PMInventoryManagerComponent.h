@@ -1,9 +1,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "Components/ControllerComponent.h"
 
-#include "PMInventoryItemManagerComponent.generated.h"
+#include "PMInventoryManagerComponent.generated.h"
 
 class UPMInventoryItemInstance;
 class UPMInventoryItemDefinition;
@@ -37,8 +37,8 @@ struct FPMInventoryList
 /**
  *
  */
-UCLASS()
-class PROJECTM_API UPMInventoryItemManagerComponent : public UActorComponent
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+class PROJECTM_API UPMInventoryManagerComponent : public UControllerComponent
 {
 	GENERATED_BODY()
 
@@ -46,7 +46,7 @@ class PROJECTM_API UPMInventoryItemManagerComponent : public UActorComponent
 * Overrided Functions
 */
 public:
-	UPMInventoryItemManagerComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	UPMInventoryManagerComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 /*
 * Member Functions

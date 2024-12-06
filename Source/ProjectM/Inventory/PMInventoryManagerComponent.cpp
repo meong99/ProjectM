@@ -1,4 +1,4 @@
-#include "PMInventoryItemManagerComponent.h"
+#include "PMInventoryManagerComponent.h"
 #include "Engine/Engine.h"
 #include "GameFramework/Actor.h"
 #include "PMInventoryItemInstance.h"
@@ -42,14 +42,15 @@ UPMInventoryItemInstance* FPMInventoryList::AddEntry(TSubclassOf<UPMInventoryIte
 }
 
 /*
-* UPMInventoryItemManagerComponent -------------------------------
+* UPMInventoryManagerComponent -------------------------------
 */
-UPMInventoryItemManagerComponent::UPMInventoryItemManagerComponent(const FObjectInitializer& ObjectInitializer)
-	: InventoryList(this)
+UPMInventoryManagerComponent::UPMInventoryManagerComponent(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+	, InventoryList(this)
 {
 }
 
-UPMInventoryItemInstance* UPMInventoryItemManagerComponent::AddItemDefinition(TSubclassOf<UPMInventoryItemDefinition> ItemDef)
+UPMInventoryItemInstance* UPMInventoryManagerComponent::AddItemDefinition(TSubclassOf<UPMInventoryItemDefinition> ItemDef)
 {
 	UPMInventoryItemInstance* Result = nullptr;
 	if (ItemDef)
