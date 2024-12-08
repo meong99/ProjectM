@@ -71,9 +71,9 @@ void UPMQuickBarComponent::EquipItemInSlot()
 	check(Slots.IsValidIndex(ActiveSlotIndex));
 	check(EquippedItem == nullptr);
 
-	if (UPMInventoryItemInstance* SlotItem = Slots[ActiveSlotIndex])
+	if (UPMInventoryItemInstance* SlotItemInstance = Slots[ActiveSlotIndex])
 	{
-		if (const UPMInventoryFragment_EquippableItem* EquipInfo = SlotItem->FindFragmentByClass<UPMInventoryFragment_EquippableItem>())
+		if (const UPMInventoryFragment_EquippableItem* EquipInfo = SlotItemInstance->FindFragmentByClass<UPMInventoryFragment_EquippableItem>())
 		{
 			TSubclassOf<UPMEquipmentDefinition> EquipDef = EquipInfo->GetEquipmentDefinition();
 			if (EquipDef)
@@ -83,7 +83,7 @@ void UPMQuickBarComponent::EquipItemInSlot()
 					EquippedItem = EquipmentManager->EquipItem(EquipDef);
 					if (EquippedItem)
 					{
-						EquippedItem->SetInstigator(SlotItem);
+						EquippedItem->SetInstigator(SlotItemInstance);
 					}
 				}
 			}

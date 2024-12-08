@@ -22,7 +22,7 @@ public:
 /**
  *
  */
-UCLASS()
+UCLASS(Blueprintable)
 class PROJECTM_API UPMInventoryItemDefinition : public UObject
 {
 	GENERATED_BODY()
