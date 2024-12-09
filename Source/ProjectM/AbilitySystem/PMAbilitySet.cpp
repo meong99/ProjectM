@@ -36,6 +36,7 @@ UPMAbilitySet::UPMAbilitySet()
 {
 }
 
+UE_DISABLE_OPTIMIZATION
 void UPMAbilitySet::GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystemComp, OUT FPMAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject) const
 {
 	check(AbilitySystemComp);
@@ -50,7 +51,7 @@ void UPMAbilitySet::GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystem
 	{
 		// 어빌리티가 지정되어있는지 확인. 에디터에서 null로 넣어놓을 수 있기 때문.
 		const FPMAbilitySet_GameplayAbility& AbilityToGrant = GrantedGameplayAbilities[AbilityIndex];
-		if (IsValid(AbilityToGrant.Ability))
+		if (!IsValid(AbilityToGrant.Ability))
 		{
 			continue;
 		}
@@ -68,3 +69,4 @@ void UPMAbilitySet::GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystem
 		}
 	}
 }
+UE_ENABLE_OPTIMIZATION
