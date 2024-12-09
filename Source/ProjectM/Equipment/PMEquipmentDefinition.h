@@ -7,6 +7,7 @@
 #include "PMEquipmentDefinition.generated.h"
 
 class UPMEquipmentInstance;
+class UPMAbilitySet;
 
 USTRUCT()
 struct FPMEquipmentActorToSpawn
@@ -39,4 +40,8 @@ public:
 	// Spawn될 장비에 대한 메타데이터
 	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
 	TArray<FPMEquipmentActorToSpawn> ActorsToSpawn;
+
+	// 장비 장착으로 부여될 어빌리티
+	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
+	TArray<TObjectPtr<UPMAbilitySet>> AbilitySetsToGrant;
 };

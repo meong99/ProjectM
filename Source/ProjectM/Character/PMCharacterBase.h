@@ -1,13 +1,14 @@
 #pragma once
 
 #include "ModularCharacter.h"
+#include "AbilitySystemInterface.h"
 #include "PMCharacterBase.generated.h"
 
 class UPMPawnExtensionComponent;
 class UPMCameraComponent;
 
 UCLASS()
-class PROJECTM_API APMCharacterBase : public AModularCharacter
+class PROJECTM_API APMCharacterBase : public AModularCharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -19,8 +20,9 @@ public:
 
 protected:
 	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-	/*
+/*
 * Member Functions
 */
 public:

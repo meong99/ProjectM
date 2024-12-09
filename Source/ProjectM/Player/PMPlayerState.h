@@ -1,8 +1,6 @@
 #pragma once
 
 #include "GameFramework/PlayerState.h"
-#include "AbilitySystemInterface.h"
-#include "AbilitySystemComponent.h"
 #include "PMPlayerState.generated.h"
 
 class UPMExperienceDefinition;
@@ -11,7 +9,7 @@ class UPMAbilitySystemComponent;
 class UAbilitySystemComponent;
 
 UCLASS()
-class PROJECTM_API APMPlayerState : public APlayerState/*, public IAbilitySystemInterface*/
+class PROJECTM_API APMPlayerState : public APlayerState
 {
 	GENERATED_BODY()
 
@@ -30,10 +28,10 @@ public:
 
 	template<class T>
 	const T* GetPawnData() const { return Cast<T>(PawnData); }
-// 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
 	UPMAbilitySystemComponent* GetPMAbilitySystemComponent() const { return AbilitySystemComponent; }
 
 	void SetPawnData(const UPMPawnData* InPawnData);
+
 /*
 * Member Variables
 */

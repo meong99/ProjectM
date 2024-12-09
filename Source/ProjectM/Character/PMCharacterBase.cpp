@@ -1,6 +1,7 @@
 #include "PMCharacterBase.h"
 #include "PMPawnExtensionComponent.h"
 #include "Camera/PMCameraComponent.h"
+#include "AbilitySystem/PMAbilitySystemComponent.h"
 
 APMCharacterBase::APMCharacterBase()
 {
@@ -21,3 +22,7 @@ void APMCharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 	PawnExtComp->SetupPlayerInputComponent();
 }
 
+UAbilitySystemComponent* APMCharacterBase::GetAbilitySystemComponent() const
+{
+	return PawnExtComp->GetPMAbilitySystemComponent();
+}

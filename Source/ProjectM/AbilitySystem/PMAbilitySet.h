@@ -33,6 +33,8 @@ struct FPMAbilitySet_GrantedHandles
 	GENERATED_BODY()
 
 	void AddAbilitySpecHandle(const FGameplayAbilitySpecHandle& Handle);
+
+	// 부여된 어빌리티 모두 제거
 	void TakeFromAbilitySystem(UPMAbilitySystemComponent* AbilitySystemComp);
 
 protected:
@@ -58,7 +60,7 @@ public:
 * Member Functions
 */
 public:
-	void GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystemComp, OUT FPMAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject = nullptr);
+	void GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystemComp, OUT FPMAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject = nullptr) const;
 
 /*
 * Member Variables

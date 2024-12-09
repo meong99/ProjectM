@@ -15,6 +15,18 @@ void FPMAbilitySet_GrantedHandles::AddAbilitySpecHandle(const FGameplayAbilitySp
 
 void FPMAbilitySet_GrantedHandles::TakeFromAbilitySystem(UPMAbilitySystemComponent* AbilitySystemComp)
 {
+	if (!AbilitySystemComp->IsOwnerActorAuthoritative())
+	{
+		return;
+	}
+
+	for (const FGameplayAbilitySpecHandle& Handle : AbilitySpecHandles)
+	{
+		if (Handle.IsValid())
+		{
+			AbilitySystemComp->ClearAbility(Handle);
+		}
+	}
 }
 
 /*
@@ -24,7 +36,7 @@ UPMAbilitySet::UPMAbilitySet()
 {
 }
 
-void UPMAbilitySet::GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystemComp, OUT FPMAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject)
+void UPMAbilitySet::GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystemComp, OUT FPMAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject) const
 {
 	check(AbilitySystemComp);
 

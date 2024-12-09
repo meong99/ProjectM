@@ -51,6 +51,7 @@ public:
 
 	template <class T>
 	const T* GetPawnData() const { return Cast<T>(PawnData); }
+	UPMAbilitySystemComponent* GetPMAbilitySystemComponent() const { return AbilitySystemComponent.Get(); }
 
 	void SetPawnData(const UPMPawnData* InPawnData);
 

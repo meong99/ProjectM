@@ -2,6 +2,8 @@
 #include "Engine/Engine.h"
 #include "PMEquipmentInstance.h"
 #include "PMEquipmentDefinition.h"
+#include "AbilitySystemGlobals.h"
+#include "../AbilitySystem/PMAbilitySystemComponent.h"
 
 FPMEquipmentList::FPMEquipmentList()
 {
@@ -44,6 +46,14 @@ UPMEquipmentInstance* FPMEquipmentList::AddEntry(TSubclassOf<UPMEquipmentDefinit
 	NewEntry.Instance = NewObject<UPMEquipmentInstance>(OwnerComponent->GetOwner(), InstanceType);
 	Result = NewEntry.Instance;
 
+	// 장비에서 보유중인 어빌리티 부여
+	UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	check(ASC);
+	for (const UPMAbilitySet* AbilitySet : EquipmentCDO->AbilitySetsToGrant)
+	{
+		AbilitySet->GiveToAbilitySystem(ASC, &NewEntry.GrantedHandles, Result);
+	}
+
 	Result->SpawnEquipmentActors(EquipmentCDO->ActorsToSpawn);
 
 	return Result;
@@ -56,10 +66,22 @@ void FPMEquipmentList::RemoveEntry(UPMEquipmentInstance* Instance)
 		FPMAppliedEquipmentEntry& Entry = *EntryIt;
 		if (Entry.Instance == Instance)
 		{
+			UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+			check(ASC);
+			Entry.GrantedHandles.TakeFromAbilitySystem(ASC);
+
 			Instance->DestroyEquipmentActors();
 			EntryIt.RemoveCurrent();
 		}
 	}
+}
+
+UPMAbilitySystemComponent* FPMEquipmentList::GetAbilitySystemComponent()
+{
+	check(OwnerComponent);
+	AActor* OwningActor = OwnerComponent->GetOwner();
+
+	return Cast<UPMAbilitySystemComponent>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OwningActor));
 }
 
 /*

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Components/PawnComponent.h"
 #include <Components\ActorComponent.h>
+#include "../AbilitySystem/PMAbilitySet.h"
 
 #include "PMEquipmentManagerComponent.generated.h"
 
@@ -19,6 +20,10 @@ struct FPMAppliedEquipmentEntry
 
 	UPROPERTY()
 	TObjectPtr<UPMEquipmentInstance> Instance = nullptr;
+
+	// 장비 장착시 부여된 어빌리티들의 핸들
+	UPROPERTY()
+	FPMAbilitySet_GrantedHandles GrantedHandles;
 };
 
 USTRUCT(BlueprintType)
@@ -31,6 +36,8 @@ struct FPMEquipmentList
 
 	UPMEquipmentInstance* AddEntry(TSubclassOf<UPMEquipmentDefinition> EquipmentDefinition);
 	void RemoveEntry(UPMEquipmentInstance* Instance);
+
+	UPMAbilitySystemComponent* GetAbilitySystemComponent();
 
 	UPROPERTY()
 	TArray<FPMAppliedEquipmentEntry> Entries;

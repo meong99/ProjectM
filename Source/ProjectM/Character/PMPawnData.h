@@ -39,6 +39,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "ProjectM | Input")
 	TObjectPtr<UPMInputConfig> InputConfig;
 
+	// Character가 기본적으로 사용하게 될 Ability
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "ProjectM | Abilities")
 	TArray<TObjectPtr<UPMAbilitySet>> AbilitySets;
 };
