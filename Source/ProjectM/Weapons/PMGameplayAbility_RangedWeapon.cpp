@@ -10,6 +10,15 @@
 #include "Engine/World.h"
 #include "AbilitySystemComponent.h"
 #include "../AbilitySystem/PMGameplayAbilityTargetData_SingleTarget.h"
+#include "DrawDebugHelpers.h"
+
+bool UPMGameplayAbility_RangedWeapon::bShowDebug_Console = false;
+static FAutoConsoleVariableRef CVarMyBoolVar(
+	TEXT("Debug.ShowDebug"), // 콘솔 변수 이름
+	UPMGameplayAbility_RangedWeapon::bShowDebug_Console, // 변수와 연동
+	TEXT("디버그 옵션을 켤지 말지"), // 설명
+	ECVF_Default // 플래그 (옵션)
+);
 
 UPMGameplayAbility_RangedWeapon::UPMGameplayAbility_RangedWeapon()
 {
@@ -68,12 +77,11 @@ void UPMGameplayAbility_RangedWeapon::PerformLocalTargeting(TArray<FHitResult>& 
 		InputData.StartTrace = TargetTransform.GetTranslation();
 		InputData.EndAim = InputData.StartTrace + InputData.AimDir * WeaponData->MaxDamageRange;
 
-#if 0
+		if (bShowDebug_Console)
 		{
 			static float DebugThickness = 2.0f;
 			DrawDebugLine(GetWorld(), InputData.StartTrace, InputData.StartTrace + (InputData.AimDir * 100.0f), FColor::Yellow, false, 10.0f, 0, DebugThickness);
 		}
-#endif
 
 		TraceBulletsInCartridge(InputData, OutHits);
 	}
@@ -184,7 +192,7 @@ FTransform UPMGameplayAbility_RangedWeapon::GetTargetingTransform(APawn* SourceP
 	const FVector WeaponLoc = GetWeaponTargetingSourceLocation();
 	FVector FinalCamLoc = FocalLoc + (((WeaponLoc - FocalLoc) | AimDir) * AimDir);
 
-#if 0
+	if (bShowDebug_Console)
 	{
 		DrawDebugPoint(GetWorld(), WeaponLoc, 10.0f, FColor::Red, false, 60.0f);
 		DrawDebugPoint(GetWorld(), CamLoc, 10.0f, FColor::Yellow, false, 60.0f);
@@ -194,7 +202,6 @@ FTransform UPMGameplayAbility_RangedWeapon::GetTargetingTransform(APawn* SourceP
 		DrawDebugLine(GetWorld(), CamLoc, FocalLoc, FColor::Blue, false, 60.0f, 0, 2.0f);
 		DrawDebugLine(GetWorld(), WeaponLoc, FinalCamLoc, FColor::Red, false, 60.0f, 0, 2.0f);
 	}
-#endif
 
 	return FTransform(CamRot, FinalCamLoc);
 }

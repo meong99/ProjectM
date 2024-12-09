@@ -72,5 +72,6 @@ protected:
 /*
 * Member Variables
 */
-private:
+public:
+	static bool bShowDebug_Console;
 };
