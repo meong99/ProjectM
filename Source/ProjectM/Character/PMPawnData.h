@@ -5,6 +5,7 @@
 
 class UPMCameraMode;
 class UPMInputConfig;
+class UPMAbilitySet;
 
 UCLASS()
 class PROJECTM_API UPMPawnData : public UPrimaryDataAsset
@@ -20,10 +21,11 @@ public:
 * Member Functions
 */
 public:
-	const TSubclassOf<APawn>& GetPawnClass() const { return PawnClass; }
-	const TSubclassOf<UPMCameraMode>& GetDefaultCameraMode() const { return DefaultCameraMode; }
+	const TSubclassOf<APawn>&					GetPawnClass() const { return PawnClass; }
+	const TSubclassOf<UPMCameraMode>&			GetDefaultCameraMode() const { return DefaultCameraMode; }
+	const UPMInputConfig*						GetInputConfig() const { return InputConfig; }
+	const TArray<TObjectPtr<UPMAbilitySet>>&	GetAbilitySets() const { return AbilitySets; }
 
-	const UPMInputConfig* GetInputConfig() const { return InputConfig; }
 /*
 * Member Variables
 */
@@ -36,4 +38,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "ProjectM | Input")
 	TObjectPtr<UPMInputConfig> InputConfig;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "ProjectM | Abilities")
+	TArray<TObjectPtr<UPMAbilitySet>> AbilitySets;
 };

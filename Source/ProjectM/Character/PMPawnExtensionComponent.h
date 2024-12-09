@@ -5,6 +5,7 @@
 #include "PMPawnExtensionComponent.generated.h"
 
 class UPMPawnData;
+class UPMAbilitySystemComponent;
 
 /*
 * GameFeature시스템으로 추가하는 모든 컴포넌트의 초기화 과정을 담당한다.
@@ -27,6 +28,9 @@ public:
 	{
 		return IsValid(Actor) ? Actor->FindComponentByClass<UPMPawnExtensionComponent>() : nullptr;
 	}
+
+	void InitializeAbilitySystem(UPMAbilitySystemComponent* InAbilitySystemComponent, AActor* InOwnerActor);
+	void UnInitializeAbilitySystem();
 
 	virtual FName GetFeatureName() const final { return NAME_ActorFeatureName; }
 	static const FName NAME_ActorFeatureName;
@@ -56,4 +60,6 @@ public:
 private:
 	UPROPERTY(EditInstanceOnly, Category = "ProjectM | Pawn")
 	TObjectPtr<const UPMPawnData> PawnData;
+
+	TWeakObjectPtr<UPMAbilitySystemComponent> AbilitySystemComponent;
 };

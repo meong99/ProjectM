@@ -20,8 +20,11 @@ public class ProjectM : ModuleRules
             "GameFeatures",
             "ModularGameplay",
             "ModularGameplayActors",
-            "GameplayTags",
 			"CommonUser",
+
+            "GameplayTags",
+			"GameplayTasks",
+			"GameplayAbilities",
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

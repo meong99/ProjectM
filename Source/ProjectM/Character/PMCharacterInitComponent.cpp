@@ -128,13 +128,18 @@ void UPMCharacterInitComponent::HandleChangeInitState(UGameFrameworkComponentMan
 			return;
 		}
 
+		// Pawn Setting
 		const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
 		const UPMPawnData* PawnData = nullptr;
 		if (UPMPawnExtensionComponent* PawnExtComp = UPMPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
 		{
 			PawnData = PawnExtComp->GetPawnData<UPMPawnData>();
+
+			// AbilitySystemSetting
+			PawnExtComp->InitializeAbilitySystem(PlayerState->GetPMAbilitySystemComponent(), PlayerState);
 		}
 
+		// Camera Setting
 		if (bIsLocallyControlled && PawnData)
 		{
 			if (UPMCameraComponent* CameraComponent = UPMCameraComponent::FindCameraComponent(Pawn))
@@ -145,6 +150,7 @@ void UPMCharacterInitComponent::HandleChangeInitState(UGameFrameworkComponentMan
 			}
 		}
  
+		//InputSetting
  		if (APMPlayerControllerBase* PlayerController = GetController<APMPlayerControllerBase>())
  		{
  			if (Pawn->InputComponent != nullptr)

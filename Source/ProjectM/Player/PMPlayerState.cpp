@@ -3,14 +3,23 @@
 #include "../GameModes/PMExperienceManagerComponent.h"
 #include "../GameModes/PMGameModeBase.h"
 #include "../Character/PMPawnData.h"
+#include "../AbilitySystem/PMAbilitySystemComponent.h"
+#include "../AbilitySystem/PMAbilitySet.h"
 
 APMPlayerState::APMPlayerState()
 {
+	AbilitySystemComponent = CreateDefaultSubobject<UPMAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 }
 
 void APMPlayerState::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	check(AbilitySystemComponent);
+	FGameplayAbilityActorInfo* ActorInfo = AbilitySystemComponent->AbilityActorInfo.Get();
+	check(ActorInfo->OwnerActor == this);
+	check(ActorInfo->OwnerActor == ActorInfo->AvatarActor);
+	AbilitySystemComponent->InitAbilityActorInfo(this, GetPawn());
 
 	const AGameStateBase* GameState = GetWorld()->GetGameState();
 	check(GameState);
@@ -39,4 +48,12 @@ void APMPlayerState::SetPawnData(const UPMPawnData* InPawnData)
 	check(!PawnData);
 
 	PawnData = InPawnData;
+
+	for (UPMAbilitySet* AbilitySet : PawnData->GetAbilitySets())
+	{
+		if (AbilitySet)
+		{
+			AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, nullptr);
+		}
+	}
 }

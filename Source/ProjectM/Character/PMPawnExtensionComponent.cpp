@@ -2,6 +2,7 @@
 #include "PMGameplayTags.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "GameFramework/Controller.h"
+#include "../AbilitySystem/PMAbilitySystemComponent.h"
 
 const FName UPMPawnExtensionComponent::NAME_ActorFeatureName{"PawnExtension"};
 
@@ -10,6 +11,38 @@ UPMPawnExtensionComponent::UPMPawnExtensionComponent(const FObjectInitializer& O
 	// 초기화 단계 검사를 틱으로 하지 않고 이벤트 발생 형태로 가기 때문에 틱을 끈다. 하위 클래스에서 필요할 때 켠다.
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 	PrimaryComponentTick.bCanEverTick = false;
+}
+
+void UPMPawnExtensionComponent::InitializeAbilitySystem(UPMAbilitySystemComponent* InAbilitySystemComponent, AActor* InOwnerActor)
+{
+	check(InAbilitySystemComponent && InOwnerActor);
+
+	if (AbilitySystemComponent == InAbilitySystemComponent)
+	{
+		return;
+	}
+
+	if (AbilitySystemComponent.IsValid())
+	{
+		UnInitializeAbilitySystem();
+	}
+
+	APawn* Pawn = GetPawnChecked<APawn>();
+	AActor* ExistingAvatar = InAbilitySystemComponent->GetAvatarActor();
+	check(!ExistingAvatar);
+
+	AbilitySystemComponent = InAbilitySystemComponent;
+	AbilitySystemComponent->InitAbilityActorInfo(InOwnerActor, Pawn);
+}
+
+void UPMPawnExtensionComponent::UnInitializeAbilitySystem()
+{
+	if (!AbilitySystemComponent.IsValid())
+	{
+		return;
+	}
+
+	AbilitySystemComponent = nullptr;
 }
 
 void UPMPawnExtensionComponent::OnRegister()
