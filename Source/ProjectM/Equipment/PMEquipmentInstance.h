@@ -44,7 +44,8 @@ public:
 	virtual void	OnUnequipped();
 
 	UObject*							GetInstigator() const { return Instigator; }
-	const TArray<TObjectPtr<AActor>>&	GetSpawnedActors() const { return SpawnedActors; }
+	UFUNCTION(BlueprintPure, Category = "Equipment")
+	const TArray<AActor*>&	GetSpawnedActors() const { return SpawnedActors; }
 
 	void SetInstigator(UObject* InInstigator) { Instigator = InInstigator; }
 /*

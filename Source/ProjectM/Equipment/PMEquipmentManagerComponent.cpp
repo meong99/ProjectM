@@ -117,3 +117,21 @@ void UPMEquipmentManagerComponent::UnequipItem(UPMEquipmentInstance* ItemInstanc
 		EquipmentList.RemoveEntry(ItemInstance);
 	}
 }
+
+TArray<UPMEquipmentInstance*> UPMEquipmentManagerComponent::GetEquipmentInstancesOfType(TSubclassOf<UPMEquipmentInstance> InstanceType) const
+{
+	TArray<UPMEquipmentInstance*> Result;
+
+	for (const FPMAppliedEquipmentEntry& Entry : EquipmentList.Entries)
+	{
+		if (UPMEquipmentInstance* Instance = Entry.Instance)
+		{
+			if (Instance->IsA(InstanceType))
+			{
+				Result.Add(Instance);
+			}
+		}
+	}
+
+	return Result;
+}
