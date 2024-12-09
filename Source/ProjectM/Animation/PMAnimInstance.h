@@ -4,8 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "GameplayEffectTypes.h"
 
 #include "PMAnimInstance.generated.h"
+
+class UAbilitySystemComponent;
 
 // BP에 있는거 전부 Native화 해야함
 UCLASS()
@@ -20,11 +23,13 @@ public:
 	UPMAnimInstance();
 
 protected:
+	virtual void NativeInitializeAnimation() override;
 
 /*
 * Member Functions
 */
 public:
+	void InitializeWithAbilitySystem(UAbilitySystemComponent* ASC);
 
 /*
 * Member Variables
@@ -32,4 +37,9 @@ public:
 private:
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = ture), Category = "ProjectM | Character State Data")
 	float GroundDistance = -1.0f;
+
+	// GameplayTag와 AnimInstance의 속성값을 매핑한다.
+	// ex) Tag와 bIsShotFire와 같은 변수를 매핑해서 Tag가 활성화되면 bIsShotFire가 ture가 되고, Tag가 비활성화되면 bIsShotFire가 false가 된다.
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = ture), Category = "ProjectM | GameplayTags")
+	FGameplayTagBlueprintPropertyMap GameplayTagPropertyMap;
 };

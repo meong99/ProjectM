@@ -1,8 +1,29 @@
 #include "PMAbilitySystemComponent.h"
 #include "Abilities/PMGameplayAbilitiy.h"
+#include "../Animation/PMAnimInstance.h"
+#include "GameFramework/Pawn.h"
 
 UPMAbilitySystemComponent::UPMAbilitySystemComponent()
 {
+}
+
+void UPMAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor)
+{
+	FGameplayAbilityActorInfo* ActorInfo = AbilityActorInfo.Get();
+	check(ActorInfo);
+	check(InOwnerActor);
+
+	const bool bHasNewPawnAvatar = Cast<APawn>(InAvatarActor) && InAvatarActor != ActorInfo->AvatarActor;
+
+	Super::InitAbilityActorInfo(InOwnerActor, InAvatarActor);
+
+	if (bHasNewPawnAvatar)
+	{
+		if (UPMAnimInstance* AnimInst = Cast<UPMAnimInstance>(ActorInfo->GetAnimInstance()))
+		{
+			AnimInst->InitializeWithAbilitySystem(this);
+		}
+	}
 }
 
 void UPMAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)

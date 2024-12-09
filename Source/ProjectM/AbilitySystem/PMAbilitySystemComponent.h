@@ -16,6 +16,7 @@ class PROJECTM_API UPMAbilitySystemComponent : public UAbilitySystemComponent
 */
 public:
 	UPMAbilitySystemComponent();
+	virtual void InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor) override;
 
 protected:
 
