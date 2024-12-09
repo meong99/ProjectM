@@ -22,7 +22,7 @@ void UPMPawnExtensionComponent::InitializeAbilitySystem(UPMAbilitySystemComponen
 		return;
 	}
 
-	if (AbilitySystemComponent.IsValid())
+	if (AbilitySystemComponent)
 	{
 		UnInitializeAbilitySystem();
 	}
@@ -37,7 +37,7 @@ void UPMPawnExtensionComponent::InitializeAbilitySystem(UPMAbilitySystemComponen
 
 void UPMPawnExtensionComponent::UnInitializeAbilitySystem()
 {
-	if (!AbilitySystemComponent.IsValid())
+	if (!AbilitySystemComponent)
 	{
 		return;
 	}

@@ -62,5 +62,6 @@ private:
 	UPROPERTY(EditInstanceOnly, Category = "ProjectM | Pawn")
 	TObjectPtr<const UPMPawnData> PawnData;
 
-	TWeakObjectPtr<UPMAbilitySystemComponent> AbilitySystemComponent;
+	UPROPERTY(VisibleAnywhere, Category = "ProjectM | Pawn")
+	TObjectPtr<UPMAbilitySystemComponent> AbilitySystemComponent;
 };

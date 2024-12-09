@@ -39,7 +39,7 @@ public:
 /*
 * Member Variables
 */
-protected:
+public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (TitleProperty = "InputAction"))
 	TArray<FPMInputAction> NativeInputActions;
 

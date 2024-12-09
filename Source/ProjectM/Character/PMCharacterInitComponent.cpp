@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Input/PMInputComponent.h"
 #include "InputActionValue.h"
+#include "../AbilitySystem/PMAbilitySystemComponent.h"
 
 const FName UPMCharacterInitComponent::NAME_ActorFeatureName{"CharacterInit"};
 const FName UPMCharacterInitComponent::NAME_BindInputsNow{"BindInputsNow"};
@@ -235,10 +236,14 @@ void UPMCharacterInitComponent::InitializePlayerInput(UInputComponent* PlayerInp
 
 				// 태그로 구분지어서 입력 바인딩
 				UPMInputComponent* InputConponent = CastChecked<UPMInputComponent>(PlayerInputComponent);
-				{
-					InputConponent->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, false);
-					InputConponent->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, false);
-				}
+
+				// 어빌리티와 관련된 InputAction 바인딩
+				TArray<uint32> BindHandles;
+				InputConponent->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, BindHandles);
+
+				// 기타 기본 입력 관련 Action 바인딩
+				InputConponent->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, false);
+				InputConponent->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, false);
 			}
 		}
 	}
@@ -289,5 +294,33 @@ void UPMCharacterInitComponent::Input_LookMouse(const FInputActionValue& InputAc
 	{
 		double AimInversionValue = -Value.Y;
 		Pawn->AddControllerPitchInput(AimInversionValue);
+	}
+}
+
+void UPMCharacterInitComponent::Input_AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	if (const APawn* Pawn = GetPawn<APawn>())
+	{
+		if (const UPMPawnExtensionComponent* PawnExtComp = UPMPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+		{
+			if (UPMAbilitySystemComponent* ASC = PawnExtComp->GetPMAbilitySystemComponent())
+			{
+				ASC->AbilityInputTagPressed(InputTag);
+			}
+		}
+	}
+}
+
+void UPMCharacterInitComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	if (const APawn* Pawn = GetPawn<APawn>())
+	{
+		if (const UPMPawnExtensionComponent* PawnExtComp = UPMPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+		{
+			if (UPMAbilitySystemComponent* ASC = PawnExtComp->GetPMAbilitySystemComponent())
+			{
+				ASC->AbilityInputTagReleased(InputTag);
+			}
+		}
 	}
 }

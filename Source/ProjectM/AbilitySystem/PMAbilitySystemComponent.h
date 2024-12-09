@@ -23,9 +23,15 @@ protected:
 * Member Functions
 */
 public:
+	void AbilityInputTagPressed(const FGameplayTag& InputTag);
+	void AbilityInputTagReleased(const FGameplayTag& InputTag);
+	void ProcessAbilityInput(float DeltaTime, bool bGamePaused);
 
 /*
 * Member Variables
 */
 private:
+	TArray<FGameplayAbilitySpecHandle> InputPressedSpecHandles;
+	TArray<FGameplayAbilitySpecHandle> InputReleasedSpecHandles;
+	TArray<FGameplayAbilitySpecHandle> InputHeldSpenHandles;
 };

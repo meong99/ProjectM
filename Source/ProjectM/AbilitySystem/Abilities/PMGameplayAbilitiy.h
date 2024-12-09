@@ -6,6 +6,17 @@
 #include "Abilities/GameplayAbility.h"
 #include "PMGameplayAbilitiy.generated.h"
 
+UENUM(BlueprintType)
+enum class EPMAbilityActivationPolicy : uint8
+{
+	// Input이 Trigger되었을 때(Preddes/Released)
+	OnInputTriggered,
+	// Input이 Held되었을 때
+	WhileInputActive,
+	//Avatar가 생성되었을 때 즉시 적용
+	OnSpawn,
+};
+
 UCLASS()
 class PROJECTM_API UPMGameplayAbilitiy : public UGameplayAbility
 {
@@ -23,9 +34,11 @@ protected:
 * Member Functions
 */
 public:
-
+	EPMAbilityActivationPolicy GetActivationPolicy() const { return ActivationPolicy; }
 /*
 * Member Variables
 */
-private:
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | AbilityActivation")
+	EPMAbilityActivationPolicy ActivationPolicy;
 };
