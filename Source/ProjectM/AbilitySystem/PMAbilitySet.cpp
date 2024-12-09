@@ -36,7 +36,6 @@ UPMAbilitySet::UPMAbilitySet()
 {
 }
 
-UE_DISABLE_OPTIMIZATION
 void UPMAbilitySet::GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystemComp, OUT FPMAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject) const
 {
 	check(AbilitySystemComp);
@@ -69,4 +68,3 @@ void UPMAbilitySet::GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystem
 		}
 	}
 }
-UE_ENABLE_OPTIMIZATION

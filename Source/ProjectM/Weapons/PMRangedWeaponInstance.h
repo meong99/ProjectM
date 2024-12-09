@@ -27,5 +27,10 @@ public:
 /*
 * Member Variables
 */
-private:
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ForceUnits = cm),  Category = "WeaponConfig")
+	float MaxDamageRange = 25000.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ForceUnits = cm),  Category = "WeaponConfig")
+	float BulletTraceWeaponRadius = 0.0f;
 };

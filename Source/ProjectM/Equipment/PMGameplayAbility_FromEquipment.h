@@ -6,6 +6,8 @@
 #include "AbilitySystem/Abilities/PMGameplayAbilitiy.h"
 #include "PMGameplayAbility_FromEquipment.generated.h"
 
+class UPMEquipmentInstance;
+
 /**
  * 
  */
@@ -24,6 +26,7 @@ public:
 * Member Functions
 */
 public:
+	UPMEquipmentInstance* GetAssociatedEquipment() const;
 
 /*
 * Member Variables
