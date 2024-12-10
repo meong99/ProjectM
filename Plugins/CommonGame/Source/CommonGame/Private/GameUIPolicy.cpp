@@ -40,6 +40,8 @@ void UGameUIPolicy::AddLayoutToViewport(UCommonLocalPlayer* LocalPlayer, UPrimar
 
 void UGameUIPolicy::RemoveLayoutFromViewport(UCommonLocalPlayer* LocalPlayer, UPrimaryGameLayout* Layout)
 {
+	// UCommonUserWidget의 SlateWidget을 가져와서 Parent와의 연결고리를 끊는다. 
+	// Layout을 더 이상 사용하지 않는다. ( 위젯의 제거가 이런 식으로 되는건가? )
 	TWeakPtr<SWidget> LayoutSlateWidget = Layout->GetCachedWidget();
 	if (LayoutSlateWidget.IsValid())
 	{
