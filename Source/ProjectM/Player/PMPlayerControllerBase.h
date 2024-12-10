@@ -1,13 +1,13 @@
 #pragma once
 
-#include "ModularPlayerController.h"
+#include "CommonPlayerController.h"
 #include "PMPlayerControllerBase.generated.h"
 
 class APMPlayerState;
 class UPMAbilitySystemComponent;
 
 UCLASS()
-class PROJECTM_API APMPlayerControllerBase : public AModularPlayerController
+class PROJECTM_API APMPlayerControllerBase : public ACommonPlayerController
 {
 	GENERATED_BODY()
 

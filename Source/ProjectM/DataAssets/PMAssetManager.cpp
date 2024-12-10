@@ -19,7 +19,7 @@ UPMAssetManager& UPMAssetManager::Get()
 	}
 
 	// 에셋 매니저 UPMAssetManager로 추가해야함!
-	MCHAE_FETAL("invalid AssetManagerClassname in DefaultEngine.ini(project settings); it must be HakAssetManager");
+	MCHAE_FETAL("invalid AssetManagerClassname in DefaultEngine.ini(project settings); it must be PMAssetManager");
 
 	// 위의 UE_LOG의 Fatal로 인해, Crash 나기 때문에 도달하지 않지만 컴파일을 위해 더미로 리턴
 	return *NewObject<UPMAssetManager>();

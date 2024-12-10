@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Engine/GameInstance.h"
+#include "CommonGameInstance.h"
 #include "PMGameInstance.generated.h"
 
 UCLASS()
-class PROJECTM_API UPMGameInstance : public UGameInstance
+class PROJECTM_API UPMGameInstance : public UCommonGameInstance
 {
 	GENERATED_BODY()
 

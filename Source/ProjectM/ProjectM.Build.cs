@@ -15,12 +15,18 @@ public class ProjectM : ModuleRules
 			"Core",
 			"CoreUObject",
 			"Engine",
+
 			"InputCore",
 			"EnhancedInput",
+
             "GameFeatures",
             "ModularGameplay",
             "ModularGameplayActors",
+
 			"CommonUser",
+			"CommonGame",
+			"CommonUI",
+			"UMG",
 
             "GameplayTags",
 			"GameplayTasks",
