@@ -33,8 +33,10 @@ void UGameUIPolicy::CreateLayoutWidget(UCommonLocalPlayer* LocalPlayer)
 
 void UGameUIPolicy::AddLayoutToViewport(UCommonLocalPlayer* LocalPlayer, UPrimaryGameLayout* Layout)
 {
+	// CommonUserWidget에 PlayerContext를 설정 (Player와 Layout 매칭)
 	Layout->SetPlayerContext(FLocalPlayerContext(LocalPlayer));
 
+	// 해당 Layout의 우선순위를 아주 높게 만들면서 Widget을 붙인다.
 	Layout->AddToPlayerScreen(1000);
 }
 
