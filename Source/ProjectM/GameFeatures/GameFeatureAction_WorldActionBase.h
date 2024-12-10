@@ -5,6 +5,10 @@
 
 struct FGameFeatureStateChangeContext;
 
+/*
+* GameFeature같은 경우에는 EngineSubsystem에 종속적이기에 어떤 World에 적용되어야 하는지 알아야한다.
+* 그래서 WorldActionBase를 상속받아서 사용하도록 하고, WorldActionBase는 WorldContext를 기반으로 Action을 적용한다.
+*/
 UCLASS()
 class PROJECTM_API UGameFeatureAction_WorldActionBase : public UGameFeatureAction
 {
