@@ -14,6 +14,10 @@ void UGameFeatureAction_AddWidgets::AddWidgets(AActor* Actor, FPerContextData& A
 	{
 		for (const FPMHUDLayoutRequest& Entry : Layout)
 		{
+			// LayoutClass는 SoftClass라서 Loading을 해줘야만 한다.
+			// 만약 이미 Loading되어있다면 SoftClass를 Get하면 Object가 반환되는데 안되어있다면 null이다.
+			// 우선 위젯은 서버에서는 Loading할 필요가 없기 때문에  Loading은 이 곳에서 하지 않는다.
+			// ExperienceManagerComponent에서 Bundle에서 Client로딩하는 곳에 위젯을 추가해서 미리 로딩을 해놓을 것이다.
 			if (TSubclassOf<UCommonActivatableWidget> ConcreteWidgetClass = Entry.LayoutClass.Get())
 			{
 				ActiveData.LayoutsAdded.Add(UCommonUIExtensions::PushContentToLayer_ForPlayer(LocalPlayer, Entry.LayerID, ConcreteWidgetClass));

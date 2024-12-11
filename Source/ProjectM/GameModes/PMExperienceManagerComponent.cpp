@@ -48,8 +48,25 @@ void UPMExperienceManagerComponent::StartExperienceLoad()
 
 	UPMAssetManager& AssetManager = UPMAssetManager::Get();
 
+	/*
+	* 이미 ExperienceId를 넘겨줬는데 왜 CDO를 사용하는걸까?
+	* GetPrimaryAssetID의 고유 특성때문에 그렇다. CDO를 사용하지 않으면 제대로 로딩되지 않는다. 내부코드를 보면 알 수 있다.
+	*/
 	TSet<FPrimaryAssetId> BundleAssetList;
 	BundleAssetList.Add(CurrentExperience->GetPrimaryAssetId());
+
+	// Widget같이 특정 상황에서 Loading을 해줘야 한다면 Soft로 묶여있는데 이건 별도로 진행해줘야한다.
+	for (const TObjectPtr<UPMExperienceActionSet>& ActionSet : CurrentExperience->GetActionSets())
+	{
+		if (ActionSet)
+		{
+			/*
+			* HUD 추가하는 과정이다.
+			* 자세한 과정은 UAssetManager::ChageBundleStateForPrimaryAssets를 보자
+			*/
+			BundleAssetList.Add(ActionSet->GetPrimaryAssetId());
+		}
+	}
 
 	TArray<FName> BundlesToLoad;
 	const ENetMode OwnerNetMode = GetOwner()->GetNetMode();

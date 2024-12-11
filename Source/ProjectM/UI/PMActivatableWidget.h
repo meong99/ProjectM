@@ -6,6 +6,7 @@
 #include "CommonActivatableWidget.h"
 #include "PMActivatableWidget.generated.h"
 
+// Widget이 켜져있을 때 Input의 처리방식
 UENUM(BlueprintType)
 enum class EPMWidgetInputMode : uint8
 {

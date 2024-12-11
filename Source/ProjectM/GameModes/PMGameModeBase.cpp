@@ -10,6 +10,7 @@
 #include "../Character/PMPawnData.h"
 #include "TimerManager.h"
 #include "../Character/PMPawnExtensionComponent.h"
+#include "../UI/PMHUD.h"
 
 UE_DISABLE_OPTIMIZATION
 
@@ -19,6 +20,7 @@ APMGameModeBase::APMGameModeBase(const FObjectInitializer& ObjectInitializer) : 
 	DefaultPawnClass = APMCharacterBase::StaticClass();
 	PlayerControllerClass = APMPlayerControllerBase::StaticClass();
 	PlayerStateClass = APMPlayerState::StaticClass();
+	HUDClass = APMHUD::StaticClass();
 }
 
 void APMGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
