@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "CommonUIExtensions.h"
 #include "CommonActivatableWidget.h"
 #include "CommonLocalPlayer.h"

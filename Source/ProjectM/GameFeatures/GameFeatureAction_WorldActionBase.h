@@ -1,9 +1,8 @@
 #pragma once
 
 #include "GameFeatureAction.h"
+#include "GameFeaturesSubsystem.h"
 #include "GameFeatureAction_WorldActionBase.generated.h"
-
-struct FGameFeatureStateChangeContext;
 
 /*
 * GameFeature같은 경우에는 EngineSubsystem에 종속적이기에 어떤 World에 적용되어야 하는지 알아야한다.

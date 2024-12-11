@@ -82,6 +82,18 @@
 			"Type": "RequiredResource"
 		},
 		{
+			"Path": "$(ProjectDir)/Plugins/UIExtension/Binaries/Win64/UnrealEditor-UIExtension.dll",
+			"Type": "DynamicLibrary"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/UIExtension/Binaries/Win64/UnrealEditor-UIExtension.pdb",
+			"Type": "SymbolFile"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/UIExtension/Binaries/Win64/UnrealEditor.modules",
+			"Type": "RequiredResource"
+		},
+		{
 			"Path": "$(EngineDir)/Binaries/Win64/AgentInterface.dll",
 			"Type": "DynamicLibrary"
 		},
@@ -3749,6 +3761,10 @@
 		},
 		{
 			"Path": "$(ProjectDir)/Plugins/ModularGameplayActors/ModularGameplayActors.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/UIExtension/UIExtension.uplugin",
 			"Type": "UFS"
 		},
 		{
@@ -26981,6 +26997,7 @@
 		"ToolPresets",
 		"TraceDataFilters",
 		"TraceUtilities",
+		"UIExtension",
 		"UObjectPlugin",
 		"UVEditor",
 		"UdpMessaging",

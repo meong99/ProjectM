@@ -27,6 +27,7 @@ public class ProjectM : ModuleRules
 			"CommonGame",
 			"CommonUI",
 			"UMG",
+			"UIExtension",
 
             "GameplayTags",
 			"GameplayTasks",
