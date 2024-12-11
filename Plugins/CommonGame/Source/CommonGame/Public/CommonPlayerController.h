@@ -14,5 +14,6 @@ class COMMONGAME_API ACommonPlayerController : public AModularPlayerController
 {
 	GENERATED_BODY()
 public:
+	// PlayerController가 LocalPlayer에게 붙으면 호출된다.
 	virtual void ReceivedPlayer() override;
 };

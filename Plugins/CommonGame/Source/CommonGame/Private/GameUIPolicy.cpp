@@ -96,10 +96,10 @@ void UGameUIPolicy::NotifyPlayerDestroyed(UCommonLocalPlayer* LocalPlayer)
 
 	LocalPlayer->OnPlayerControllerSet.RemoveAll(this);
 
-	// RootViewportLayouts���� ��������
 	const int32 LayoutInfoIdx = RootViewportLayouts.IndexOfByKey(LocalPlayer);
 	if (LayoutInfoIdx != INDEX_NONE)
 	{
+		// 만약 PrimaryGameLayout이 있으면 Viewport에서도 제거한다.
 		UPrimaryGameLayout* Layout = RootViewportLayouts[LayoutInfoIdx].RootLayout;
 		RootViewportLayouts.RemoveAt(LayoutInfoIdx);
 		RemoveLayoutFromViewport(LocalPlayer, Layout);
