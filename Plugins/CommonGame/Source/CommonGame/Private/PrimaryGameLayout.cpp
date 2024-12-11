@@ -17,6 +17,7 @@ void UPrimaryGameLayout::RegisterLayer(FGameplayTag LayerTag, UCommonActivatable
 {
 	if (!IsDesignTime())
 	{
+		// 레이어의 전환 속도
 		LayerWidget->SetTransitionDuration(0.0);
 		Layers.Add(LayerTag, LayerWidget);
 	}

@@ -36,9 +36,11 @@ public:
 		return nullptr;
 	}
 
+	// Layer를 추가하면서 GameplayTag를 매핑시켜준다
 	UFUNCTION(BlueprintCallable, Category = "Layer")
 	void RegisterLayer(FGameplayTag LayerTag, UCommonActivatableWidgetContainerBase* LayerWidget);
 
+	// GameplayTag와 CommonUILayer가 매핑되어있는 데이터
 	UPROPERTY(Transient, meta = (Categories = "UI.Layer"))
 	TMap<FGameplayTag, TObjectPtr<UCommonActivatableWidgetContainerBase>> Layers;
 };
