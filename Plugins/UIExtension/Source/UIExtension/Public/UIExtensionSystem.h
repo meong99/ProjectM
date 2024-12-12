@@ -5,9 +5,12 @@
 #include "GameplayTagContainer.h"
 #include "Templates/SharedPointer.h"
 #include "Subsystems/WorldSubsystem.h"
+#include "Templates/SubclassOf.h"
+
 #include "UIExtensionSystem.generated.h"
 
 class UUIExtensionSubsystem;
+class UUserWidget;
 
 UENUM(BlueprintType)
 enum class EUIExtensionPointMatch : uint8
@@ -55,6 +58,7 @@ public:
 	bool operator==(const FUIExtensionHandle& Other) const { return DataPtr == Other.DataPtr; }
 	bool operator!=(const FUIExtensionHandle& Other) const { return !operator==(Other); }
 
+	// Map을 위한 Hash값
 	friend FORCEINLINE uint32 GetTypeHash(FUIExtensionHandle Handle)
 	{
 		return PointerHash(Handle.DataPtr.Get());
@@ -86,9 +90,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayTag ExtensionPointTag;
 
+	// WidgetClass로 FUIExtension과 같다
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UObject> Data = nullptr;
 
+	// FUIExtension의 ContextObject를 전달받음
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UObject> ContextObject = nullptr;
 
@@ -103,12 +109,16 @@ struct FUIExtensionPoint : TSharedFromThis<FUIExtensionPoint>
 public:
 	bool DoesExtensionPassContract(const FUIExtension* Extension) const;
 
+	// UIExtension의 Slot Tag
 	FGameplayTag ExtensionPointTag;
 
+	// UIExtension을 생성/제거한 Instigator
 	TWeakObjectPtr<UObject> ContextObject;
 
+	// UIExtensionPointWidget에 허용된 WidgetClass
 	TArray<UClass*> AllowedDataClasses;
 
+	// Widget을 ExtensionPointWidget에 연결하기 위한 Callback함수
 	FExtendExtensionPointDelegate Callback;
 	EUIExtensionPointMatch ExtensionPointTagMatchType = EUIExtensionPointMatch::ExactMatch;
 };

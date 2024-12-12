@@ -135,3 +135,18 @@ TArray<UPMEquipmentInstance*> UPMEquipmentManagerComponent::GetEquipmentInstance
 
 	return Result;
 }
+
+UPMEquipmentInstance* UPMEquipmentManagerComponent::GetFirstInstanceOfType(TSubclassOf<UPMEquipmentInstance> InstanceType)
+{
+	for (FPMAppliedEquipmentEntry& Entry : EquipmentList.Entries)
+	{
+		if (UPMEquipmentInstance* Instance = Entry.Instance)
+		{
+			if (Instance->IsA(InstanceType))
+			{
+				return Instance;
+			}
+		}
+	}
+	return nullptr;
+}

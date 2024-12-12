@@ -74,11 +74,13 @@ FUIExtensionHandle UUIExtensionSubsystem::RegisterExtensionAsData(const FGamepla
 {
 	if (!ExtensionPointTag.IsValid())
 	{
+		MCHAE_WARNING("ExtensionPointTag is not valid!");
 		return FUIExtensionHandle();
 	}
 
 	if (!Data)
 	{
+		MCHAE_WARNING("Data is null!");
 		return FUIExtensionHandle();
 	}
 
@@ -117,16 +119,21 @@ FUIExtensionPointHandle UUIExtensionSubsystem::RegisterExtensionPointForContext(
 {
 	if (!ExtensionPointTag.IsValid())
 	{
+		MCHAE_WARNING("ExtensionPointTag is not valid!");
 		return FUIExtensionPointHandle();
 	}
 
+	// Binding되지 않았다면 Widget을 등록할 방법이 없다.
 	if (!ExtensionCallback.IsBound())
 	{
+		MCHAE_WARNING("ExtensionCallback is not bound!");
 		return FUIExtensionPointHandle();
 	}
 
+	// 허용된 Widget이 없다.
 	if (AllowedDataClasses.Num() == 0)
 	{
+		MCHAE_WARNING("AllowedDataClasses is empty!");
 		return FUIExtensionPointHandle();
 	}
 

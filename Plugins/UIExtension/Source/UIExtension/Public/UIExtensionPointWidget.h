@@ -8,7 +8,6 @@
 #include "Components/DynamicEntryBoxBase.h"
 #include "UIExtensionPointWidget.generated.h"
 
-/** forward declarations */
 class UCommonLocalPlayer;
 
 /**
@@ -26,25 +25,24 @@ public:
 	void RegisterExtensionPointForPlayerState(UCommonLocalPlayer* LocalPlayer, APlayerState* PlayerState);
 	void OnAddOrRemoveExtension(EUIExtensionAction Action, const FUIExtensionRequest& Request);
 
-	/**
-	* UWidget's interfaces
-	*/
 	virtual TSharedRef<SWidget> RebuildWidget() override;
 
+	// Pointì˜ Tag
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI Extension")
 	FGameplayTag ExtensionPointTag;
 
+	// Tag Match ë°©ì‹
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI Extension")
 	EUIExtensionPointMatch ExtensionPointTagMatch = EUIExtensionPointMatch::ExactMatch;
 
-	/** UIExtensionPointWidget¿¡ °áÇÕÀÌ Çã¿ëµÈ UWidget Classes */
+	// UIExtensionPointWidgetì— ê²°í•©ì´ í—ˆìš©ëœ WidgetClasses(1ì°¨ì ìœ¼ë¡œ Tagë¥¼ ë³´ê³  2ì°¨ì ìœ¼ë¡œ Classë¥¼ ë³¸ë‹¤)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI Extension")
 	TArray<TObjectPtr<UClass>> DataClasses;
 
-	/** UIExtension --- Widget °ü°è ¸ÅÇÎ */
+	// UIExtensionê³¼ Widgetì˜ ê´€ê³„ ë§¤í•‘
 	UPROPERTY(Transient)
 	TMap<FUIExtensionHandle, TObjectPtr<UUserWidget>> ExtensionMapping;
 
-	/** UIExtensionPoint °´Ã¼ °ü¸® */
+	// UI ExtensionPoint ê°ì²´ ê´€ë¦¬
 	TArray<FUIExtensionPointHandle> ExtensionPointHandles;
 };

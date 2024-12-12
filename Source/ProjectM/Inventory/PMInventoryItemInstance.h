@@ -10,7 +10,7 @@
 /**
  *
  */
-UCLASS()
+UCLASS(BlueprintType)
 class PROJECTM_API UPMInventoryItemInstance : public UObject
 {
 	GENERATED_BODY()
@@ -25,6 +25,7 @@ public:
 * Member Functions
 */
 public:
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, meta = (DeterminesOutputType = FragmentClass))
 	const UPMInventoryItemFragment* FindFragmentByClass(TSubclassOf<UPMInventoryItemFragment> FragmentClass) const;
 
 	template<typename ResultClass>

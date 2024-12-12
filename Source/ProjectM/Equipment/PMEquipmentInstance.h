@@ -43,7 +43,8 @@ public:
 	virtual void	OnEquipped();
 	virtual void	OnUnequipped();
 
-	UObject*							GetInstigator() const { return Instigator; }
+	UFUNCTION(BlueprintPure, Category = "Equipment")
+	UObject*				GetInstigator() const { return Instigator; }
 	UFUNCTION(BlueprintPure, Category = "Equipment")
 	const TArray<AActor*>&	GetSpawnedActors() const { return SpawnedActors; }
 

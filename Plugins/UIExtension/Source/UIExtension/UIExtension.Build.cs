@@ -8,8 +8,10 @@ public class UIExtension : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
+        PrivatePCHHeaderFile = "PCH.h";
+
 		PublicIncludePaths.AddRange(
-			new string[] {
+            new string[] {
 				// ... add public include paths required here ...
 			}
 			);

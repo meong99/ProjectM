@@ -29,6 +29,9 @@ public class ProjectM : ModuleRules
 			"UMG",
 			"UIExtension",
 
+            "Slate",
+            "SlateCore",
+
             "GameplayTags",
 			"GameplayTasks",
 			"GameplayAbilities",

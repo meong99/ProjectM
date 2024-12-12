@@ -72,6 +72,14 @@ public:
 
 	const FPMEquipmentList& GetEquipmentList() const { return EquipmentList; }
 
+	UPMEquipmentInstance* GetFirstInstanceOfType(TSubclassOf<UPMEquipmentInstance> InstanceType);
+
+	template <typename T>
+	T* GetFirstInstanceOfType()
+	{
+		return (T*)GetFirstInstanceOfType(T::StaticClass());
+	}
+
 /*
 * Member Variables
 */
