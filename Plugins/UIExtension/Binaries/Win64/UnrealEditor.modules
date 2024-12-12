@@ -2,6 +2,6 @@
 	"BuildId": "33043543",
 	"Modules": 
 	{
-		"UIExtension": "UnrealEditor-UIExtension-0001.dll"
+		"UIExtension": "UnrealEditor-UIExtension.dll"
 	}
 }

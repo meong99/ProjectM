@@ -2,6 +2,6 @@
 	"BuildId": "33043543",
 	"Modules": 
 	{
-		"ShooterCoreRuntime": "UnrealEditor-ShooterCoreRuntime-0001.dll"
+		"ShooterCoreRuntime": "UnrealEditor-ShooterCoreRuntime.dll"
 	}
 }

@@ -5,10 +5,15 @@
 #include "../Character/PMPawnData.h"
 #include "../AbilitySystem/PMAbilitySystemComponent.h"
 #include "../AbilitySystem/PMAbilitySet.h"
+#include "../AbilitySystem/Attributes/PMHealthSet.h"
+#include "../AbilitySystem/Attributes/PMCombatSet.h"
 
 APMPlayerState::APMPlayerState()
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UPMAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+
+	CreateDefaultSubobject<UPMHealthSet>(TEXT("HealthSet"));
+	CreateDefaultSubobject<UPMCombatSet>(TEXT("CombatSet"));
 }
 
 void APMPlayerState::PostInitializeComponents()

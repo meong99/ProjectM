@@ -2,6 +2,6 @@
 	"BuildId": "33043543",
 	"Modules": 
 	{
-		"CommonUser": "UnrealEditor-CommonUser-0001.dll"
+		"CommonUser": "UnrealEditor-CommonUser.dll"
 	}
 }
