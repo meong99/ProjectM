@@ -12,6 +12,8 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+#pragma TODO("이거 설정 더 해야됨. 데디 등등")
+
 UCLASS()
 class PROJECTM_API UPMAttributeSet : public UAttributeSet
 {
