@@ -2,6 +2,7 @@
 #include "PMPawnExtensionComponent.h"
 #include "Camera/PMCameraComponent.h"
 #include "AbilitySystem/PMAbilitySystemComponent.h"
+#include "PMHealthComponent.h"
 
 APMCharacterBase::APMCharacterBase()
 {
@@ -10,9 +11,13 @@ APMCharacterBase::APMCharacterBase()
 	PrimaryActorTick.bCanEverTick = false;
 
 	PawnExtComp		= CreateDefaultSubobject<UPMPawnExtensionComponent>(TEXT("PawnExtensionComponent"));
+	PawnExtComp->OnAbilitySystemInitialized_RegisterAndCall(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemInitialized));
+	PawnExtComp->OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemUninitialzed));
 
 	CameraComponent = CreateDefaultSubobject<UPMCameraComponent>(TEXT("CameraComponent"));
 	CameraComponent->SetRelativeLocation(FVector(-300.f, 0.f, 75.f));
+
+	HealthComponent = CreateDefaultSubobject<UPMHealthComponent>(TEXT("HealthComponent"));
 }
 
 void APMCharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -25,4 +30,17 @@ void APMCharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 UAbilitySystemComponent* APMCharacterBase::GetAbilitySystemComponent() const
 {
 	return PawnExtComp->GetPMAbilitySystemComponent();
+}
+
+void APMCharacterBase::OnAbilitySystemInitialized()
+{
+	UPMAbilitySystemComponent* ASC = Cast<UPMAbilitySystemComponent>(GetAbilitySystemComponent());
+	check(ASC);
+
+	HealthComponent->InitializeWithAbilitySystem(ASC);
+}
+
+void APMCharacterBase::OnAbilitySystemUninitialzed()
+{
+	HealthComponent->UninitializeWithAbilitySystem();
 }

@@ -49,9 +49,12 @@ private:
 public:
 	void SetupPlayerInputComponent();
 
+	void OnAbilitySystemInitialized_RegisterAndCall(FSimpleMulticastDelegate::FDelegate Delegate);
+	void OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate Delegate);
+
 	template <class T>
-	const T* GetPawnData() const { return Cast<T>(PawnData); }
-	UPMAbilitySystemComponent* GetPMAbilitySystemComponent() const { return AbilitySystemComponent.Get(); }
+	const T*					GetPawnData() const { return Cast<T>(PawnData); }
+	UPMAbilitySystemComponent*	GetPMAbilitySystemComponent() const { return AbilitySystemComponent.Get(); }
 
 	void SetPawnData(const UPMPawnData* InPawnData);
 
@@ -64,4 +67,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "ProjectM | Pawn")
 	TObjectPtr<UPMAbilitySystemComponent> AbilitySystemComponent;
+
+	FSimpleMulticastDelegate OnAbilitySystemInitialized;
+	FSimpleMulticastDelegate OnAbilitySystemUninitialized;
 };

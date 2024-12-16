@@ -6,6 +6,7 @@
 
 class UPMPawnExtensionComponent;
 class UPMCameraComponent;
+class UPMHealthComponent;
 
 UCLASS()
 class PROJECTM_API APMCharacterBase : public AModularCharacter, public IAbilitySystemInterface
@@ -20,12 +21,15 @@ public:
 
 protected:
 	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 /*
 * Member Functions
 */
 public:
+	void OnAbilitySystemInitialized();
+	void OnAbilitySystemUninitialzed();
 
 /*
 * Member Variables
@@ -36,4 +40,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Character")
 	TObjectPtr<UPMCameraComponent> CameraComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Character")
+	TObjectPtr<UPMHealthComponent> HealthComponent;
 };

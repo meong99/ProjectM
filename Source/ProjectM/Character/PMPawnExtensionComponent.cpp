@@ -33,6 +33,9 @@ void UPMPawnExtensionComponent::InitializeAbilitySystem(UPMAbilitySystemComponen
 
 	AbilitySystemComponent = InAbilitySystemComponent;
 	AbilitySystemComponent->InitAbilityActorInfo(InOwnerActor, Pawn);
+
+	// 어빌리티 준비 완료됐다고 호출
+	OnAbilitySystemInitialized.Broadcast();
 }
 
 void UPMPawnExtensionComponent::UnInitializeAbilitySystem()
@@ -40,6 +43,11 @@ void UPMPawnExtensionComponent::UnInitializeAbilitySystem()
 	if (!AbilitySystemComponent)
 	{
 		return;
+	}
+
+	if (AbilitySystemComponent->GetAvatarActor() == GetOwner())
+	{
+		OnAbilitySystemUninitialized.Broadcast();
 	}
 
 	AbilitySystemComponent = nullptr;
@@ -169,6 +177,27 @@ void UPMPawnExtensionComponent::SetupPlayerInputComponent()
 {
 	// 컨트롤러가 초기화가 완료되었을 때 다시한번 시작하기 위함
 	CheckDefaultInitialization();
+}
+
+void UPMPawnExtensionComponent::OnAbilitySystemInitialized_RegisterAndCall(FSimpleMulticastDelegate::FDelegate Delegate)
+{
+	if (!OnAbilitySystemInitialized.IsBoundToObject(Delegate.GetUObject()))
+	{
+		OnAbilitySystemInitialized.Add(Delegate);
+	}
+
+	if (AbilitySystemComponent)
+	{
+		Delegate.Execute();
+	}
+}
+
+void UPMPawnExtensionComponent::OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate Delegate)
+{
+	if (!OnAbilitySystemUninitialized.IsBoundToObject(Delegate.GetUObject()))
+	{
+		OnAbilitySystemUninitialized.Add(Delegate);
+	}
 }
 
 void UPMPawnExtensionComponent::SetPawnData(const UPMPawnData* InPawnData)
