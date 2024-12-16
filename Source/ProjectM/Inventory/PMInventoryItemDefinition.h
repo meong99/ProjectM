@@ -5,6 +5,8 @@
 
 #include "PMInventoryItemDefinition.generated.h"
 
+class UPMInventoryItemInstance;
+
 /*
 * Item의 Component라고 이해하면 편하다.
 * 각 Item은 개별적인 능력들이 존재하는데 그걸 아이템에 종속시키지 않고 컴포넌트처럼 별도로 생성 후 아이템에 붙이는 형태로 간다.
@@ -17,6 +19,7 @@ class UPMInventoryItemFragment : public UObject
 	GENERATED_BODY()
 
 public:
+	virtual void OnInstanceCreated(UPMInventoryItemInstance* Instance) const {};
 };
 
 /**

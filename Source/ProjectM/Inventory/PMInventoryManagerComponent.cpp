@@ -2,6 +2,7 @@
 #include "Engine/Engine.h"
 #include "GameFramework/Actor.h"
 #include "PMInventoryItemInstance.h"
+#include "PMInventoryItemDefinition.h"
 
 /*
 * FPMInventoryList -------------------------------
@@ -36,6 +37,14 @@ UPMInventoryItemInstance* FPMInventoryList::AddEntry(TSubclassOf<UPMInventoryIte
 	FPMInventoryEntry& NewEntry = Entries.AddDefaulted_GetRef();
 	NewEntry.Instance = NewObject<UPMInventoryItemInstance>(OwningActor);
 	NewEntry.Instance->ItemDef = ItemDef;
+
+	for (const UPMInventoryItemFragment* Fragment : GetDefault<UPMInventoryItemDefinition>(ItemDef)->GetFragments())
+	{
+		if (Fragment)
+		{
+			Fragment->OnInstanceCreated(NewEntry.Instance);
+		}
+	}
 
 	Result = NewEntry.Instance;
 	return Result;
