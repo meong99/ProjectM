@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "PMInventoryItemDefinition.h"
+#include "Inventory/PMInventoryItemDefinition.h"
 #include "PMInventoryFragment_SetStats.generated.h"
 
 class UPMInventoryItemInstance;

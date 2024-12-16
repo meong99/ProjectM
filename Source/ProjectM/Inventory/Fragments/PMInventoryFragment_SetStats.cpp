@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PMInventoryFragment_SetStats.h"
-#include "PMInventoryItemInstance.h"
+#include "Inventory/PMInventoryItemInstance.h"
 
 void UPMInventoryFragment_SetStats::OnInstanceCreated(UPMInventoryItemInstance* Instance) const
 {

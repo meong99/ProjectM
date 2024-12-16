@@ -1,8 +1,8 @@
 #include "PMQuickBarComponent.h"
 #include "PMEquipmentManagerComponent.h"
-#include "../Inventory/PMInventoryFragment_EquippableItem.h"
+#include "Inventory/Fragments/PMInventoryFragment_EquippableItem.h"
 #include "PMEquipmentInstance.h"
-#include "../Inventory/PMInventoryItemInstance.h"
+#include "Inventory/PMInventoryItemInstance.h"
 
 #pragma TODO("퀵바를 RPG스럽게 다룰 수 있는지 확인해보고, 추후 기능들을 추가할 때 한 번 더 봐보자")
 

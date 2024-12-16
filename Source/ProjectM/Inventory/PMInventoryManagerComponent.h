@@ -27,6 +27,7 @@ struct FPMInventoryList
 
 	UPMInventoryItemInstance* AddEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
 
+	// 실제 아이템의 Instance를 보유하고있는 배열
 	UPROPERTY()
 	TArray<FPMInventoryEntry> Entries;
 

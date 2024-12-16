@@ -1,8 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PMInventoryItemDefinition.h"
-#include "../Equipment/PMEquipmentDefinition.h"
+#include "Inventory/PMInventoryItemDefinition.h"
+#include "Equipment/PMEquipmentDefinition.h"
 #include "PMInventoryFragment_EquippableItem.generated.h"
 
 UCLASS()
