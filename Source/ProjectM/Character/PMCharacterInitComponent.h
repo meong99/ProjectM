@@ -7,6 +7,7 @@
 
 class UPMCameraMode;
 struct FInputActionValue;
+class UPMInputComponent;
 
 /*
 * 캐릭터와 관련된 시스템의 초기화를 담당하는 컴포넌트이다.
@@ -48,6 +49,8 @@ protected:
 	void Input_LookMouse(const FInputActionValue& InputActionValue);
 	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
 	void Input_AbilityInputTagReleased(FGameplayTag InputTag);
+	void Input_ToggleInputTagPressed(FGameplayTag InputTag);
+	void Input_ToggleInputTagReleased(FGameplayTag InputTag);
 /*
 * Member Variables
 */
@@ -59,4 +62,7 @@ private:
 	// 입력에 대한 단위
 	UPROPERTY(EditAnywhere)
 	TArray<FPMMappableConfigPair> DefaultInputConfigs;
+
+	UPROPERTY()
+	UPMInputComponent* InputConponent;
 };

@@ -3,12 +3,15 @@
 #include "Camera/PMCameraComponent.h"
 #include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "PMHealthComponent.h"
+#include "Input/PMInputComponent.h"
 
 APMCharacterBase::APMCharacterBase()
 {
 	// 초기화 단계 검사를 틱으로 하지 않고 이벤트 발생 형태로 가기 때문에 틱을 끈다. 하위 클래스에서 필요할 때 켠다.
 	PrimaryActorTick.bStartWithTickEnabled = false;
 	PrimaryActorTick.bCanEverTick = false;
+
+	OverrideInputComponentClass = UPMInputComponent::StaticClass();
 
 	PawnExtComp		= CreateDefaultSubobject<UPMPawnExtensionComponent>(TEXT("PawnExtensionComponent"));
 	PawnExtComp->OnAbilitySystemInitialized_RegisterAndCall(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemInitialized));

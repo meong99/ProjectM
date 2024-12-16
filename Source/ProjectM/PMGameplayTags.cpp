@@ -32,4 +32,9 @@ void FPMGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	*/
 	AddTag(InputTag_Move, "InputTag.Move", "");
 	AddTag(InputTag_Look_Mouse, "InputTag.Look.Mouse", "");
+
+	/*
+	* Input Tags
+	*/
+	AddTag(HUD_Slot_Inventory, "HUD.Slot.Inventory", "");
 }

@@ -35,14 +35,21 @@ public:
 public:
 	const UInputAction* FindNativeInputActionForTag(const FGameplayTag& InputTag, bool bLogNotFound = true) const;
 	const UInputAction* FindAbilityInputActionForTag(const FGameplayTag& InputTag, bool bLogNotFound = true) const;
+	const UInputAction* FindToggleInputActionForTag(const FGameplayTag& InputTag, bool bLogNotFound = true) const;
 
 /*
 * Member Variables
 */
 public:
+	// 직접 바인딩 해야하는 액션 (Vector, float ... 등등 다양한 데이터를 받는 액션)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (TitleProperty = "InputAction"))
 	TArray<FPMInputAction> NativeInputActions;
 
+	// 입력 시 어빌리티를 사용하는 액션
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (TitleProperty = "InputAction"))
 	TArray<FPMInputAction> AbilityInputActions;
+
+	// 기타 boolean값을 입력으로 토글링하는 액션
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (TitleProperty = "InputAction"))
+	TArray<FPMInputAction> ToggleInputActions;
 };

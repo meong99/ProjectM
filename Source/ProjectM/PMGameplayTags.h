@@ -28,6 +28,11 @@ struct FPMGameplayTags
 	FGameplayTag InputTag_Move;
 	FGameplayTag InputTag_Look_Mouse;
 
+	/*
+	* Widget Tags
+	*/
+	FGameplayTag HUD_Slot_Inventory;
+
 private:
 	static FPMGameplayTags GameplayTags;
 };
