@@ -4,6 +4,7 @@
 #include "PMGameplayAbility_FromEquipment.h"
 #include "GameplayAbilitySpec.h"
 #include "PMEquipmentInstance.h"
+#include "Inventory/PMInventoryItemInstance.h"
 
 UPMGameplayAbility_FromEquipment::UPMGameplayAbility_FromEquipment()
 {
@@ -18,4 +19,14 @@ UPMEquipmentInstance* UPMGameplayAbility_FromEquipment::GetAssociatedEquipment()
 	}
 
 	return  nullptr;
+}
+
+UPMInventoryItemInstance* UPMGameplayAbility_FromEquipment::GetAssociatedItem() const
+{
+	if (UPMEquipmentInstance* Equipment = GetAssociatedEquipment())
+	{
+		return Cast<UPMInventoryItemInstance>(Equipment->GetInstigator());
+	}
+
+	return nullptr;
 }

@@ -1,6 +1,6 @@
 #include "PMAbilitySet.h"
 #include "PMAbilitySystemComponent.h"
-#include "Abilities/PMGameplayAbilitiy.h"
+#include "Abilities/PMGameplayAbility.h"
 
 /*
 * FPMAbilitySet_GrantedHandles --------------------------------------
@@ -55,7 +55,7 @@ void UPMAbilitySet::GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystem
 			continue;
 		}
 
-		UPMGameplayAbilitiy* AbilityCDO = AbilityToGrant.Ability->GetDefaultObject<UPMGameplayAbilitiy>();
+		UPMGameplayAbility* AbilityCDO = AbilityToGrant.Ability->GetDefaultObject<UPMGameplayAbility>();
 
 		FGameplayAbilitySpec AbilitySpec(AbilityCDO, AbilityToGrant.AbilityLevel);
 		AbilitySpec.SourceObject = SourceObject;

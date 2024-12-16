@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
-#include "PMGameplayAbilitiy.generated.h"
+#include "PMGameplayAbility.generated.h"
+
+class UPMAbilityCost;
 
 UENUM(BlueprintType)
 enum class EPMAbilityActivationPolicy : uint8
@@ -18,7 +20,7 @@ enum class EPMAbilityActivationPolicy : uint8
 };
 
 UCLASS()
-class PROJECTM_API UPMGameplayAbilitiy : public UGameplayAbility
+class PROJECTM_API UPMGameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
 
@@ -26,7 +28,7 @@ class PROJECTM_API UPMGameplayAbilitiy : public UGameplayAbility
 * Overrided Functions
 */
 public:
-	UPMGameplayAbilitiy();
+	UPMGameplayAbility();
 
 protected:
 
@@ -34,6 +36,9 @@ protected:
 * Member Functions
 */
 public:
+	virtual bool CheckCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags /* = nullptr */) const override;
+	virtual void ApplyCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const override;
+
 	EPMAbilityActivationPolicy GetActivationPolicy() const { return ActivationPolicy; }
 /*
 * Member Variables
@@ -41,4 +46,7 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | AbilityActivation")
 	EPMAbilityActivationPolicy ActivationPolicy;
+
+	UPROPERTY(EditDefaultsOnly, Instanced, Category = "ProjectM | Costs")
+	TArray<TObjectPtr<UPMAbilityCost>> AdditionalCosts;
 };

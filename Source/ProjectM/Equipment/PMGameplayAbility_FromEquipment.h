@@ -3,16 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystem/Abilities/PMGameplayAbilitiy.h"
+#include "AbilitySystem/Abilities/PMGameplayAbility.h"
 #include "PMGameplayAbility_FromEquipment.generated.h"
 
 class UPMEquipmentInstance;
+class UPMInventoryItemInstance;
 
 /**
  * 
  */
 UCLASS()
-class PROJECTM_API UPMGameplayAbility_FromEquipment : public UPMGameplayAbilitiy
+class PROJECTM_API UPMGameplayAbility_FromEquipment : public UPMGameplayAbility
 {
 	GENERATED_BODY()
 
@@ -27,6 +28,7 @@ public:
 */
 public:
 	UPMEquipmentInstance* GetAssociatedEquipment() const;
+	UPMInventoryItemInstance* GetAssociatedItem() const;
 
 /*
 * Member Variables

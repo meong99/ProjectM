@@ -1,5 +1,5 @@
 #include "PMAbilitySystemComponent.h"
-#include "Abilities/PMGameplayAbilitiy.h"
+#include "Abilities/PMGameplayAbility.h"
 #include "../Animation/PMAnimInstance.h"
 #include "GameFramework/Pawn.h"
 
@@ -67,7 +67,7 @@ void UPMAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 		{
 			if (AbilitySpec->Ability && !AbilitySpec->IsActive())
 			{
-				const UPMGameplayAbilitiy* AbilityCDO = CastChecked<UPMGameplayAbilitiy>(AbilitySpec->Ability);
+				const UPMGameplayAbility* AbilityCDO = CastChecked<UPMGameplayAbility>(AbilitySpec->Ability);
 
 				if (AbilityCDO->GetActivationPolicy() == EPMAbilityActivationPolicy::WhileInputActive)
 				{
@@ -92,7 +92,7 @@ void UPMAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 				}
 				else
 				{
-					const UPMGameplayAbilitiy* AbilityCDO = CastChecked<UPMGameplayAbilitiy>(AbilitySpec->Ability);
+					const UPMGameplayAbility* AbilityCDO = CastChecked<UPMGameplayAbility>(AbilitySpec->Ability);
 
 					if (AbilityCDO->GetActivationPolicy() == EPMAbilityActivationPolicy::OnInputTriggered)
 					{

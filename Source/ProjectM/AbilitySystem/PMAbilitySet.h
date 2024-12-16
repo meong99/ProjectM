@@ -8,7 +8,7 @@
 #include "GameplayAbilitySpecHandle.h"
 #include "PMAbilitySet.generated.h"
 
-class UPMGameplayAbilitiy;
+class UPMGameplayAbility;
 class UPMAbilitySystemComponent;
 
 // Ability와 Tag를 Wrapping해놓은 구조체
@@ -18,7 +18,7 @@ struct FPMAbilitySet_GameplayAbility
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UPMGameplayAbilitiy> Ability = nullptr;
+	TSubclassOf<UPMGameplayAbility> Ability = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)
 	FGameplayTag InputTag;
