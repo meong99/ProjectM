@@ -26,8 +26,8 @@ public:
 	template<class UserClass, typename PressedFuncType, typename ReleasedFuncType>
 	void BindAbilityActions(const UPMInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, TArray<uint32>& BindHandles);
 
-	template<class UserClass, typename PressedFuncType, typename ReleasedFuncType>
-	void BindToggleActions(const UPMInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, TArray<uint32>& BindHandles);
+	template<class UserClass, typename ToggleFuncType>
+	void BindToggleActions(const UPMInputConfig* InputConfig, UserClass* Object, ToggleFuncType ToggleFunc, TArray<uint32>& BindHandles);
 
 	/*
 	* Member Variables
@@ -73,8 +73,8 @@ void UPMInputComponent::BindAbilityActions(const UPMInputConfig* InputConfig, Us
 	}
 }
 
-template<class UserClass, typename PressedFuncType, typename ReleasedFuncType>
-void UPMInputComponent::BindToggleActions(const UPMInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, TArray<uint32>& BindHandles)
+template<class UserClass, typename ToggleFuncType>
+void UPMInputComponent::BindToggleActions(const UPMInputConfig* InputConfig, UserClass* Object, ToggleFuncType ToggleFunc, TArray<uint32>& BindHandles)
 {
 	check(InputConfig);
 
@@ -82,14 +82,9 @@ void UPMInputComponent::BindToggleActions(const UPMInputConfig* InputConfig, Use
 	{
 		if (Action.InputAction && Action.InputTag.IsValid())
 		{
-			if (PressedFunc)
+			if (ToggleFunc)
 			{
-				BindHandles.Add(BindAction(Action.InputAction, ETriggerEvent::Triggered, Object, PressedFunc, Action.InputTag).GetHandle());
-			}
-
-			if (ReleasedFunc)
-			{
-				BindHandles.Add(BindAction(Action.InputAction, ETriggerEvent::Completed, Object, ReleasedFunc, Action.InputTag).GetHandle());
+				BindHandles.Add(BindAction(Action.InputAction, ETriggerEvent::Started, Object, ToggleFunc, Action.InputTag).GetHandle());
 			}
 		}
 	}

@@ -18,7 +18,7 @@ struct FPMHUDLayoutRequest
 	GENERATED_BODY()
 
 	// 실제 UI의 클래스. Game UI라면 GameUI 위젯을 별도로 만들고, 그걸 레이아웃에 붙이는 형태
-	UPROPERTY(EditAnywhere, Category = UI, meta = (AssetBundles = "Client"/*에셋 번들에서 읽기 위해 메타 키워드 추가*/))
+	UPROPERTY(EditAnywhere, Category = UI, meta = (AssetBundles = "Client"/*Remind 에셋 번들에서 읽기 위해 메타 키워드 추가*/))
 	TSoftClassPtr<UCommonActivatableWidget> LayoutClass;
 
 	UPROPERTY(EditAnywhere, Category = UI)

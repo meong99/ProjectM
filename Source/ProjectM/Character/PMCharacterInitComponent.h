@@ -49,8 +49,7 @@ protected:
 	void Input_LookMouse(const FInputActionValue& InputActionValue);
 	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
 	void Input_AbilityInputTagReleased(FGameplayTag InputTag);
-	void Input_ToggleInputTagPressed(FGameplayTag InputTag);
-	void Input_ToggleInputTagReleased(FGameplayTag InputTag);
+	void Input_ToggleInputTag(FGameplayTag InputTag);
 /*
 * Member Variables
 */

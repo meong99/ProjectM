@@ -16,6 +16,7 @@
 const FName UPMCharacterInitComponent::NAME_ActorFeatureName{"CharacterInit"};
 const FName UPMCharacterInitComponent::NAME_BindInputsNow{"BindInputsNow"};
 
+UE_DISABLE_OPTIMIZATION
 UPMCharacterInitComponent::UPMCharacterInitComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	// 초기화 단계 검사를 틱으로 하지 않고 이벤트 발생 형태로 가기 때문에 틱을 끈다. 하위 클래스에서 필요할 때 켠다.
@@ -246,7 +247,7 @@ void UPMCharacterInitComponent::InitializePlayerInput(UInputComponent* PlayerInp
 				InputConponent->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, BindHandles);
 
 				// Boolean Toogle입력을 받을 액션 바인딩
-				InputConponent->BindToggleActions(InputConfig, this, &ThisClass::Input_ToggleInputTagPressed, &ThisClass::Input_ToggleInputTagReleased, BindHandles);
+				InputConponent->BindToggleActions(InputConfig, this, &ThisClass::Input_ToggleInputTag, BindHandles);
 			}
 		}
 	}
@@ -327,8 +328,7 @@ void UPMCharacterInitComponent::Input_AbilityInputTagReleased(FGameplayTag Input
 		}
 	}
 }
- UE_DISABLE_OPTIMIZATION
-void UPMCharacterInitComponent::Input_ToggleInputTagPressed(FGameplayTag InputTag)
+void UPMCharacterInitComponent::Input_ToggleInputTag(FGameplayTag InputTag)
 {
 	if (InputConponent)
 	{
@@ -343,20 +343,5 @@ void UPMCharacterInitComponent::Input_ToggleInputTagPressed(FGameplayTag InputTa
 		MCHAE_ERROR("InputComponent is null!");
 	}
 }
- UE_ENABLE_OPTIMIZATION
 
-void UPMCharacterInitComponent::Input_ToggleInputTagReleased(FGameplayTag InputTag)
-{
-	if (InputConponent)
-	{
-		FSimpleMulticastDelegate::FDelegate* Delegate = InputConponent->ToggleInputActionMap.Find(InputTag);
-		if (Delegate && Delegate->IsBound())
-		{
-			Delegate->Execute();
-		}
-	}
-	else
-	{
-		MCHAE_ERROR("InputComponent is null!");
-	}
-}
+UE_ENABLE_OPTIMIZATION

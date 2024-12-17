@@ -4,6 +4,7 @@
 #include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "PMHealthComponent.h"
 #include "Input/PMInputComponent.h"
+#include "UI/MViewportClient.h"
 
 APMCharacterBase::APMCharacterBase()
 {
@@ -21,6 +22,15 @@ APMCharacterBase::APMCharacterBase()
 	CameraComponent->SetRelativeLocation(FVector(-300.f, 0.f, 75.f));
 
 	HealthComponent = CreateDefaultSubobject<UPMHealthComponent>(TEXT("HealthComponent"));
+}
+
+void APMCharacterBase::Test_ActivateWidget(const FGameplayTag& RegisterTag, const FGameplayTag& WidgetTag)
+{
+	UMViewportClient* ViewportClient = UMViewportClient::Get(this);
+	if (IsValid(ViewportClient))
+	{
+		ViewportClient->ActivateWidget(RegisterTag, WidgetTag);
+	}
 }
 
 void APMCharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)

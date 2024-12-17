@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CommonActivatableWidget.h"
+#include "GameplayTagContainer.h"
 #include "PMActivatableWidget.generated.h"
 
 // Widget이 켜져있을 때 Input의 처리방식
@@ -30,4 +31,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	EMouseCaptureMode GameMouseCaptureMode = EMouseCaptureMode::CapturePermanently;
+
+	UPROPERTY(VisibleAnywhere)
+	FGameplayTag WidgetTag;
 };

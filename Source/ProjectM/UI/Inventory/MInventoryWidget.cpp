@@ -1,7 +1,8 @@
 #include "MInventoryWidget.h"
 #include "Input/PMInputComponent.h"
-#include "PMGameplayTags.h"
+#include "GameFramework/Pawn.h"
 
+UE_DISABLE_OPTIMIZATION
 UMInventoryWidget::UMInventoryWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {}
 
@@ -12,14 +13,16 @@ void UMInventoryWidget::NativeOnInitialized()
 	APlayerController* PlayerController = GetOwningPlayer();
 	if (PlayerController)
 	{
-		UPMInputComponent* PMInputComponent = PlayerController->FindComponentByClass<UPMInputComponent>();
-		if (PMInputComponent)
+		APawn* Pawn = PlayerController->GetPawn();
+		if (Pawn)
 		{
-			PMInputComponent->ToggleInputActionMap.Add(FPMGameplayTags::Get().HUD_Slot_Inventory, FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnInput_ToggleInventory));
+			OnPossessedPawn(nullptr, Pawn);
+		}
+		else
+		{
+			PlayerController->OnPossessedPawnChanged.AddDynamic(this, &ThisClass::OnPossessedPawn);
 		}
 	}
-
-	DeactivateWidget();
 }
 
 void UMInventoryWidget::OnInput_ToggleInventory()
@@ -33,3 +36,18 @@ void UMInventoryWidget::OnInput_ToggleInventory()
 		ActivateWidget();
 	}
 }
+
+void UMInventoryWidget::OnPossessedPawn(APawn* OldPawn, APawn* NewPawn)
+{
+	if (!NewPawn)
+	{
+		return;
+	}
+
+	UPMInputComponent* PMInputComponent = Cast<UPMInputComponent>(NewPawn->InputComponent);
+	if (PMInputComponent)
+	{
+		PMInputComponent->ToggleInputActionMap.Add(WidgetTag, FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnInput_ToggleInventory));
+	}
+}
+UE_ENABLE_OPTIMIZATION

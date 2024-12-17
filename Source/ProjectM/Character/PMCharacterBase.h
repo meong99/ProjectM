@@ -19,6 +19,9 @@ class PROJECTM_API APMCharacterBase : public AModularCharacter, public IAbilityS
 public:
 	APMCharacterBase();
 
+	UFUNCTION(BlueprintCallable)
+	void Test_ActivateWidget(const FGameplayTag& RegisterTag, const FGameplayTag& WidgetTag);
+
 protected:
 	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
