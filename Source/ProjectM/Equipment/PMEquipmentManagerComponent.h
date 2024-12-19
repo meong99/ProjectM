@@ -2,8 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/PawnComponent.h"
-#include <Components\ActorComponent.h>
-#include "../AbilitySystem/PMAbilitySet.h"
+#include "AbilitySystem/PMAbilitySet.h"
 
 #include "PMEquipmentManagerComponent.generated.h"
 

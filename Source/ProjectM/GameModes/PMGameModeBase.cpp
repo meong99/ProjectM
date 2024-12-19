@@ -1,16 +1,16 @@
 #include "PMGameModeBase.h"
-#include "../Character/PMCharacterBase.h"
+#include "Character/PMCharacterBase.h"
 #include "PMGameStateBase.h"
-#include "../Player/PMPlayerControllerBase.h"
-#include "../Player/PMPlayerState.h"
+#include "Player/PMPlayerControllerBase.h"
+#include "Player/PMPlayerState.h"
 #include "PMExperienceDefinition.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "PMExperienceManagerComponent.h"
-#include "../Character/PMPawnData.h"
+#include "Character/PMPawnData.h"
 #include "TimerManager.h"
-#include "../Character/PMPawnExtensionComponent.h"
-#include "../UI/PMHUD.h"
+#include "Character/Components/PMPawnExtensionComponent.h"
+#include "UI/PMHUD.h"
 
 UE_DISABLE_OPTIMIZATION
 

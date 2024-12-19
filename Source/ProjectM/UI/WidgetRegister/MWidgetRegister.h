@@ -4,24 +4,33 @@
 #include "GameplayTagContainer.h"
 #include "MWidgetRegister.generated.h"
 
-class UUserWidget;
-
-USTRUCT(BlueprintType)
-struct FMappedWidgetInstances
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	TMap<FGameplayTag, TObjectPtr<UUserWidget>> WidgetInstances;
-};
+class UMWidgetBase;
 
 USTRUCT(BlueprintType)
 struct FMappedWidgetData
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly)
-	TMap<FGameplayTag, TSoftClassPtr<UUserWidget>> WidgetData;
+	UPROPERTY(EditDefaultsOnly, meta = (Categories = "UI.Registry"))
+	TMap<FGameplayTag, TSoftClassPtr<UMWidgetBase>> WidgetData;
+};
+
+USTRUCT(BlueprintType)
+struct FFullLoadedWidgetData
+{
+	GENERATED_BODY()
+
+	FFullLoadedWidgetData() {};
+	FFullLoadedWidgetData(const FGameplayTag& InWidgetTag, TSubclassOf<UMWidgetBase> InWidgetClass)
+	{
+		WidgetTag = InWidgetTag;
+		WidgetClass = InWidgetClass;
+	}
+
+	FGameplayTag WidgetTag;
+
+	UPROPERTY()
+	TSubclassOf<UMWidgetBase> WidgetClass;
 };
 
 /*
@@ -41,30 +50,24 @@ public:
 /*
 * Member Functions
 */
-	void SetWorld(const UObject* InWorldContext);
-	void AsyncLoadAllWidgets();
+public:
+	TSubclassOf<UMWidgetBase>		GetWidgetClass(const FGameplayTag& Tag) const;
+	TArray<FFullLoadedWidgetData> 	LoadAllWidgetAndGetData();
 
-	TSubclassOf<UUserWidget>	GetWidgetClass(const FGameplayTag& Tag);
-	UUserWidget*				GetWidgetInstanceAndLoadIfNotLoaded(const FGameplayTag& Tag);
+private:
+	TSubclassOf<UMWidgetBase>	GetWidgetClass_Impl(const TSoftClassPtr<UMWidgetBase>& SoftClass) const;
 
-protected:
-	UUserWidget* AsyncLoadWidgetByTag(const FGameplayTag& Tag);
-	UUserWidget* AsyncLoadWidget_Impl(const FGameplayTag& Tag, const TSoftClassPtr<UUserWidget>& WidgetSoftClass);
 /*
 * Member Variables
 */
 public:
 	// WidgetRegister들을 구분지을 태그. 특정 위젯군을 찾을 때 사용한다.
-	UPROPERTY(EditDefaultsOnly, Category = "WidgetRegister")
-	FGameplayTag			RegisterTag;
+	UPROPERTY(EditDefaultsOnly, Category = "WidgetRegister", meta = (Categories="UI.Registry"))
+	FGameplayTag RegisterTag;
 
 	// Widget Metadata
 	UPROPERTY(EditDefaultsOnly, Category = "WidgetRegister")
-	FMappedWidgetData		MappedWidgetData;
-
-	// Widget Instances
-	UPROPERTY()
-	FMappedWidgetInstances	MappedWidgetInstances;
+	FMappedWidgetData MappedWidgetData;
 
 	UPROPERTY()
 	const UObject* WorldContext;

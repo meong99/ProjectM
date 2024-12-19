@@ -1,7 +1,7 @@
 #include "GameFeatureAction_AddWidgets.h"
 #include "CommonUIExtensions.h"
 #include "Components/GameFrameworkComponentManager.h"
-#include "../UI/PMHUD.h"
+#include "UI/PMHUD.h"
 #include "Engine/Engine.h"
 #include "Engine/GameInstance.h"
 #include "GameFeaturesSubsystem.h"

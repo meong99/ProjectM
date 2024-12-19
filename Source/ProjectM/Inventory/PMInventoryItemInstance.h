@@ -4,7 +4,7 @@
 #include "UObject/Object.h"
 #include "Templates/SubclassOf.h"
 #include "PMInventoryItemDefinition.h"
-#include "../System/PMGameplayTagStack.h"
+#include "System/PMGameplayTagStack.h"
 
 #include "PMInventoryItemInstance.generated.h"
 

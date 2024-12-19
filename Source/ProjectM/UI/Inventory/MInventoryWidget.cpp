@@ -27,13 +27,13 @@ void UMInventoryWidget::NativeOnInitialized()
 
 void UMInventoryWidget::OnInput_ToggleInventory()
 {
-	if (IsActivated())
+	if (IsInViewport())
 	{
-		DeactivateWidget();
+		RemoveFromParent();
 	}
 	else
 	{
-		ActivateWidget();
+		AddToViewport();
 	}
 }
 

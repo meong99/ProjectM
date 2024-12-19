@@ -6,42 +6,14 @@
 #include "WidgetRegister/MWidgetRegister.h"
 #include "Engine/World.h"
 #include "Engine/GameInstance.h"
-#include "CommonActivatableWidget.h"
-#include "UIExtensionSystem.h"
-#include "CommonUIExtensions.h"
+#include "MWidgetInstanceList.h"
+#include "MWidgetBase.h"
 
 UE_DISABLE_OPTIMIZATION
 void UMViewportClient::Init(struct FWorldContext& WorldContext, UGameInstance* OwningGameInstance, bool bCreateNewAudioDevice /*= true*/)
 {
 	Super::Init(WorldContext, OwningGameInstance, true);
-
-	UPMAssetManager& AssetManager = UPMAssetManager::Get();
-	check(UPMAssetManager::IsInitialized());
-
-	FPrimaryAssetType		AssetType{ UMWidgetRegister::StaticClass()->GetFName() };
-	TArray<FPrimaryAssetId>	PrimaryAssetIdList;
-	AssetManager.GetPrimaryAssetIdList(AssetType, PrimaryAssetIdList);
-
-	TArray<FName> LoadBundles;
-	AssetManager.LoadPrimaryAssets(PrimaryAssetIdList, LoadBundles, FSimpleMulticastDelegate::FDelegate::CreateLambda(
-		[this, PrimaryAssetIdList, &AssetManager]()->void
-		{
-			for (const FPrimaryAssetId& AssetId : PrimaryAssetIdList)
-			{
-				UMWidgetRegister* WidgetRegister = AssetManager.GetPrimaryAssetObject<UMWidgetRegister>(AssetId);
-
-				if (IsValid(WidgetRegister) && WidgetRegister->RegisterTag.IsValid())
-				{
-					WidgetRegister->SetWorld(this);
-					WidgetRegisterMap.Add(WidgetRegister->RegisterTag, WidgetRegister);
-				}
-				else
-				{
-					MCHAE_ERROR("WidgetRegistar or RegisterTag is not valid! Check!");
-				}
-			}
-		})
-	);
+	LoadDefaultWidgetRegister();
 }
 
 UMViewportClient* UMViewportClient::Get(const UObject* WorldContext)
@@ -65,43 +37,140 @@ UMViewportClient* UMViewportClient::Get(const UObject* WorldContext)
 	return nullptr;
 }
 
-void UMViewportClient::ActivateWidget(const FGameplayTag& RegisterTag, const FGameplayTag& WidgetTag)
+void UMViewportClient::LoadDefaultWidgetRegister()
 {
-	UUserWidget* Widget = GetWidgetInstance(RegisterTag, WidgetTag);
+	UPMAssetManager& AssetManager = UPMAssetManager::Get();
+	check(UPMAssetManager::IsInitialized());
 
-	if (UCommonActivatableWidget* ActivatableWidget = Cast<UCommonActivatableWidget>(Widget))
-	{
-		if (!ActivatableWidget->IsActivated())
+	FPrimaryAssetType		AssetType{ UMWidgetRegister::StaticClass()->GetFName() };
+	TArray<FPrimaryAssetId>	PrimaryAssetIdList;
+	AssetManager.GetPrimaryAssetIdList(AssetType, PrimaryAssetIdList);
+
+	TArray<FName> LoadBundles;
+	AssetManager.LoadPrimaryAssets(PrimaryAssetIdList, LoadBundles, FSimpleMulticastDelegate::FDelegate::CreateLambda(
+		[this, PrimaryAssetIdList, &AssetManager]()->void
 		{
-			ActivatableWidget->ActivateWidget();
-		}
+			for (const FPrimaryAssetId& AssetId : PrimaryAssetIdList)
+			{
+				UMWidgetRegister* WidgetRegister = AssetManager.GetPrimaryAssetObject<UMWidgetRegister>(AssetId);
+
+				if (IsValid(WidgetRegister) && WidgetRegister->RegisterTag.IsValid())
+				{
+					AddWidgetRegister(WidgetRegister->RegisterTag, WidgetRegister);
+// 
+// 					// Input에 매치되어있는 Widget은 미리 Instancing해놓는다. (장비창, Inventory...)
+// 					if (WidgetRegister->RegisterTag.MatchesTagExact(FPMGameplayTags::Get().UI_Registry_InputTag))
+// 					{
+// 						CreateWidgetInRegister(WidgetRegister->RegisterTag);
+// 					}
+				}
+				else
+				{
+					MCHAE_ERROR("WidgetRegistar or RegisterTag is not valid! Check!");
+				}
+			}
+		})
+	);
+}
+
+void UMViewportClient::AddWidgetRegister(const FGameplayTag& RegisterTag, UMWidgetRegister* InWidgetRegister)
+{
+	if (RegisterTag.IsValid() && InWidgetRegister)
+	{
+		WidgetRegisterMap.Emplace(RegisterTag, InWidgetRegister);
 	}
-	else if (Widget)
+}
+
+void UMViewportClient::RemoveWidgetRegister(const FGameplayTag& RegisterTag)
+{
+	WidgetRegisterMap.Remove(RegisterTag);
+	WidgetInstanceListMap.Remove(RegisterTag);
+}
+
+void UMViewportClient::CreateWidgetInRegister(const FGameplayTag& RegisterTag)
+{
+	UMWidgetInstanceList* WidgetInstanceList = WidgetInstanceListMap.FindRef(RegisterTag);
+	if (WidgetInstanceList == nullptr)
 	{
-		if (!Widget->IsInViewport())
+		WidgetInstanceList = CreateNewWidgetInstanceList(RegisterTag);
+		if (WidgetInstanceList)
 		{
-			Widget->AddToViewport();
+			WidgetInstanceList->CreateNewWidgets(WidgetRegisterMap.FindRef(RegisterTag));
 		}
 	}
 }
 
-UUserWidget* UMViewportClient::GetWidgetInstance(const FGameplayTag& RegisterTag, const FGameplayTag& WidgetTag)
+void UMViewportClient::AddWidgetToViewport(const FGameplayTag& WidgetTag)
 {
-	if (!RegisterTag.IsValid() || !WidgetTag.IsValid())
+	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
+
+	if (Widget && !Widget->IsInViewport())
 	{
-		MCHAE_WARNING("RegisterTag or WidgetTag is not valid. RegisterTag = %s, WidgetTag = %s", *RegisterTag.ToString(), *WidgetTag.ToString());
+		Widget->AddToViewport();
+	}
+}
+
+void UMViewportClient::RemoveWidgetFromParent(const FGameplayTag& WidgetTag)
+{
+	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
+
+	if (Widget && Widget->IsInViewport())
+	{
+		Widget->RemoveFromParent();
+	}
+}
+
+UMWidgetBase* UMViewportClient::GetWidgetInstance(const FGameplayTag& WidgetTag)
+{
+	if (!WidgetTag.IsValid())
+	{
+		MCHAE_WARNING("RegisterTag or WidgetTag is not valid. WidgetTag = %s", *WidgetTag.ToString());
 		return nullptr;
 	}
 
-	UMWidgetRegister* WidgetRegister = WidgetRegisterMap.FindRef(RegisterTag);
+	UMWidgetRegister* WidgetRegister = GetWidgetRegister(WidgetTag);
+
 	if (WidgetRegister == nullptr)
 	{
-		MCHAE_WARNING("Can't Found WidgetRegister! Check RegisterTag and WigetRegisterData");
+		MCHAE_WARNING("Can't Found WidgetRegister! Check WidgetTag's currect");
 		return nullptr;
 	}
 
-	UUserWidget* FoundWidget = WidgetRegister->GetWidgetInstanceAndLoadIfNotLoaded(WidgetTag);
+	UMWidgetInstanceList* WidgetInstanceList = WidgetInstanceListMap.FindRef(WidgetRegister->RegisterTag);
+	if (WidgetInstanceList)
+	{
+		return WidgetInstanceList->GetWidgetInstance(WidgetTag);
+	}
 
-	return FoundWidget;
+	WidgetInstanceList = CreateNewWidgetInstanceList(WidgetRegister->RegisterTag);
+	UMWidgetBase* NewWidget = WidgetInstanceList->CreateNewWidget(WidgetTag, WidgetRegister->GetWidgetClass(WidgetTag));
+
+	return NewWidget;
 }
+
+UMWidgetInstanceList* UMViewportClient::CreateNewWidgetInstanceList(const FGameplayTag& RegisterTag)
+{
+	return UMWidgetInstanceList::CreateNewWidgetInstanceList(this, RegisterTag);
+}
+
 UE_ENABLE_OPTIMIZATION
+
+UMWidgetRegister* UMViewportClient::GetWidgetRegister(const FGameplayTag& Tag)
+{
+	UMWidgetRegister* WidgetRegister = nullptr;
+	FGameplayTagContainer ParentTags = Tag.GetGameplayTagParents();
+	for (const FGameplayTag& ParentTag : ParentTags)
+	{
+		if (ParentTag.IsValid())
+		{
+			WidgetRegister = WidgetRegisterMap.FindRef(ParentTag);
+
+			if (WidgetRegister)
+			{
+				break;
+			}
+		}
+	}
+
+	return WidgetRegister;
+}

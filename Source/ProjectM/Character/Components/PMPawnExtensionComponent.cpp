@@ -2,7 +2,7 @@
 #include "PMGameplayTags.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "GameFramework/Controller.h"
-#include "../AbilitySystem/PMAbilitySystemComponent.h"
+#include "AbilitySystem/PMAbilitySystemComponent.h"
 
 const FName UPMPawnExtensionComponent::NAME_ActorFeatureName{"PawnExtension"};
 

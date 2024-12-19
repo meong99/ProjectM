@@ -1,5 +1,5 @@
 #include "PMWeaponInstance.h"
-#include "../Cosmetics/PMCosmeticAnimationTypes.h"
+#include "Cosmetics/PMCosmeticAnimationTypes.h"
 #include "Animation/AnimInstance.h"
 
 UPMWeaponInstance::UPMWeaponInstance(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)

@@ -3,7 +3,7 @@
 #include "PMEquipmentInstance.h"
 #include "PMEquipmentDefinition.h"
 #include "AbilitySystemGlobals.h"
-#include "../AbilitySystem/PMAbilitySystemComponent.h"
+#include "AbilitySystem/PMAbilitySystemComponent.h"
 
 FPMEquipmentList::FPMEquipmentList()
 {

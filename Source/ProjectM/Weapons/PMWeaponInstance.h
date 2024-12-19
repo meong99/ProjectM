@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Equipment/PMEquipmentInstance.h"
-#include "../Cosmetics/PMCosmeticAnimationTypes.h"
+#include "Cosmetics/PMCosmeticAnimationTypes.h"
 
 #include "PMWeaponInstance.generated.h"
 

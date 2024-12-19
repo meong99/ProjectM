@@ -1,7 +1,7 @@
 #include "PMPlayerControllerBase.h"
 #include "Camera/PMPlayerCameraManager.h"
 #include "PMPlayerState.h"
-#include "../AbilitySystem/PMAbilitySystemComponent.h"
+#include "AbilitySystem/PMAbilitySystemComponent.h"
 
 APMPlayerControllerBase::APMPlayerControllerBase()
 {

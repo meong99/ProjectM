@@ -31,7 +31,8 @@ struct FPMGameplayTags
 	/*
 	* Widget Tags
 	*/
-	FGameplayTag HUD_Slot_Inventory;
+	FGameplayTag UI_Registry_InputTag;
+	FGameplayTag UI_Registry_InputTag_Inventory;
 
 private:
 	static FPMGameplayTags GameplayTags;

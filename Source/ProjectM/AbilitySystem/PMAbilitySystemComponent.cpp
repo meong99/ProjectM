@@ -1,6 +1,6 @@
 #include "PMAbilitySystemComponent.h"
 #include "Abilities/PMGameplayAbility.h"
-#include "../Animation/PMAnimInstance.h"
+#include "Animation/PMAnimInstance.h"
 #include "GameFramework/Pawn.h"
 
 UPMAbilitySystemComponent::UPMAbilitySystemComponent()

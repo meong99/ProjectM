@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UI/PMActivatableWidget.h"
+#include "UI/MWidgetBase.h"
 #include "MInventoryWidget.generated.h"
 
 class UTileView;
 
 UCLASS()
-class PROJECTM_API UMInventoryWidget : public UPMActivatableWidget
+class PROJECTM_API UMInventoryWidget : public UMWidgetBase
 {
 	GENERATED_BODY()
 

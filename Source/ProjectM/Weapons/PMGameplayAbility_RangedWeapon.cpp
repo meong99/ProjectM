@@ -6,10 +6,10 @@
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
 #include "CollisionQueryParams.h"
-#include "../Physics/PMkCollisionChannels.h"
+#include "Physics/PMkCollisionChannels.h"
 #include "Engine/World.h"
 #include "AbilitySystemComponent.h"
-#include "../AbilitySystem/PMGameplayAbilityTargetData_SingleTarget.h"
+#include "AbilitySystem/PMGameplayAbilityTargetData_SingleTarget.h"
 #include "DrawDebugHelpers.h"
 
 bool UPMGameplayAbility_RangedWeapon::bShowDebug_Console = false;

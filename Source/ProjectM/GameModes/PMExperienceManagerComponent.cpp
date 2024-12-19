@@ -1,9 +1,9 @@
 #include "PMExperienceManagerComponent.h"
-#include "../DataAssets/PMAssetManager.h"
+#include "DataAssets/PMAssetManager.h"
 #include "PMExperienceDefinition.h"
-#include "../../GameFeatures/Source/GameFeatures/Public/GameFeaturesSubsystemSettings.h"
-#include "../../GameFeatures/Source/GameFeatures/Public/GameFeaturesSubsystem.h"
-#include "../Plugins/Runtime/GameFeatures/Source/GameFeatures/Public/GameFeatureAction.h"
+#include "GameFeaturesSubsystemSettings.h"
+#include "GameFeaturesSubsystem.h"
+#include "GameFeatureAction.h"
 #include "PMExperienceActionSet.h"
 
 UPMExperienceManagerComponent::UPMExperienceManagerComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)

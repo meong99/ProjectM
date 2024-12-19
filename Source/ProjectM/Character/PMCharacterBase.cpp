@@ -1,8 +1,8 @@
 #include "PMCharacterBase.h"
-#include "PMPawnExtensionComponent.h"
+#include "Components/PMPawnExtensionComponent.h"
 #include "Camera/PMCameraComponent.h"
 #include "AbilitySystem/PMAbilitySystemComponent.h"
-#include "PMHealthComponent.h"
+#include "Components/PMHealthComponent.h"
 #include "Input/PMInputComponent.h"
 #include "UI/MViewportClient.h"
 
@@ -29,7 +29,7 @@ void APMCharacterBase::Test_ActivateWidget(const FGameplayTag& RegisterTag, cons
 	UMViewportClient* ViewportClient = UMViewportClient::Get(this);
 	if (IsValid(ViewportClient))
 	{
-		ViewportClient->ActivateWidget(RegisterTag, WidgetTag);
+		ViewportClient->AddWidgetToViewport(WidgetTag);
 	}
 }
 

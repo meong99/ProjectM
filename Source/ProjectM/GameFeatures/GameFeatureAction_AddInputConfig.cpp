@@ -2,7 +2,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
 #include "GameFramework/Pawn.h"
-#include "../Character/PMCharacterInitComponent.h"
+#include "Character/Components/PMCharacterInitComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "Engine/GameInstance.h"
 

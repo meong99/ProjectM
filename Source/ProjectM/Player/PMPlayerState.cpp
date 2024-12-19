@@ -1,12 +1,12 @@
 #include "PMPlayerState.h"
 #include "GameFramework/GameStateBase.h"
-#include "../GameModes/PMExperienceManagerComponent.h"
-#include "../GameModes/PMGameModeBase.h"
-#include "../Character/PMPawnData.h"
-#include "../AbilitySystem/PMAbilitySystemComponent.h"
-#include "../AbilitySystem/PMAbilitySet.h"
-#include "../AbilitySystem/Attributes/PMHealthSet.h"
-#include "../AbilitySystem/Attributes/PMCombatSet.h"
+#include "GameModes/PMExperienceManagerComponent.h"
+#include "GameModes/PMGameModeBase.h"
+#include "Character/PMPawnData.h"
+#include "AbilitySystem/PMAbilitySystemComponent.h"
+#include "AbilitySystem/PMAbilitySet.h"
+#include "AbilitySystem/Attributes/PMHealthSet.h"
+#include "AbilitySystem/Attributes/PMCombatSet.h"
 
 APMPlayerState::APMPlayerState()
 {
