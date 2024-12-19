@@ -10,6 +10,14 @@
 class UMWidgetBase;
 class UMWidgetRegister;
 
+USTRUCT()
+struct FMWidgetInstanceMapWrapper
+{
+	GENERATED_BODY();
+
+	TMap<FGameplayTag/*WidgetTag*/, TObjectPtr<UMWidgetBase>> WidgetInstanceMap;
+};
+
 /*
 * Instancing된 Widget을 관리하는 클래스
 */
@@ -32,16 +40,18 @@ public:
 
 	void CreateNewWidgets(UMWidgetRegister* WidgetRegister);
 	UMWidgetBase* CreateNewWidget(const FGameplayTag& InWidgetTag, TSubclassOf<UMWidgetBase> WidgetClass);
-	UMWidgetBase* GetWidgetInstance(const FGameplayTag& WidgetTag);
 
-	const FGameplayTag& GetRegisterTag() const { return RegisterTag; }
+	UMWidgetBase* GetWidgetInstance(const FGameplayTag& WidgetTag) const;
+
+	const FGameplayTag&					GetRegisterTag() const { return RegisterTag; }
+	const FMWidgetInstanceMapWrapper&	GetWidgetInstanceMapWrapper() { return WidgetInstanceMapWrapper; }
 
 /*
 * Member Variables
 */
 protected:
 	UPROPERTY()
-	TMap<FGameplayTag/*WidgetTag*/, TObjectPtr<UMWidgetBase>> WidgetInstanceMap;
+	FMWidgetInstanceMapWrapper WidgetInstanceMapWrapper;
 
 	UPROPERTY()
 	FGameplayTag RegisterTag;

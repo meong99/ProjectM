@@ -6,6 +6,8 @@
 #include "GameplayTagContainer.h"
 #include "PMInputComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FInputActionDelegate, const FGameplayTag&);
+
 UCLASS()
 class PROJECTM_API UPMInputComponent : public UEnhancedInputComponent
 {
@@ -33,7 +35,8 @@ public:
 	* Member Variables
 	*/
 public:
-	TMap<FGameplayTag, FSimpleMulticastDelegate::FDelegate> ToggleInputActionMap;
+	// 입력에 따른 동작을 담아놓은 델리게이트 맵
+	TMap<FGameplayTag, FInputActionDelegate::FDelegate> InputActionMap;
 };
 
 template<class UserClass, typename FuncType>

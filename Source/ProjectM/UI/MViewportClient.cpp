@@ -87,7 +87,7 @@ void UMViewportClient::RemoveWidgetRegister(const FGameplayTag& RegisterTag)
 	WidgetInstanceListMap.Remove(RegisterTag);
 }
 
-void UMViewportClient::CreateWidgetInRegister(const FGameplayTag& RegisterTag)
+UMWidgetInstanceList* UMViewportClient::CreateWidgetInRegister(const FGameplayTag& RegisterTag)
 {
 	UMWidgetInstanceList* WidgetInstanceList = WidgetInstanceListMap.FindRef(RegisterTag);
 	if (WidgetInstanceList == nullptr)
@@ -98,6 +98,8 @@ void UMViewportClient::CreateWidgetInRegister(const FGameplayTag& RegisterTag)
 			WidgetInstanceList->CreateNewWidgets(WidgetRegisterMap.FindRef(RegisterTag));
 		}
 	}
+
+	return WidgetInstanceList;
 }
 
 void UMViewportClient::AddWidgetToViewport(const FGameplayTag& WidgetTag)

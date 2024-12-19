@@ -37,7 +37,8 @@ public:
 	void AddWidgetRegister(const FGameplayTag& RegisterTag, UMWidgetRegister* InWidgetRegister);
 	void RemoveWidgetRegister(const FGameplayTag& RegisterTag);
 
-	void CreateWidgetInRegister(const FGameplayTag& RegisterTag);
+	// Register내부에 있는 모든 위젯 생성
+	UMWidgetInstanceList* CreateWidgetInRegister(const FGameplayTag& RegisterTag);
 
 	void AddWidgetToViewport(const FGameplayTag& WidgetTag);
 	void RemoveWidgetFromParent(const FGameplayTag& WidgetTag);

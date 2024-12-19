@@ -333,10 +333,10 @@ void UPMCharacterInitComponent::Input_ToggleInputTag(FGameplayTag InputTag)
 {
 	if (InputConponent)
 	{
-		FSimpleMulticastDelegate::FDelegate* Delegate = InputConponent->ToggleInputActionMap.Find(InputTag);
+		FInputActionDelegate::FDelegate* Delegate = InputConponent->InputActionMap.Find(InputTag);
 		if (Delegate && Delegate->IsBound())
 		{
-			Delegate->Execute();
+			Delegate->Execute(InputTag);
 		}
 	}
 	else

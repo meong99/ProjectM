@@ -45,12 +45,12 @@ UMWidgetBase* UMWidgetInstanceList::CreateNewWidget(const FGameplayTag& InWidget
 	UMWidgetBase* NewWidget = CreateWidget<UMWidgetBase>(GetWorld(), WidgetClass);
 
 	NewWidget->SetWidgetTag(InWidgetTag);
-	WidgetInstanceMap.Emplace(InWidgetTag, NewWidget);
+	WidgetInstanceMapWrapper.WidgetInstanceMap.Emplace(InWidgetTag, NewWidget);
 
 	return NewWidget;
 }
 
-UMWidgetBase* UMWidgetInstanceList::GetWidgetInstance(const FGameplayTag& WidgetTag)
+UMWidgetBase* UMWidgetInstanceList::GetWidgetInstance(const FGameplayTag& WidgetTag) const
 {
-	return WidgetInstanceMap.FindRef(WidgetTag);
+	return WidgetInstanceMapWrapper.WidgetInstanceMap.FindRef(WidgetTag);
 }

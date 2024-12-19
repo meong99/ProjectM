@@ -25,11 +25,6 @@ public:
 * Member Functions
 */
 public:
-	UFUNCTION()
-	void OnInput_ToggleInventory();
-
-	UFUNCTION()
-	void OnPossessedPawn(APawn* OldPawn, APawn* NewPawn);
 /*
 * Member Variables
 */
