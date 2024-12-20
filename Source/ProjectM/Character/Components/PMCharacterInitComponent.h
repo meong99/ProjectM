@@ -63,5 +63,5 @@ private:
 	TArray<FPMMappableConfigPair> DefaultInputConfigs;
 
 	UPROPERTY()
-	UPMInputComponent* InputConponent;
+	UPMInputComponent* InputComponent;
 };

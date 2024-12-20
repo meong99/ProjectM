@@ -35,8 +35,8 @@ public:
 	* Member Variables
 	*/
 public:
-	// 입력에 따른 동작을 담아놓은 델리게이트 맵
-	TMap<FGameplayTag, FInputActionDelegate::FDelegate> InputActionMap;
+	// 입력에 따른 동작을 담아놓은 델리게이트 맵. Tag와 입력에 따른 동작이 1:1매핑된다.
+	TMap<FGameplayTag, FInputActionDelegate::FDelegate> InputActionDelegateMap;
 };
 
 template<class UserClass, typename FuncType>

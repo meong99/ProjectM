@@ -236,18 +236,18 @@ void UPMCharacterInitComponent::InitializePlayerInput(UInputComponent* PlayerInp
 				}
 
 				// 태그로 구분지어서 입력 바인딩
-				InputConponent = CastChecked<UPMInputComponent>(PlayerInputComponent);
+				InputComponent = CastChecked<UPMInputComponent>(PlayerInputComponent);
 
 				// 기본 입력 관련 Action 바인딩 (복잡한 Value가진 값 Vector... 등)
-				InputConponent->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, false);
-				InputConponent->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, false);
+				InputComponent->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, false);
+				InputComponent->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, false);
 
 				// 어빌리티와 관련된 InputAction 바인딩
 				TArray<uint32> BindHandles;
-				InputConponent->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, BindHandles);
+				InputComponent->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, BindHandles);
 
 				// Boolean Toogle입력을 받을 액션 바인딩
-				InputConponent->BindToggleActions(InputConfig, this, &ThisClass::Input_ToggleInputTag, BindHandles);
+				InputComponent->BindToggleActions(InputConfig, this, &ThisClass::Input_ToggleInputTag, BindHandles);
 			}
 		}
 	}
@@ -331,9 +331,9 @@ void UPMCharacterInitComponent::Input_AbilityInputTagReleased(FGameplayTag Input
 
 void UPMCharacterInitComponent::Input_ToggleInputTag(FGameplayTag InputTag)
 {
-	if (InputConponent)
+	if (InputComponent)
 	{
-		FInputActionDelegate::FDelegate* Delegate = InputConponent->InputActionMap.Find(InputTag);
+		FInputActionDelegate::FDelegate* Delegate = InputComponent->InputActionDelegateMap.Find(InputTag);
 		if (Delegate && Delegate->IsBound())
 		{
 			Delegate->Execute(InputTag);

@@ -10,6 +10,7 @@
 #include "MViewportClient.generated.h"
 
 class UMWidgetInstanceList;
+class UMWidgetLayout;
 
 /**
  * 
@@ -40,12 +41,14 @@ public:
 	// Register내부에 있는 모든 위젯 생성
 	UMWidgetInstanceList* CreateWidgetInRegister(const FGameplayTag& RegisterTag);
 
-	void AddWidgetToViewport(const FGameplayTag& WidgetTag);
-	void RemoveWidgetFromParent(const FGameplayTag& WidgetTag);
+	void AddWidgetToLayer(const FGameplayTag& WidgetTag);
+	void RemoveWidgetFromLayer(const FGameplayTag& WidgetTag);
 
 	UMWidgetBase* GetWidgetInstance(const FGameplayTag& WidgetTag);
 
 private:
+	void OnLoaded_DefaultWidgetRegister();
+	void ApplyWidgetLayout();
 	UMWidgetInstanceList* CreateNewWidgetInstanceList(const FGameplayTag& RegisterTag);
 	UMWidgetRegister* GetWidgetRegister(const FGameplayTag& Tag);
 /*
@@ -58,4 +61,7 @@ private:
 
 	UPROPERTY()
 	TMap<FGameplayTag/*RegisterTag*/, TObjectPtr<UMWidgetInstanceList>> WidgetInstanceListMap;
+
+	UPROPERTY()
+	UMWidgetLayout* WidgetLayout;
 };

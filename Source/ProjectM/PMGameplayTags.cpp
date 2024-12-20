@@ -38,4 +38,5 @@ void FPMGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	*/
 	AddTag(UI_Registry_InputTag, "UI.Registry.InputTag", "");
 	AddTag(UI_Registry_InputTag_Inventory, "UI.Registry.InputTag.Inventory", "");
+	AddTag(UI_Registry_HUD_Layout, "UI.Registry.HUD.Layout", "");
 }

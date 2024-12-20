@@ -8,6 +8,8 @@
 #include "Engine/GameInstance.h"
 #include "MWidgetInstanceList.h"
 #include "MWidgetBase.h"
+#include "PMGameplayTags.h"
+#include "UI/MWidgetLayout.h"
 
 UE_DISABLE_OPTIMIZATION
 void UMViewportClient::Init(struct FWorldContext& WorldContext, UGameInstance* OwningGameInstance, bool bCreateNewAudioDevice /*= true*/)
@@ -57,18 +59,14 @@ void UMViewportClient::LoadDefaultWidgetRegister()
 				if (IsValid(WidgetRegister) && WidgetRegister->RegisterTag.IsValid())
 				{
 					AddWidgetRegister(WidgetRegister->RegisterTag, WidgetRegister);
-// 
-// 					// Input에 매치되어있는 Widget은 미리 Instancing해놓는다. (장비창, Inventory...)
-// 					if (WidgetRegister->RegisterTag.MatchesTagExact(FPMGameplayTags::Get().UI_Registry_InputTag))
-// 					{
-// 						CreateWidgetInRegister(WidgetRegister->RegisterTag);
-// 					}
 				}
 				else
 				{
 					MCHAE_ERROR("WidgetRegistar or RegisterTag is not valid! Check!");
 				}
 			}
+
+			OnLoaded_DefaultWidgetRegister();
 		})
 	);
 }
@@ -102,7 +100,7 @@ UMWidgetInstanceList* UMViewportClient::CreateWidgetInRegister(const FGameplayTa
 	return WidgetInstanceList;
 }
 
-void UMViewportClient::AddWidgetToViewport(const FGameplayTag& WidgetTag)
+void UMViewportClient::AddWidgetToLayer(const FGameplayTag& WidgetTag)
 {
 	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
 
@@ -112,7 +110,7 @@ void UMViewportClient::AddWidgetToViewport(const FGameplayTag& WidgetTag)
 	}
 }
 
-void UMViewportClient::RemoveWidgetFromParent(const FGameplayTag& WidgetTag)
+void UMViewportClient::RemoveWidgetFromLayer(const FGameplayTag& WidgetTag)
 {
 	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
 
@@ -175,4 +173,26 @@ UMWidgetRegister* UMViewportClient::GetWidgetRegister(const FGameplayTag& Tag)
 	}
 
 	return WidgetRegister;
+}
+
+void UMViewportClient::OnLoaded_DefaultWidgetRegister()
+{
+	ApplyWidgetLayout();
+}
+
+void UMViewportClient::ApplyWidgetLayout()
+{
+	if (WidgetLayout)
+	{
+		WidgetLayout->AddToViewport();
+		return;
+	}
+
+	UMWidgetRegister* WidgetRegister = GetWidgetRegister(FPMGameplayTags::Get().UI_Registry_HUD_Layout.RequestDirectParent());
+	check(WidgetRegister);
+
+	WidgetLayout = Cast<UMWidgetLayout>(GetWidgetInstance(FPMGameplayTags::Get().UI_Registry_HUD_Layout));
+	check(WidgetLayout);
+
+	WidgetLayout->AddToViewport();
 }

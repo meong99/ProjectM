@@ -48,7 +48,7 @@ void UMBindWidgetByInputComponent::BindWidgetByInput(UInputComponent* InInputCom
 	{
 		if (Iter.Key.IsValid() && IsValid(Iter.Value))
 		{
-			InputComponent->InputActionMap.Emplace(Iter.Key, FInputActionDelegate::FDelegate::CreateUObject(this, &ThisClass::ToggleWidget));
+			InputComponent->InputActionDelegateMap.Emplace(Iter.Key, FInputActionDelegate::FDelegate::CreateUObject(this, &ThisClass::ToggleWidget));
 		}
 	}
 }
