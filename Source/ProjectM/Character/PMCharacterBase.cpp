@@ -37,7 +37,14 @@ void APMCharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	// GameFeature를 통한 초기화를 하고싶은 컴포넌트를 위한 초기화 시작 단계
 	PawnExtComp->SetupPlayerInputComponent();
+
+	if (OnSetInputComponentDelegate.IsBound())
+	{
+		OnSetInputComponentDelegate.Broadcast(InputComponent);
+		OnSetInputComponentDelegate.Clear();
+	}
 }
 
 UAbilitySystemComponent* APMCharacterBase::GetAbilitySystemComponent() const
@@ -56,4 +63,16 @@ void APMCharacterBase::OnAbilitySystemInitialized()
 void APMCharacterBase::OnAbilitySystemUninitialzed()
 {
 	HealthComponent->UninitializeWithAbilitySystem();
+}
+
+void APMCharacterBase::CallOrRegister_OnSetInputComponent(FOnSetInputComponent::FDelegate&& Delegate)
+{
+	if (IsValid(InputComponent))
+	{
+		Delegate.ExecuteIfBound(InputComponent);
+	}
+	else
+	{
+		OnSetInputComponentDelegate.Add(MoveTemp(Delegate));
+	}
 }

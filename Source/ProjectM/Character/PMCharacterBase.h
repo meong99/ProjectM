@@ -7,6 +7,9 @@
 class UPMPawnExtensionComponent;
 class UPMCameraComponent;
 class UPMHealthComponent;
+class UInputComponent;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnSetInputComponent, UInputComponent* PlayerInputComponent);
 
 UCLASS()
 class PROJECTM_API APMCharacterBase : public AModularCharacter, public IAbilitySystemInterface
@@ -19,11 +22,8 @@ class PROJECTM_API APMCharacterBase : public AModularCharacter, public IAbilityS
 public:
 	APMCharacterBase();
 
-	UFUNCTION(BlueprintCallable)
-	void Test_ActivateWidget(const FGameplayTag& RegisterTag, const FGameplayTag& WidgetTag);
-
 protected:
-	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
@@ -33,6 +33,11 @@ protected:
 public:
 	void OnAbilitySystemInitialized();
 	void OnAbilitySystemUninitialzed();
+
+	void CallOrRegister_OnSetInputComponent(FOnSetInputComponent::FDelegate&& Delegate);
+	
+	UFUNCTION(BlueprintCallable)
+	void Test_ActivateWidget(const FGameplayTag& RegisterTag, const FGameplayTag& WidgetTag);
 
 /*
 * Member Variables
@@ -46,4 +51,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Character")
 	TObjectPtr<UPMHealthComponent> HealthComponent;
+
+private:
+	FOnSetInputComponent OnSetInputComponentDelegate;
 };

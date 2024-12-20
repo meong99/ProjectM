@@ -15,14 +15,17 @@ void UMBindWidgetByInputComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 이거 Pawn초기화 다 됐을때로 옮겨야돼
 	if (GetNetMode() != ENetMode::NM_DedicatedServer)
 	{
-		BindWidgetByInput();
+		APMCharacterBase* OwnerCharacter = GetPawn<APMCharacterBase>();
+		if (IsValid(OwnerCharacter))
+		{
+			OwnerCharacter->CallOrRegister_OnSetInputComponent(FOnSetInputComponent::FDelegate::CreateUObject(this, &ThisClass::BindWidgetByInput));
+		}
 	}
 }
 
-void UMBindWidgetByInputComponent::BindWidgetByInput()
+void UMBindWidgetByInputComponent::BindWidgetByInput(UInputComponent* InInputComponent)
 {
 	UMWidgetInstanceList* WidgetInstanceList = GetWidgetInstanceList();
 	
@@ -34,7 +37,7 @@ void UMBindWidgetByInputComponent::BindWidgetByInput()
 
 	WidgetInstanceMapWrapper = WidgetInstanceList->GetWidgetInstanceMapWrapper();
 
-	UPMInputComponent* InputComponent = GetInputComponent();
+	InputComponent = Cast<UPMInputComponent>(InInputComponent);
 	if (IsValid(InputComponent) == false)
 	{
 		MCHAE_WARNING("InputComponent is not valid");
@@ -64,18 +67,6 @@ void UMBindWidgetByInputComponent::ToggleWidget(const FGameplayTag& Tag) const
 			Widget->AddToViewport();
 		}
 	}
-}
-
-UPMInputComponent* UMBindWidgetByInputComponent::GetInputComponent() const
-{
-	APMCharacterBase* OwnerCharacter = GetPawn<APMCharacterBase>();
-
-	if (IsValid(OwnerCharacter))
-	{
-		return Cast<UPMInputComponent>(OwnerCharacter->InputComponent);
-	}
-
-	return nullptr;
 }
 
 UMWidgetInstanceList* UMBindWidgetByInputComponent::GetWidgetInstanceList() const
