@@ -44,8 +44,11 @@ UMWidgetBase* UMWidgetInstanceList::CreateNewWidget(const FGameplayTag& InWidget
 {
 	UMWidgetBase* NewWidget = CreateWidget<UMWidgetBase>(GetWorld(), WidgetClass);
 
-	NewWidget->SetWidgetTag(InWidgetTag);
-	WidgetInstanceMapWrapper.WidgetInstanceMap.Emplace(InWidgetTag, NewWidget);
+	if (NewWidget)
+	{
+		NewWidget->SetWidgetTag(InWidgetTag);
+		WidgetInstanceMapWrapper.WidgetInstanceMap.Emplace(InWidgetTag, NewWidget);
+	}
 
 	return NewWidget;
 }

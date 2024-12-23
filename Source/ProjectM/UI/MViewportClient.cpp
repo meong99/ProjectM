@@ -143,6 +143,8 @@ UMWidgetBase* UMViewportClient::GetWidgetInstance(const FGameplayTag& WidgetTag)
 	}
 
 	WidgetInstanceList = CreateNewWidgetInstanceList(WidgetRegister->RegisterTag);
+	WidgetInstanceListMap.Add(WidgetTag.RequestDirectParent(), WidgetInstanceList);
+
 	UMWidgetBase* NewWidget = WidgetInstanceList->CreateNewWidget(WidgetTag, WidgetRegister->GetWidgetClass(WidgetTag));
 
 	return NewWidget;

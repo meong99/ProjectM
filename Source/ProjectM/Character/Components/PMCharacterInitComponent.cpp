@@ -12,6 +12,8 @@
 #include "Input/PMInputComponent.h"
 #include "InputActionValue.h"
 #include "AbilitySystem/PMAbilitySystemComponent.h"
+#include "UI/MViewportClient.h"
+#include "Engine/GameInstance.h"
 
 const FName UPMCharacterInitComponent::NAME_ActorFeatureName{"CharacterInit"};
 const FName UPMCharacterInitComponent::NAME_BindInputsNow{"BindInputsNow"};
@@ -160,6 +162,14 @@ void UPMCharacterInitComponent::HandleChangeInitState(UGameFrameworkComponentMan
  				InitializePlayerInput(Pawn->InputComponent);
  			}
  		}
+		
+		// WidgetLayout설정
+		UGameInstance* GameInstance = GetGameInstance<UGameInstance>();
+		UMViewportClient* ViewportClient = GameInstance ? Cast<UMViewportClient>(GameInstance->GetGameViewportClient()) : nullptr;
+		if (ViewportClient)
+		{
+			ViewportClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_HUD_Layout);
+		}
 	}
 }
 
