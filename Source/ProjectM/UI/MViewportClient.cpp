@@ -11,7 +11,6 @@
 #include "PMGameplayTags.h"
 #include "UI/MWidgetLayout.h"
 
-UE_DISABLE_OPTIMIZATION
 void UMViewportClient::Init(struct FWorldContext& WorldContext, UGameInstance* OwningGameInstance, bool bCreateNewAudioDevice /*= true*/)
 {
 	Super::Init(WorldContext, OwningGameInstance, true);
@@ -100,7 +99,7 @@ UMWidgetInstanceList* UMViewportClient::CreateWidgetInRegister(const FGameplayTa
 	return WidgetInstanceList;
 }
 
-void UMViewportClient::AddWidgetToLayer(const FGameplayTag& WidgetTag)
+void UMViewportClient::AddWidgetToViewport(const FGameplayTag& WidgetTag)
 {
 	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
 
@@ -110,13 +109,41 @@ void UMViewportClient::AddWidgetToLayer(const FGameplayTag& WidgetTag)
 	}
 }
 
-void UMViewportClient::RemoveWidgetFromLayer(const FGameplayTag& WidgetTag)
+void UMViewportClient::RemoveWidgetFromParent(const FGameplayTag& WidgetTag)
 {
 	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
 
 	if (Widget && Widget->IsInViewport())
 	{
 		Widget->RemoveFromParent();
+	}
+}
+
+void UMViewportClient::AddWidgetToLayer(const FGameplayTag& WidgetTag, const int32 LayerId)
+{
+	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
+	if (WidgetLayout && Widget)
+	{
+		WidgetLayout->AddWidgetToLayout(GetWidgetInstance(WidgetTag), (EMWidgetLayout)LayerId);
+		Widget->SetActivate(true);
+	}
+	else
+	{
+		MCHAE_WARNING("WidgetLayout or WidgetInstance is null!");
+	}
+}
+
+void UMViewportClient::RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, const int32 LayerId)
+{
+	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
+	if (WidgetLayout && Widget)
+	{
+		WidgetLayout->RemoveWidgetFromLayout(GetWidgetInstance(WidgetTag), (EMWidgetLayout)LayerId);
+		Widget->SetActivate(false);
+	}
+	else
+	{
+		MCHAE_WARNING("WidgetLayout or WidgetInstance is null!");
 	}
 }
 
@@ -136,26 +163,36 @@ UMWidgetBase* UMViewportClient::GetWidgetInstance(const FGameplayTag& WidgetTag)
 		return nullptr;
 	}
 
+	// WidgetInstanceList에서 Widget찾기
+	UMWidgetBase* NewWidget = nullptr;
 	UMWidgetInstanceList* WidgetInstanceList = WidgetInstanceListMap.FindRef(WidgetRegister->RegisterTag);
 	if (WidgetInstanceList)
 	{
-		return WidgetInstanceList->GetWidgetInstance(WidgetTag);
+		NewWidget = WidgetInstanceList->GetWidgetInstance(WidgetTag);
+		if (NewWidget)
+		{
+			return NewWidget;
+		}
+	}
+	else
+	{
+		// WidgetList가 없다면 만들기
+		WidgetInstanceList = CreateNewWidgetInstanceList(WidgetRegister->RegisterTag);
 	}
 
-	WidgetInstanceList = CreateNewWidgetInstanceList(WidgetRegister->RegisterTag);
-	WidgetInstanceListMap.Add(WidgetTag.RequestDirectParent(), WidgetInstanceList);
-
-	UMWidgetBase* NewWidget = WidgetInstanceList->CreateNewWidget(WidgetTag, WidgetRegister->GetWidgetClass(WidgetTag));
+	// List에 Widget이 없어서 새로 만들고 추가 후 리턴
+	NewWidget = WidgetInstanceList->CreateNewWidget(WidgetTag, WidgetRegister->GetWidgetClass(WidgetTag));
 
 	return NewWidget;
 }
 
 UMWidgetInstanceList* UMViewportClient::CreateNewWidgetInstanceList(const FGameplayTag& RegisterTag)
 {
-	return UMWidgetInstanceList::CreateNewWidgetInstanceList(this, RegisterTag);
-}
+	UMWidgetInstanceList* WidgetInstanceList = UMWidgetInstanceList::CreateNewWidgetInstanceList(this, RegisterTag);
+	WidgetInstanceListMap.Add(RegisterTag, WidgetInstanceList);
 
-UE_ENABLE_OPTIMIZATION
+	return WidgetInstanceList;
+}
 
 UMWidgetRegister* UMViewportClient::GetWidgetRegister(const FGameplayTag& Tag)
 {
@@ -194,7 +231,11 @@ void UMViewportClient::ApplyWidgetLayout()
 	check(WidgetRegister);
 
 	WidgetLayout = Cast<UMWidgetLayout>(GetWidgetInstance(FPMGameplayTags::Get().UI_Registry_HUD_Layout));
-	check(WidgetLayout);
+	if (WidgetLayout == nullptr)
+	{
+		MCHAE_WARNING("WidgetLayout is null");
+		return;
+	}
 
 	WidgetLayout->AddToViewport();
 }

@@ -168,7 +168,8 @@ void UPMCharacterInitComponent::HandleChangeInitState(UGameFrameworkComponentMan
 		UMViewportClient* ViewportClient = GameInstance ? Cast<UMViewportClient>(GameInstance->GetGameViewportClient()) : nullptr;
 		if (ViewportClient)
 		{
-			ViewportClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_HUD_Layout);
+			ViewportClient->AddWidgetToViewport(FPMGameplayTags::Get().UI_Registry_HUD_Layout);
+			ViewportClient->AddWidgetToLayer((FPMGameplayTags::Get().UI_Registry_HUD_MainHUD));
 		}
 	}
 }

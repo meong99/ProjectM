@@ -34,6 +34,7 @@ struct FPMGameplayTags
 	FGameplayTag UI_Registry_InputTag;
 	FGameplayTag UI_Registry_InputTag_Inventory;
 	FGameplayTag UI_Registry_HUD_Layout;
+	FGameplayTag UI_Registry_HUD_MainHUD;
 
 private:
 	static FPMGameplayTags GameplayTags;

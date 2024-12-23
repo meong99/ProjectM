@@ -44,7 +44,7 @@ public:
 	UMWidgetBase* GetWidgetInstance(const FGameplayTag& WidgetTag) const;
 
 	const FGameplayTag&					GetRegisterTag() const { return RegisterTag; }
-	const FMWidgetInstanceMapWrapper&	GetWidgetInstanceMapWrapper() { return WidgetInstanceMapWrapper; }
+	const FMWidgetInstanceMapWrapper*	GetWidgetInstanceMapWrapper() const { return &WidgetInstanceMapWrapper; }
 
 /*
 * Member Variables

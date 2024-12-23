@@ -29,7 +29,7 @@ void APMCharacterBase::Test_ActivateWidget(const FGameplayTag& RegisterTag, cons
 	UMViewportClient* ViewportClient = UMViewportClient::Get(this);
 	if (IsValid(ViewportClient))
 	{
-		ViewportClient->AddWidgetToLayer(WidgetTag);
+		ViewportClient->AddWidgetToViewport(WidgetTag);
 	}
 }
 

@@ -24,14 +24,19 @@ public:
 * Member Functions
 */
 public:
-
 	const FGameplayTag& GetWidgetTag() const { return WidgetTag; }
+	bool				IsActivate() const { return bIsActivate; }
 
 	void SetWidgetTag(const FGameplayTag& InWidgetTag) { WidgetTag = InWidgetTag; }
+	void SetActivate(const bool bNewActivate) { bIsActivate = bNewActivate; }
 /*
 * Member Variables
 */
 protected:
 	UPROPERTY(VisibleInstanceOnly)
 	FGameplayTag WidgetTag;
+
+	// Layer에 등록된 위젯의 활성화 여부
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsActivate = false;
 };

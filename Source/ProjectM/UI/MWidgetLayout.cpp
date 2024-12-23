@@ -1,6 +1,7 @@
 #include "MWidgetLayout.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/Overlay.h"
+#include "Components/OverlaySlot.h"
 
 UMWidgetLayout::UMWidgetLayout(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {}
@@ -30,15 +31,32 @@ void UMWidgetLayout::RemoveWidgetToCurrentLayout(UMWidgetBase* Widget) const
 
 void UMWidgetLayout::AddWidgetToLayout(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const
 {
+	if (Widget == nullptr)
+	{
+		MCHAE_WARNING("Widget Instance is null!");
+		return;
+	}
+
 	UOverlay* CurrentLayout = GetLayout(WidgetLayout);
 	if (CurrentLayout)
 	{
-		CurrentLayout->AddChild(Widget);
+		UOverlaySlot* OverlaySlot = CurrentLayout->AddChildToOverlay(Widget);
+		if (OverlaySlot)
+		{
+			OverlaySlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Fill);
+			OverlaySlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Fill);
+		}
 	}
 }
 
-void UMWidgetLayout::RemoveWidgetToLayout(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const
+void UMWidgetLayout::RemoveWidgetFromLayout(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const
 {
+	if (Widget == nullptr)
+	{
+		MCHAE_WARNING("Widget Instance is null!");
+		return;
+	}
+
 	UOverlay* CurrentLayout = GetLayout(WidgetLayout);
 	if (CurrentLayout)
 	{

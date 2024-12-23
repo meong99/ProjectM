@@ -36,6 +36,7 @@ void UMBindWidgetByInputComponent::BindWidgetByInput(UInputComponent* InInputCom
 	}
 
 	WidgetInstanceMapWrapper = WidgetInstanceList->GetWidgetInstanceMapWrapper();
+	check(WidgetInstanceMapWrapper);
 
 	InputComponent = Cast<UPMInputComponent>(InInputComponent);
 	if (IsValid(InputComponent) == false)
@@ -44,7 +45,8 @@ void UMBindWidgetByInputComponent::BindWidgetByInput(UInputComponent* InInputCom
 		return;
 	}
 
-	for (const auto Iter : WidgetInstanceMapWrapper.WidgetInstanceMap)
+	const auto& WidgetInstanceMap = WidgetInstanceMapWrapper->WidgetInstanceMap;
+	for (const auto Iter : WidgetInstanceMap)
 	{
 		if (Iter.Key.IsValid() && IsValid(Iter.Value))
 		{
@@ -53,21 +55,26 @@ void UMBindWidgetByInputComponent::BindWidgetByInput(UInputComponent* InInputCom
 	}
 }
 
+UE_DISABLE_OPTIMIZATION
 void UMBindWidgetByInputComponent::ToggleWidget(const FGameplayTag& Tag) const
 {
-	UMWidgetBase* Widget = WidgetInstanceMapWrapper.WidgetInstanceMap.FindRef(Tag);
-	if (IsValid(Widget))
+	UMWidgetBase* Widget = WidgetInstanceMapWrapper->WidgetInstanceMap.FindRef(Tag);
+	UGameInstance* GameInstance = GetGameInstance<UGameInstance>();
+	UMViewportClient* ViewportClient = GameInstance ? Cast<UMViewportClient>(GameInstance->GetGameViewportClient()) : nullptr;
+
+	if (IsValid(Widget) && IsValid(ViewportClient))
 	{
-		if (Widget->IsInViewport())
+		if (Widget->IsActivate())
 		{
-			Widget->RemoveFromParent();
+			ViewportClient->RemoveWidgetFromLayer(Tag);
 		}
 		else
 		{
-			Widget->AddToViewport();
+			ViewportClient->AddWidgetToLayer(Tag);
 		}
 	}
 }
+UE_ENABLE_OPTIMIZATION
 
 UMWidgetInstanceList* UMBindWidgetByInputComponent::GetWidgetInstanceList() const
 {

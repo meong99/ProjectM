@@ -45,7 +45,7 @@ public:
 	void AddWidgetToCurrentLayout(UMWidgetBase* Widget) const;
 	void RemoveWidgetToCurrentLayout(UMWidgetBase* Widget) const;
 	void AddWidgetToLayout(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const;
-	void RemoveWidgetToLayout(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const;
+	void RemoveWidgetFromLayout(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const;
 
 private:
 	UOverlay* GetLayout(EMWidgetLayout WidgetLayout) const;

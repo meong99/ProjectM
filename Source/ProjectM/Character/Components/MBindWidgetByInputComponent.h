@@ -41,8 +41,7 @@ private:
 * Member Variables
 */
 private:
-	UPROPERTY()
-	FMWidgetInstanceMapWrapper WidgetInstanceMapWrapper;
+	const FMWidgetInstanceMapWrapper* WidgetInstanceMapWrapper;
 
 	UPROPERTY()
 	UPMInputComponent* InputComponent;

@@ -39,4 +39,5 @@ void FPMGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(UI_Registry_InputTag, "UI.Registry.InputTag", "");
 	AddTag(UI_Registry_InputTag_Inventory, "UI.Registry.InputTag.Inventory", "");
 	AddTag(UI_Registry_HUD_Layout, "UI.Registry.HUD.Layout", "");
+	AddTag(UI_Registry_HUD_MainHUD, "UI.Registry.HUD.MainHUD", "각 게임 모드 별 HUD. 등록한다면 Character가 초기화된 후 자동으로 위젯이 켜진다");
 }
