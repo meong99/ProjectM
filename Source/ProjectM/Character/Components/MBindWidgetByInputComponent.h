@@ -13,6 +13,7 @@ class UPMInputComponent;
 
 /*
 * 입력에 따라 위젯이 켜지고, 꺼지는 동작을 수행할 수 있도록 하는 컴포넌트
+* 위젯을 다루는 클래스라서 클라이언트 전용 클래스다
 */
 UCLASS()
 class PROJECTM_API UMBindWidgetByInputComponent : public UMPawnComponent
