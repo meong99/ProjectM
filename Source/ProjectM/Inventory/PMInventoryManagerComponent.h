@@ -36,7 +36,7 @@ struct FPMInventoryList
 };
 
 /**
- * InventoryManager는 Controller에서 아이템에 관한 메타데이터를 들고있고, 실제 스폰하는거는 Character에 부착된 EquipmentManagerComponent에서 한다.
+ * InventoryManager는 Controller에서 아이템에 관한 메타데이터 및 Instance를 들고있고, 실제 Actor(무기)자체를 스폰하는거는 Character에 부착된 EquipmentManagerComponent에서 한다.
  */
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTM_API UPMInventoryManagerComponent : public UControllerComponent

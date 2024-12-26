@@ -27,7 +27,6 @@ APawn* UPMEquipmentInstance::GetTypedPawn(TSubclassOf<APawn> PawnType) const
 	return Result;
 }
 
-UE_DISABLE_OPTIMIZATION
 void UPMEquipmentInstance::SpawnEquipmentActors(const TArray<FPMEquipmentActorToSpawn>& ActorsToSpawn)
 {
 	if (APawn* OwningPawn = GetPawn())
@@ -51,7 +50,6 @@ void UPMEquipmentInstance::SpawnEquipmentActors(const TArray<FPMEquipmentActorTo
 		}
 	}
 }
-UE_ENABLE_OPTIMIZATION
 
 void UPMEquipmentInstance::DestroyEquipmentActors()
 {
