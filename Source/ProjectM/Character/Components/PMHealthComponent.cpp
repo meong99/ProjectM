@@ -14,6 +14,7 @@ UPMHealthComponent::UPMHealthComponent(const FObjectInitializer& ObjectInitializ
 
 	AbilitySystemComponent = nullptr;
 	HealthSet = nullptr;
+	SetIsReplicatedByDefault(true);
 }
 
 void UPMHealthComponent::InitializeWithAbilitySystem(UPMAbilitySystemComponent* InASC)

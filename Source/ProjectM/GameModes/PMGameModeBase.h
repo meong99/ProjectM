@@ -41,6 +41,8 @@ protected:
 	void OnMatchAssignmentGiven(const FPrimaryAssetId& ExperienceId);
 
 	void OnExperienceLoaded(const UPMExperienceDefinition* CurrentExperience);
+
+	bool TryDedicatedServerLogin();
 /*
 * Member Variables
 */

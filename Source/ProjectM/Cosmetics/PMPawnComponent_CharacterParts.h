@@ -74,6 +74,8 @@ class PROJECTM_API UPMPawnComponent_CharacterParts : public UPawnComponent
 public:
 	UPMPawnComponent_CharacterParts(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
 public:
 /*
 * Member Functions
@@ -97,7 +99,7 @@ private:
 
 private:
 	//Instancing된 CharacterParts
-	UPROPERTY()
+	UPROPERTY(Replicated, Transient)
 	FPMCharacterPartList CharacterPartList;
 
 	//애니메이션 적용을 위핸 메시와 연결고리

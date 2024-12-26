@@ -16,14 +16,15 @@ void UPMControllerComponent_CharacterParts::BeginPlay()
 		{
 			OwningController->OnPossessedPawnChanged.AddDynamic(this, &ThisClass::OnPossessedPawnChanged);
 		}
+
+	#pragma TODO("이거 원래 BP에 있는데 나중에 제거해야함")
+		{
+			FPMCharacterPart NewPart;
+			NewPart.PartClass = DefaultTaggedActor;
+			AddCharacterPart(NewPart);
+		}
 	}
 
-#pragma TODO("이거 원래 BP에 있는데 나중에 제거해야함")
-	{
-		FPMCharacterPart NewPart;
-		NewPart.PartClass = DefaultTaggedActor;
-		AddCharacterPart(NewPart);
-	}
 }
 
 void UPMControllerComponent_CharacterParts::EndPlay(const EEndPlayReason::Type EndPlayReason)

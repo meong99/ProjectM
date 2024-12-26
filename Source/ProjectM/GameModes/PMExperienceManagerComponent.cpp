@@ -8,6 +8,7 @@
 
 UPMExperienceManagerComponent::UPMExperienceManagerComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	SetIsReplicatedByDefault(true);
 }
 
 void UPMExperienceManagerComponent::SetCurrentExperience(FPrimaryAssetId ExperienceId)

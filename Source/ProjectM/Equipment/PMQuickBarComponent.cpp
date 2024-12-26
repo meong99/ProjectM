@@ -8,6 +8,7 @@
 
 UPMQuickBarComponent::UPMQuickBarComponent(const FObjectInitializer& ObjectInitializer /*= FObjectInitializer::Get()*/) : Super(ObjectInitializer)
 {
+	SetIsReplicatedByDefault(true);
 }
 
 void UPMQuickBarComponent::BeginPlay()

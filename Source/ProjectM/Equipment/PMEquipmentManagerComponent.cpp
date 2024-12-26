@@ -91,6 +91,7 @@ UPMEquipmentManagerComponent::UPMEquipmentManagerComponent(const FObjectInitiali
 	: Super(ObjectInitializer)
 	, EquipmentList(this) // 이것도 필수!!!
 {
+	SetIsReplicatedByDefault(true);
 }
 
 UPMEquipmentInstance* UPMEquipmentManagerComponent::EquipItem(TSubclassOf<UPMEquipmentDefinition> EquipmentDefinition)

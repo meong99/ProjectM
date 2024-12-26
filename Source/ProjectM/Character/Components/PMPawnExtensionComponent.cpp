@@ -3,6 +3,7 @@
 #include "Components/GameFrameworkComponentManager.h"
 #include "GameFramework/Controller.h"
 #include "AbilitySystem/PMAbilitySystemComponent.h"
+#include "Net/UnrealNetwork.h"
 
 const FName UPMPawnExtensionComponent::NAME_ActorFeatureName{"PawnExtension"};
 
@@ -11,6 +12,15 @@ UPMPawnExtensionComponent::UPMPawnExtensionComponent(const FObjectInitializer& O
 	// 초기화 단계 검사를 틱으로 하지 않고 이벤트 발생 형태로 가기 때문에 틱을 끈다. 하위 클래스에서 필요할 때 켠다.
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 	PrimaryComponentTick.bCanEverTick = false;
+
+	SetIsReplicatedByDefault(true);
+}
+
+void UPMPawnExtensionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UPMPawnExtensionComponent, PawnData);
 }
 
 void UPMPawnExtensionComponent::InitializeAbilitySystem(UPMAbilitySystemComponent* InAbilitySystemComponent, AActor* InOwnerActor)
@@ -131,8 +141,9 @@ bool UPMPawnExtensionComponent::CanChangeInitState(UGameFrameworkComponentManage
 			return false;
 		}
 
+		const bool bHasAuthority = Pawn->HasAuthority();
 		const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
-		if (bIsLocallyControlled)
+		if (bHasAuthority || bIsLocallyControlled)
 		{
 			if (!GetController<AController>())
 			{
@@ -217,4 +228,9 @@ void UPMPawnExtensionComponent::SetPawnData(const UPMPawnData* InPawnData)
 
 	// 얘는 초기화 진행이 안됨
 // 	CheckDefaultInitialization();
+}
+
+void UPMPawnExtensionComponent::OnRep_PawnData()
+{
+	CheckDefaultInitialization();
 }

@@ -57,6 +57,7 @@ UPMInventoryManagerComponent::UPMInventoryManagerComponent(const FObjectInitiali
 	: Super(ObjectInitializer)
 	, InventoryList(this)
 {
+	SetIsReplicatedByDefault(true);
 }
 
 UPMInventoryItemInstance* UPMInventoryManagerComponent::AddItemDefinition(TSubclassOf<UPMInventoryItemDefinition> ItemDef)

@@ -11,9 +11,13 @@
 APMPlayerState::APMPlayerState()
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UPMAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
 	CreateDefaultSubobject<UPMHealthSet>(TEXT("HealthSet"));
 	CreateDefaultSubobject<UPMCombatSet>(TEXT("CombatSet"));
+
+	NetUpdateFrequency = 100.0f;
 }
 
 void APMPlayerState::PostInitializeComponents()
@@ -21,18 +25,20 @@ void APMPlayerState::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	check(AbilitySystemComponent);
-	FGameplayAbilityActorInfo* ActorInfo = AbilitySystemComponent->AbilityActorInfo.Get();
-	check(ActorInfo->OwnerActor == this);
-	check(ActorInfo->OwnerActor == ActorInfo->AvatarActor);
 	AbilitySystemComponent->InitAbilityActorInfo(this, GetPawn());
 
-	const AGameStateBase* GameState = GetWorld()->GetGameState();
-	check(GameState);
 
-	UPMExperienceManagerComponent* ExperienceManagerComp = GameState->FindComponentByClass<UPMExperienceManagerComponent>();
-	check(ExperienceManagerComp);
+	UWorld* World = GetWorld();
+	if (World && World->IsGameWorld() && World->GetNetMode() != NM_Client)
+	{
+		const AGameStateBase* GameState = World->GetGameState();
+		check(GameState);
 
-	ExperienceManagerComp->CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
+		UPMExperienceManagerComponent* ExperienceManagerComp = GameState->FindComponentByClass<UPMExperienceManagerComponent>();
+		check(ExperienceManagerComp);
+
+		ExperienceManagerComp->CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
+	}
 }
 
 void APMPlayerState::OnExperienceLoaded(const UPMExperienceDefinition* CurrentExperience)
@@ -50,6 +56,12 @@ void APMPlayerState::OnExperienceLoaded(const UPMExperienceDefinition* CurrentEx
 void APMPlayerState::SetPawnData(const UPMPawnData* InPawnData)
 {
 	check(InPawnData);
+
+	if (GetLocalRole() != ROLE_Authority)
+	{
+		return;
+	}
+
 	check(!PawnData);
 
 	PawnData = InPawnData;

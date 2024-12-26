@@ -24,16 +24,12 @@ class PROJECTM_API UPMPawnExtensionComponent : public UPawnComponent, public IGa
 public:
 	UPMPawnExtensionComponent(const FObjectInitializer& ObjectInitializer);
 
-	static UPMPawnExtensionComponent* FindPawnExtensionComponent(const APawn* Actor)
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	virtual FName GetFeatureName() const final
 	{
-		return IsValid(Actor) ? Actor->FindComponentByClass<UPMPawnExtensionComponent>() : nullptr;
+		return NAME_ActorFeatureName;
 	}
-
-	void InitializeAbilitySystem(UPMAbilitySystemComponent* InAbilitySystemComponent, AActor* InOwnerActor);
-	void UnInitializeAbilitySystem();
-
-	virtual FName GetFeatureName() const final { return NAME_ActorFeatureName; }
-	static const FName NAME_ActorFeatureName;
 
 private:
 	virtual void OnRegister() final;
@@ -47,10 +43,18 @@ private:
 * Member Functions
 */
 public:
+	static UPMPawnExtensionComponent* FindPawnExtensionComponent(const APawn* Actor)
+	{
+		return IsValid(Actor) ? Actor->FindComponentByClass<UPMPawnExtensionComponent>() : nullptr;
+	}
+
 	void SetupPlayerInputComponent();
 
 	void OnAbilitySystemInitialized_RegisterAndCall(FSimpleMulticastDelegate::FDelegate Delegate);
 	void OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate Delegate);
+
+	void InitializeAbilitySystem(UPMAbilitySystemComponent* InAbilitySystemComponent, AActor* InOwnerActor);
+	void UnInitializeAbilitySystem();
 
 	template <class T>
 	const T*					GetPawnData() const { return Cast<T>(PawnData); }
@@ -58,11 +62,17 @@ public:
 
 	void SetPawnData(const UPMPawnData* InPawnData);
 
+private:
+	UFUNCTION()
+	void OnRep_PawnData();
 /*
 * Member Variables
 */
+public:
+	static const FName NAME_ActorFeatureName;
+
 private:
-	UPROPERTY(EditInstanceOnly, Category = "ProjectM | Pawn")
+	UPROPERTY(EditInstanceOnly, ReplicatedUsing = OnRep_PawnData, Category = "ProjectM | Pawn")
 	TObjectPtr<const UPMPawnData> PawnData;
 
 	UPROPERTY(VisibleAnywhere, Category = "ProjectM | Pawn")

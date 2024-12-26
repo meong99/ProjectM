@@ -11,6 +11,7 @@
 #include "TimerManager.h"
 #include "Character/Components/PMPawnExtensionComponent.h"
 #include "UI/PMHUD.h"
+#include "Misc/CommandLine.h"
 
 UE_DISABLE_OPTIMIZATION
 
@@ -155,6 +156,20 @@ void APMGameModeBase::HandleMatchAssignmentIfNotExpectingOne()
 		ExperienceId = FPrimaryAssetId(FPrimaryAssetType(UPMExperienceDefinition::StaticClass()->GetFName()), FName(*ExperienceFromOptions/*얘가 ExperienceDefinition 이름*/));
 	}
 
+	// CommandLine으로 Experience읽기
+	if (!ExperienceId.IsValid())
+	{
+		FString ExperienceFromCommandLine;
+		if (FParse::Value(FCommandLine::Get(), TEXT("Experience="), ExperienceFromCommandLine))
+		{
+			ExperienceId = FPrimaryAssetId::ParseTypeAndName(ExperienceFromCommandLine);
+			if (!ExperienceId.PrimaryAssetType.IsValid())
+			{
+				ExperienceId = FPrimaryAssetId(FPrimaryAssetType(UPMExperienceDefinition::StaticClass()->GetFName()), FName(*ExperienceFromCommandLine));
+			}
+		}
+	}
+
 	// Experience를 마지막까지 못 찾는다면 기본값을 사용한다.
 	if (ExperienceId.IsValid() == false)
 	{
@@ -188,6 +203,11 @@ void APMGameModeBase::OnExperienceLoaded(const UPMExperienceDefinition* CurrentE
 			}
 		}
 	}
+}
+
+bool APMGameModeBase::TryDedicatedServerLogin()
+{
+	return false;
 }
 
 UE_ENABLE_OPTIMIZATION

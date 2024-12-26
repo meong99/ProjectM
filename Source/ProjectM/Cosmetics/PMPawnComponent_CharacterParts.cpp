@@ -3,6 +3,7 @@
 #include "GameplayTagAssetInterface.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/Engine.h"
+#include "Net/UnrealNetwork.h"
 
 /*
 * FPMCharacterPartHandle
@@ -75,7 +76,7 @@ bool FPMCharacterPartList::SpawnActorForEntry(FPMAppliedCharacterPartEntry& Entr
 			{
 				if (USceneComponent* SpawnedRootComponent = SpawnedActor->GetRootComponent())
 				{
-					//Tick이 도는 순서를 정하는 구간이다. 부모 틱이 먼저 돌 수 있도록 보장해준다.
+					// remind : Tick이 도는 순서를 정하는 구간이다. 부모 틱이 먼저 돌 수 있도록 보장해준다.
 					// RootComponent -> CharactarPart의 순서를 지정하는 것
 					SpawnedRootComponent->AddTickPrerequisiteComponent(ComponentToAttachTo);
 				}
@@ -141,7 +142,16 @@ FGameplayTagContainer FPMCharacterPartList::CollectCombinedTags() const
 UPMPawnComponent_CharacterParts::UPMPawnComponent_CharacterParts(const FObjectInitializer& ObjectInitializer /*= FObjectInitializer::Get()*/)
 	: Super(ObjectInitializer)
 	, CharacterPartList(this) // <-------------------- 이 부분이 중요하다!!! this로 CharacterPartList에게 Owner를 지정해줘야한다!
-{}
+{
+	SetIsReplicatedByDefault(true);
+}
+
+void UPMPawnComponent_CharacterParts::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, CharacterPartList);
+}
 
 USkeletalMeshComponent* UPMPawnComponent_CharacterParts::GetParentMeshComponent() const
 {
