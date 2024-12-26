@@ -4,6 +4,7 @@
 #include "Components/PawnComponent.h"
 #include "PMCharacterPartTypes.h"
 #include "PMCosmeticAnimationTypes.h"
+#include "Net/Serialization/FastArraySerializer.h"
 
 #include "PMPawnComponent_CharacterParts.generated.h"
 
@@ -11,18 +12,18 @@ class UPMPawnComponent_CharacterParts;
 
 // 실제 적용된 Character Part에 대한 Data
 USTRUCT()
-struct FPMAppliedCharacterPartEntry
+struct FPMAppliedCharacterPartEntry : public FFastArraySerializerItem
 {
 	GENERATED_BODY()
 
 	UPROPERTY()
 	FPMCharacterPart Part;
 
-	UPROPERTY()
+	UPROPERTY(NotReplicated)
 	int32 PartHandle = INDEX_NONE;
 
 	// Actor를 Actor에게 붙일 땐 UChildActorComponent를 사용해야하며, 실제 스폰되어 부착된 Object이다.
-	UPROPERTY()
+	UPROPERTY(NotReplicated)
 	TObjectPtr<UChildActorComponent> SpawnedComponent = nullptr;
 };
 
@@ -33,7 +34,7 @@ struct FPMAppliedCharacterPartEntry
 */
 // Instancing된 Character Parts를 관리하는 구조체
 USTRUCT(BlueprintType)
-struct FPMCharacterPartList
+struct FPMCharacterPartList : public FFastArraySerializer
 {
 	GENERATED_BODY()
 
@@ -42,24 +43,44 @@ struct FPMCharacterPartList
 	// CharacterPartList는 Owner가 꼭 필요하다!
 	FPMCharacterPartList(UPMPawnComponent_CharacterParts* InOwnerComponent);
 
+	//~FFastArraySerializer contract
+	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
+	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
+	void PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize);
+	//~End of FFastArraySerializer contract
+
 	// 실질적으로 CharacterPart가 저장, 적용되는 부분이다.
 	FPMCharacterPartHandle AddEntry(FPMCharacterPart NewPart);
 	// Actor를 Spawn하고 RootComponent에 붙여주고, 사전 세팅을 해주는 부분이다
 	bool SpawnActorForEntry(FPMAppliedCharacterPartEntry& Entry);
 
 	void RemoveEntry(FPMCharacterPartHandle Handle);
-	void DestroyActorForEntry(FPMAppliedCharacterPartEntry& Entry);
+	bool DestroyActorForEntry(FPMAppliedCharacterPartEntry& Entry);
 
 	// TaggedActor에 맞는 Tag를 모두 가져온다. 지금은 Tagged Actor를 제대로 사용하지 않고 기본값만 사용하니 지금은 비어있는 값을 리턴한다.
 	FGameplayTagContainer CollectCombinedTags() const;
 
+	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms)
+	{
+		return FFastArraySerializer::FastArrayDeltaSerialize<FPMAppliedCharacterPartEntry, FPMCharacterPartList>(Entries, DeltaParms, *this);
+	}
+
 	UPROPERTY()
 	TArray<FPMAppliedCharacterPartEntry> Entries;
 
-	UPROPERTY()
+	UPROPERTY(NotReplicated)
 	TObjectPtr<UPMPawnComponent_CharacterParts> OwnerComponent;
 
 	int32 PartHandleCounter = 0;
+};
+
+template<>
+struct TStructOpsTypeTraits<FPMCharacterPartList> : public TStructOpsTypeTraitsBase2<FPMCharacterPartList>
+{
+	enum
+	{
+		WithNetDeltaSerializer = true
+	};
 };
 
 // Character에 부착되는 CharacterPart를 들고있을 Component.
@@ -93,10 +114,10 @@ private:
 	// 설정되어있는 CharacterPartList에 Tag에 맞는 TaggedActor의 Tag를 모두 가져와주는데 지금은 비어있다
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Cosmetics", meta = (AllowPrivateAccess = true))
 	FGameplayTagContainer GetCombinedTags(FGameplayTag RequiredPrefix) const;
+
 /*
 * Member Variables
 */
-
 private:
 	//Instancing된 CharacterParts
 	UPROPERTY(Replicated, Transient)

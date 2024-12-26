@@ -35,7 +35,11 @@ public class ProjectM : ModuleRules
             "GameplayTags",
 			"GameplayTasks",
 			"GameplayAbilities",
-        });
+
+			"NetCore",           // 네트워크 관련
+// 			"Serialization",     // FFastArraySerializer 관련
+// 			"GuidUtilities"      // FGuidReferences 관련
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

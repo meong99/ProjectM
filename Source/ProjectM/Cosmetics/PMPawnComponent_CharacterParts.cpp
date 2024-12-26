@@ -27,6 +27,55 @@ FPMCharacterPartList::FPMCharacterPartList(UPMPawnComponent_CharacterParts* InOw
 	}
 }
 
+void FPMCharacterPartList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
+{
+	bool bDestroyedAnyActors = false;
+	for (int32 Index : RemovedIndices)
+	{
+		FPMAppliedCharacterPartEntry& Entry = Entries[Index];
+		bDestroyedAnyActors |= DestroyActorForEntry(Entry);
+	}
+
+	if (bDestroyedAnyActors && ensure(OwnerComponent))
+	{
+		OwnerComponent->BroadcastChanged();
+	}
+}
+
+void FPMCharacterPartList::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
+{
+	bool bCreatedAnyActors = false;
+	for (int32 Index : AddedIndices)
+	{
+		FPMAppliedCharacterPartEntry& Entry = Entries[Index];
+		bCreatedAnyActors |= SpawnActorForEntry(Entry);
+	}
+
+	if (bCreatedAnyActors && ensure(OwnerComponent))
+	{
+		OwnerComponent->BroadcastChanged();
+	}
+}
+
+void FPMCharacterPartList::PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize)
+{
+	bool bChangedAnyActors = false;
+
+		// We don't support dealing with propagating changes, just destroy and recreate
+	for (int32 Index : ChangedIndices)
+	{
+		FPMAppliedCharacterPartEntry& Entry = Entries[Index];
+
+		bChangedAnyActors |= DestroyActorForEntry(Entry);
+		bChangedAnyActors |= SpawnActorForEntry(Entry);
+	}
+
+	if (bChangedAnyActors && ensure(OwnerComponent))
+	{
+		OwnerComponent->BroadcastChanged();
+	}
+}
+
 FPMCharacterPartHandle FPMCharacterPartList::AddEntry(FPMCharacterPart NewPart)
 {
 	FPMCharacterPartHandle Result;
@@ -43,6 +92,8 @@ FPMCharacterPartHandle FPMCharacterPartList::AddEntry(FPMCharacterPart NewPart)
 			// Actor가 생성 및 적용되었으니 Animation 및 Physics를 Re-initialize한다
 			OwnerComponent->BroadcastChanged();
 		}
+
+		MarkItemDirty(NewEntry);
 	}
 	else
 	{
@@ -56,34 +107,38 @@ FPMCharacterPartHandle FPMCharacterPartList::AddEntry(FPMCharacterPart NewPart)
 bool FPMCharacterPartList::SpawnActorForEntry(FPMAppliedCharacterPartEntry& Entry)
 {
 	bool bCreatedAnyActor = false;
-	if (Entry.Part.PartClass != nullptr)
+
+	if (ensure(OwnerComponent) && !OwnerComponent->IsNetMode(NM_DedicatedServer))
 	{
-		UWorld* World = OwnerComponent->GetWorld();
-
-		if (USceneComponent* ComponentToAttachTo = OwnerComponent->GetSceneComponentToAttachTo())
+		if (Entry.Part.PartClass != nullptr)
 		{
-			//지금 사용은 안 함
-// 			const FTransform SpawnTransform = ComponentToAttachTo->GetSocketTransform(Entry.Part.SocketName);
+			UWorld* World = OwnerComponent->GetWorld();
 
-			UChildActorComponent* PartComponent = NewObject<UChildActorComponent>(OwnerComponent->GetOwner());
-			PartComponent->SetupAttachment(ComponentToAttachTo, Entry.Part.SocketName);
-			PartComponent->SetChildActorClass(Entry.Part.PartClass);
-
-			//Render World에 적용시킨다
-			PartComponent->RegisterComponent();
-
-			if (AActor* SpawnedActor = PartComponent->GetChildActor())
+			if (USceneComponent* ComponentToAttachTo = OwnerComponent->GetSceneComponentToAttachTo())
 			{
-				if (USceneComponent* SpawnedRootComponent = SpawnedActor->GetRootComponent())
-				{
-					// remind : Tick이 도는 순서를 정하는 구간이다. 부모 틱이 먼저 돌 수 있도록 보장해준다.
-					// RootComponent -> CharactarPart의 순서를 지정하는 것
-					SpawnedRootComponent->AddTickPrerequisiteComponent(ComponentToAttachTo);
-				}
-			}
+				//지금 사용은 안 함
+	// 			const FTransform SpawnTransform = ComponentToAttachTo->GetSocketTransform(Entry.Part.SocketName);
 
-			Entry.SpawnedComponent = PartComponent;
-			bCreatedAnyActor = true;
+				UChildActorComponent* PartComponent = NewObject<UChildActorComponent>(OwnerComponent->GetOwner());
+				PartComponent->SetupAttachment(ComponentToAttachTo, Entry.Part.SocketName);
+				PartComponent->SetChildActorClass(Entry.Part.PartClass);
+
+				//Render World에 적용시킨다
+				PartComponent->RegisterComponent();
+
+				if (AActor* SpawnedActor = PartComponent->GetChildActor())
+				{
+					if (USceneComponent* SpawnedRootComponent = SpawnedActor->GetRootComponent())
+					{
+						// remind : Tick이 도는 순서를 정하는 구간이다. 부모 틱이 먼저 돌 수 있도록 보장해준다.
+						// RootComponent -> CharactarPart의 순서를 지정하는 것
+						SpawnedRootComponent->AddTickPrerequisiteComponent(ComponentToAttachTo);
+					}
+				}
+
+				Entry.SpawnedComponent = PartComponent;
+				bCreatedAnyActor = true;
+			}
 		}
 	}
 
@@ -103,13 +158,18 @@ void FPMCharacterPartList::RemoveEntry(FPMCharacterPartHandle Handle)
 	}
 }
 
-void FPMCharacterPartList::DestroyActorForEntry(FPMAppliedCharacterPartEntry& Entry)
+bool FPMCharacterPartList::DestroyActorForEntry(FPMAppliedCharacterPartEntry& Entry)
 {
+	bool bDestroyedAnyActors = false;
+
 	if (Entry.SpawnedComponent)
 	{
 		Entry.SpawnedComponent->DestroyComponent();
 		Entry.SpawnedComponent = nullptr;
+		bDestroyedAnyActors = true;
 	}
+
+	return bDestroyedAnyActors;
 }
 
 FGameplayTagContainer FPMCharacterPartList::CollectCombinedTags() const
@@ -224,3 +284,4 @@ FGameplayTagContainer UPMPawnComponent_CharacterParts::GetCombinedTags(FGameplay
 
 	return Result;
 }
+
