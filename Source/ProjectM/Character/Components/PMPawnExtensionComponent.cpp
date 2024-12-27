@@ -4,6 +4,7 @@
 #include "GameFramework/Controller.h"
 #include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Character/PMCharacterBase.h"
 
 const FName UPMPawnExtensionComponent::NAME_ActorFeatureName{"PawnExtension"};
 
@@ -34,22 +35,42 @@ void UPMPawnExtensionComponent::InitializeAbilitySystem(UPMAbilitySystemComponen
 
 	if (AbilitySystemComponent)
 	{
-		UnInitializeAbilitySystem();
+		UninitializeAbilitySystem();
 	}
 
 	APawn* Pawn = GetPawnChecked<APawn>();
+	if (Pawn->HasAuthority())
+	{
+		MCHAE_LOG("AUTH");
+	}
 	AActor* ExistingAvatar = InAbilitySystemComponent->GetAvatarActor();
-	check(!ExistingAvatar);
+	if ((ExistingAvatar != nullptr) && (ExistingAvatar != Pawn))
+	{
+		// There is already a pawn acting as the ASC's avatar, so we need to kick it out
+		// This can happen on clients if they're lagged: their new pawn is spawned + possessed before the dead one is removed
+		ensure(!ExistingAvatar->HasAuthority());
+
+		if (UPMPawnExtensionComponent* OtherExtensionComponent = FindPawnExtensionComponent(ExistingAvatar))
+		{
+			OtherExtensionComponent->UninitializeAbilitySystem();
+		}
+	}
 
 	AbilitySystemComponent = InAbilitySystemComponent;
 	AbilitySystemComponent->InitAbilityActorInfo(InOwnerActor, Pawn);
 
 	// 어빌리티 준비 완료됐다고 호출
 	OnAbilitySystemInitialized.Broadcast();
-	OnInitAsc_Delegate.Broadcast();
+
+	#pragma NOTE("임시. 장비 완전 구현되고나면 제거")
+	APMCharacterBase* OwnerCharacter = Cast<APMCharacterBase>(Pawn);
+	if (OwnerCharacter)
+	{
+		OwnerCharacter->Test_OnInitASC();
+	}
 }
 
-void UPMPawnExtensionComponent::UnInitializeAbilitySystem()
+void UPMPawnExtensionComponent::UninitializeAbilitySystem()
 {
 	if (!AbilitySystemComponent)
 	{
@@ -58,6 +79,16 @@ void UPMPawnExtensionComponent::UnInitializeAbilitySystem()
 
 	if (AbilitySystemComponent->GetAvatarActor() == GetOwner())
 	{
+		if (AbilitySystemComponent->GetOwnerActor() != nullptr)
+		{
+			AbilitySystemComponent->SetAvatarActor(nullptr);
+		}
+		else
+		{
+			// If the ASC doesn't have a valid owner, we need to clear *all* actor info, not just the avatar pairing
+			AbilitySystemComponent->ClearActorInfo();
+		}
+
 		OnAbilitySystemUninitialized.Broadcast();
 	}
 

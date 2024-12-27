@@ -22,6 +22,8 @@ APMCharacterBase::APMCharacterBase()
 	CameraComponent->SetRelativeLocation(FVector(-300.f, 0.f, 75.f));
 
 	HealthComponent = CreateDefaultSubobject<UPMHealthComponent>(TEXT("HealthComponent"));
+
+	NetCullDistanceSquared = 900000000.0f;
 }
 
 void APMCharacterBase::Test_ActivateWidget(const FGameplayTag& RegisterTag, const FGameplayTag& WidgetTag)

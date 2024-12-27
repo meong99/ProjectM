@@ -5,10 +5,18 @@
 #include "GameFeaturesSubsystem.h"
 #include "GameFeatureAction.h"
 #include "PMExperienceActionSet.h"
+#include "Net/UnrealNetwork.h"
 
 UPMExperienceManagerComponent::UPMExperienceManagerComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	SetIsReplicatedByDefault(true);
+}
+
+void UPMExperienceManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, CurrentExperience);
 }
 
 void UPMExperienceManagerComponent::SetCurrentExperience(FPrimaryAssetId ExperienceId)
@@ -193,6 +201,11 @@ void UPMExperienceManagerComponent::OnExperienceFullLoadCompleted()
 	LoadState = EPMExperienceLoadState::Loaded;
 	OnExperienceLoaded.Broadcast(CurrentExperience);
 	OnExperienceLoaded.Clear();
+}
+
+void UPMExperienceManagerComponent::OnRep_CurrentExperience()
+{
+	StartExperienceLoad();
 }
 
 const UPMExperienceDefinition* UPMExperienceManagerComponent::GetCurrentExperienceChecked() const

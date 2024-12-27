@@ -39,6 +39,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Test_ActivateWidget(const FGameplayTag& RegisterTag, const FGameplayTag& WidgetTag);
 
+	UFUNCTION(BlueprintImplementableEvent, BlueprintAuthorityOnly)
+	void Test_OnInitASC();
 /*
 * Member Variables
 */

@@ -181,13 +181,17 @@ void APMGameModeBase::HandleMatchAssignmentIfNotExpectingOne()
 
 void APMGameModeBase::OnMatchAssignmentGiven(const FPrimaryAssetId& ExperienceId)
 {
-	check(ExperienceId.IsValid());
-	check(GameState);
+	if (ExperienceId.IsValid() && GameState)
+	{
+		UPMExperienceManagerComponent* ExperienceManagerComp = GameState->FindComponentByClass<UPMExperienceManagerComponent>();
+		check(ExperienceManagerComp);
 
-	UPMExperienceManagerComponent* ExperienceManagerComp = GameState->FindComponentByClass<UPMExperienceManagerComponent>();
-	check(ExperienceManagerComp);
-
-	ExperienceManagerComp->SetCurrentExperience(ExperienceId);
+		ExperienceManagerComp->SetCurrentExperience(ExperienceId);
+	}
+	else
+	{
+		MCHAE_ERROR("Failed to identify experience, loading screen will stay up forever");
+	}
 }
 
 void APMGameModeBase::OnExperienceLoaded(const UPMExperienceDefinition* CurrentExperience)

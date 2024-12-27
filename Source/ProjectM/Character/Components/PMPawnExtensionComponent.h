@@ -7,8 +7,6 @@
 class UPMPawnData;
 class UPMAbilitySystemComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInitAsc);
-
 /*
 * GameFeature시스템으로 추가하는 모든 컴포넌트의 초기화 과정을 담당한다.
 * 이 컴포넌트가 최상위 계층에서 초기화를 담당하고, 초기화가 진행될때마다 하위 컴포넌트들에게 뿌리는 형태로 진행된다.
@@ -45,7 +43,7 @@ private:
 * Member Functions
 */
 public:
-	static UPMPawnExtensionComponent* FindPawnExtensionComponent(const APawn* Actor)
+	static UPMPawnExtensionComponent* FindPawnExtensionComponent(const AActor* Actor)
 	{
 		return IsValid(Actor) ? Actor->FindComponentByClass<UPMPawnExtensionComponent>() : nullptr;
 	}
@@ -56,7 +54,7 @@ public:
 	void OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate Delegate);
 
 	void InitializeAbilitySystem(UPMAbilitySystemComponent* InAbilitySystemComponent, AActor* InOwnerActor);
-	void UnInitializeAbilitySystem();
+	void UninitializeAbilitySystem();
 
 	template <class T>
 	const T*					GetPawnData() const { return Cast<T>(PawnData); }
@@ -72,9 +70,6 @@ private:
 */
 public:
 	static const FName NAME_ActorFeatureName;
-
-	UPROPERTY(BlueprintAssignable)
-	FOnInitAsc OnInitAsc_Delegate;
 
 private:
 	UPROPERTY(EditInstanceOnly, ReplicatedUsing = OnRep_PawnData, Category = "ProjectM | Pawn")

@@ -53,6 +53,9 @@ private:
 	void OnGameFeaturePluginLoadComplete(const UE::GameFeatures::FResult& Result);
 
 	void OnExperienceFullLoadCompleted();
+
+	UFUNCTION()
+	void OnRep_CurrentExperience();
 /*
 * Member Variables
 */
@@ -60,7 +63,7 @@ public:
 	FOnExperienceLoaded OnExperienceLoaded;
 
 private:
-	UPROPERTY()
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentExperience)
 	TObjectPtr<const UPMExperienceDefinition> CurrentExperience;
 
 	EPMExperienceLoadState LoadState = EPMExperienceLoadState::Unloaded;
