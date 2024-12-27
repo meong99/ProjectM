@@ -46,6 +46,7 @@ void UPMPawnExtensionComponent::InitializeAbilitySystem(UPMAbilitySystemComponen
 
 	// 어빌리티 준비 완료됐다고 호출
 	OnAbilitySystemInitialized.Broadcast();
+	OnInitAsc_Delegate.Broadcast();
 }
 
 void UPMPawnExtensionComponent::UnInitializeAbilitySystem()
@@ -226,8 +227,9 @@ void UPMPawnExtensionComponent::SetPawnData(const UPMPawnData* InPawnData)
 
 	PawnData = InPawnData;
 
-	// 얘는 초기화 진행이 안됨
-// 	CheckDefaultInitialization();
+	Pawn->ForceNetUpdate();
+
+	OnRep_PawnData();
 }
 
 void UPMPawnExtensionComponent::OnRep_PawnData()

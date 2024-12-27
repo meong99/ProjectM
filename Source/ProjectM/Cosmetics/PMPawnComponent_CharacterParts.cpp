@@ -153,7 +153,17 @@ void FPMCharacterPartList::RemoveEntry(FPMCharacterPartHandle Handle)
 
 		if (Entry.PartHandle == Handle.PartHandle)
 		{
-			DestroyActorForEntry(Entry);
+			const bool bDestroyedActor = DestroyActorForEntry(Entry);
+
+			EntryIter.RemoveCurrent();
+			MarkArrayDirty();
+
+			if (bDestroyedActor && ensure(OwnerComponent))
+			{
+				OwnerComponent->BroadcastChanged();
+			}
+
+			break;
 		}
 	}
 }

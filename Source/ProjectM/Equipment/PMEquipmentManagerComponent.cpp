@@ -4,6 +4,8 @@
 #include "PMEquipmentDefinition.h"
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystem/PMAbilitySystemComponent.h"
+#include "Net/UnrealNetwork.h"
+#include "Engine/ActorChannel.h"
 
 FPMEquipmentList::FPMEquipmentList()
 {
@@ -21,6 +23,39 @@ FPMEquipmentList::FPMEquipmentList(UActorComponent* InOwnerComponent)
 	{
 		MCHAE_FETAL("OwnerComponent must be set!!");
 	}
+}
+
+void FPMEquipmentList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
+{
+	for (int32 Index : RemovedIndices)
+	{
+		const FPMAppliedEquipmentEntry& Entry = Entries[Index];
+		if (Entry.Instance != nullptr)
+		{
+			Entry.Instance->OnUnequipped();
+		}
+	}
+}
+
+void FPMEquipmentList::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
+{
+	for (int32 Index : AddedIndices)
+	{
+		const FPMAppliedEquipmentEntry& Entry = Entries[Index];
+		if (Entry.Instance != nullptr)
+		{
+			Entry.Instance->OnEquipped();
+		}
+	}
+}
+
+void FPMEquipmentList::PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize)
+{
+// 	for (int32 Index : ChangedIndices)
+// 	{
+// 		const FGameplayTagStack& Stack = Stacks[Index];
+// 		TagToCountMap[Stack.Tag] = Stack.StackCount;
+// 	}
 }
 
 /*
@@ -46,9 +81,16 @@ UPMEquipmentInstance* FPMEquipmentList::AddEntry(TSubclassOf<UPMEquipmentDefinit
 	NewEntry.Instance = NewObject<UPMEquipmentInstance>(OwnerComponent->GetOwner(), InstanceType);
 	Result = NewEntry.Instance;
 
+	MarkItemDirty(NewEntry);
+
 	// 장비에서 보유중인 어빌리티 부여
 	UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
-	check(ASC);
+	if (ASC == nullptr)
+	{
+		MCHAE_ERROR("ASC is null");
+		return nullptr;
+	}
+
 	for (const UPMAbilitySet* AbilitySet : EquipmentCDO->AbilitySetsToGrant)
 	{
 		AbilitySet->GiveToAbilitySystem(ASC, &NewEntry.GrantedHandles, Result);
@@ -72,6 +114,7 @@ void FPMEquipmentList::RemoveEntry(UPMEquipmentInstance* Instance)
 
 			Instance->DestroyEquipmentActors();
 			EntryIt.RemoveCurrent();
+			MarkArrayDirty();
 		}
 	}
 }
@@ -94,6 +137,49 @@ UPMEquipmentManagerComponent::UPMEquipmentManagerComponent(const FObjectInitiali
 	SetIsReplicatedByDefault(true);
 }
 
+// bool UPMEquipmentManagerComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+// {
+// 	bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+// 
+// 	for (FPMAppliedEquipmentEntry& Entry : EquipmentList.Entries)
+// 	{
+// 		UPMEquipmentInstance* Instance = Entry.Instance;
+// 
+// 		if (IsValid(Instance))
+// 		{
+// 			WroteSomething |= Channel->ReplicateSubobject(Instance, *Bunch, *RepFlags);
+// 		}
+// 	}
+// 
+// 	return WroteSomething;
+// }
+// 
+// void UPMEquipmentManagerComponent::ReadyForReplication()
+// {
+// 	Super::ReadyForReplication();
+// 
+// 		// Register existing LyraEquipmentInstances
+// 	if (IsUsingRegisteredSubObjectList())
+// 	{
+// 		for (const FPMAppliedEquipmentEntry& Entry : EquipmentList.Entries)
+// 		{
+// 			UPMEquipmentInstance* Instance = Entry.Instance;
+// 
+// 			if (IsValid(Instance))
+// 			{
+// 				AddReplicatedSubObject(Instance);
+// 			}
+// 		}
+// 	}
+// }
+
+void UPMEquipmentManagerComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, EquipmentList);
+}
+
 UPMEquipmentInstance* UPMEquipmentManagerComponent::EquipItem(TSubclassOf<UPMEquipmentDefinition> EquipmentDefinition)
 {
 	UPMEquipmentInstance* Result = nullptr;
@@ -103,6 +189,11 @@ UPMEquipmentInstance* UPMEquipmentManagerComponent::EquipItem(TSubclassOf<UPMEqu
 		if (Result)
 		{
 			Result->OnEquipped();
+
+// 			if (IsUsingRegisteredSubObjectList() && IsReadyForReplication())
+// 			{
+// 				AddReplicatedSubObject(Result);
+// 			}
 		}
 	}
 
@@ -113,6 +204,11 @@ void UPMEquipmentManagerComponent::UnequipItem(UPMEquipmentInstance* ItemInstanc
 {
 	if (ItemInstance)
 	{
+// 		if (IsUsingRegisteredSubObjectList())
+// 		{
+// 			RemoveReplicatedSubObject(ItemInstance);
+// 		}
+
 		ItemInstance->OnUnequipped();
 
 		EquipmentList.RemoveEntry(ItemInstance);
