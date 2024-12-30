@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameplayTagContainer.h"
+#include "Net/Serialization/FastArraySerializer.h"
 #include "PMGameplayTagStack.generated.h"
 
 /**
@@ -8,7 +9,7 @@
  * : for example, Ammo is representative example for GameplayTagStack
  */
 USTRUCT(BlueprintType)
-struct FPMGameplayTagStack
+struct FPMGameplayTagStack : public FFastArraySerializerItem
 {
 	GENERATED_BODY()
 
@@ -27,7 +28,7 @@ struct FPMGameplayTagStack
 
 /** container of PMGameplayTagStack */
 USTRUCT(BlueprintType)
-struct FPMGameplayTagStackContainer
+struct FPMGameplayTagStackContainer : public FFastArraySerializer
 {
 	GENERATED_BODY()
 
@@ -49,6 +50,17 @@ struct FPMGameplayTagStackContainer
 		return TagToCountMap.Contains(Tag);
 	}
 
+	//~FFastArraySerializer contract
+	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
+	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
+	void PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize);
+	//~End of FFastArraySerializer contract
+
+	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms)
+	{
+		return FFastArraySerializer::FastArrayDeltaSerialize<FPMGameplayTagStack, FPMGameplayTagStackContainer>(Stacks, DeltaParms, *this);
+	}
+
 	/** a list of gameplay tag stacks */
 	UPROPERTY()
 	TArray<FPMGameplayTagStack> Stacks;
@@ -58,4 +70,13 @@ struct FPMGameplayTagStackContainer
 	 * - we also use this LUT to find existance for corresponding gameplay tag
 	 */
 	TMap<FGameplayTag, int32> TagToCountMap;
+};
+
+template<>
+struct TStructOpsTypeTraits<FPMGameplayTagStackContainer> : public TStructOpsTypeTraitsBase2<FPMGameplayTagStackContainer>
+{
+	enum
+	{
+		WithNetDeltaSerializer = true,
+	};
 };

@@ -28,7 +28,8 @@ bool UPMAbilityCost_ItemTagStack::CheckCost(const UPMGameplayAbility* Ability, c
 			// - the magic pistol lv5 costs four bullets, give more strong one shot
 			const float NumStacksReal = Quantity.GetValueAtLevel(AbilityLevel);
 			const int32 NumStacks = FMath::TruncToInt(NumStacksReal);
-			const bool bCanApplyCost = ItemInstance->GetStatTagStackCount(Tag) >= NumStacks;
+			const int32 TagStacks = ItemInstance->GetStatTagStackCount(Tag);
+			const bool bCanApplyCost = TagStacks >= NumStacks;
 
 			// when we cannot be afford to give a shot, leave the failure tag in OptionalRelevantTags:
 			if (!bCanApplyCost && OptionalRelevantTags && FailureTag.IsValid())

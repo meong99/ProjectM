@@ -22,6 +22,7 @@ static FAutoConsoleVariableRef CVarMyBoolVar(
 
 UPMGameplayAbility_RangedWeapon::UPMGameplayAbility_RangedWeapon()
 {
+	ReplicationPolicy = EGameplayAbilityReplicationPolicy::ReplicateYes;
 }
 
 void UPMGameplayAbility_RangedWeapon::StartRangedWeaponTargeting()
