@@ -64,12 +64,12 @@ void UAsyncAction_ExperienceReady::Step2_ListenToExperienceLoading(AGameStateBas
 		UWorld* World = GameState->GetWorld();
 		check(World);
 
+		// Mesh장착은 Controller에서 OnPossess에 Binding된 Delegate에서 호출되는데 Experience가 Load되는 타이밍과는 정확하게 맞지 않을 수 있다.
+		// 그래서 Mesh가 완전히 장착된 후에 아이템이 장착되도록 하기 위해서 다음 프레임에 동작하도록 한다.
 		World->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &ThisClass::Step4_BroadcastReady));
 	}
 	else
 	{
-		// Mesh장착은 Controller에서 OnPossess에 Binding된 Delegate에서 호출되는데 Experience가 Load되는 타이밍과는 정확하게 맞지 않을 수 있다.
-		// 그래서 Mesh가 완전히 장착된 후에 아이템이 장착되도록 하기 위해서 다음 프레임에 동작하도록 한다.
 		ExperienceManagerComponent->CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::Step3_HandleExperienceLoaded));
 	}
 }

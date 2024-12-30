@@ -3,12 +3,21 @@
 #include "Inventory/Fragments/PMInventoryFragment_EquippableItem.h"
 #include "PMEquipmentInstance.h"
 #include "Inventory/PMInventoryItemInstance.h"
+#include "Net/UnrealNetwork.h"
 
 #pragma TODO("퀵바를 RPG스럽게 다룰 수 있는지 확인해보고, 추후 기능들을 추가할 때 한 번 더 봐보자")
 
 UPMQuickBarComponent::UPMQuickBarComponent(const FObjectInitializer& ObjectInitializer /*= FObjectInitializer::Get()*/) : Super(ObjectInitializer)
 {
 	SetIsReplicatedByDefault(true);
+}
+
+void UPMQuickBarComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, Slots);
+	DOREPLIFETIME(ThisClass, ActiveSlotIndex);
 }
 
 void UPMQuickBarComponent::BeginPlay()
@@ -90,4 +99,12 @@ void UPMQuickBarComponent::EquipItemInSlot()
 			}
 		}
 	}
+}
+
+void UPMQuickBarComponent::OnRep_Slots()
+{
+}
+
+void UPMQuickBarComponent::OnRep_ActiveSlotIndex()
+{
 }
