@@ -146,14 +146,54 @@ void UPMGameplayAbility_RangedWeapon::AddAdditionalTraceIgnoreActors(FCollisionQ
 
 void UPMGameplayAbility_RangedWeapon::OnTargetDataReadyCallback(const FGameplayAbilityTargetDataHandle& InData, FGameplayTag ApplicationTag)
 {
-	UAbilitySystemComponent* MyAbilitySystemComponent = CurrentActorInfo->AbilitySystemComponent.Get();
-	check(MyAbilitySystemComponent);
+	UAbilitySystemComponent* MyAbilityComponent = CurrentActorInfo->AbilitySystemComponent.Get();
+	check(MyAbilityComponent);
 
-	if (const FGameplayAbilitySpec* AbilitySpec = MyAbilitySystemComponent->FindAbilitySpecFromHandle(CurrentSpecHandle))
+	if (const FGameplayAbilitySpec* AbilitySpec = MyAbilityComponent->FindAbilitySpecFromHandle(CurrentSpecHandle))
 	{
 		// 현재 Stack에서 InData에서 지금 Local로 Ownership을 가져온다
 		FGameplayAbilityTargetDataHandle LocalTargetDataHandle(MoveTemp(const_cast<FGameplayAbilityTargetDataHandle&>(InData)));
+		FScopedPredictionWindow	ScopedPrediction(MyAbilityComponent);
 
+		const bool bShouldNotifyServer = CurrentActorInfo->IsLocallyControlled() && !CurrentActorInfo->IsNetAuthority();
+		if (bShouldNotifyServer)
+		{
+			MyAbilityComponent->CallServerSetReplicatedTargetData(CurrentSpecHandle, CurrentActivationInfo.GetActivationPredictionKey(), LocalTargetDataHandle, ApplicationTag, MyAbilityComponent->ScopedPredictionKey);
+		}
+
+		const bool bIsTargetDataValid = true;
+
+		bool bProjectileWeapon = false;
+
+#if WITH_SERVER_CODE
+// 		if (!bProjectileWeapon)
+// 		{
+// 			if (AController* Controller = GetControllerFromActorInfo())
+// 			{
+// 				if (Controller->GetLocalRole() == ROLE_Authority)
+// 				{
+// 					// Confirm hit markers
+// 					if (ULyraWeaponStateComponent* WeaponStateComponent = Controller->FindComponentByClass<ULyraWeaponStateComponent>())
+// 					{
+// 						TArray<uint8> HitReplaces;
+// 						for (uint8 i = 0; (i < LocalTargetDataHandle.Num()) && (i < 255); ++i)
+// 						{
+// 							if (FGameplayAbilityTargetData_SingleTargetHit* SingleTargetHit = static_cast<FGameplayAbilityTargetData_SingleTargetHit*>(LocalTargetDataHandle.Get(i)))
+// 							{
+// 								if (SingleTargetHit->bHitReplaced)
+// 								{
+// 									HitReplaces.Add(i);
+// 								}
+// 							}
+// 						}
+// 
+// 						WeaponStateComponent->ClientConfirmTargetData(LocalTargetDataHandle.UniqueId, bIsTargetDataValid, HitReplaces);
+// 					}
+// 
+// 				}
+// 			}
+// 		}
+#endif //WITH_SERVER_CODE
 		// CommitAbility 호출로 GE를 처리한다.
 		if (CommitAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo))
 		{
