@@ -3,9 +3,18 @@
 #include "PMEquipmentDefinition.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/World.h"
+#include "Net/UnrealNetwork.h"
 
 UPMEquipmentInstance::UPMEquipmentInstance(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+}
+
+void UPMEquipmentInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, Instigator);
+	DOREPLIFETIME(ThisClass, SpawnedActors);
 }
 
 APawn* UPMEquipmentInstance::GetPawn() const
@@ -72,4 +81,9 @@ void UPMEquipmentInstance::OnUnequipped()
 {
 #pragma TODO("Native화 필요!")
 	K2_OnUnequipped();
+}
+
+void UPMEquipmentInstance::OnRep_Instigator()
+{
+
 }

@@ -19,6 +19,7 @@ class PROJECTM_API UPMEquipmentInstance : public UObject
 */
 public:
 	UPMEquipmentInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	virtual bool IsSupportedForNetworking() const override { return true; }
 
 /*
 * Member Functions
@@ -49,15 +50,19 @@ public:
 	const TArray<AActor*>&	GetSpawnedActors() const { return SpawnedActors; }
 
 	void SetInstigator(UObject* InInstigator) { Instigator = InInstigator; }
+
+private:
+	UFUNCTION()
+	void OnRep_Instigator();
 /*
 * Member Variables
 */
 private:
 	// 어떤 InventoryItemInstance에 의해 활성화되었는가
-	UPROPERTY()
+	UPROPERTY(ReplicatedUsing = OnRep_Instigator)
 	TObjectPtr<UObject> Instigator;
 
 	// EquipmentDefinition에 따라서 Instancing된 Actor들
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TArray<TObjectPtr<AActor>> SpawnedActors;
 };

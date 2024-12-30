@@ -39,10 +39,6 @@ void UPMPawnExtensionComponent::InitializeAbilitySystem(UPMAbilitySystemComponen
 	}
 
 	APawn* Pawn = GetPawnChecked<APawn>();
-	if (Pawn->HasAuthority())
-	{
-		MCHAE_LOG("AUTH");
-	}
 	AActor* ExistingAvatar = InAbilitySystemComponent->GetAvatarActor();
 	if ((ExistingAvatar != nullptr) && (ExistingAvatar != Pawn))
 	{
@@ -63,10 +59,14 @@ void UPMPawnExtensionComponent::InitializeAbilitySystem(UPMAbilitySystemComponen
 	OnAbilitySystemInitialized.Broadcast();
 
 	#pragma NOTE("임시. 장비 완전 구현되고나면 제거")
-	APMCharacterBase* OwnerCharacter = Cast<APMCharacterBase>(Pawn);
-	if (OwnerCharacter)
+
+	if (Pawn->HasAuthority())
 	{
-		OwnerCharacter->Test_OnInitASC();
+		APMCharacterBase* OwnerCharacter = Cast<APMCharacterBase>(Pawn);
+		if (OwnerCharacter)
+		{
+			OwnerCharacter->Test_OnInitASC();
+		}
 	}
 }
 
@@ -93,6 +93,11 @@ void UPMPawnExtensionComponent::UninitializeAbilitySystem()
 	}
 
 	AbilitySystemComponent = nullptr;
+}
+
+void UPMPawnExtensionComponent::HandleControllerChanged()
+{
+	CheckDefaultInitialization();
 }
 
 void UPMPawnExtensionComponent::OnRegister()
@@ -241,6 +246,11 @@ void UPMPawnExtensionComponent::OnAbilitySystemUninitialized_Register(FSimpleMul
 	{
 		OnAbilitySystemUninitialized.Add(Delegate);
 	}
+}
+
+UPMAbilitySystemComponent* UPMPawnExtensionComponent::GetPMAbilitySystemComponent() const
+{
+	return AbilitySystemComponent.Get();
 }
 
 void UPMPawnExtensionComponent::SetPawnData(const UPMPawnData* InPawnData)

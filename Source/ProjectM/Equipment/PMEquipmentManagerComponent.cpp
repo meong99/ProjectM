@@ -137,41 +137,41 @@ UPMEquipmentManagerComponent::UPMEquipmentManagerComponent(const FObjectInitiali
 	SetIsReplicatedByDefault(true);
 }
 
-// bool UPMEquipmentManagerComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
-// {
-// 	bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
-// 
-// 	for (FPMAppliedEquipmentEntry& Entry : EquipmentList.Entries)
-// 	{
-// 		UPMEquipmentInstance* Instance = Entry.Instance;
-// 
-// 		if (IsValid(Instance))
-// 		{
-// 			WroteSomething |= Channel->ReplicateSubobject(Instance, *Bunch, *RepFlags);
-// 		}
-// 	}
-// 
-// 	return WroteSomething;
-// }
-// 
-// void UPMEquipmentManagerComponent::ReadyForReplication()
-// {
-// 	Super::ReadyForReplication();
-// 
-// 		// Register existing LyraEquipmentInstances
-// 	if (IsUsingRegisteredSubObjectList())
-// 	{
-// 		for (const FPMAppliedEquipmentEntry& Entry : EquipmentList.Entries)
-// 		{
-// 			UPMEquipmentInstance* Instance = Entry.Instance;
-// 
-// 			if (IsValid(Instance))
-// 			{
-// 				AddReplicatedSubObject(Instance);
-// 			}
-// 		}
-// 	}
-// }
+bool UPMEquipmentManagerComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+{
+	bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+
+	for (FPMAppliedEquipmentEntry& Entry : EquipmentList.Entries)
+	{
+		UPMEquipmentInstance* Instance = Entry.Instance;
+
+		if (IsValid(Instance))
+		{
+			WroteSomething |= Channel->ReplicateSubobject(Instance, *Bunch, *RepFlags);
+		}
+	}
+
+	return WroteSomething;
+}
+
+void UPMEquipmentManagerComponent::ReadyForReplication()
+{
+	Super::ReadyForReplication();
+
+		// Register existing LyraEquipmentInstances
+	if (IsUsingRegisteredSubObjectList())
+	{
+		for (const FPMAppliedEquipmentEntry& Entry : EquipmentList.Entries)
+		{
+			UPMEquipmentInstance* Instance = Entry.Instance;
+
+			if (IsValid(Instance))
+			{
+				AddReplicatedSubObject(Instance);
+			}
+		}
+	}
+}
 
 void UPMEquipmentManagerComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
@@ -190,10 +190,10 @@ UPMEquipmentInstance* UPMEquipmentManagerComponent::EquipItem(TSubclassOf<UPMEqu
 		{
 			Result->OnEquipped();
 
-// 			if (IsUsingRegisteredSubObjectList() && IsReadyForReplication())
-// 			{
-// 				AddReplicatedSubObject(Result);
-// 			}
+			if (IsUsingRegisteredSubObjectList() && IsReadyForReplication())
+			{
+				AddReplicatedSubObject(Result);
+			}
 		}
 	}
 
@@ -204,10 +204,10 @@ void UPMEquipmentManagerComponent::UnequipItem(UPMEquipmentInstance* ItemInstanc
 {
 	if (ItemInstance)
 	{
-// 		if (IsUsingRegisteredSubObjectList())
-// 		{
-// 			RemoveReplicatedSubObject(ItemInstance);
-// 		}
+		if (IsUsingRegisteredSubObjectList())
+		{
+			RemoveReplicatedSubObject(ItemInstance);
+		}
 
 		ItemInstance->OnUnequipped();
 

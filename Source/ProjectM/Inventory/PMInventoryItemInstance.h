@@ -22,6 +22,7 @@ class PROJECTM_API UPMInventoryItemInstance : public UObject
 public:
 	UPMInventoryItemInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	virtual bool IsSupportedForNetworking() const override { return true; }
 /*
 * Member Functions
 */
@@ -49,10 +50,10 @@ public:
 * Member Variables
 */
 public:
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TSubclassOf<UPMInventoryItemDefinition> ItemDef;
 
 	/** gameplay-tag stacks for inventory item instance */
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	FPMGameplayTagStackContainer StatTags;
 };

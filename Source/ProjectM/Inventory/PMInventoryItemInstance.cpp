@@ -1,8 +1,17 @@
 #include "PMInventoryItemInstance.h"
 #include "PMInventoryItemDefinition.h"
+#include "Net/UnrealNetwork.h"
 
 UPMInventoryItemInstance::UPMInventoryItemInstance(const FObjectInitializer& ObjectInitializer)
 {
+}
+
+void UPMInventoryItemInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, StatTags);
+	DOREPLIFETIME(ThisClass, ItemDef);
 }
 
 const UPMInventoryItemFragment* UPMInventoryItemInstance::FindFragmentByClass(TSubclassOf<UPMInventoryItemFragment> FragmentClass) const

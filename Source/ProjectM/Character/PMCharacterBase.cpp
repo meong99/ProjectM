@@ -35,6 +35,18 @@ void APMCharacterBase::Test_ActivateWidget(const FGameplayTag& RegisterTag, cons
 	}
 }
 
+void APMCharacterBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	// Dedi에서도 Controller가 존재할 때 초기화 단계를 다시 시작해주는 부분이 필요하다.
+	// Client는 SetupPlayerInputComponent에서 실행
+	if (GetNetMode() == ENetMode::NM_DedicatedServer)
+	{
+		PawnExtComp->HandleControllerChanged();
+	}
+}
+
 void APMCharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);

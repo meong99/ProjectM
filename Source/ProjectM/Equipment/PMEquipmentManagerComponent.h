@@ -79,8 +79,8 @@ class PROJECTM_API UPMEquipmentManagerComponent : public UPawnComponent
 */
 public:
 	UPMEquipmentManagerComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-// 	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
-// 	virtual void ReadyForReplication() override;
+	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+	virtual void ReadyForReplication() override;
 
 /*
 * Member Functions

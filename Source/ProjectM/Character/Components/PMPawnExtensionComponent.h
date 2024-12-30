@@ -56,9 +56,11 @@ public:
 	void InitializeAbilitySystem(UPMAbilitySystemComponent* InAbilitySystemComponent, AActor* InOwnerActor);
 	void UninitializeAbilitySystem();
 
+	void HandleControllerChanged();
+
 	template <class T>
 	const T*					GetPawnData() const { return Cast<T>(PawnData); }
-	UPMAbilitySystemComponent*	GetPMAbilitySystemComponent() const { return AbilitySystemComponent.Get(); }
+	UPMAbilitySystemComponent*	GetPMAbilitySystemComponent() const;
 
 	void SetPawnData(const UPMPawnData* InPawnData);
 
