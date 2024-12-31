@@ -227,10 +227,10 @@ void UMViewportClient::ApplyWidgetLayout()
 		return;
 	}
 
-	UMWidgetRegister* WidgetRegister = GetWidgetRegister(FPMGameplayTags::Get().UI_Registry_HUD_Layout.RequestDirectParent());
+	UMWidgetRegister* WidgetRegister = GetWidgetRegister(FPMGameplayTags::Get().UI_Registry_Layout_DefaultLayout.RequestDirectParent());
 	check(WidgetRegister);
 
-	WidgetLayout = Cast<UMWidgetLayout>(GetWidgetInstance(FPMGameplayTags::Get().UI_Registry_HUD_Layout));
+	WidgetLayout = Cast<UMWidgetLayout>(GetWidgetInstance(FPMGameplayTags::Get().UI_Registry_Layout_DefaultLayout));
 	if (WidgetLayout == nullptr)
 	{
 		MCHAE_WARNING("WidgetLayout is null");

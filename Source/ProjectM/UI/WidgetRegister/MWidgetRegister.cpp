@@ -35,9 +35,10 @@ TArray<FFullLoadedWidgetData> UMWidgetRegister::LoadAllWidgetAndGetData()
 
 TSubclassOf<UMWidgetBase> UMWidgetRegister::GetWidgetClass_Impl(const TSoftClassPtr<UMWidgetBase>& SoftClass) const
 {
+#pragma TODO("이거 자동으로 load되도록 해야되는데...안되네 갑자기")
 	if (SoftClass.IsValid() == false)
 	{
-		MCHAE_ERROR("It's only setted key! check widget soft class in widget register!");
+		MCHAE_WARNING("It's only setted key! check widget soft class in widget register!");
 	}
 
 	TSubclassOf<UMWidgetBase> WidgetClass = SoftClass.Get();

@@ -33,7 +33,7 @@ struct FPMGameplayTags
 	*/
 	FGameplayTag UI_Registry_InputTag;
 	FGameplayTag UI_Registry_InputTag_Inventory;
-	FGameplayTag UI_Registry_HUD_Layout;
+	FGameplayTag UI_Registry_Layout_DefaultLayout;
 	FGameplayTag UI_Registry_HUD_MainHUD;
 
 private:
