@@ -29,6 +29,14 @@ class PROJECTM_API UPMGameplayAbility_RangedWeapon : public UPMGameplayAbility_F
 */
 public:
 	UPMGameplayAbility_RangedWeapon();
+
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+
+	/*
+* Member Functions
+*/
+public:
 	struct FRangedWeaponFiringInput
 	{
 		FVector StartTrace;
@@ -45,10 +53,7 @@ public:
 			, AimDir(ForceInitToZero)
 		{}
 	};
-/*
-* Member Functions
-*/
-public:
+
 protected:
 	UFUNCTION(BlueprintCallable)
 	void StartRangedWeaponTargeting();
@@ -69,9 +74,12 @@ protected:
 
 	UPMRangedWeaponInstance* GetWeaponInstance();
 
-/*
+	/*
 * Member Variables
 */
 public:
 	static bool bShowDebug_Console;
+
+protected:
+	FDelegateHandle OnTargetDataReadyCallbackDelegateHandle;
 };

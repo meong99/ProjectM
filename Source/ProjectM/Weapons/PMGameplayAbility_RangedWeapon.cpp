@@ -25,6 +25,38 @@ UPMGameplayAbility_RangedWeapon::UPMGameplayAbility_RangedWeapon()
 	ReplicationPolicy = EGameplayAbilityReplicationPolicy::ReplicateYes;
 }
 
+void UPMGameplayAbility_RangedWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+{
+	// Bind target data callback
+	UAbilitySystemComponent* MyAbilityComponent = CurrentActorInfo->AbilitySystemComponent.Get();
+	check(MyAbilityComponent);
+
+	OnTargetDataReadyCallbackDelegateHandle = MyAbilityComponent->AbilityTargetDataSetDelegate(CurrentSpecHandle, CurrentActivationInfo.GetActivationPredictionKey()).AddUObject(this, &ThisClass::OnTargetDataReadyCallback);
+
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+}
+
+void UPMGameplayAbility_RangedWeapon::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	if (IsEndAbilityValid(Handle, ActorInfo))
+	{
+		if (ScopeLockCount > 0)
+		{
+			WaitingToExecute.Add(FPostLockDelegate::CreateUObject(this, &ThisClass::EndAbility, Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled));
+			return;
+		}
+
+		UAbilitySystemComponent* MyAbilityComponent = CurrentActorInfo->AbilitySystemComponent.Get();
+		check(MyAbilityComponent);
+
+		// When ability ends, consume target data and remove delegate
+		MyAbilityComponent->AbilityTargetDataSetDelegate(CurrentSpecHandle, CurrentActivationInfo.GetActivationPredictionKey()).Remove(OnTargetDataReadyCallbackDelegateHandle);
+		MyAbilityComponent->ConsumeClientReplicatedTargetData(CurrentSpecHandle, CurrentActivationInfo.GetActivationPredictionKey());
+
+		Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	}
+}
+
 void UPMGameplayAbility_RangedWeapon::StartRangedWeaponTargeting()
 {
 	check(CurrentActorInfo);
@@ -153,7 +185,6 @@ void UPMGameplayAbility_RangedWeapon::OnTargetDataReadyCallback(const FGameplayA
 	{
 		// 현재 Stack에서 InData에서 지금 Local로 Ownership을 가져온다
 		FGameplayAbilityTargetDataHandle LocalTargetDataHandle(MoveTemp(const_cast<FGameplayAbilityTargetDataHandle&>(InData)));
-		FScopedPredictionWindow	ScopedPrediction(MyAbilityComponent);
 
 		const bool bShouldNotifyServer = CurrentActorInfo->IsLocallyControlled() && !CurrentActorInfo->IsNetAuthority();
 		if (bShouldNotifyServer)
@@ -165,35 +196,6 @@ void UPMGameplayAbility_RangedWeapon::OnTargetDataReadyCallback(const FGameplayA
 
 		bool bProjectileWeapon = false;
 
-#if WITH_SERVER_CODE
-// 		if (!bProjectileWeapon)
-// 		{
-// 			if (AController* Controller = GetControllerFromActorInfo())
-// 			{
-// 				if (Controller->GetLocalRole() == ROLE_Authority)
-// 				{
-// 					// Confirm hit markers
-// 					if (ULyraWeaponStateComponent* WeaponStateComponent = Controller->FindComponentByClass<ULyraWeaponStateComponent>())
-// 					{
-// 						TArray<uint8> HitReplaces;
-// 						for (uint8 i = 0; (i < LocalTargetDataHandle.Num()) && (i < 255); ++i)
-// 						{
-// 							if (FGameplayAbilityTargetData_SingleTargetHit* SingleTargetHit = static_cast<FGameplayAbilityTargetData_SingleTargetHit*>(LocalTargetDataHandle.Get(i)))
-// 							{
-// 								if (SingleTargetHit->bHitReplaced)
-// 								{
-// 									HitReplaces.Add(i);
-// 								}
-// 							}
-// 						}
-// 
-// 						WeaponStateComponent->ClientConfirmTargetData(LocalTargetDataHandle.UniqueId, bIsTargetDataValid, HitReplaces);
-// 					}
-// 
-// 				}
-// 			}
-// 		}
-#endif //WITH_SERVER_CODE
 		// CommitAbility 호출로 GE를 처리한다.
 		if (CommitAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo))
 		{
@@ -205,6 +207,8 @@ void UPMGameplayAbility_RangedWeapon::OnTargetDataReadyCallback(const FGameplayA
 			K2_EndAbility();
 		}
 	}
+
+	MyAbilityComponent->ConsumeClientReplicatedTargetData(CurrentSpecHandle, CurrentActivationInfo.GetActivationPredictionKey());
 }
 
 FTransform UPMGameplayAbility_RangedWeapon::GetTargetingTransform(APawn* SourcePawn, EPMAbilityTargetingSource Source)

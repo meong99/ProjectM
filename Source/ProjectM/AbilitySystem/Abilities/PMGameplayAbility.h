@@ -29,6 +29,7 @@ class PROJECTM_API UPMGameplayAbility : public UGameplayAbility
 */
 public:
 	UPMGameplayAbility();
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 protected:
 
