@@ -1,118 +1,8 @@
 #include "PMInventoryManagerComponent.h"
-#include "Engine/Engine.h"
-#include "GameFramework/Actor.h"
 #include "PMInventoryItemInstance.h"
 #include "PMInventoryItemDefinition.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
-
-/*
-* FPMInventoryList -------------------------------
-*/
-FPMInventoryList::FPMInventoryList()
-{
-	if (GEngine && GEngine->GetWorld() && GEngine->GetWorld()->GetGameInstance()
-			&& IsValid(OwnerComponent) == false)
-	{
-		MCHAE_FETAL("OwnerComponent must be set!!");
-	}
-}
-
-FPMInventoryList::FPMInventoryList(UActorComponent* InOwnerComponent)
-	: OwnerComponent(InOwnerComponent)
-{
-	if (IsValid(OwnerComponent) == false)
-	{
-		MCHAE_FETAL("OwnerComponent must be set!!");
-	}
-}
-
-void FPMInventoryList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
-{
-// 	for (int32 Index : RemovedIndices)
-// 	{
-// 		FPMInventoryEntry& Stack = Entries[Index];
-// 		BroadcastChangeMessage(Stack, /*OldCount=*/ Stack.StackCount, /*NewCount=*/ 0);
-// 		Stack.LastObservedCount = 0;
-// 	}
-}
-
-void FPMInventoryList::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
-{
-// 	for (int32 Index : AddedIndices)
-// 	{
-// 		FPMInventoryEntry& Stack = Entries[Index];
-// 		BroadcastChangeMessage(Stack, /*OldCount=*/ 0, /*NewCount=*/ Stack.StackCount);
-// 		Stack.LastObservedCount = Stack.StackCount;
-// 	}
-}
-
-void FPMInventoryList::PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize)
-{
-// 	for (int32 Index : ChangedIndices)
-// 	{
-// 		FPMInventoryEntry& Stack = Entries[Index];
-// 		check(Stack.LastObservedCount != INDEX_NONE);
-// 		BroadcastChangeMessage(Stack, /*OldCount=*/ Stack.LastObservedCount, /*NewCount=*/ Stack.StackCount);
-// 		Stack.LastObservedCount = Stack.StackCount;
-// 	}
-}
-
-void FPMInventoryList::BroadcastChangeMessage(FPMInventoryEntry& Entry, int32 OldCount, int32 NewCount)
-{
-	FMInventoryChangeMessage Message;
-	Message.InventoryOwner = OwnerComponent;
-	Message.Instance = Entry.Instance;
-	Message.NewCount = NewCount;
-	Message.Delta = NewCount - OldCount;
-
-// 	UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(OwnerComponent->GetWorld());
-// 	MessageSystem.BroadcastMessage(TAG_Lyra_Inventory_Message_StackChanged, Message);
-}
-
-UPMInventoryItemInstance* FPMInventoryList::AddEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef)
-{
-	UPMInventoryItemInstance* Result = nullptr;
-	check(ItemDef);
-	check(OwnerComponent);
-
-	AActor* OwningActor = OwnerComponent->GetOwner();
-	check(OwningActor->HasAuthority());
-
-	FPMInventoryEntry& NewEntry = Entries.AddDefaulted_GetRef();
-	NewEntry.Instance = NewObject<UPMInventoryItemInstance>(OwningActor);
-	NewEntry.Instance->ItemDef = ItemDef;
-
-	for (const UPMInventoryItemFragment* Fragment : GetDefault<UPMInventoryItemDefinition>(ItemDef)->GetFragments())
-	{
-		if (Fragment)
-		{
-			Fragment->OnInstanceCreated(NewEntry.Instance);
-		}
-	}
-
-	Result = NewEntry.Instance;
-	MarkItemDirty(NewEntry);
-	return Result;
-}
-
-void FPMInventoryList::AddEntry(UPMInventoryItemInstance* Instance)
-{
-	unimplemented();
-}
-
-void FPMInventoryList::RemoveEntry(UPMInventoryItemInstance* Instance)
-{
-	for (auto EntryIt = Entries.CreateIterator(); EntryIt; ++EntryIt)
-	{
-		FPMInventoryEntry& Entry = *EntryIt;
-		if (Entry.Instance == Instance)
-		{
-			EntryIt.RemoveCurrent();
-			MarkArrayDirty();
-		}
-	}
-}
 
 /*
 * UPMInventoryManagerComponent -------------------------------
@@ -122,6 +12,26 @@ UPMInventoryManagerComponent::UPMInventoryManagerComponent(const FObjectInitiali
 	, InventoryList(this)
 {
 	SetIsReplicatedByDefault(true);
+	bWantsInitializeComponent = true;
+}
+
+void UPMInventoryManagerComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+
+	InitInventory();
+}
+
+void UPMInventoryManagerComponent::CallOrRegister_FinishInventoryInit(FSimpleMulticastDelegate::FDelegate&& Delegate)
+{
+	if (bIsInitInventory)
+	{
+		Delegate.Execute();
+	}
+	else
+	{
+		Delegate_FinishInventoryInit.Add(MoveTemp(Delegate));
+	}
 }
 
 void UPMInventoryManagerComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
@@ -167,37 +77,105 @@ void UPMInventoryManagerComponent::ReadyForReplication()
 	}
 }
 
-UPMInventoryItemInstance* UPMInventoryManagerComponent::AddItemDefinition(TSubclassOf<UPMInventoryItemDefinition> ItemDef)
+FMItemHandle UPMInventoryManagerComponent::AddItemDefinition(TSubclassOf<UPMInventoryItemDefinition> ItemDef)
 {
-	UPMInventoryItemInstance* Result = nullptr;
+	FMItemHandle Handle = FMItemHandle{};
+
 	if (ItemDef)
 	{
-		Result = InventoryList.AddEntry(ItemDef);
+		Handle = InventoryList.AddEntry(ItemDef);
 
-		if (IsUsingRegisteredSubObjectList() && IsReadyForReplication() && Result)
+		FPMInventoryEntry* Entry = InventoryList.FindEntry(Handle);
+		if (Entry == nullptr)
 		{
-			AddReplicatedSubObject(Result);
+			return FMItemHandle{};
+		}
+
+		UPMInventoryItemInstance* ItemInstance = Entry->Instance;
+
+		if (IsUsingRegisteredSubObjectList() && IsReadyForReplication() && ItemInstance)
+		{
+			AddReplicatedSubObject(ItemInstance);
+		}
+
+		Delegate_OnNewItemAdded.Broadcast(Entry);
+	}
+
+	return Handle;
+}
+
+UPMInventoryItemInstance* UPMInventoryManagerComponent::GetItemInstance(const FMItemHandle& ItemHandle)
+{
+	FPMInventoryEntry* Entry = InventoryList.FindEntry(ItemHandle);
+	if (Entry)
+	{
+		return Entry->Instance;
+	}
+
+	return nullptr;
+}
+
+int32 UPMInventoryManagerComponent::ChangeItemQuantity(const FMItemHandle& ItemHandle, int32 ChangeNum)
+{
+	int32 CurrentItemQuentity = InventoryList.ChangeItemQuantity(ItemHandle, ChangeNum);
+
+	if (CurrentItemQuentity == 0)
+	{
+		RemoveItem(ItemHandle);
+	}
+
+	FOnChangeInventory* InventoryDelegates = Delegate_OnChangeInventory.Find(ItemHandle.ItemUid);
+	if (InventoryDelegates)
+	{
+		InventoryDelegates->Broadcast(ItemHandle);
+	}
+
+	return CurrentItemQuentity;
+}
+
+FDelegateHandle UPMInventoryManagerComponent::AddDelegateOnChangeInventory(const int32 ItemUid, FOnChangeInventory::FDelegate&& Delegate)
+{
+	FOnChangeInventory& InventoryDelegates = Delegate_OnChangeInventory.FindOrAdd(ItemUid);
+
+	FDelegateHandle DelegateHandle = InventoryDelegates.Add(Delegate);
+
+	return DelegateHandle;
+}
+
+void UPMInventoryManagerComponent::RemoveDelegateOnChangeInventory(const int32 ItemUid, const FDelegateHandle& DelegateHandle)
+{
+	FOnChangeInventory* InventoryDelegates = Delegate_OnChangeInventory.Find(ItemUid);
+
+	if (InventoryDelegates)
+	{
+		InventoryDelegates->Remove(DelegateHandle);
+		
+		if (InventoryDelegates->IsBound() == false)
+		{
+			Delegate_OnChangeInventory.Remove(ItemUid);
 		}
 	}
-
-	return Result;
 }
 
-void UPMInventoryManagerComponent::AddItemInstance(UPMInventoryItemInstance* ItemInstance)
+void UPMInventoryManagerComponent::InitInventory()
 {
-	InventoryList.AddEntry(ItemInstance);
-	if (IsUsingRegisteredSubObjectList() && IsReadyForReplication() && ItemInstance)
-	{
-		AddReplicatedSubObject(ItemInstance);
-	}
+	bIsInitInventory = true;
+	Delegate_FinishInventoryInit.Broadcast();
+	Delegate_FinishInventoryInit.Clear();
 }
 
-void UPMInventoryManagerComponent::RemoveItemInstance(UPMInventoryItemInstance* ItemInstance)
+void UPMInventoryManagerComponent::RemoveItem(const FMItemHandle& ItemHandle)
 {
-	InventoryList.RemoveEntry(ItemInstance);
-
-	if (ItemInstance && IsUsingRegisteredSubObjectList())
+	FPMInventoryEntry* Entry = InventoryList.FindEntry(ItemHandle);
+	if (Entry == nullptr)
 	{
-		RemoveReplicatedSubObject(ItemInstance);
+		return;
 	}
+
+	if (Entry->Instance && IsUsingRegisteredSubObjectList())
+	{
+		RemoveReplicatedSubObject(Entry->Instance);
+	}
+
+	InventoryList.RemoveEntry(ItemHandle);
 }

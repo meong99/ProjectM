@@ -29,14 +29,14 @@ const UPMInventoryItemFragment* UPMInventoryItemInstance::FindFragmentByClass(TS
 	return nullptr;
 }
 
-void UPMInventoryItemInstance::AddStatTagStack(FGameplayTag Tag, int32 StackCount)
+int32 UPMInventoryItemInstance::AddStatTagStack(FGameplayTag Tag, int32 StackCount)
 {
-	StatTags.AddStack(Tag, StackCount);
+	return StatTags.AddStack(Tag, StackCount);
 }
 
-void UPMInventoryItemInstance::RemoveStatTagStack(FGameplayTag Tag, int32 StackCount)
+int32 UPMInventoryItemInstance::RemoveStatTagStack(FGameplayTag Tag, int32 StackCount)
 {
-	StatTags.RemoveStack(Tag, StackCount);
+	return StatTags.RemoveStack(Tag, StackCount);
 }
 
 bool UPMInventoryItemInstance::HasStatTag(FGameplayTag Tag) const

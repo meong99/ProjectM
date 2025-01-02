@@ -35,8 +35,8 @@ struct FPMGameplayTagStackContainer : public FFastArraySerializer
 	FPMGameplayTagStackContainer() {}
 
 	/** add/remove stack count by gameplay-tag */
-	void AddStack(FGameplayTag Tag, int32 StackCount);
-	void RemoveStack(FGameplayTag Tag, int32 StackCount);
+	int32 AddStack(FGameplayTag Tag, int32 StackCount);
+	int32 RemoveStack(FGameplayTag Tag, int32 StackCount);
 
 	/** get the count by the gameplay tag */
 	int32 GetStackCount(FGameplayTag Tag) const

@@ -37,8 +37,8 @@ public:
 	}
 
 	/** add/remove stack count to stat tag(=gameplay-tag stack) */
-	void AddStatTagStack(FGameplayTag Tag, int32 StackCount);
-	void RemoveStatTagStack(FGameplayTag Tag, int32 StackCount);
+	int32 AddStatTagStack(FGameplayTag Tag, int32 StackCount);
+	int32 RemoveStatTagStack(FGameplayTag Tag, int32 StackCount);
 
 	/** whether stat tag has in StatTags */
 	bool HasStatTag(FGameplayTag Tag) const;

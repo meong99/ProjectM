@@ -7,6 +7,8 @@
 #include "MInventoryWidget.generated.h"
 
 class UTileView;
+class UPMInventoryManagerComponent;
+struct FPMInventoryEntry;
 
 UCLASS()
 class PROJECTM_API UMInventoryWidget : public UMWidgetBase
@@ -25,10 +27,17 @@ public:
 * Member Functions
 */
 public:
+	void Callback_OnInitInventory();
+
+	void Callback_AddNewItem(const FPMInventoryEntry* NewItemEntry);
+
 /*
 * Member Variables
 */
 protected:
+	UPROPERTY()
+	UPMInventoryManagerComponent* InventoryComponent;
+
 	UPROPERTY(meta = (BindWidget))
 	UTileView* TileView_Items;
 };

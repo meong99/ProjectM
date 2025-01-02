@@ -1,11 +1,12 @@
 #include "PMGameplayTagStack.h"
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PMGameplayTagStack)
 
-void FPMGameplayTagStackContainer::AddStack(FGameplayTag Tag, int32 StackCount)
+int32 FPMGameplayTagStackContainer::AddStack(FGameplayTag Tag, int32 StackCount)
 {
 	if (!Tag.IsValid())
 	{
-		return;
+		MCHAE_WARNING("StackTag is not valid");
+		return -1;
 	}
 
 	if (StackCount > 0)
@@ -20,7 +21,7 @@ void FPMGameplayTagStackContainer::AddStack(FGameplayTag Tag, int32 StackCount)
 				Stack.StackCount = NewCount;
 				TagToCountMap[Tag] = NewCount;
 				MarkItemDirty(Stack);
-				return;
+				return NewCount;
 			}
 		}
 
@@ -29,14 +30,20 @@ void FPMGameplayTagStackContainer::AddStack(FGameplayTag Tag, int32 StackCount)
 		MarkItemDirty(NewStack);
 		// if we reach to this line of code, the initial StackCount is 0
 		TagToCountMap.Add(Tag, StackCount);
+
+		return StackCount;
 	}
+
+	MCHAE_WARNING("StackCount is zero");
+	return -1;
 }
 
-void FPMGameplayTagStackContainer::RemoveStack(FGameplayTag Tag, int32 StackCount)
+int32 FPMGameplayTagStackContainer::RemoveStack(FGameplayTag Tag, int32 StackCount)
 {
 	if (!Tag.IsValid())
 	{
-		return;
+		MCHAE_WARNING("StackTag is not valid");
+		return -1;
 	}
 
 	if (StackCount > 0)
@@ -54,19 +61,22 @@ void FPMGameplayTagStackContainer::RemoveStack(FGameplayTag Tag, int32 StackCoun
 					It.RemoveCurrent();
 					TagToCountMap.Remove(Tag);
 					MarkArrayDirty();
+
+					return 0;
 				}
-				// just update normally
-				else
-				{
-					const int32 NewCount = Stack.StackCount - StackCount;
-					Stack.StackCount = NewCount;
-					TagToCountMap[Tag] = NewCount;
-					MarkItemDirty(Stack);
-				}
-				return;
+
+				const int32 NewCount = Stack.StackCount - StackCount;
+				Stack.StackCount = NewCount;
+				TagToCountMap[Tag] = NewCount;
+				MarkItemDirty(Stack);
+
+				return NewCount;
 			}
 		}
 	}
+
+	MCHAE_WARNING("StackCount is zero");
+	return -1;
 }
 
 void FPMGameplayTagStackContainer::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)

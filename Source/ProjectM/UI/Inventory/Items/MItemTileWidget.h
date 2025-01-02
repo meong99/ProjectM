@@ -10,6 +10,15 @@
 class UTileView;
 
 UCLASS()
+class UMItemDetailData : public UObject
+{
+	GENERATED_BODY()
+
+public:
+
+};
+
+UCLASS()
 class PROJECTM_API UMItemTileWidget : public UUserWidget, public IUserObjectListEntry
 {
 	GENERATED_BODY()

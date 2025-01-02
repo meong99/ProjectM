@@ -36,6 +36,11 @@ struct FPMGameplayTags
 	FGameplayTag UI_Registry_Layout_DefaultLayout;
 	FGameplayTag UI_Registry_HUD_MainHUD;
 
+	/*
+	* Item
+	*/
+	FGameplayTag Item_Quentity;
+
 private:
 	static FPMGameplayTags GameplayTags;
 };
