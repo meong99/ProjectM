@@ -15,6 +15,7 @@ struct FMWidgetInstanceMapWrapper
 {
 	GENERATED_BODY();
 
+	UPROPERTY()
 	TMap<FGameplayTag/*WidgetTag*/, TObjectPtr<UMWidgetBase>> WidgetInstanceMap;
 };
 

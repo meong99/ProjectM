@@ -19,18 +19,18 @@ void UPMInventoryManagerComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
-	InitInventory();
+// 	InitInventory();
 }
 
-void UPMInventoryManagerComponent::CallOrRegister_FinishInventoryInit(FSimpleMulticastDelegate::FDelegate&& Delegate)
+void UPMInventoryManagerComponent::CallOrRegister_OnInitInventory(FOnInitInventory::FDelegate&& Delegate)
 {
 	if (bIsInitInventory)
 	{
-		Delegate.Execute();
+		Delegate.Execute(InventoryList);
 	}
 	else
 	{
-		Delegate_FinishInventoryInit.Add(MoveTemp(Delegate));
+		Delegate_OnInitInventory.Add(MoveTemp(Delegate));
 	}
 }
 
@@ -101,6 +101,8 @@ FMItemHandle UPMInventoryManagerComponent::AddItemDefinition(TSubclassOf<UPMInve
 		Delegate_OnNewItemAdded.Broadcast(Entry);
 	}
 
+	#pragma TODO("테스트 완료 후 제거")
+	InitInventory();
 	return Handle;
 }
 
@@ -159,9 +161,13 @@ void UPMInventoryManagerComponent::RemoveDelegateOnChangeInventory(const int32 I
 
 void UPMInventoryManagerComponent::InitInventory()
 {
+	if (bIsInitInventory)
+	{
+		return;
+	}
 	bIsInitInventory = true;
-	Delegate_FinishInventoryInit.Broadcast();
-	Delegate_FinishInventoryInit.Clear();
+	Delegate_OnInitInventory.Broadcast(InventoryList);
+	Delegate_OnInitInventory.Clear();
 }
 
 void UPMInventoryManagerComponent::RemoveItem(const FMItemHandle& ItemHandle)

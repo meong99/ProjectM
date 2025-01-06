@@ -8,6 +8,7 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnChangeInventory, const FMItemHandle& ItemHandle);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnNewItemAdded, const FPMInventoryEntry* ItemEntry);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnInitInventory, const FPMInventoryList& InventoryList);
 
 /**
  * InventoryManager는 Controller에서 아이템에 관한 메타데이터 및 Instance를 들고있고, 실제 Actor(무기)자체를 스폰하는거는 Character에 부착된 EquipmentManagerComponent에서 한다.
@@ -34,7 +35,7 @@ public:
 * Member Functions
 */
 public:
-	void CallOrRegister_FinishInventoryInit(FSimpleMulticastDelegate::FDelegate&& Delegate);
+	void CallOrRegister_OnInitInventory(FOnInitInventory::FDelegate&& Delegate);
 
 	// 아이템을 추가하고 Instancing해서 저장한다.
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
@@ -76,5 +77,5 @@ private:
 
 	bool bIsInitInventory = false;
 
-	FSimpleMulticastDelegate Delegate_FinishInventoryInit;
+	FOnInitInventory Delegate_OnInitInventory;
 };

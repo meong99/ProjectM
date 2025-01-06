@@ -6,6 +6,7 @@
 #include "PMInventoryItemDefinition.generated.h"
 
 class UPMInventoryItemInstance;
+class UTexture2D;
 
 /* Remind
 * Item의 Component라고 이해하면 편하다.
@@ -47,7 +48,7 @@ public:
 /*
 * Member Variables
 */
-private:
+public:
 	//아이템의 고유 Id
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Display")
 	int32 ItemId = INDEX_NONE;
@@ -55,6 +56,9 @@ private:
 	//아이템의 이름
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Display")
 	FText DisplayName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Display")
+	UTexture2D* ItemIcon;
 
 	// 아이템의 컴포넌트라고 생각할 수 있다.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, meta = (AllowPrivateAccess = true), Category = "Display")

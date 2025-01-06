@@ -17,7 +17,7 @@ void UMInventoryWidget::NativeOnInitialized()
 	InventoryComponent = PlayerController? PlayerController->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
 	if (IsValid(InventoryComponent))
 	{
-		InventoryComponent->CallOrRegister_FinishInventoryInit(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::Callback_OnInitInventory));
+		InventoryComponent->CallOrRegister_OnInitInventory(FOnInitInventory::FDelegate::CreateUObject(this, &ThisClass::Callback_OnInitInventory));
 		InventoryComponent->Delegate_OnNewItemAdded.AddUObject(this, &ThisClass::Callback_AddNewItem);
 	}
 	else
@@ -28,7 +28,7 @@ void UMInventoryWidget::NativeOnInitialized()
 	}
 }
 
-void UMInventoryWidget::Callback_OnInitInventory()
+void UMInventoryWidget::Callback_OnInitInventory(const FPMInventoryList& InventoryList)
 {
 	if (InventoryComponent)
 	{
@@ -37,7 +37,11 @@ void UMInventoryWidget::Callback_OnInitInventory()
 		for (int32 i = 0; i < MaxInventoryCount; i++)
 		{
 			UMItemDetailData* ItemDetailData = NewObject<UMItemDetailData>(this);
-
+			ItemDetailData->Index = i;
+			if (InventoryList.Entries.IsValidIndex(i))
+			{
+				ItemDetailData->ItemEntry = &InventoryList.Entries[i];
+			}
 			TileView_Items->AddItem(ItemDetailData);
 		}
 	}
@@ -45,5 +49,28 @@ void UMInventoryWidget::Callback_OnInitInventory()
 
 void UMInventoryWidget::Callback_AddNewItem(const FPMInventoryEntry* NewItemEntry)
 {
+	UMItemDetailData* ItemDetailData = NewObject<UMItemDetailData>(this);
+// #pragma TODO("아이템 데이터 넣기")
 
+	const MPriorityQueueNode<UMItemTileWidget>& EmptySlotHandle = PopEmptySlot();
+	if (EmptySlotHandle.IsValid() && EmptySlotHandle.Data)
+	{
+		EmptySlotHandle.Data->SetItemData(NewItemEntry);
+	}
+	else
+	{
+		MCHAE_WARNING("EmptySlot is not valid");
+	}
+}
+
+void UMInventoryWidget::RegisterEmptySlot(MPriorityQueueNode<UMItemTileWidget>&& NewNode)
+{
+	EmptySlots.Push_Unique(NewNode);
+}
+
+MPriorityQueueNode<UMItemTileWidget> UMInventoryWidget::PopEmptySlot()
+{
+	MPriorityQueueNode<UMItemTileWidget> Node;
+	EmptySlots.Pop(Node);
+	return Node;
 }
