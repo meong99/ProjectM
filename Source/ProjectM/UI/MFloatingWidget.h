@@ -20,22 +20,25 @@ public:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime);
 
+	virtual FReply	NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void	NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+	virtual bool	NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	virtual void	NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+
 /*
 * Member Functions
 */
 public:
 protected:
-	virtual FReply	NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-	virtual FReply	NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
-	virtual FReply	NativeOnMouseMove(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
-
-	/*
+/*
 * Member Variables
 */
 protected:
 	bool bIsFloating = false;
 
 	FVector2d DragOffset;
+	FVector2d ViewportSize;
+	FVector2d WidgetSize;
 
 	UWidget* TargetWidget = nullptr;
 };

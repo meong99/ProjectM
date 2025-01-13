@@ -5,6 +5,7 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Blueprint/WidgetTree.h"
 #include "Engine/GameInstance.h"
+#include "Engine/GameViewportClient.h"
 
 UMFloatingWidget::UMFloatingWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -12,6 +13,11 @@ UMFloatingWidget::UMFloatingWidget(const FObjectInitializer& ObjectInitializer) 
 
 void UMFloatingWidget::NativeOnInitialized()
 {
+	Super::NativeOnInitialized();
+	float ViewportScale = UWidgetLayoutLibrary::GetViewportScale(GetWorld());
+	GetWorld()->GetGameViewport()->GetViewportSize(ViewportSize);
+	ViewportSize /= ViewportScale;
+	WidgetSize = FVector2d::ZeroVector;
 }
 
 void UMFloatingWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -21,12 +27,36 @@ void UMFloatingWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 		UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(TargetWidget->Slot);
 		if (CanvasSlot)
 		{
-			double x;
-			double y;
-			UWidgetLayoutLibrary::GetMousePositionScaledByDPI(GetOwningPlayer(), x, y);
-			FVector2D MousePosition{x, y};
+// 			double x;
+// 			double y;
+// 			UWidgetLayoutLibrary::GetMousePositionScaledByDPI(GetOwningPlayer(), x, y);
+// 			FVector2D MousePosition{x, y};
+			FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
 			FVector2D NewPosition = MousePosition + DragOffset;
-			NewPosition *= 0.8;
+
+			if (WidgetSize.IsZero())
+			{
+				WidgetSize = GetDesiredSize();
+			}
+
+			if (NewPosition.X < 0)
+			{
+				NewPosition.X = 0;
+			}
+			else if (NewPosition.X > ViewportSize.X - WidgetSize.X)
+			{
+				NewPosition.X = ViewportSize.X - WidgetSize.X;
+			}
+
+			if (NewPosition.Y < 0)
+			{
+				NewPosition.Y = 0;
+			}
+			else if (NewPosition.Y > ViewportSize.Y - WidgetSize.Y)
+			{
+				NewPosition.Y = ViewportSize.Y - WidgetSize.Y;
+			}
+
 			CanvasSlot->SetPosition(NewPosition);
 		}
 	}
@@ -34,11 +64,16 @@ void UMFloatingWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
 FReply UMFloatingWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-// 	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
-// 	{
-// 		return UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton).NativeReply;
-// 	}
+	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
+	{
+		return UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton).NativeReply;
+	}
 
+	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+}
+
+void UMFloatingWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
+{
 	if (TargetWidget == nullptr)
 	{
 		UWidgetTree* OuterWidgetTree = Cast<UWidgetTree>(GetOuter());
@@ -58,32 +93,23 @@ FReply UMFloatingWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 		DragOffset = WidgetPosition - MousePosition;
 	}
 
-	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+	OutOperation = UWidgetBlueprintLibrary::CreateDragDropOperation(UDragDropOperation::StaticClass());
+	if (OutOperation)
+	{
+		OutOperation->Payload = this;
+	}
+
+	return Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
 }
 
-FReply UMFloatingWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+bool UMFloatingWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 	bIsFloating = false;
-	return Super::NativeOnMouseButtonUp(InGeometry, InMouseEvent);
+	return Super::NativeOnDrop(InGeometry,InDragDropEvent,InOperation);
 }
 
-FReply UMFloatingWidget::NativeOnMouseMove(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+void UMFloatingWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
-// 	if (bIsFloating && TargetWidget)
-// 	{
-// 		UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(TargetWidget->Slot);
-// 		if (CanvasSlot)
-// 		{
-// 			FVector2D MousePosition = InMouseEvent.GetScreenSpacePosition();
-// 			MousePosition = InGeometry.AbsoluteToLocal(MousePosition);
-// 			FVector2D NewPosition = MousePosition + DragOffset;
-// 			CanvasSlot->
-// 
-// // 			float scale = UWidgetLayoutLibrary::GetViewportScale(GetGameInstance()->GetGameViewportClient());
-// // 			NewPosition *= scale;
-// 
-// 			CanvasSlot->SetPosition(NewPosition);
-// 		}
-// 	}
-	return Super::NativeOnMouseMove(InGeometry, InMouseEvent);
+	bIsFloating = false;
+	return Super::NativeOnDragCancelled(InDragDropEvent, InOperation);
 }

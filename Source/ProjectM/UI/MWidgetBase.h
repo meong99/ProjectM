@@ -18,7 +18,8 @@ class PROJECTM_API UMWidgetBase : public UUserWidget
 public:
 	UMWidgetBase(const FObjectInitializer& ObjectInitializer);
 
-	virtual void NativeOnInitialized() override;
+	virtual void	NativeOnInitialized() override;
+// 	virtual bool	NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
 /*
 * Member Functions
