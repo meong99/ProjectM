@@ -27,10 +27,6 @@ void UMFloatingWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 		UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(TargetWidget->Slot);
 		if (CanvasSlot)
 		{
-// 			double x;
-// 			double y;
-// 			UWidgetLayoutLibrary::GetMousePositionScaledByDPI(GetOwningPlayer(), x, y);
-// 			FVector2D MousePosition{x, y};
 			FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
 			FVector2D NewPosition = MousePosition + DragOffset;
 
@@ -100,12 +96,6 @@ void UMFloatingWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 	}
 
 	return Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
-}
-
-bool UMFloatingWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
-{
-	bIsFloating = false;
-	return Super::NativeOnDrop(InGeometry,InDragDropEvent,InOperation);
 }
 
 void UMFloatingWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)

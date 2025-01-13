@@ -30,6 +30,11 @@ void UMItemTileWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 	{
 		SetItemData(ItemData->ItemEntry);
 	}
+
+	if (ItemImage)
+	{
+		ItemImage->SetBrushSize({ ItemData->EntryWidth, ItemData->EntryHeight });
+	}
 }
 
 void UMItemTileWidget::SetItemData(const FPMInventoryEntry* NewItemEntry)
@@ -43,5 +48,5 @@ void UMItemTileWidget::SetItemData(const FPMInventoryEntry* NewItemEntry)
 #pragma TODO("아이템 변경 델리게이트 적용")
 
 	const UPMInventoryItemDefinition* ItemDef = GetDefault<UPMInventoryItemDefinition>(NewItemEntry->Instance->ItemDef);
-	ItemIcon->SetBrushFromTexture(ItemDef->ItemIcon);
+	ItemImage->SetBrushFromTexture(ItemDef->ItemIcon);
 }

@@ -42,6 +42,8 @@ void UMInventoryWidget::Callback_OnInitInventory(const FPMInventoryList& Invento
 			{
 				ItemDetailData->ItemEntry = &InventoryList.Entries[i];
 			}
+			ItemDetailData->EntryHeight = TileView_Items->GetEntryHeight();
+			ItemDetailData->EntryWidth = TileView_Items->GetEntryWidth();
 			TileView_Items->AddItem(ItemDetailData);
 		}
 	}

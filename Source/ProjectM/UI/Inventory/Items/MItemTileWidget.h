@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/IUserObjectListEntry.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/MDragableWidget.h"
 #include "MItemTileWidget.generated.h"
 
 class UTileView;
@@ -21,10 +21,14 @@ public:
 	const FPMInventoryEntry* ItemEntry = nullptr;
 
 	int32 Index = INDEX_NONE;
+
+	float EntryHeight;
+
+	float EntryWidth;
 };
 
 UCLASS()
-class PROJECTM_API UMItemTileWidget : public UUserWidget, public IUserObjectListEntry
+class PROJECTM_API UMItemTileWidget : public UMDragableWidget, public IUserObjectListEntry
 {
 	GENERATED_BODY()
 
@@ -47,9 +51,6 @@ public:
 * Member Variables
 */
 protected:
-	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
-	UImage* ItemIcon;
-
 	UPROPERTY()
 	UMInventoryWidget* InventoryWidget;
 };
