@@ -5,10 +5,10 @@
 #include "CoreMinimal.h"
 #include "Blueprint/IUserObjectListEntry.h"
 #include "UI/MDragableWidget.h"
+#include "Inventory/MInventoryTypes.h"
 #include "MItemTileWidget.generated.h"
 
 class UTileView;
-struct FPMInventoryEntry;
 class UImage;
 class UMInventoryWidget;
 
@@ -38,13 +38,19 @@ class PROJECTM_API UMItemTileWidget : public UMDragableWidget, public IUserObjec
 public:
 	UMItemTileWidget(const FObjectInitializer& ObjectInitializer);
 
-	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
+	virtual void	NativeOnListItemObjectSet(UObject* ListItemObject) override;
+	virtual void	NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+	virtual bool	NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	virtual void	NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
 /*
 * Member Functions
 */
 public:
 	void SetItemData(const FPMInventoryEntry* NewItemEntry);
+
+protected:
+	void ResetItemSlot();
 
 
 /*
@@ -53,4 +59,6 @@ public:
 protected:
 	UPROPERTY()
 	UMInventoryWidget* InventoryWidget;
+
+	FMItemHandle ItemHandle;
 };

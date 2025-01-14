@@ -47,6 +47,9 @@ public:
 	void AddWidgetToLayout(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const;
 	void RemoveWidgetFromLayout(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const;
 
+protected:
+	void SetInputMode(uint8 NewInputMode) const;
+
 private:
 	UOverlay* GetLayout(EMWidgetLayout WidgetLayout) const;
 /*

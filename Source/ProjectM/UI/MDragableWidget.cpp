@@ -1,6 +1,7 @@
 #include "MDragableWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/Image.h"
+
 UMDragableWidget::UMDragableWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 }
@@ -28,7 +29,7 @@ void UMDragableWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 		OutOperation->DefaultDragVisual = ItemImage;
 	}
 
-	return Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
+	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
 }
 
 bool UMDragableWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)

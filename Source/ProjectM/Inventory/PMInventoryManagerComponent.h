@@ -42,16 +42,16 @@ public:
 	FMItemHandle AddItemDefinition(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	UPMInventoryItemInstance* GetItemInstance(const FMItemHandle& ItemHandle);
+	UPMInventoryItemInstance*	FindItemInstance(const FMItemHandle& ItemHandle);
+	FPMInventoryEntry*			FindEntry(const FMItemHandle& ItemHandle);
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
 	int32 ChangeItemQuantity(const FMItemHandle& ItemHandle, int32 ChangeNum);
-
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
 	int32 GetMaxInventoryCount() const { return MaxInventoryCount; }
 
 	FDelegateHandle AddDelegateOnChangeInventory(const int32 ItemUid, FOnChangeInventory::FDelegate&& Delegate);
-	void RemoveDelegateOnChangeInventory(const int32 ItemUid, const FDelegateHandle& DelegateHandle);
+	void			RemoveDelegateOnChangeInventory(const int32 ItemUid, const FDelegateHandle& DelegateHandle);
 
 protected:
 	void InitInventory();

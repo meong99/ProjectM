@@ -106,7 +106,7 @@ FMItemHandle UPMInventoryManagerComponent::AddItemDefinition(TSubclassOf<UPMInve
 	return Handle;
 }
 
-UPMInventoryItemInstance* UPMInventoryManagerComponent::GetItemInstance(const FMItemHandle& ItemHandle)
+UPMInventoryItemInstance* UPMInventoryManagerComponent::FindItemInstance(const FMItemHandle& ItemHandle)
 {
 	FPMInventoryEntry* Entry = InventoryList.FindEntry(ItemHandle);
 	if (Entry)
@@ -115,6 +115,11 @@ UPMInventoryItemInstance* UPMInventoryManagerComponent::GetItemInstance(const FM
 	}
 
 	return nullptr;
+}
+
+FPMInventoryEntry* UPMInventoryManagerComponent::FindEntry(const FMItemHandle& ItemHandle)
+{
+	return InventoryList.FindEntry(ItemHandle);
 }
 
 int32 UPMInventoryManagerComponent::ChangeItemQuantity(const FMItemHandle& ItemHandle, int32 ChangeNum)

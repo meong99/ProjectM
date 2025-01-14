@@ -7,6 +7,15 @@
 #include "GameplayTagContainer.h"
 #include "MWidgetBase.generated.h"
 
+UENUM(BlueprintType)
+enum class EMWidgetInputMode : uint8
+{
+	GameAndUI,
+	GameOnly,
+	UIOnly,
+	GameAndUIWithShowMouse,
+};
+
 UCLASS()
 class PROJECTM_API UMWidgetBase : public UUserWidget
 {
@@ -27,6 +36,7 @@ public:
 public:
 	const FGameplayTag& GetWidgetTag() const { return WidgetTag; }
 	bool				IsActivate() const { return bIsActivate; }
+	EMWidgetInputMode	GetInputMode() const { return InputMode; }
 
 	void SetWidgetTag(const FGameplayTag& InWidgetTag) { WidgetTag = InWidgetTag; }
 	void SetActivate(const bool bNewActivate) { bIsActivate = bNewActivate; }
@@ -34,6 +44,9 @@ public:
 * Member Variables
 */
 protected:
+	UPROPERTY(EditDefaultsOnly)
+	EMWidgetInputMode InputMode = EMWidgetInputMode::GameOnly;
+
 	UPROPERTY(VisibleInstanceOnly)
 	FGameplayTag WidgetTag;
 
