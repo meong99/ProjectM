@@ -27,6 +27,11 @@ struct FPMInventoryEntry : public FFastArraySerializerItem
 {
 	GENERATED_BODY()
 
+	bool IsValid() const
+	{
+		return ItemUid != INDEX_NONE;
+	}
+
 	UPROPERTY()
 	int32 ItemUid = INDEX_NONE;
 

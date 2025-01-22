@@ -11,6 +11,7 @@
 class UTileView;
 class UImage;
 class UMInventoryWidget;
+class UTextBlock;
 
 UCLASS()
 class UMItemDetailData : public UObject
@@ -18,9 +19,10 @@ class UMItemDetailData : public UObject
 	GENERATED_BODY()
 
 public:
-	const FPMInventoryEntry* ItemEntry = nullptr;
 
-	int32 Index = INDEX_NONE;
+	bool IsValid() const { return ItemEntry.IsValid(); }
+
+	FPMInventoryEntry ItemEntry;
 
 	float EntryHeight;
 
@@ -47,11 +49,14 @@ public:
 * Member Functions
 */
 public:
-	void SetItemData(const FPMInventoryEntry* NewItemEntry);
+	void SetNewEntry(const FPMInventoryEntry& NewEntry);
+	void UpdateItemData();
+	void SetSlotIndex(const int32 InIndex);
 
 protected:
 	void ResetItemSlot();
 
+	static void ChangeItemData(UMItemDetailData* Lst, UMItemDetailData* Rst);
 
 /*
 * Member Variables
@@ -59,6 +64,11 @@ protected:
 protected:
 	UPROPERTY()
 	UMInventoryWidget* InventoryWidget;
+
+	int32 SlotIndex = INDEX_NONE;
+
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* Index;
 
 	FMItemHandle ItemHandle;
 };

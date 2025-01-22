@@ -37,10 +37,9 @@ void UMInventoryWidget::Callback_OnInitInventory(const FPMInventoryList& Invento
 		for (int32 i = 0; i < MaxInventoryCount; i++)
 		{
 			UMItemDetailData* ItemDetailData = NewObject<UMItemDetailData>(this);
-			ItemDetailData->Index = i;
 			if (InventoryList.Entries.IsValidIndex(i))
 			{
-				ItemDetailData->ItemEntry = &InventoryList.Entries[i];
+				ItemDetailData->ItemEntry = InventoryList.Entries[i];
 			}
 			ItemDetailData->EntryHeight = TileView_Items->GetEntryHeight();
 			ItemDetailData->EntryWidth = TileView_Items->GetEntryWidth();
@@ -51,13 +50,16 @@ void UMInventoryWidget::Callback_OnInitInventory(const FPMInventoryList& Invento
 
 void UMInventoryWidget::Callback_AddNewItem(const FPMInventoryEntry* NewItemEntry)
 {
-	UMItemDetailData* ItemDetailData = NewObject<UMItemDetailData>(this);
-// #pragma TODO("아이템 데이터 넣기")
+	if (NewItemEntry == nullptr)
+	{
+		MCHAE_WARNING("NewItemEntry is null");
+		return;
+	}
 
 	const MPriorityQueueNode<UMItemTileWidget>& EmptySlotHandle = PopEmptySlot();
 	if (EmptySlotHandle.IsValid() && EmptySlotHandle.Data)
 	{
-		EmptySlotHandle.Data->SetItemData(NewItemEntry);
+		EmptySlotHandle.Data->SetNewEntry(*NewItemEntry);
 	}
 	else
 	{

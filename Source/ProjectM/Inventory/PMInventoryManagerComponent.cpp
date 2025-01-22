@@ -19,7 +19,8 @@ void UPMInventoryManagerComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
-// 	InitInventory();
+#pragma TODO("이거 인벤토리 설정 해야함")
+ 	InitInventory();
 }
 
 void UPMInventoryManagerComponent::CallOrRegister_OnInitInventory(FOnInitInventory::FDelegate&& Delegate)
@@ -101,8 +102,6 @@ FMItemHandle UPMInventoryManagerComponent::AddItemDefinition(TSubclassOf<UPMInve
 		Delegate_OnNewItemAdded.Broadcast(Entry);
 	}
 
-	#pragma TODO("테스트 완료 후 제거")
-	InitInventory();
 	return Handle;
 }
 

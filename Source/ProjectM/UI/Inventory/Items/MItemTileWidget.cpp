@@ -7,12 +7,28 @@
 #include "UI/Inventory/MInventoryWidget.h"
 #include "Blueprint/DragDropOperation.h"
 #include "Inventory/PMInventoryManagerComponent.h"
+#include "Components/TextBlock.h"
 
 UMItemTileWidget::UMItemTileWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {}
 
+UE_DISABLE_OPTIMIZATION
 void UMItemTileWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
+#ifdef WITH_EDITOR
+	if (SlotIndex == INDEX_NONE)
+	{
+		static int32 i = 0;
+
+		SetSlotIndex(i++);
+	}
+#else
+	if (Index)
+	{
+		Index->SetVisibility(ESlateVisibility::Hidden);
+	}
+#endif // WITH_EDITOR
+
 	UMItemDetailData* ItemData = Cast<UMItemDetailData>(ListItemObject);
 	if (ItemData == nullptr)
 	{
@@ -20,23 +36,20 @@ void UMItemTileWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 	}
 
 	InventoryWidget = Cast<UMInventoryWidget>(ItemData->GetOuter());
-	if (ItemData->ItemEntry == nullptr && InventoryWidget)
+	if (ItemData->ItemEntry.IsValid() == false && InventoryWidget)
 	{
 		MPriorityQueueNode<UMItemTileWidget> Node;
 
-		Node.Keyid = ItemData->Index;
 		Node.Data = this;
 		InventoryWidget->RegisterEmptySlot(MoveTemp(Node));
-	}
-	else if (ItemData->ItemEntry)
-	{
-		SetItemData(ItemData->ItemEntry);
 	}
 
 	if (ItemImage)
 	{
 		ItemImage->SetBrushSize({ ItemData->EntryWidth, ItemData->EntryHeight });
 	}
+
+	UpdateItemData();
 }
 
 void UMItemTileWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
@@ -66,23 +79,13 @@ bool UMItemTileWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
 		return false;
 	}
 
-	APlayerController* Controller = GetOwningPlayer();
-	UPMInventoryManagerComponent* InvenManager = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
-	if (Controller == nullptr)
+	UMItemDetailData* NewItemDetailData = Other->GetListItem<UMItemDetailData>();
+	if (NewItemDetailData)
 	{
-		MCHAE_WARNING("Can't get InventoryManager");
-		return false;
+		ChangeItemData(NewItemDetailData, GetListItem<UMItemDetailData>());
+		UpdateItemData();
+		Other->UpdateItemData();
 	}
-
-	const FPMInventoryEntry* NewItemEntry = InvenManager->FindEntry(Other->ItemHandle);
-	if (NewItemEntry == nullptr)
-	{
-		MCHAE_WARNING("Can't Found Entry");
-		return false;
-	}
-
-	SetItemData(NewItemEntry);
-	Other->ResetItemSlot();
 
 	return true;
 }
@@ -92,20 +95,46 @@ void UMItemTileWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDropEve
 	MCHAE_LOG("on cancelled");
 }
 
-void UMItemTileWidget::SetItemData(const FPMInventoryEntry* NewItemEntry)
+void UMItemTileWidget::SetNewEntry(const FPMInventoryEntry& NewEntry)
 {
-	if (NewItemEntry == nullptr || NewItemEntry->Instance == nullptr)
+	UMItemDetailData* NewItemDetailData = GetListItem<UMItemDetailData>();
+	if (NewItemDetailData)
 	{
-		MCHAE_WARNING("You trying to set invalid item into widget!");
+		NewItemDetailData->ItemEntry = NewEntry;
+		UpdateItemData();
+	}
+}
+
+void UMItemTileWidget::UpdateItemData()
+{
+	UMItemDetailData* ItemDatail = GetListItem<UMItemDetailData>();
+	if (ItemDatail == nullptr)
+	{
+		return;
+	}
+
+	const FPMInventoryEntry& NewItemEntry = ItemDatail->ItemEntry;
+	if (NewItemEntry.IsValid() == false || NewItemEntry.Instance == nullptr)
+	{
+		ResetItemSlot();
 		return;
 	}
 
 #pragma TODO("아이템 변경 델리게이트 적용")
 
-	const UPMInventoryItemDefinition* ItemDef = GetDefault<UPMInventoryItemDefinition>(NewItemEntry->Instance->ItemDef);
+	const UPMInventoryItemDefinition* ItemDef = GetDefault<UPMInventoryItemDefinition>(NewItemEntry.Instance->ItemDef);
 	ItemImage->SetBrushFromTexture(ItemDef->ItemIcon);
 
-	ItemHandle.ItemUid = NewItemEntry->ItemUid;
+	ItemHandle.ItemUid = NewItemEntry.ItemUid;
+}
+
+void UMItemTileWidget::SetSlotIndex(const int32 InIndex)
+{
+	SlotIndex = InIndex;
+	if (Index)
+	{
+		Index->SetText(FText::FromString(FString::FromInt(SlotIndex)));
+	}
 }
 
 void UMItemTileWidget::ResetItemSlot()
@@ -114,3 +143,16 @@ void UMItemTileWidget::ResetItemSlot()
 
 	ItemHandle.ItemUid = INDEX_NONE;
 }
+
+void UMItemTileWidget::ChangeItemData(UMItemDetailData* Lst, UMItemDetailData* Rst)
+{
+	if (Lst == nullptr || Rst == nullptr)
+	{
+		return;
+	}
+
+	FPMInventoryEntry Tmp = Lst->ItemEntry;
+	Lst->ItemEntry = Rst->ItemEntry;
+	Rst->ItemEntry = Tmp;
+}
+UE_ENABLE_OPTIMIZATION
