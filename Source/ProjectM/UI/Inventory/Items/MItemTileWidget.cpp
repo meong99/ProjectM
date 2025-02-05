@@ -1,5 +1,5 @@
 #include "MItemTileWidget.h"
-#include "Inventory/MInventoryTypes.h"
+#include "Inventory/PMInventoryItemList.h"
 #include "Inventory/PMInventoryItemDefinition.h"
 #include "Inventory/PMInventoryItemInstance.h"
 #include "Components/Image.h"
@@ -124,6 +124,7 @@ void UMItemTileWidget::UpdateItemData()
 
 	const UPMInventoryItemDefinition* ItemDef = GetDefault<UPMInventoryItemDefinition>(NewItemEntry.Instance->ItemDef);
 	ItemImage->SetBrushFromTexture(ItemDef->ItemIcon);
+	ItemImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
 	ItemHandle.ItemUid = NewItemEntry.ItemUid;
 }
@@ -140,6 +141,7 @@ void UMItemTileWidget::SetSlotIndex(const int32 InIndex)
 void UMItemTileWidget::ResetItemSlot()
 {
 	ItemImage->SetBrushFromTexture(nullptr);
+	ItemImage->SetVisibility(ESlateVisibility::Hidden);
 
 	ItemHandle.ItemUid = INDEX_NONE;
 }

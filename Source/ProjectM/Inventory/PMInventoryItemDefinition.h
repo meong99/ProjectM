@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
+#include "Inventory\MInventoryTypes.h"
 
 #include "PMInventoryItemDefinition.generated.h"
 
@@ -52,6 +53,9 @@ public:
 	//아이템의 고유 Id
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Display")
 	int32 ItemId = INDEX_NONE;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Display")
+	EMItemType ItemType = EMItemType::None;
 
 	//아이템의 이름
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Display")

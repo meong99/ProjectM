@@ -2,13 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "Components/ControllerComponent.h"
-#include "Inventory/MInventoryTypes.h"
+#include "Inventory/PMInventoryItemList.h"
 
 #include "PMInventoryManagerComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnChangeInventory, const FMItemHandle& ItemHandle);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnNewItemAdded, const FPMInventoryEntry* ItemEntry);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnInitInventory, const FPMInventoryList& InventoryList);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnInitInventory, const FPMInventoryItemList& InventoryList);
 
 /**
  * InventoryManager는 Controller에서 아이템에 관한 메타데이터 및 Instance를 들고있고, 실제 Actor(무기)자체를 스폰하는거는 Character에 부착된 EquipmentManagerComponent에서 한다.
@@ -40,6 +40,7 @@ public:
 	// 아이템을 추가하고 Instancing해서 저장한다.
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
 	FMItemHandle AddItemDefinition(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
+	FMItemHandle AddItemDefinition_Impl(TSubclassOf<UPMInventoryItemDefinition> ItemDef, FPMInventoryItemList& ItemList);
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UPMInventoryItemInstance*	FindItemInstance(const FMItemHandle& ItemHandle);
@@ -53,12 +54,14 @@ public:
 	FDelegateHandle AddDelegateOnChangeInventory(const int32 ItemUid, FOnChangeInventory::FDelegate&& Delegate);
 	void			RemoveDelegateOnChangeInventory(const int32 ItemUid, const FDelegateHandle& DelegateHandle);
 
+
 protected:
 	void InitInventory();
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
 	void RemoveItem(const FMItemHandle& ItemHandle);
 
+	FPMInventoryItemList* GetItemList(const EMItemType ItemType);
 /*
 * Member Variables
 */
@@ -67,7 +70,10 @@ public:
 
 private:
 	UPROPERTY(Replicated)
-	FPMInventoryList InventoryList;
+	FPMInventoryItemList InventoryList;
+
+	UPROPERTY(Replicated)
+	FPMInventoryItemList ConsumableItemList;
 
 #pragma TODO("하드코딩 말고 데이터 읽기 만들면 변경해야함")
 	UPROPERTY(BlueprintReadOnly, meta=(AllowprivateAccess=true))

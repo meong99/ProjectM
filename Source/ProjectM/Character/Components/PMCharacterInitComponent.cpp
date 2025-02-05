@@ -269,6 +269,22 @@ void UPMCharacterInitComponent::InitializePlayerInput(UInputComponent* PlayerInp
 
 void UPMCharacterInitComponent::Input_Move(const FInputActionValue& InputActionValue)
 {
+
+//	{
+//#include "Misc/DateTime.h"
+//
+//		static FDateTime LastTime = FDateTime::Now();
+//		static int32 test = 0;
+//
+//		FDateTime CurrentTime = FDateTime::Now();
+//		if ((CurrentTime - LastTime).GetSeconds() > 1)
+//		{
+//			UE_LOG(LogTemp, Log, TEXT("mchae : %d"), test);
+//			test = 0;
+//			LastTime = FDateTime::Now();
+//		}
+//		test++;
+//	}
 	APawn* Pawn = GetPawn<APawn>();
 	AController* Controller = Pawn ? Pawn->GetController() : nullptr;
 

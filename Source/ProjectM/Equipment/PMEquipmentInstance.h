@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
+#include "GameFramework/Pawn.h"
 #include "PMEquipmentInstance.generated.h"
 
 struct FPMEquipmentActorToSpawn;

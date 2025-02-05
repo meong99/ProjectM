@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "Blueprint/IUserObjectListEntry.h"
 #include "UI/MDragableWidget.h"
-#include "Inventory/MInventoryTypes.h"
+
+#pragma TODO("포인터로 변경하면 아래 헤더 바꿔")
+#include "Inventory/PMInventoryItemList.h"
 #include "MItemTileWidget.generated.h"
 
 class UTileView;
@@ -22,6 +24,8 @@ public:
 
 	bool IsValid() const { return ItemEntry.IsValid(); }
 
+#pragma TODO("이거 포인터가 맞는 듯. Instance가 어떻게 변경되는지 알아야해. 댕글링포인터가 안 생기도록 스마트포인터를 쓰던지 해도 좋을 듯")
+	UPROPERTY()
 	FPMInventoryEntry ItemEntry;
 
 	float EntryHeight;

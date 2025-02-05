@@ -46,6 +46,9 @@ public:
 	/** get the current count of gameplay-tag stack */
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 	int32 GetStatTagStackCount(FGameplayTag Tag) const;
+
+	UFUNCTION()
+	EMItemType GetItemType() const;
 /*
 * Member Variables
 */

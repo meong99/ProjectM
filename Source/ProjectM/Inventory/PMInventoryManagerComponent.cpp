@@ -4,6 +4,7 @@
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 
+UE_DISABLE_OPTIMIZATION
 /*
 * UPMInventoryManagerComponent -------------------------------
 */
@@ -13,6 +14,9 @@ UPMInventoryManagerComponent::UPMInventoryManagerComponent(const FObjectInitiali
 {
 	SetIsReplicatedByDefault(true);
 	bWantsInitializeComponent = true;
+
+	InventoryList.OwnedItemType = EMItemType::Equipment;
+	ConsumableItemList.OwnedItemType = EMItemType::Consumable;
 }
 
 void UPMInventoryManagerComponent::InitializeComponent()
@@ -28,6 +32,7 @@ void UPMInventoryManagerComponent::CallOrRegister_OnInitInventory(FOnInitInvento
 	if (bIsInitInventory)
 	{
 		Delegate.Execute(InventoryList);
+		Delegate.Execute(ConsumableItemList);
 	}
 	else
 	{
@@ -40,6 +45,7 @@ void UPMInventoryManagerComponent::GetLifetimeReplicatedProps(TArray< FLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, InventoryList);
+	DOREPLIFETIME(ThisClass, ConsumableItemList);
 }
 
 bool UPMInventoryManagerComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
@@ -47,6 +53,16 @@ bool UPMInventoryManagerComponent::ReplicateSubobjects(UActorChannel* Channel, F
 	bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
 
 	for (FPMInventoryEntry& Entry : InventoryList.Entries)
+	{
+		UPMInventoryItemInstance* Instance = Entry.Instance;
+
+		if (Instance && IsValid(Instance))
+		{
+			WroteSomething |= Channel->ReplicateSubobject(Instance, *Bunch, *RepFlags);
+		}
+	}
+
+	for (FPMInventoryEntry& Entry : ConsumableItemList.Entries)
 	{
 		UPMInventoryItemInstance* Instance = Entry.Instance;
 
@@ -75,42 +91,69 @@ void UPMInventoryManagerComponent::ReadyForReplication()
 				AddReplicatedSubObject(Instance);
 			}
 		}
+
+		for (const FPMInventoryEntry& Entry : ConsumableItemList.Entries)
+		{
+			UPMInventoryItemInstance* Instance = Entry.Instance;
+
+			if (IsValid(Instance))
+			{
+				AddReplicatedSubObject(Instance);
+			}
+		}
 	}
 }
 
 FMItemHandle UPMInventoryManagerComponent::AddItemDefinition(TSubclassOf<UPMInventoryItemDefinition> ItemDef)
 {
 	FMItemHandle Handle = FMItemHandle{};
-
-	if (ItemDef)
+	UPMInventoryItemDefinition* CDO = ItemDef->GetDefaultObject<UPMInventoryItemDefinition>();
+	if (CDO)
 	{
-		Handle = InventoryList.AddEntry(ItemDef);
-
-		FPMInventoryEntry* Entry = InventoryList.FindEntry(Handle);
-		if (Entry == nullptr)
+		FPMInventoryItemList* ItemList = GetItemList(CDO->ItemType);
+		if (ItemList)
 		{
-			return FMItemHandle{};
+			return AddItemDefinition_Impl(ItemDef, *ItemList);
 		}
-
-		UPMInventoryItemInstance* ItemInstance = Entry->Instance;
-
-		if (IsUsingRegisteredSubObjectList() && IsReadyForReplication() && ItemInstance)
-		{
-			AddReplicatedSubObject(ItemInstance);
-		}
-
-		Delegate_OnNewItemAdded.Broadcast(Entry);
 	}
+
+	return Handle;
+}
+
+FMItemHandle UPMInventoryManagerComponent::AddItemDefinition_Impl(TSubclassOf<UPMInventoryItemDefinition> ItemDef, FPMInventoryItemList& ItemList)
+{
+	FMItemHandle Handle = FMItemHandle{};
+
+	Handle = ItemList.AddEntry(ItemDef);
+
+	FPMInventoryEntry* Entry = ItemList.FindEntry(Handle);
+	if (Entry == nullptr)
+	{
+		return FMItemHandle{};
+	}
+
+	UPMInventoryItemInstance* ItemInstance = Entry->Instance;
+
+	if (IsUsingRegisteredSubObjectList() && IsReadyForReplication() && ItemInstance)
+	{
+		AddReplicatedSubObject(ItemInstance);
+	}
+
+	Delegate_OnNewItemAdded.Broadcast(Entry);
 
 	return Handle;
 }
 
 UPMInventoryItemInstance* UPMInventoryManagerComponent::FindItemInstance(const FMItemHandle& ItemHandle)
 {
-	FPMInventoryEntry* Entry = InventoryList.FindEntry(ItemHandle);
-	if (Entry)
+	FPMInventoryItemList* ItemList = GetItemList(ItemHandle.ItemType);
+	if (ItemList)
 	{
-		return Entry->Instance;
+		FPMInventoryEntry* Entry = ItemList->FindEntry(ItemHandle);
+		if (Entry)
+		{
+			return Entry->Instance;
+		}
 	}
 
 	return nullptr;
@@ -118,25 +161,37 @@ UPMInventoryItemInstance* UPMInventoryManagerComponent::FindItemInstance(const F
 
 FPMInventoryEntry* UPMInventoryManagerComponent::FindEntry(const FMItemHandle& ItemHandle)
 {
-	return InventoryList.FindEntry(ItemHandle);
+	FPMInventoryItemList* ItemList = GetItemList(ItemHandle.ItemType);
+	if (ItemList)
+	{
+		return ItemList->FindEntry(ItemHandle);
+	}
+
+	return nullptr;
 }
 
 int32 UPMInventoryManagerComponent::ChangeItemQuantity(const FMItemHandle& ItemHandle, int32 ChangeNum)
 {
-	int32 CurrentItemQuentity = InventoryList.ChangeItemQuantity(ItemHandle, ChangeNum);
-
-	if (CurrentItemQuentity == 0)
+	FPMInventoryItemList* ItemList = GetItemList(ItemHandle.ItemType);
+	if (ItemList)
 	{
-		RemoveItem(ItemHandle);
+		int32 CurrentItemQuentity = ItemList->ChangeItemQuantity(ItemHandle, ChangeNum);
+
+		if (CurrentItemQuentity == 0)
+		{
+			RemoveItem(ItemHandle);
+		}
+
+		FOnChangeInventory* InventoryDelegates = Delegate_OnChangeInventory.Find(ItemHandle.ItemUid);
+		if (InventoryDelegates)
+		{
+			InventoryDelegates->Broadcast(ItemHandle);
+		}
+
+		return CurrentItemQuentity;
 	}
 
-	FOnChangeInventory* InventoryDelegates = Delegate_OnChangeInventory.Find(ItemHandle.ItemUid);
-	if (InventoryDelegates)
-	{
-		InventoryDelegates->Broadcast(ItemHandle);
-	}
-
-	return CurrentItemQuentity;
+	return 0;
 }
 
 FDelegateHandle UPMInventoryManagerComponent::AddDelegateOnChangeInventory(const int32 ItemUid, FOnChangeInventory::FDelegate&& Delegate)
@@ -169,23 +224,49 @@ void UPMInventoryManagerComponent::InitInventory()
 	{
 		return;
 	}
+
 	bIsInitInventory = true;
 	Delegate_OnInitInventory.Broadcast(InventoryList);
+	Delegate_OnInitInventory.Broadcast(ConsumableItemList);
 	Delegate_OnInitInventory.Clear();
 }
 
 void UPMInventoryManagerComponent::RemoveItem(const FMItemHandle& ItemHandle)
 {
-	FPMInventoryEntry* Entry = InventoryList.FindEntry(ItemHandle);
-	if (Entry == nullptr)
+	FPMInventoryItemList* ItemList = GetItemList(ItemHandle.ItemType);
+	if (ItemList)
 	{
-		return;
-	}
+		FPMInventoryEntry* Entry = ItemList->FindEntry(ItemHandle);
+		if (Entry)
+		{
+			if (Entry->Instance && IsUsingRegisteredSubObjectList())
+			{
+				RemoveReplicatedSubObject(Entry->Instance);
+			}
 
-	if (Entry->Instance && IsUsingRegisteredSubObjectList())
-	{
-		RemoveReplicatedSubObject(Entry->Instance);
+			InventoryList.RemoveEntry(ItemHandle);
+		}
 	}
-
-	InventoryList.RemoveEntry(ItemHandle);
+	
 }
+
+FPMInventoryItemList* UPMInventoryManagerComponent::GetItemList(const EMItemType ItemType)
+{
+	switch (ItemType)
+	{
+		case EMItemType::Equipment :
+		{
+			return &InventoryList;
+		}
+		case EMItemType::Consumable :
+		{
+			return &ConsumableItemList;
+		}
+		default:
+		{
+			MCHAE_WARNING("Can't Found ItemList");
+			return nullptr;
+		}
+	}
+}
+UE_ENABLE_OPTIMIZATION

@@ -48,3 +48,16 @@ int32 UPMInventoryItemInstance::GetStatTagStackCount(FGameplayTag Tag) const
 {
 	return StatTags.GetStackCount(Tag);
 }
+
+EMItemType UPMInventoryItemInstance::GetItemType() const
+{
+	if (ItemDef)
+	{
+		UPMInventoryItemDefinition* DefinitionCDO = ItemDef->GetDefaultObject<UPMInventoryItemDefinition>();
+		return DefinitionCDO->ItemType;
+	}
+
+	MCHAE_WARNING("ItemDefinition is not defined. Please set item definition ");
+
+	return EMItemType::None;
+}

@@ -34,6 +34,9 @@ public:
 * Member Functions
 */
 public:
+	void AddWidgetToLayer(const int32 LayerId = 0/*GameLayer*/);
+	void RemoveWidgetFromLayer(const int32 LayerId = 0/*GameLayer*/);
+
 	const FGameplayTag& GetWidgetTag() const { return WidgetTag; }
 	bool				IsActivate() const { return bIsActivate; }
 	EMWidgetInputMode	GetInputMode() const { return InputMode; }
