@@ -6,6 +6,15 @@
 
 class UTexture;
 
+UENUM(BlueprintType)
+enum class EMItemIdType : uint8
+{
+	Equipment UMETA(DisplayName="Equipment"),
+	Consumable UMETA(DisplayName = "Consumable"),
+
+	None UMETA(DisplayName = "None"),
+};
+
 /**
  *
  */
