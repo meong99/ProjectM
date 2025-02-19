@@ -5,6 +5,14 @@
 #include "Item/MTable_ItemBase.h"
 #include "MTableAsset.generated.h"
 
+UENUM(BlueprintType)
+enum class EMTableType : uint8
+{
+	None		UMETA(DisplayName = "None"),
+	Equipment	UMETA(DisplayName="Equipment"),
+	Consumable	UMETA(DisplayName = "Consumable"),
+};
+
 class UTexture;
 
 /**
@@ -28,6 +36,9 @@ public:
 * Member Variables
 */
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	EMTableType TableType = EMTableType::None;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<UDataTable*> Tables;
 };

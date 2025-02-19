@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/EngineSubsystem.h"
+#include "Table/MTableAsset.h"
 #include "MDataTableManager.generated.h"
 
 class UDataTable;
@@ -15,7 +16,7 @@ UCLASS()
 class PROJECTM_API UMDataTableManager : public UEngineSubsystem
 {
 	GENERATED_BODY()
-	/*
+/*
 * Overrided Function
 */
 public:
@@ -25,7 +26,7 @@ public:
 	* Member Functions
 	*/
 public:
-	const UDataTable* GetDataTable(const UScriptStruct* TableType) const;
+	const UDataTable* GetDataTable(EMTableType TableType) const;
 private:
 	void LoadDataTables();
 	/*
@@ -33,5 +34,5 @@ private:
 	*/
 public:
 	UPROPERTY(BlueprintReadOnly)
-	TMap<const UScriptStruct*, UDataTable*> TableMap;
+	TMap<EMTableType, UDataTable*> TableMap;
 };

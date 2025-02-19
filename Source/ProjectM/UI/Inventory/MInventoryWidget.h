@@ -6,6 +6,7 @@
 #include "UI/MWidgetBase.h"
 #include "Util/MPriorityQueue.h"
 #include "Inventory/PMInventoryItemList.h"
+#include "Util/MHeap.h"
 #include "MInventoryWidget.generated.h"
 
 class UTileView;
@@ -15,6 +16,7 @@ class UMItemTileWidget;
 struct FPMInventoryEntry;
 class UButton;
 class UWidgetSwitcher;
+class UMTileWidget;
 
 UENUM(BlueprintType)
 enum class EMInventoryType : uint8
@@ -71,15 +73,16 @@ protected:
 protected:
 	MPriorityQueue<UMItemTileWidget> EmptySlots;
 	MPriorityQueue<UMItemTileWidget> ConsumableEmptySlots;
+	TMHeap<int32> Test;
 
 	UPROPERTY()
 	UPMInventoryManagerComponent* InventoryComponent;
 
 	UPROPERTY(meta = (BindWidget))
-	UTileView* TileView_EquipmentItems;
+	UMTileWidget* TileView_EquipmentItems;
 
 	UPROPERTY(meta = (BindWidget))
-	UTileView* TileView_ConsumableItems;
+	UMTileWidget* TileView_ConsumableItems;
 
 	UPROPERTY(meta = (BindWidget))
 	UWidgetSwitcher* WidgetSwitcher;

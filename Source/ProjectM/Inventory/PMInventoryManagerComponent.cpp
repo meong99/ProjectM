@@ -6,7 +6,8 @@
 #include "System/MDataTableManager.h"
 #include "Engine/Engine.h"
 #include "Engine/DataTable.h"
-#include "../Table/Item/MTable_ConsumableItem.h"
+#include "Table/Item/MTable_ConsumableItem.h"
+#include "Table/MTableAsset.h"
 
 UE_DISABLE_OPTIMIZATION
 /*
@@ -277,7 +278,7 @@ void UPMInventoryManagerComponent::Debug_AddItem(int32 TableId, int32 ItemId)
 		UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
 		if (TableManager)
 		{
-			const UDataTable* DataTable = TableManager->GetDataTable(FMTable_ConsumableItem::StaticStruct());
+			const UDataTable* DataTable = TableManager->GetDataTable(EMTableType::Consumable);
 			if (DataTable)
 			{
 				const TArray<FName>& Names = DataTable->GetRowNames();

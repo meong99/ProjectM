@@ -2,11 +2,11 @@
 #include "Input/PMInputComponent.h"
 #include "GameFramework/Pawn.h"
 #include "Inventory/PMInventoryManagerComponent.h"
-#include "Components/TileView.h"
 #include "Items/MItemTileWidget.h"
 #include "Inventory/PMInventoryItemList.h"
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
+#include "CommonWidgets/MTileWidget.h"
 
 UMInventoryWidget::UMInventoryWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {}
