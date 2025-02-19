@@ -2,9 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
+#include "Templates/SubclassOf.h"
 #include "MTable_ItemBase.generated.h"
 
 class UTexture;
+class UPMInventoryItemDefinition;
 
 UENUM(BlueprintType)
 enum class EMItemIdType : uint8
@@ -37,11 +39,5 @@ public:
 */
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 ItemId = INDEX_NONE;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FName ItemName;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	UTexture* ItemTexture;
+	TSubclassOf<UPMInventoryItemDefinition> ItemDefinition;
 };

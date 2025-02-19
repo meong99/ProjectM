@@ -14,6 +14,7 @@ struct MPriorityQueueNode
 		return Keyid == Other.Keyid;
 	}
 
+	int ItemType = INDEX_NONE;
 	int Keyid = INDEX_NONE;
 	T* Data = nullptr;
 };

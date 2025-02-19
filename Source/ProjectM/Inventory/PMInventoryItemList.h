@@ -8,7 +8,7 @@
 
 class UPMInventoryItemInstance;
 class UPMInventoryItemDefinition;
-class UActorComponent;
+class UPMInventoryManagerComponent;
 
 USTRUCT(BlueprintType)
 struct FPMInventoryEntry : public FFastArraySerializerItem
@@ -18,6 +18,8 @@ struct FPMInventoryEntry : public FFastArraySerializerItem
 	bool IsValid() const;
 
 	EMItemType GetItemType() const;
+
+	TSubclassOf<UPMInventoryItemDefinition> GetItemDefinition() const;
 
 	UPROPERTY()
 	int32 ItemUid = INDEX_NONE;
@@ -33,7 +35,7 @@ struct FPMInventoryItemList : public FFastArraySerializer
 	GENERATED_BODY()
 
 	FPMInventoryItemList();
-	FPMInventoryItemList(UActorComponent* InOwnerComponent);
+	FPMInventoryItemList(UPMInventoryManagerComponent* InOwnerComponent);
 
 /*
 * Network
@@ -64,8 +66,9 @@ public:
 	TArray<FPMInventoryEntry> Entries;
 
 	UPROPERTY(NotReplicated)
-	TObjectPtr<UActorComponent> OwnerComponent;
+	TObjectPtr<UPMInventoryManagerComponent> OwnerComponent;
 
+	UPROPERTY()
 	EMItemType OwnedItemType = EMItemType::None;
 };
 

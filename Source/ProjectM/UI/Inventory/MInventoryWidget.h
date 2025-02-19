@@ -64,12 +64,13 @@ protected:
 	void	OnClick_ExitButton();
 
 protected:
-	MPriorityQueueNode<UMItemTileWidget> PopEmptySlot();
+	MPriorityQueueNode<UMItemTileWidget> PopEmptySlot(EMItemType ItemType);
 /*
 * Member Variables
 */
 protected:
 	MPriorityQueue<UMItemTileWidget> EmptySlots;
+	MPriorityQueue<UMItemTileWidget> ConsumableEmptySlots;
 
 	UPROPERTY()
 	UPMInventoryManagerComponent* InventoryComponent;

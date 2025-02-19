@@ -41,7 +41,7 @@ void UMInventoryWidget::Callback_AddNewItem(const FPMInventoryEntry* NewItemEntr
 		return;
 	}
 
-	const MPriorityQueueNode<UMItemTileWidget>& EmptySlotHandle = PopEmptySlot();
+	const MPriorityQueueNode<UMItemTileWidget>& EmptySlotHandle = PopEmptySlot(NewItemEntry->GetItemType());
 	if (EmptySlotHandle.IsValid() && EmptySlotHandle.Data)
 	{
 		EmptySlotHandle.Data->SetNewEntry(*NewItemEntry);
@@ -54,7 +54,14 @@ void UMInventoryWidget::Callback_AddNewItem(const FPMInventoryEntry* NewItemEntr
 
 void UMInventoryWidget::RegisterEmptySlot(MPriorityQueueNode<UMItemTileWidget>&& NewNode)
 {
-	EmptySlots.Push_Unique(NewNode);
+	if (NewNode.ItemType == (int)EMItemType::Equipment)
+	{
+		EmptySlots.Push_Unique(NewNode);
+	}
+	else if (NewNode.ItemType == (int)EMItemType::Consumable)
+	{
+		ConsumableEmptySlots.Push_Unique(NewNode);
+	}
 }
 
 void UMInventoryWidget::BindDelegates()
@@ -106,7 +113,8 @@ void UMInventoryWidget::InitInventorySlots_Impl(const FPMInventoryItemList& Inve
 				ItemDetailData->ItemEntry = *EntryIter;
 				++EntryIter;
 			}
-
+			ItemDetailData->SlotIndex = i;
+			ItemDetailData->SlotType = InventoryList.OwnedItemType;
 			ItemDetailData->EntryHeight = ItemSlots->GetEntryHeight();
 			ItemDetailData->EntryWidth = ItemSlots->GetEntryWidth();
 			ItemSlots->AddItem(ItemDetailData);
@@ -152,9 +160,18 @@ void UMInventoryWidget::OnClick_ExitButton()
 	RemoveWidgetFromLayer();
 }
 
-MPriorityQueueNode<UMItemTileWidget> UMInventoryWidget::PopEmptySlot()
+MPriorityQueueNode<UMItemTileWidget> UMInventoryWidget::PopEmptySlot(EMItemType ItemType)
 {
 	MPriorityQueueNode<UMItemTileWidget> Node;
-	EmptySlots.Pop(Node);
+
+	if (ItemType == EMItemType::Equipment)
+	{
+		EmptySlots.Pop(Node);
+	}
+	else if (ItemType == EMItemType::Consumable)
+	{
+		ConsumableEmptySlots.Pop(Node);
+	}
+
 	return Node;
 }

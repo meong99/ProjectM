@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "System/MDataLoadSubsystem.h"
+#include "System/MDataTableManager.h"
 #include "DataAssets/PMAssetManager.h"
 #include "Table/MTableAsset.h"
 #include "Engine/Engine.h"
 #include "Table/Item/MTable_ConsumableItem.h"
 
-void UMDataLoadSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+void UMDataTableManager::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	
@@ -18,12 +18,12 @@ void UMDataLoadSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	);
 }
 
-const UDataTable* UMDataLoadSubsystem::GetDataTable(const UScriptStruct* TableRowData) const
+const UDataTable* UMDataTableManager::GetDataTable(const UScriptStruct* TableType) const
 {
-	return TableMap.FindRef(TableRowData);
+	return TableMap.FindRef(TableType);
 }
 
-void UMDataLoadSubsystem::LoadDataTables()
+void UMDataTableManager::LoadDataTables()
 {
 	UPMAssetManager& AssetManager = UPMAssetManager::Get();
 	check(UPMAssetManager::IsInitialized());

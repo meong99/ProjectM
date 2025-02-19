@@ -28,6 +28,10 @@ public:
 	UPROPERTY()
 	FPMInventoryEntry ItemEntry;
 
+	int32 SlotIndex = INDEX_NONE;
+
+	EMItemType SlotType = EMItemType::None;
+
 	float EntryHeight;
 
 	float EntryWidth;

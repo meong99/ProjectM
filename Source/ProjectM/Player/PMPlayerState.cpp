@@ -8,6 +8,17 @@
 #include "AbilitySystem/Attributes/PMHealthSet.h"
 #include "AbilitySystem/Attributes/PMCombatSet.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "Player/MPlayerSaveGame.h"
+#include "GameFramework/PlayerState.h"
+#include "Inventory/PMInventoryManagerComponent.h"
+#include "Equipment/PMQuickBarComponent.h"
+#include "Inventory/PMInventoryItemInstance.h"
+#include "GameModes/AsyncAction_ExperienceReady.h"
+
+#define PLAYER_ID 1
+#define PLAYER_NAME TEXT("PlayerName")
+
 APMPlayerState::APMPlayerState()
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UPMAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
@@ -38,6 +49,22 @@ void APMPlayerState::PostInitializeComponents()
 		check(ExperienceManagerComp);
 
 		ExperienceManagerComp->CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
+	}
+}
+
+void APMPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (HasAuthority())
+	{
+		UAsyncAction_ExperienceReady* ExperienceReady = UAsyncAction_ExperienceReady::WaitForExperienceReady(this);
+		if (ExperienceReady)
+		{
+			ExperienceReady->OnReady.AddDynamic(this, &ThisClass::Server_LoadPlayerData);
+			ExperienceReady->Activate();
+		}
+		//Server_LoadPlayerData();
 	}
 }
 
@@ -73,4 +100,107 @@ void APMPlayerState::SetPawnData(const UPMPawnData* InPawnData)
 			AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, nullptr);
 		}
 	}
+}
+
+void APMPlayerState::Server_SavePlayerData_Implementation()
+{
+	UpdateCurrentData();
+	UGameplayStatics::SaveGameToSlot(PlayerSaveData, PlayerSaveData->SaveSlotName, PlayerSaveData->SaveIndex);
+}
+
+void APMPlayerState::Server_LoadPlayerData_Implementation()
+{
+	if (!PlayerSaveData)
+	{
+		PlayerSaveData = Cast<UMPlayerSaveGame>(UGameplayStatics::LoadGameFromSlot(PLAYER_NAME, PLAYER_ID));
+		if (PlayerSaveData)
+		{
+			ApplyLoadedData();
+		}
+	}
+}
+
+void APMPlayerState::UpdateCurrentData()
+{
+	if (!PlayerSaveData)
+	{
+		PlayerSaveData = Cast<UMPlayerSaveGame>(UGameplayStatics::CreateSaveGameObject(UMPlayerSaveGame::StaticClass()));
+	}
+
+	PlayerSaveData->SaveIndex = PLAYER_ID;
+	PlayerSaveData->SaveSlotName = PLAYER_NAME;
+	APlayerController* Controller = GetPlayerController();
+	UPMInventoryManagerComponent* InventoryManager = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
+	UPMQuickBarComponent* QuickBarComp = Controller ? Controller->FindComponentByClass<UPMQuickBarComponent>() : nullptr;
+
+	if (InventoryManager && QuickBarComp)
+	{
+		PlayerSaveData->EquipmentItems.Empty();
+		PlayerSaveData->ConsumableItems.Empty();
+
+		const FPMInventoryItemList& EquipmentItemList = InventoryManager->GetEquipmentItemList();
+		for (const FPMInventoryEntry& Entry : EquipmentItemList.Entries)
+		{
+			TSubclassOf<UPMInventoryItemDefinition> ItemDef = Entry.GetItemDefinition();
+			if (ItemDef)
+			{
+				PlayerSaveData->EquipmentItems.Add(ItemDef);
+			}
+		}
+
+		const FPMInventoryItemList& ConsumableItemList = InventoryManager->GetConsumableItemList();
+		for (const FPMInventoryEntry& Entry : ConsumableItemList.Entries)
+		{
+			TSubclassOf<UPMInventoryItemDefinition> ItemDef = Entry.GetItemDefinition();
+			if (ItemDef)
+			{
+				PlayerSaveData->ConsumableItems.Add(ItemDef);
+			}
+		}
+
+		const UPMInventoryItemInstance* EquippedItem = QuickBarComp->GetEquippedItemDef();
+		if (EquippedItem)
+		{
+			PlayerSaveData->EquippedItem = EquippedItem->ItemDef;
+		}
+	}
+	else
+	{
+		MCHAE_WARNING("InventoryManager or QuickBarComp is null. Check the controller is created currectly");
+	}
+}
+
+void APMPlayerState::ApplyLoadedData()
+{
+	APlayerController* Controller = GetPlayerController();
+	UPMInventoryManagerComponent* InventoryManager = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
+	UPMQuickBarComponent* QuickBarComp = Controller ? Controller->FindComponentByClass<UPMQuickBarComponent>() : nullptr;
+
+	if (InventoryManager && QuickBarComp)
+	{
+		for (const TSubclassOf<UPMInventoryItemDefinition>& ItemDef : PlayerSaveData->EquipmentItems)
+		{
+			const FMItemHandle& ItemHandle = InventoryManager->AddItemDefinition(ItemDef);
+			UPMInventoryItemInstance* ItemInstance = InventoryManager->FindItemInstance(ItemHandle);
+			QuickBarComp->AddItemToSlot(0, ItemInstance);
+			QuickBarComp->SetActiveSlotIndex(0);
+		}
+		for (const TSubclassOf<UPMInventoryItemDefinition>& ItemDef : PlayerSaveData->ConsumableItems)
+		{
+			InventoryManager->AddItemDefinition(ItemDef);
+		}
+		if (PlayerSaveData->EquippedItem)
+		{
+#pragma TODO("장비 슬롯 개발되면 여기서 추가하고 인벤토리 장비 아이템과 분리")
+		}
+	}
+	else
+	{
+		MCHAE_WARNING("InventoryManager or QuickBarComp is null. Check the controller is created currectly");
+	}
+}
+
+void APMPlayerState::Debug_SaveGame()
+{
+	Server_SavePlayerData();
 }

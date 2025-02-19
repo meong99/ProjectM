@@ -3,6 +3,10 @@
 #include "PMInventoryItemDefinition.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
+#include "System/MDataTableManager.h"
+#include "Engine/Engine.h"
+#include "Engine/DataTable.h"
+#include "../Table/Item/MTable_ConsumableItem.h"
 
 UE_DISABLE_OPTIMIZATION
 /*
@@ -11,6 +15,7 @@ UE_DISABLE_OPTIMIZATION
 UPMInventoryManagerComponent::UPMInventoryManagerComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 	, InventoryList(this)
+	, ConsumableItemList(this)
 {
 	SetIsReplicatedByDefault(true);
 	bWantsInitializeComponent = true;
@@ -23,8 +28,7 @@ void UPMInventoryManagerComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
-#pragma TODO("이거 인벤토리 설정 해야함")
- 	InitInventory();
+	InitInventory();
 }
 
 void UPMInventoryManagerComponent::CallOrRegister_OnInitInventory(FOnInitInventory::FDelegate&& Delegate)
@@ -220,11 +224,6 @@ void UPMInventoryManagerComponent::RemoveDelegateOnChangeInventory(const int32 I
 
 void UPMInventoryManagerComponent::InitInventory()
 {
-	if (bIsInitInventory)
-	{
-		return;
-	}
-
 	bIsInitInventory = true;
 	Delegate_OnInitInventory.Broadcast(InventoryList);
 	Delegate_OnInitInventory.Broadcast(ConsumableItemList);
@@ -270,3 +269,36 @@ FPMInventoryItemList* UPMInventoryManagerComponent::GetItemList(const EMItemType
 	}
 }
 UE_ENABLE_OPTIMIZATION
+
+void UPMInventoryManagerComponent::Debug_AddItem(int32 TableId, int32 ItemId)
+{
+	if (GEngine)
+	{
+		UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
+		if (TableManager)
+		{
+			const UDataTable* DataTable = TableManager->GetDataTable(FMTable_ConsumableItem::StaticStruct());
+			if (DataTable)
+			{
+				const TArray<FName>& Names = DataTable->GetRowNames();
+				if (Names.IsValidIndex(ItemId))
+				{
+					FMTable_ConsumableItem* Item = DataTable->FindRow<FMTable_ConsumableItem>(Names[ItemId], Names[ItemId].ToString());
+					if (Item)
+					{
+						DebugServer_AddItem(Item->ItemDefinition);
+					}
+					else
+					{
+						MCHAE_LOG("Can't Found Item. ItemId = %d", ItemId);
+					}
+				}
+			}
+		}
+	}
+}
+
+void UPMInventoryManagerComponent::DebugServer_AddItem_Implementation(TSubclassOf<UPMInventoryItemDefinition> ItemDef)
+{
+	AddItemDefinition(ItemDef);
+}

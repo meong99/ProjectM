@@ -4,6 +4,7 @@
 #include "PMInventoryItemDefinition.h"
 #include "PMInventoryItemInstance.h"
 #include "PMGameplayTags.h"
+#include "PMInventoryManagerComponent.h"
 
 /*
 * FPMInventoryEntry -------------------------------
@@ -25,6 +26,16 @@ EMItemType FPMInventoryEntry::GetItemType() const
 	return EMItemType::None;
 }
 
+TSubclassOf<UPMInventoryItemDefinition> FPMInventoryEntry::GetItemDefinition() const
+{
+	if (Instance)
+	{
+		return Instance->ItemDef;
+	}
+
+	return nullptr;
+}
+
 /*
 * FPMInventoryList -------------------------------
 */
@@ -37,7 +48,7 @@ FPMInventoryItemList::FPMInventoryItemList()
 	}
 }
 
-FPMInventoryItemList::FPMInventoryItemList(UActorComponent* InOwnerComponent)
+FPMInventoryItemList::FPMInventoryItemList(UPMInventoryManagerComponent* InOwnerComponent)
 	: OwnerComponent(InOwnerComponent)
 {
 	if (IsValid(OwnerComponent) == false)
@@ -58,23 +69,30 @@ void FPMInventoryItemList::PreReplicatedRemove(const TArrayView<int32> RemovedIn
 
 void FPMInventoryItemList::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
 {
-	// 	for (int32 Index : AddedIndices)
-	// 	{
-	// 		FPMInventoryEntry& Stack = Entries[Index];
-	// 		BroadcastChangeMessage(Stack, /*OldCount=*/ 0, /*NewCount=*/ Stack.StackCount);
-	// 		Stack.LastObservedCount = Stack.StackCount;
-	// 	}
+	for (int32 Index : AddedIndices)
+	{
+		if (Entries.IsValidIndex(Index))
+		{
+	 		OwnerComponent->Delegate_OnNewItemAdded.Broadcast(&Entries[Index]);
+		}
+	}
 }
 
 void FPMInventoryItemList::PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize)
 {
-	// 	for (int32 Index : ChangedIndices)
-	// 	{
-	// 		FPMInventoryEntry& Stack = Entries[Index];
-	// 		check(Stack.LastObservedCount != INDEX_NONE);
-	// 		BroadcastChangeMessage(Stack, /*OldCount=*/ Stack.LastObservedCount, /*NewCount=*/ Stack.StackCount);
-	// 		Stack.LastObservedCount = Stack.StackCount;
-	// 	}
+	for (int32 Index : ChangedIndices)
+	{
+		if (Entries.IsValidIndex(Index))
+		{
+			FPMInventoryEntry& Entry = Entries[Index];
+			FOnChangeInventory Delegate = OwnerComponent->Delegate_OnChangeInventory.FindRef(Entry.ItemUid);
+
+			FMItemHandle Handle;
+
+			Handle.ItemUid = Entry.ItemUid;
+			Delegate.Broadcast(Handle);
+		}
+	}
 }
 
 int32 FPMInventoryItemList::ChangeItemQuantity(const FMItemHandle& ItemHandle, int32 ChangeNum)

@@ -4,6 +4,7 @@
 #include "PMGameStateBase.generated.h"
 
 class UPMExperienceManagerComponent;
+class USaveGame;
 
 UCLASS()
 class PROJECTM_API APMGameStateBase : public AGameStateBase
@@ -15,11 +16,17 @@ class PROJECTM_API APMGameStateBase : public AGameStateBase
 */
 public:
 	APMGameStateBase();
+
 /*
 * Member Functions
 */
 public:
 	UPMExperienceManagerComponent* GetExperienceManagerComponent() const { return ExperienceManagerComponent; }
+	
+	UFUNCTION(Server, Reliable)
+	void Server_SaveGame();
+	UFUNCTION(Server, Reliable)
+	void Server_LoadGame();
 
 /*
 * Member Variables
@@ -27,4 +34,7 @@ public:
 private:
 	UPROPERTY()
 	UPMExperienceManagerComponent* ExperienceManagerComponent;
+	
+	UPROPERTY()
+	TArray<TObjectPtr<USaveGame>> PlayerSaveDataArray;
 };

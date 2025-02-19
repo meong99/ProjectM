@@ -41,6 +41,8 @@ void UMItemTileWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 		MPriorityQueueNode<UMItemTileWidget> Node;
 
 		Node.Data = this;
+		Node.Keyid = ItemData->SlotIndex;
+		Node.ItemType = (int)ItemData->SlotType;
 		InventoryWidget->RegisterEmptySlot(MoveTemp(Node));
 	}
 

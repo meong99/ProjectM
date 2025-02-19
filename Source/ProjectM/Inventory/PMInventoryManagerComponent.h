@@ -6,6 +6,8 @@
 
 #include "PMInventoryManagerComponent.generated.h"
 
+class ULocalPlayerSaveGame;
+
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnChangeInventory, const FMItemHandle& ItemHandle);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnNewItemAdded, const FPMInventoryEntry* ItemEntry);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnInitInventory, const FPMInventoryItemList& InventoryList);
@@ -40,7 +42,6 @@ public:
 	// 아이템을 추가하고 Instancing해서 저장한다.
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
 	FMItemHandle AddItemDefinition(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
-	FMItemHandle AddItemDefinition_Impl(TSubclassOf<UPMInventoryItemDefinition> ItemDef, FPMInventoryItemList& ItemList);
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UPMInventoryItemInstance*	FindItemInstance(const FMItemHandle& ItemHandle);
@@ -54,8 +55,14 @@ public:
 	FDelegateHandle AddDelegateOnChangeInventory(const int32 ItemUid, FOnChangeInventory::FDelegate&& Delegate);
 	void			RemoveDelegateOnChangeInventory(const int32 ItemUid, const FDelegateHandle& DelegateHandle);
 
+	const FPMInventoryItemList& GetEquipmentItemList() const { return InventoryList; }
+	const FPMInventoryItemList& GetConsumableItemList() const { return ConsumableItemList; }
+
 
 protected:
+	FMItemHandle AddItemDefinition_Impl(TSubclassOf<UPMInventoryItemDefinition> ItemDef, FPMInventoryItemList& ItemList);
+
+	UFUNCTION()
 	void InitInventory();
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
@@ -67,7 +74,8 @@ protected:
 */
 public:
 	FOnNewItemAdded Delegate_OnNewItemAdded;
-
+	TMap<int32, FOnChangeInventory> Delegate_OnChangeInventory;
+	
 private:
 	UPROPERTY(Replicated)
 	FPMInventoryItemList InventoryList;
@@ -79,9 +87,14 @@ private:
 	UPROPERTY(BlueprintReadOnly, meta=(AllowprivateAccess=true))
 	int32 MaxInventoryCount = 30;
 
-	TMap<int32, FOnChangeInventory> Delegate_OnChangeInventory;
-
 	bool bIsInitInventory = false;
 
 	FOnInitInventory Delegate_OnInitInventory;
+
+// DEBUG
+private:
+	UFUNCTION(Exec)
+	void Debug_AddItem(int32 TableId, int32 ItemId);
+	UFUNCTION(Server, Reliable)
+	void DebugServer_AddItem(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
 };

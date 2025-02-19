@@ -25,12 +25,4 @@ public:
 * Member Variables
 */
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 Health = 0;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 Mana = 0;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 Exp = 0;
 };

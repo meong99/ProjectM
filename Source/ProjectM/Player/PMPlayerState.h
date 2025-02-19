@@ -7,6 +7,7 @@ class UPMExperienceDefinition;
 class UPMPawnData;
 class UPMAbilitySystemComponent;
 class UAbilitySystemComponent;
+class UMPlayerSaveGame;
 
 UCLASS()
 class PROJECTM_API APMPlayerState : public APlayerState
@@ -20,6 +21,7 @@ public:
 	APMPlayerState();
 
 	virtual void PostInitializeComponents() override;
+	virtual void BeginPlay() override;
 	/*
 * Member Functions
 */
@@ -32,6 +34,15 @@ public:
 
 	void SetPawnData(const UPMPawnData* InPawnData);
 
+	UFUNCTION(Server, Reliable)
+	void Server_SavePlayerData();
+	UFUNCTION(Server, Reliable)
+	void Server_LoadPlayerData();
+
+protected:
+	void UpdateCurrentData();
+	void ApplyLoadedData();
+
 /*
 * Member Variables
 */
@@ -42,4 +53,13 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "ProjectM | PlayerState")
 	TObjectPtr<UPMAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY()
+	TObjectPtr<UMPlayerSaveGame> PlayerSaveData;
+
+
+//DEBUG
+public:
+	UFUNCTION(Exec)
+	void Debug_SaveGame();
 };

@@ -40,6 +40,8 @@ public:
 	void UnequipItemInSlot();
 	void EquipItemInSlot();
 
+	const UPMInventoryItemInstance* GetEquippedItemDef() const;
+
 protected:
 	UFUNCTION()
 	void OnRep_Slots();
