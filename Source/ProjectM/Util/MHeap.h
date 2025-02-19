@@ -5,83 +5,30 @@ template <typename T, typename Compare = TLess<T>>
 class TMHeap
 {
 private:
-	TArray<T> Data;
-	Compare Comp;
-
-	void HeapifyUp(int32 Index)
-	{
-		while (Index > 0)
-		{
-			int32 Parent = (Index - 1) / 2;
-			if (!Comp(Data[Parent], Data[Index]))
-			{
-				break;
-			}
-			Swap(Data[Index], Data[Parent]);
-			Index = Parent;
-		}
-	}
-
-	void heapifyDown(int32 Index)
-	{
-		int32 Size = Data.Num();
-		while (true)
-		{
-			int32 Left = 2 * Index + 1;
-			int32 Right = 2 * Index + 2;
-			int32 Best = Index;
-
-			if (Left < Size && Comp(Data[Best], Data[Left]))
-			{
-				Best = Left;
-			}
-			if (Right < Size && Comp(Data[Best], Data[Right]))
-			{
-				Best = Right;
-			}
-			if (Best == Index)
-			{
-				break;
-			}
-			Swap(Data[Index], Data[Best]);
-			Index = Best;
-		}
-	}
-
-	void Swap(T& Left, T& Right)
-	{
-		T Temp = Left;
-		Left = Right;
-		Right = Left;
-	}
-
+	TArray<T>	Data;
+	Compare		Comp;
+	
 public:
-	TMHeap() = default;
+	TMHeap()
+	{
+		Data.Heapify(Comp);
+	}
 
 	void Push(T Value)
 	{
-		Data.Add(Value);
-		HeapifyUp(Data.size() - 1);
+		Data.HeapPush(Value, Comp);
 	}
 	void Push(T&& Value)
 	{
-		Data.Add(Value);
-		HeapifyUp(Data.size() - 1);
+		Data.HeapPush(Value, Comp);
 	}
 
-	void Pop()
+	T Pop()
 	{
-		if (Data.IsEmpty())
-		{
-			MCHAE_WARNING("Data is empty");
-			return;
-		}
-		Data[0] = Data[Data.Num() - 1];
-		Data.RemoveAt(Data.Num() - 1);
-		if (!Data.IsEmpty())
-		{
-			heapifyDown(0);
-		}
+		T Item;
+		Data.HeapPop(Item, Comp);
+
+		return Item;
 	}
 
 	T Top() const
@@ -89,8 +36,10 @@ public:
 		if (Data.IsEmpty())
 		{
 			MCHAE_WARNING("Data is empty");
+			return;
 		}
-		return Data[0];
+
+		return Data.HeapTop();
 	}
 
 	bool Empty() const
