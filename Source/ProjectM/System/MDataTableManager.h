@@ -26,13 +26,16 @@ public:
 	* Member Functions
 	*/
 public:
-	const UDataTable* GetDataTable(EMTableType TableType) const;
+	const UDataTable* GetDataTable(EMItemIdType TableType) const;
+
+	int32 GetTableNum() const { return TableMap.Num(); }
 private:
 	void LoadDataTables();
+
 	/*
 	* Member Variables
 	*/
 public:
 	UPROPERTY(BlueprintReadOnly)
-	TMap<EMTableType, UDataTable*> TableMap;
+	TMap<EMItemIdType, UDataTable*> TableMap;
 };

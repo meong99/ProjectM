@@ -6,7 +6,8 @@
 #include "Inventory/PMInventoryItemList.h"
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
-#include "CommonWidgets/MTileWidget.h"
+#include "CommonWidgets/MTileView.h"
+#include "MInventoryTemplete.h"
 
 UMInventoryWidget::UMInventoryWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {}
@@ -30,6 +31,12 @@ FReply UMInventoryWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGeom
 
 void UMInventoryWidget::Callback_OnInitInventory(const FPMInventoryItemList& InventoryList)
 {
+	UMInventoryTemplete* InvenOfType = Cast<UMInventoryTemplete>(CreateWidget(this, InventoryTemplete));
+	if (InvenOfType)
+	{
+		Inventories.Add(InvenOfType->GetTileView());
+		WidgetSwitcher->AddChild(InvenOfType);
+	}
 	InitInventorySlots(InventoryList);
 }
 
@@ -124,26 +131,19 @@ void UMInventoryWidget::InitInventorySlots_Impl(const FPMInventoryItemList& Inve
 
 UTileView* UMInventoryWidget::GetItemSlotView(const EMItemType ItemType)
 {
-	switch (ItemType)
+	if (Inventories.IsValidIndex((int32)ItemType))
 	{
-		case EMItemType::Equipment :
-		{
-			return TileView_EquipmentItems;
-		}
-		case EMItemType::Consumable :
-		{
-			return TileView_ConsumableItems;
-		}
-		default:
-			return nullptr;
+		return Inventories[(int32)ItemType];
 	}
+	
+	return nullptr;
 }
 
 void UMInventoryWidget::OnClick_EquipmentButton()
 {
 	if (WidgetSwitcher)
 	{
-		WidgetSwitcher->SetActiveWidgetIndex(0);
+		WidgetSwitcher->SetActiveWidgetIndex((int32)EMItemType::Equipment);
 	}
 }
 
@@ -151,7 +151,7 @@ void UMInventoryWidget::OnClick_ConsumableButton()
 {
 	if (WidgetSwitcher)
 	{
-		WidgetSwitcher->SetActiveWidgetIndex(1);
+		WidgetSwitcher->SetActiveWidgetIndex((int32)EMItemType::Consumable);
 	}
 }
 

@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Components/TileView.h"
-#include "MTileWidget.generated.h"
+#include "MTileView.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTM_API UMTileWidget : public UTileView
+class PROJECTM_API UMTileView : public UTileView
 {
 	GENERATED_BODY()
 	

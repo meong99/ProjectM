@@ -83,6 +83,10 @@ private:
 	UPROPERTY(Replicated)
 	FPMInventoryItemList ConsumableItemList;
 
+	// ItemTable을 기준으로 생성함
+	UPROPERTY(Replicated)
+	TArray<FPMInventoryItemList> ItemListArray;
+
 #pragma TODO("하드코딩 말고 데이터 읽기 만들면 변경해야함")
 	UPROPERTY(BlueprintReadOnly, meta=(AllowprivateAccess=true))
 	int32 MaxInventoryCount = 30;

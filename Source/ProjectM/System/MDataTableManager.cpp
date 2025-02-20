@@ -18,7 +18,7 @@ void UMDataTableManager::Initialize(FSubsystemCollectionBase& Collection)
 	);
 }
 
-const UDataTable* UMDataTableManager::GetDataTable(EMTableType TableType) const
+const UDataTable* UMDataTableManager::GetDataTable(EMItemIdType TableType) const
 {
 	return TableMap.FindRef(TableType);
 }
@@ -44,7 +44,7 @@ void UMDataTableManager::LoadDataTables()
 				{
 					for (UDataTable* Table :TableAsset->Tables)
 					{
-						if (Table && TableAsset->TableType != EMTableType::None)
+						if (Table && TableAsset->TableType != EMItemIdType::None)
 						{
 							TableMap.Add(TableAsset->TableType, Table);
 						}

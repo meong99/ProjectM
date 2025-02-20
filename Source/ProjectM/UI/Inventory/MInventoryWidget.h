@@ -16,7 +16,8 @@ class UMItemTileWidget;
 struct FPMInventoryEntry;
 class UButton;
 class UWidgetSwitcher;
-class UMTileWidget;
+class UMTileView;
+class UMInventoryTemplete;
 
 UENUM(BlueprintType)
 enum class EMInventoryType : uint8
@@ -78,12 +79,19 @@ protected:
 	UPROPERTY()
 	UPMInventoryManagerComponent* InventoryComponent;
 
-	UPROPERTY(meta = (BindWidget))
-	UMTileWidget* TileView_EquipmentItems;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UMInventoryTemplete> InventoryTemplete;
 
-	UPROPERTY(meta = (BindWidget))
-	UMTileWidget* TileView_ConsumableItems;
+	UPROPERTY()
+	UTileView* TileView_EquipmentItems;
 
+	UPROPERTY()
+	UTileView* TileView_ConsumableItems;
+
+	// 타입 별 인벤토리
+	TArray<UMTileView*> Inventories;
+
+	// 여기에 TileView를 추가해서 Switching??
 	UPROPERTY(meta = (BindWidget))
 	UWidgetSwitcher* WidgetSwitcher;
 
