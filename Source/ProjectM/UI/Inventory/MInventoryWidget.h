@@ -6,7 +6,6 @@
 #include "UI/MWidgetBase.h"
 #include "Util/MPriorityQueue.h"
 #include "Inventory/PMInventoryItemList.h"
-#include "Util/MHeap.h"
 #include "MInventoryWidget.generated.h"
 
 class UTileView;
@@ -18,13 +17,6 @@ class UButton;
 class UWidgetSwitcher;
 class UMTileView;
 class UMInventoryTemplete;
-
-UENUM(BlueprintType)
-enum class EMInventoryType : uint8
-{
-	Equipment,
-	Consumable,
-};
 
 UCLASS()
 class PROJECTM_API UMInventoryWidget : public UMWidgetBase
@@ -48,16 +40,14 @@ public:
 	void	Callback_OnInitInventory(const FPMInventoryItemList& InventoryList);
 
 	//인벤토리에 존재하지 않던 새로운 아이템이 추가됨
-	void	Callback_AddNewItem(const FPMInventoryEntry* NewItemEntry);
-
-	void	RegisterEmptySlot(MPriorityQueueNode<UMItemTileWidget>&& NewNode);
+	void	Callback_AddNewItem(const FPMInventoryEntry& NewItemEntry);
 
 protected:
 	void	BindDelegates();
 	void	InitInventorySlots(const FPMInventoryItemList& InventoryList);
-	void	InitInventorySlots_Impl(const FPMInventoryItemList& InventoryList, UTileView* ItemSlots);
+	void	InitInventorySlots_Impl(const FPMInventoryItemList& InventoryList, UMTileView* ItemSlots);
 
-	UTileView* GetItemSlotView(const EMItemType ItemType);
+	UMTileView* GetItemSlotView(const EMItemType ItemType);
 
 	UFUNCTION()
 	void	OnClick_EquipmentButton();
@@ -67,31 +57,19 @@ protected:
 	void	OnClick_ExitButton();
 
 protected:
-	MPriorityQueueNode<UMItemTileWidget> PopEmptySlot(EMItemType ItemType);
 /*
 * Member Variables
 */
 protected:
-	MPriorityQueue<UMItemTileWidget> EmptySlots;
-	MPriorityQueue<UMItemTileWidget> ConsumableEmptySlots;
-	TMHeap<int32> Test;
-
 	UPROPERTY()
 	UPMInventoryManagerComponent* InventoryComponent;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UMInventoryTemplete> InventoryTemplete;
 
-	UPROPERTY()
-	UTileView* TileView_EquipmentItems;
-
-	UPROPERTY()
-	UTileView* TileView_ConsumableItems;
-
 	// 타입 별 인벤토리
 	TArray<UMTileView*> Inventories;
 
-	// 여기에 TileView를 추가해서 Switching??
 	UPROPERTY(meta = (BindWidget))
 	UWidgetSwitcher* WidgetSwitcher;
 

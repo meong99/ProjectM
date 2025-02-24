@@ -11,7 +11,7 @@
 */
 bool FPMInventoryEntry::IsValid() const
 {
-	return ItemUid != INDEX_NONE;
+	return ItemUid != INDEX_NONE && Instance != nullptr;
 }
 
 EMItemType FPMInventoryEntry::GetItemType() const
@@ -73,7 +73,7 @@ void FPMInventoryItemList::PostReplicatedAdd(const TArrayView<int32> AddedIndice
 	{
 		if (Entries.IsValidIndex(Index))
 		{
-	 		OwnerComponent->Delegate_OnNewItemAdded.Broadcast(&Entries[Index]);
+	 		OwnerComponent->Delegate_OnNewItemAdded.Broadcast(Entries[Index]);
 		}
 	}
 }

@@ -18,7 +18,6 @@
 const FName UPMCharacterInitComponent::NAME_ActorFeatureName{"CharacterInit"};
 const FName UPMCharacterInitComponent::NAME_BindInputsNow{"BindInputsNow"};
 
-UE_DISABLE_OPTIMIZATION
 UPMCharacterInitComponent::UPMCharacterInitComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	// 초기화 단계 검사를 틱으로 하지 않고 이벤트 발생 형태로 가기 때문에 틱을 끈다. 하위 클래스에서 필요할 때 켠다.
@@ -371,5 +370,3 @@ void UPMCharacterInitComponent::Input_ToggleInputTag(FGameplayTag InputTag)
 		MCHAE_ERROR("InputComponent is null!");
 	}
 }
-
-UE_ENABLE_OPTIMIZATION

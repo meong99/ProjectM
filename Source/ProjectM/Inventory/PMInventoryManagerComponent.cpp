@@ -9,7 +9,6 @@
 #include "Table/Item/MTable_ConsumableItem.h"
 #include "Table/MTableAsset.h"
 
-UE_DISABLE_OPTIMIZATION
 /*
 * UPMInventoryManagerComponent -------------------------------
 */
@@ -157,7 +156,7 @@ FMItemHandle UPMInventoryManagerComponent::AddItemDefinition_Impl(TSubclassOf<UP
 		AddReplicatedSubObject(ItemInstance);
 	}
 
-	Delegate_OnNewItemAdded.Broadcast(Entry);
+	Delegate_OnNewItemAdded.Broadcast(*Entry);
 
 	return Handle;
 }
@@ -282,7 +281,6 @@ FPMInventoryItemList* UPMInventoryManagerComponent::GetItemList(const EMItemType
 		}
 	}
 }
-UE_ENABLE_OPTIMIZATION
 
 void UPMInventoryManagerComponent::Debug_AddItem(int32 TableId, int32 ItemId)
 {

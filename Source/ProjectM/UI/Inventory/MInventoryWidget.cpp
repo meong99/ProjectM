@@ -40,34 +40,18 @@ void UMInventoryWidget::Callback_OnInitInventory(const FPMInventoryItemList& Inv
 	InitInventorySlots(InventoryList);
 }
 
-void UMInventoryWidget::Callback_AddNewItem(const FPMInventoryEntry* NewItemEntry)
+void UMInventoryWidget::Callback_AddNewItem(const FPMInventoryEntry& NewItemEntry)
 {
-	if (NewItemEntry == nullptr)
+	if (NewItemEntry.IsValid() == false)
 	{
-		MCHAE_WARNING("NewItemEntry is null");
+		MCHAE_WARNING("NewItemEntry is not valid");
 		return;
 	}
 
-	const MPriorityQueueNode<UMItemTileWidget>& EmptySlotHandle = PopEmptySlot(NewItemEntry->GetItemType());
-	if (EmptySlotHandle.IsValid() && EmptySlotHandle.Data)
+	UMTileView* View = GetItemSlotView(NewItemEntry.GetItemType());
+	if (View)
 	{
-		EmptySlotHandle.Data->SetNewEntry(*NewItemEntry);
-	}
-	else
-	{
-		MCHAE_WARNING("EmptySlot is not valid");
-	}
-}
-
-void UMInventoryWidget::RegisterEmptySlot(MPriorityQueueNode<UMItemTileWidget>&& NewNode)
-{
-	if (NewNode.ItemType == (int)EMItemType::Equipment)
-	{
-		EmptySlots.Push_Unique(NewNode);
-	}
-	else if (NewNode.ItemType == (int)EMItemType::Consumable)
-	{
-		ConsumableEmptySlots.Push_Unique(NewNode);
+		View->AddNewItem(NewItemEntry);
 	}
 }
 
@@ -105,31 +89,16 @@ void UMInventoryWidget::InitInventorySlots(const FPMInventoryItemList& Inventory
 	InitInventorySlots_Impl(InventoryList, GetItemSlotView(InventoryList.OwnedItemType));
 }
 
-void UMInventoryWidget::InitInventorySlots_Impl(const FPMInventoryItemList& InventoryList, UTileView* ItemSlots)
+void UMInventoryWidget::InitInventorySlots_Impl(const FPMInventoryItemList& InventoryList, UMTileView* ItemSlots)
 {
 	if (InventoryComponent && ItemSlots)
 	{
 		const int32 MaxInventoryCount = InventoryComponent->GetMaxInventoryCount();
-
-		auto EntryIter = InventoryList.Entries.CreateConstIterator();
-		for (int32 i = 0; i < MaxInventoryCount; i++)
-		{
-			UMItemDetailData* ItemDetailData = NewObject<UMItemDetailData>(this);
-			if (EntryIter)
-			{
-				ItemDetailData->ItemEntry = *EntryIter;
-				++EntryIter;
-			}
-			ItemDetailData->SlotIndex = i;
-			ItemDetailData->SlotType = InventoryList.OwnedItemType;
-			ItemDetailData->EntryHeight = ItemSlots->GetEntryHeight();
-			ItemDetailData->EntryWidth = ItemSlots->GetEntryWidth();
-			ItemSlots->AddItem(ItemDetailData);
-		}
+		ItemSlots->InitView(InventoryList, MaxInventoryCount);
 	}
 }
 
-UTileView* UMInventoryWidget::GetItemSlotView(const EMItemType ItemType)
+UMTileView* UMInventoryWidget::GetItemSlotView(const EMItemType ItemType)
 {
 	if (Inventories.IsValidIndex((int32)ItemType))
 	{
@@ -158,20 +127,4 @@ void UMInventoryWidget::OnClick_ConsumableButton()
 void UMInventoryWidget::OnClick_ExitButton()
 {
 	RemoveWidgetFromLayer();
-}
-
-MPriorityQueueNode<UMItemTileWidget> UMInventoryWidget::PopEmptySlot(EMItemType ItemType)
-{
-	MPriorityQueueNode<UMItemTileWidget> Node;
-
-	if (ItemType == EMItemType::Equipment)
-	{
-		EmptySlots.Pop(Node);
-	}
-	else if (ItemType == EMItemType::Consumable)
-	{
-		ConsumableEmptySlots.Pop(Node);
-	}
-
-	return Node;
 }

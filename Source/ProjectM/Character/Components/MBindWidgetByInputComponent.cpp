@@ -55,7 +55,6 @@ void UMBindWidgetByInputComponent::BindWidgetByInput(UInputComponent* InInputCom
 	}
 }
 
-UE_DISABLE_OPTIMIZATION
 void UMBindWidgetByInputComponent::ToggleWidget(const FGameplayTag& Tag) const
 {
 	UMWidgetBase* Widget = WidgetInstanceMapWrapper->WidgetInstanceMap.FindRef(Tag);
@@ -74,7 +73,6 @@ void UMBindWidgetByInputComponent::ToggleWidget(const FGameplayTag& Tag) const
 		}
 	}
 }
-UE_ENABLE_OPTIMIZATION
 
 UMWidgetInstanceList* UMBindWidgetByInputComponent::GetWidgetInstanceList() const
 {

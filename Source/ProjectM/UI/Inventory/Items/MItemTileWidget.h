@@ -14,6 +14,7 @@ class UTileView;
 class UImage;
 class UMInventoryWidget;
 class UTextBlock;
+class UMTileView;
 
 UCLASS()
 class UMItemDetailData : public UObject
@@ -21,11 +22,10 @@ class UMItemDetailData : public UObject
 	GENERATED_BODY()
 
 public:
-
+#pragma TODO("아이템 변경 델리게이트 적용")
 	bool IsValid() const { return ItemEntry.IsValid(); }
+	void SetNewEntry(const FPMInventoryEntry& NewItemEntry);
 
-#pragma TODO("이거 포인터가 맞는 듯. Instance가 어떻게 변경되는지 알아야해. 댕글링포인터가 안 생기도록 스마트포인터를 쓰던지 해도 좋을 듯")
-	UPROPERTY()
 	FPMInventoryEntry ItemEntry;
 
 	int32 SlotIndex = INDEX_NONE;
@@ -57,21 +57,20 @@ public:
 * Member Functions
 */
 public:
-	void SetNewEntry(const FPMInventoryEntry& NewEntry);
 	void UpdateItemData();
 	void SetSlotIndex(const int32 InIndex);
 
 protected:
 	void ResetItemSlot();
 
-	static void ChangeItemData(UMItemDetailData* Lst, UMItemDetailData* Rst);
+	static void SwapItemData(UMItemDetailData* Lst, UMItemDetailData* Rst);
 
 /*
 * Member Variables
 */
 protected:
 	UPROPERTY()
-	UMInventoryWidget* InventoryWidget;
+	UMTileView* OwnerWidget;
 
 	int32 SlotIndex = INDEX_NONE;
 

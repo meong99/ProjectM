@@ -23,7 +23,6 @@ void UGameFeatureAction_AddRegisterWidget::AddToWorld(const FWorldContext& World
 		}
 	}
 }
-UE_DISABLE_OPTIMIZATION
 void UGameFeatureAction_AddRegisterWidget::HandleWidgetRegistry(AActor* Actor, FName EventName, FGameFeatureStateChangeContext ChangeContext)
 {
 	if (EventName == UGameFrameworkComponentManager::NAME_ReceiverRemoved)
@@ -76,4 +75,3 @@ void UGameFeatureAction_AddRegisterWidget::RemoveWidgetRegister(FGameFeatureStat
 		}
 	}
 }
-UE_ENABLE_OPTIMIZATION

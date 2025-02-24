@@ -8,21 +8,28 @@
 #include "Blueprint/DragDropOperation.h"
 #include "Inventory/PMInventoryManagerComponent.h"
 #include "Components/TextBlock.h"
+#include "CommonWidgets/MTileView.h"
 
+/*
+* UMItemDetailData
+*/
+void UMItemDetailData::SetNewEntry(const FPMInventoryEntry& NewItemEntry)
+{
+	if (NewItemEntry.IsValid())
+	{
+		ItemEntry = NewItemEntry;
+	}
+}
+
+/*
+* UMItemTileWidget
+*/
 UMItemTileWidget::UMItemTileWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {}
 
-UE_DISABLE_OPTIMIZATION
 void UMItemTileWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
-#ifdef WITH_EDITOR
-	if (SlotIndex == INDEX_NONE)
-	{
-		static int32 i = 0;
-
-		SetSlotIndex(i++);
-	}
-#else
+#ifndef WITH_EDITOR
 	if (Index)
 	{
 		Index->SetVisibility(ESlateVisibility::Hidden);
@@ -35,15 +42,19 @@ void UMItemTileWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 		return;
 	}
 
-	InventoryWidget = Cast<UMInventoryWidget>(ItemData->GetOuter());
-	if (ItemData->ItemEntry.IsValid() == false && InventoryWidget)
+	if (ItemData->SlotIndex != INDEX_NONE)
 	{
-		MPriorityQueueNode<UMItemTileWidget> Node;
+		SetSlotIndex(ItemData->SlotIndex);
+	}
+	else
+	{
+		MCHAE_FETAL("Item slot index is not valid! Must be set slot index!");
+	}
 
-		Node.Data = this;
-		Node.Keyid = ItemData->SlotIndex;
-		Node.ItemType = (int)ItemData->SlotType;
-		InventoryWidget->RegisterEmptySlot(MoveTemp(Node));
+	OwnerWidget = Cast<UMTileView>(ItemData->GetOuter());
+	if (OwnerWidget == nullptr)
+	{
+		MCHAE_FETAL("Owner of TileWidget is must be MTileView! Check where the tileview is created.");
 	}
 
 	if (ItemImage)
@@ -84,7 +95,7 @@ bool UMItemTileWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
 	UMItemDetailData* NewItemDetailData = Other->GetListItem<UMItemDetailData>();
 	if (NewItemDetailData)
 	{
-		ChangeItemData(NewItemDetailData, GetListItem<UMItemDetailData>());
+		SwapItemData(NewItemDetailData, GetListItem<UMItemDetailData>());
 		UpdateItemData();
 		Other->UpdateItemData();
 	}
@@ -97,16 +108,6 @@ void UMItemTileWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDropEve
 	MCHAE_LOG("on cancelled");
 }
 
-void UMItemTileWidget::SetNewEntry(const FPMInventoryEntry& NewEntry)
-{
-	UMItemDetailData* NewItemDetailData = GetListItem<UMItemDetailData>();
-	if (NewItemDetailData)
-	{
-		NewItemDetailData->ItemEntry = NewEntry;
-		UpdateItemData();
-	}
-}
-
 void UMItemTileWidget::UpdateItemData()
 {
 	UMItemDetailData* ItemDatail = GetListItem<UMItemDetailData>();
@@ -116,19 +117,23 @@ void UMItemTileWidget::UpdateItemData()
 	}
 
 	const FPMInventoryEntry& NewItemEntry = ItemDatail->ItemEntry;
-	if (NewItemEntry.IsValid() == false || NewItemEntry.Instance == nullptr)
+	if (NewItemEntry.IsValid() == false)
 	{
 		ResetItemSlot();
-		return;
+	}
+	else
+	{
+		const UPMInventoryItemDefinition* ItemDef = GetDefault<UPMInventoryItemDefinition>(NewItemEntry.Instance->ItemDef);
+		ItemImage->SetBrushFromTexture(ItemDef->ItemIcon);
+		ItemImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+		ItemHandle.ItemUid = NewItemEntry.ItemUid;
 	}
 
-#pragma TODO("아이템 변경 델리게이트 적용")
-
-	const UPMInventoryItemDefinition* ItemDef = GetDefault<UPMInventoryItemDefinition>(NewItemEntry.Instance->ItemDef);
-	ItemImage->SetBrushFromTexture(ItemDef->ItemIcon);
-	ItemImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-
-	ItemHandle.ItemUid = NewItemEntry.ItemUid;
+	if (OwnerWidget)
+	{
+		OwnerWidget->UpdateEntryWidget(SlotIndex);
+	}
 }
 
 void UMItemTileWidget::SetSlotIndex(const int32 InIndex)
@@ -148,15 +153,14 @@ void UMItemTileWidget::ResetItemSlot()
 	ItemHandle.ItemUid = INDEX_NONE;
 }
 
-void UMItemTileWidget::ChangeItemData(UMItemDetailData* Lst, UMItemDetailData* Rst)
+void UMItemTileWidget::SwapItemData(UMItemDetailData* Lst, UMItemDetailData* Rst)
 {
 	if (Lst == nullptr || Rst == nullptr)
 	{
 		return;
 	}
 
-	FPMInventoryEntry Tmp = Lst->ItemEntry;
+	const FPMInventoryEntry Tmp = Lst->ItemEntry;
 	Lst->ItemEntry = Rst->ItemEntry;
 	Rst->ItemEntry = Tmp;
 }
-UE_ENABLE_OPTIMIZATION

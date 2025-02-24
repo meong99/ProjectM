@@ -1,3 +1,5 @@
+#pragma once
+
 #include "CoreMinimal.h"
 
 // 기본이 최대힙(Less)이며 최소힙을 사용할 땐 TGreater를 사용한다.
@@ -6,27 +8,38 @@ class TMHeap
 {
 private:
 	TArray<T>	Data;
+	TSet<T>		DataCheck;
 	Compare		Comp;
 	
 public:
 	TMHeap()
 	{
-		Data.Heapify(Comp);
+		Heapify();
 	}
 
 	void Push(T Value)
 	{
-		Data.HeapPush(Value, Comp);
+		if (!DataCheck.Find(Value))
+		{
+			Data.HeapPush(Value, Comp);
+			DataCheck.Add(Value);
+		}
 	}
+
 	void Push(T&& Value)
 	{
-		Data.HeapPush(Value, Comp);
+		if (!DataCheck.Find(Value))
+		{
+			Data.HeapPush(Value, Comp);
+			DataCheck.Add(Value);
+		}
 	}
 
 	T Pop()
 	{
 		T Item;
 		Data.HeapPop(Item, Comp);
+		DataCheck.Remove(Item);
 
 		return Item;
 	}
@@ -42,13 +55,39 @@ public:
 		return Data.HeapTop();
 	}
 
-	bool Empty() const
+	bool IsEmpty() const
 	{
 		return Data.IsEmpty();
 	}
 
-	int32 Size() const
+	int32 Num() const
 	{
 		return Data.Num();
+	}
+
+	void RemoveElement(const T& Element)
+	{
+		bool bIsRemoved = false;
+
+		for (int32 i = 0; i < Data.Num(); i++)
+		{
+			if (Data[i] == Element)
+			{
+				Data.RemoveAt(i);
+				DataCheck.Remove(Element);
+				bIsRemoved = true;
+				break;
+			}
+		}
+
+		if (bIsRemoved)
+		{
+			Data.Heapify();
+		}
+	}
+
+	void Heapify()
+	{
+		Data.Heapify(Comp);
 	}
 };
