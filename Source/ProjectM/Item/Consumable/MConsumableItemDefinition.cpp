@@ -1,7 +1,7 @@
-//#include "PMEquipmentDefinition.h"
-//#include "PMEquipmentInstance.h"
-//
-//UPMEquipmentDefinition::UPMEquipmentDefinition()
-//{
-//	InstanceType = UPMEquipmentInstance::StaticClass();
-//}
+#include "MConsumableItemDefinition.h"
+#include "MConsumableItemInstance.h"
+
+UMConsumableItemDefinition::UMConsumableItemDefinition()
+{
+	InstanceType = UMConsumableItemInstance::StaticClass();
+}

@@ -140,8 +140,15 @@ FMItemHandle FPMInventoryItemList::AddEntry(TSubclassOf<UPMInventoryItemDefiniti
 		return NewHandle;
 	}
 
+	const UPMInventoryItemDefinition* ItemDefCDO = GetDefault<UPMInventoryItemDefinition>(ItemDef);
+	TSubclassOf<UPMInventoryItemInstance> InstanceType = ItemDefCDO->InstanceType;
+	if (!InstanceType)
+	{
+		InstanceType = UPMInventoryItemInstance::StaticClass();
+	}
+
 	FPMInventoryEntry& NewEntry = Entries.AddDefaulted_GetRef();
-	NewEntry.Instance = NewObject<UPMInventoryItemInstance>(OwningActor);
+	NewEntry.Instance = NewObject<UPMInventoryItemInstance>(OwningActor, InstanceType);
 	NewEntry.Instance->ItemDef = ItemDef;
 
 	for (const UPMInventoryItemFragment* Fragment : GetDefault<UPMInventoryItemDefinition>(ItemDef)->GetFragments())

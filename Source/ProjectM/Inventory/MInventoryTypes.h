@@ -24,7 +24,9 @@ struct FMItemHandle
 		return ItemUid != INDEX_NONE;
 	}
 
+	UPROPERTY()
 	int32 ItemUid = INDEX_NONE;
 
+	UPROPERTY()
 	EMItemType ItemType = EMItemType::None;
 };

@@ -44,14 +44,26 @@ void UPMHealthComponent::InitializeWithAbilitySystem(UPMAbilitySystemComponent* 
 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UPMHealthSet::GetHealthAttribute()).AddUObject(this, &ThisClass::HandleHealthChanged);
 
+#pragma TODO("Pawn이 재생성되기때문에 Ability, AttributeSet초기화와 위젯 초기화 타이밍 등이 맞지 않는다. 새로운 함수로 초기화 해야한다.")
 	// 초기화
-	HandleHealthChanged_Impl(this, 0, HealthSet->GetHealth(), nullptr);
+	Multicast_HandleHealthChanged(this, 0, HealthSet->GetHealth(), nullptr);
 }
 
 void UPMHealthComponent::UninitializeWithAbilitySystem()
 {
 	AbilitySystemComponent = nullptr;
 	HealthSet = nullptr;
+}
+
+float UPMHealthComponent::GetCurrentHealth()
+{
+	if (HealthSet)
+	{
+		return HealthSet->GetHealth();
+	}
+	
+	MCHAE_WARNING("Health is not initialized!");
+	return 0;
 }
 
 static AActor* GetInstigatorFromAttrChangeData(const FOnAttributeChangeData& ChangeData)
@@ -66,10 +78,10 @@ static AActor* GetInstigatorFromAttrChangeData(const FOnAttributeChangeData& Cha
 
 void UPMHealthComponent::HandleHealthChanged(const FOnAttributeChangeData& ChangeData)
 {
-	HandleHealthChanged_Impl(this, ChangeData.OldValue, ChangeData.NewValue, GetInstigatorFromAttrChangeData(ChangeData));
+	Multicast_HandleHealthChanged(this, ChangeData.OldValue, ChangeData.NewValue, GetInstigatorFromAttrChangeData(ChangeData));
 }
 
-void UPMHealthComponent::HandleHealthChanged_Impl(UPMHealthComponent* HealthComponent, float OldValue, float NewValue, AActor* Instigator)
+void UPMHealthComponent::Multicast_HandleHealthChanged_Implementation(UPMHealthComponent* HealthComponent, float OldValue, float NewValue, AActor* Instigator)
 {
 	OnHealthChanged.Broadcast(HealthComponent, OldValue, NewValue, Instigator);
 }

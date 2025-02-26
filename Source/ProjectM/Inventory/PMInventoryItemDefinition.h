@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
 #include "Inventory\MInventoryTypes.h"
+#include "Templates/SubclassOf.h"
 
 #include "PMInventoryItemDefinition.generated.h"
 
@@ -63,6 +64,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Display")
 	UTexture2D* ItemIcon;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "InstanceClassType")
+	TSubclassOf<UPMInventoryItemInstance> InstanceType;
 
 	// 아이템의 컴포넌트라고 생각할 수 있다.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, meta = (AllowPrivateAccess = true), Category = "Display")

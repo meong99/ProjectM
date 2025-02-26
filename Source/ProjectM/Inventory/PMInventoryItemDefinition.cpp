@@ -1,8 +1,10 @@
 #include "PMInventoryItemDefinition.h"
 #include "Templates/SubclassOf.h"
+#include "PMInventoryItemInstance.h"
 
-UPMInventoryItemDefinition::UPMInventoryItemDefinition(const FObjectInitializer& ObjectInitializer)
+UPMInventoryItemDefinition::UPMInventoryItemDefinition(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	InstanceType = UPMInventoryItemInstance::StaticClass();
 }
 
 const UPMInventoryItemFragment* UPMInventoryItemDefinition::FindFragmentByClass(TSubclassOf<UPMInventoryItemFragment> FragmentClass) const

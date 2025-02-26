@@ -28,19 +28,6 @@ void UPMInventoryManagerComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
-	if (GEngine)
-	{
-		// 아이템 테이블을 기준으로 인벤토리 저장소 초기화
-		UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
-		if (TableManager)
-		{
-			const int32 ItemTableNum = TableManager->GetTableNum();
-			for (int32 i = 0; i < ItemTableNum; i++)
-			{
-				ItemListArray.Emplace(this);
-			}
-		}
-	}
 	InitInventory();
 }
 
@@ -232,6 +219,15 @@ void UPMInventoryManagerComponent::RemoveDelegateOnChangeInventory(const int32 I
 		{
 			Delegate_OnChangeInventory.Remove(ItemUid);
 		}
+	}
+}
+
+void UPMInventoryManagerComponent::Server_UseItem_Implementation(const FMItemHandle& ItemHandle)
+{
+	UPMInventoryItemInstance* ItemInstance = FindItemInstance(ItemHandle);
+	if (ItemInstance)
+	{
+		ItemInstance->UseItem();
 	}
 }
 

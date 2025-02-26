@@ -1,6 +1,7 @@
 #include "PMInventoryItemInstance.h"
 #include "PMInventoryItemDefinition.h"
 #include "Net/UnrealNetwork.h"
+#include "PMGameplayTags.h"
 
 UPMInventoryItemInstance::UPMInventoryItemInstance(const FObjectInitializer& ObjectInitializer)
 {
@@ -27,6 +28,17 @@ const UPMInventoryItemFragment* UPMInventoryItemInstance::FindFragmentByClass(TS
 	}
 
 	return nullptr;
+}
+
+void UPMInventoryItemInstance::UseItem()
+{
+	if (CanUseItem())
+	{
+		if (RemoveStatTagStack(FPMGameplayTags::Get().Item_Quentity, 1) == 0)
+		{
+#pragma TODO("아이템 제거 델리게이트 발동해야함")
+		}
+	}
 }
 
 int32 UPMInventoryItemInstance::AddStatTagStack(FGameplayTag Tag, int32 StackCount)

@@ -39,8 +39,10 @@ public:
 	void InitializeWithAbilitySystem(UPMAbilitySystemComponent* InASC);
 	void UninitializeWithAbilitySystem();
 
-	void HandleHealthChanged(const FOnAttributeChangeData& ChangeData);
-	void HandleHealthChanged_Impl(UPMHealthComponent* HealthComponent, float OldValue, float NewValue, AActor* Instigator);
+	float	GetCurrentHealth();
+	void	HandleHealthChanged(const FOnAttributeChangeData& ChangeData);
+	UFUNCTION(NetMulticast, Reliable)
+	void	Multicast_HandleHealthChanged(UPMHealthComponent* HealthComponent, float OldValue, float NewValue, AActor* Instigator);
 
 public:
 	UPROPERTY(BlueprintAssignable)

@@ -36,6 +36,9 @@ public:
 		return (ResultClass*)FindFragmentByClass(ResultClass::StaticClass());
 	}
 
+	virtual void UseItem();
+	virtual bool CanUseItem() const { return true; }
+
 	/** add/remove stack count to stat tag(=gameplay-tag stack) */
 	int32 AddStatTagStack(FGameplayTag Tag, int32 StackCount);
 	int32 RemoveStatTagStack(FGameplayTag Tag, int32 StackCount);

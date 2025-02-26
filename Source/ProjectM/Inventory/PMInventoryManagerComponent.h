@@ -41,23 +41,22 @@ public:
 
 	// 아이템을 추가하고 Instancing해서 저장한다.
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
-	FMItemHandle AddItemDefinition(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
+	FMItemHandle	AddItemDefinition(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
+	int32			ChangeItemQuantity(const FMItemHandle& ItemHandle, int32 ChangeNum);
+	FDelegateHandle AddDelegateOnChangeInventory(const int32 ItemUid, FOnChangeInventory::FDelegate&& Delegate);
+	void			RemoveDelegateOnChangeInventory(const int32 ItemUid, const FDelegateHandle& DelegateHandle);
+
+	UFUNCTION(Server, Reliable)
+	void Server_UseItem(const FMItemHandle& ItemHandle);
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UPMInventoryItemInstance*	FindItemInstance(const FMItemHandle& ItemHandle);
 	FPMInventoryEntry*			FindEntry(const FMItemHandle& ItemHandle);
-
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
-	int32 ChangeItemQuantity(const FMItemHandle& ItemHandle, int32 ChangeNum);
-	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
-	int32 GetMaxInventoryCount() const { return MaxInventoryCount; }
-
-	FDelegateHandle AddDelegateOnChangeInventory(const int32 ItemUid, FOnChangeInventory::FDelegate&& Delegate);
-	void			RemoveDelegateOnChangeInventory(const int32 ItemUid, const FDelegateHandle& DelegateHandle);
-
+	int32						GetMaxInventoryCount() const { return MaxInventoryCount; }
 	const FPMInventoryItemList& GetEquipmentItemList() const { return InventoryList; }
 	const FPMInventoryItemList& GetConsumableItemList() const { return ConsumableItemList; }
-
 
 protected:
 	FMItemHandle AddItemDefinition_Impl(TSubclassOf<UPMInventoryItemDefinition> ItemDef, FPMInventoryItemList& ItemList);
@@ -82,10 +81,6 @@ private:
 
 	UPROPERTY(Replicated)
 	FPMInventoryItemList ConsumableItemList;
-
-	// ItemTable을 기준으로 생성함
-	UPROPERTY(Replicated)
-	TArray<FPMInventoryItemList> ItemListArray;
 
 #pragma TODO("하드코딩 말고 데이터 읽기 만들면 변경해야함")
 	UPROPERTY(BlueprintReadOnly, meta=(AllowprivateAccess=true))

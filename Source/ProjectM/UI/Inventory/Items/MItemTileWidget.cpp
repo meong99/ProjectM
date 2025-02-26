@@ -108,6 +108,24 @@ void UMItemTileWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDropEve
 	MCHAE_LOG("on cancelled");
 }
 
+FReply UMItemTileWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+
+	APlayerController* Controller = GetOwningPlayer();
+	UPMInventoryManagerComponent* InventoryManagerComp = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
+	if (InventoryManagerComp)
+	{
+		InventoryManagerComp->Server_UseItem(ItemHandle);
+	}
+	else
+	{
+		MCHAE_WARNING("Can't found InventoryComponent!");
+	}
+
+	return FReply::Handled();
+}
+
 void UMItemTileWidget::UpdateItemData()
 {
 	UMItemDetailData* ItemDatail = GetListItem<UMItemDetailData>();
@@ -128,6 +146,7 @@ void UMItemTileWidget::UpdateItemData()
 		ItemImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
 		ItemHandle.ItemUid = NewItemEntry.ItemUid;
+		ItemHandle.ItemType = NewItemEntry.GetItemType();
 	}
 
 	if (OwnerWidget)
