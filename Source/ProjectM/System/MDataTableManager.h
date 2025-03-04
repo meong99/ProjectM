@@ -27,6 +27,7 @@ public:
 	*/
 public:
 	const UDataTable* GetDataTable(EMItemIdType TableType) const;
+	const TSubclassOf<UPMInventoryItemDefinition> GetItemDefinition(EMItemIdType TableType, int32 ItemId) const;
 
 	int32 GetTableNum() const { return TableMap.Num(); }
 private:

@@ -8,11 +8,11 @@ UMConsumableItemInstance::UMConsumableItemInstance(const FObjectInitializer& Obj
 {
 }
 
-void UMConsumableItemInstance::UseItem()
+int32 UMConsumableItemInstance::UseItem()
 {
 	if (CanUseItem() == false)
 	{
-		return;
+		return GetStatTagStackCount(FPMGameplayTags::Get().Item_Quentity);
 	}
 
 	const UMConsumableItemDefinition* ItemDefCDO = GetDefault<UMConsumableItemDefinition>(ItemDef);
@@ -33,8 +33,9 @@ void UMConsumableItemInstance::UseItem()
 
 		MCHAE_TEST("ItemUse");
 		
-		Super::UseItem();
 	}
+
+	return Super::UseItem();
 }
 
 bool UMConsumableItemInstance::CanUseItem() const
@@ -63,4 +64,3 @@ UPMAbilitySystemComponent* UMConsumableItemInstance::GetAbilitySystemComponent()
 
 	return nullptr;
 }
-

@@ -7,6 +7,18 @@
 
 class UTexture;
 
+USTRUCT(BlueprintType)
+struct FMTableDefinition 
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	EMItemIdType TableType = EMItemIdType::None;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UDataTable* Table;
+};
+
 /**
  *
  */
@@ -29,8 +41,5 @@ public:
 */
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	EMItemIdType TableType = EMItemIdType::None;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<UDataTable*> Tables;
+	TArray<FMTableDefinition> TableDefinitions;
 };

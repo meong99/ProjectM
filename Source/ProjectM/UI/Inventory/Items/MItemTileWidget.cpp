@@ -15,10 +15,27 @@
 */
 void UMItemDetailData::SetNewEntry(const FPMInventoryEntry& NewItemEntry)
 {
-	if (NewItemEntry.IsValid())
+	ItemEntry = NewItemEntry;
+}
+
+void UMItemDetailData::SwapEntry(UMItemDetailData& Other)
+{
+	FPMInventoryEntry Tmp = Other.ItemEntry;
+	ItemEntry = Other.ItemEntry;
+	Other.ItemEntry = Tmp;
+}
+
+void UMItemDetailData::SwapEntry(UMItemDetailData* Other)
+{
+	if (Other == nullptr || Other == this)
 	{
-		ItemEntry = NewItemEntry;
+		MCHAE_WARNING("ItemData is null or change with itself");
+		return;
 	}
+
+	FPMInventoryEntry Tmp = Other->ItemEntry;
+	Other->ItemEntry = ItemEntry;
+	ItemEntry = Tmp;
 }
 
 /*
@@ -92,13 +109,9 @@ bool UMItemTileWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
 		return false;
 	}
 
-	UMItemDetailData* NewItemDetailData = Other->GetListItem<UMItemDetailData>();
-	if (NewItemDetailData)
-	{
-		SwapItemData(NewItemDetailData, GetListItem<UMItemDetailData>());
-		UpdateItemData();
-		Other->UpdateItemData();
-	}
+	SwapItemData(Other);
+	UpdateItemData();
+	Other->UpdateItemData();
 
 	return true;
 }
@@ -106,24 +119,6 @@ bool UMItemTileWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
 void UMItemTileWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 	MCHAE_LOG("on cancelled");
-}
-
-FReply UMItemTileWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-{
-	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
-
-	APlayerController* Controller = GetOwningPlayer();
-	UPMInventoryManagerComponent* InventoryManagerComp = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
-	if (InventoryManagerComp)
-	{
-		InventoryManagerComp->Server_UseItem(ItemHandle);
-	}
-	else
-	{
-		MCHAE_WARNING("Can't found InventoryComponent!");
-	}
-
-	return FReply::Handled();
 }
 
 void UMItemTileWidget::UpdateItemData()
@@ -151,7 +146,7 @@ void UMItemTileWidget::UpdateItemData()
 
 	if (OwnerWidget)
 	{
-		OwnerWidget->UpdateEntryWidget(SlotIndex);
+		OwnerWidget->UpdateEmptySlot(SlotIndex);
 	}
 }
 
@@ -172,14 +167,33 @@ void UMItemTileWidget::ResetItemSlot()
 	ItemHandle.ItemUid = INDEX_NONE;
 }
 
-void UMItemTileWidget::SwapItemData(UMItemDetailData* Lst, UMItemDetailData* Rst)
+void UMItemTileWidget::SwapItemData(UMItemTileWidget* Other)
 {
-	if (Lst == nullptr || Rst == nullptr)
+	if (Other)
 	{
-		return;
-	}
+		UMItemDetailData* OtherData = Other->GetListItem<UMItemDetailData>();
+		UMItemDetailData* MyData = GetListItem<UMItemDetailData>();
 
-	const FPMInventoryEntry Tmp = Lst->ItemEntry;
-	Lst->ItemEntry = Rst->ItemEntry;
-	Rst->ItemEntry = Tmp;
+		if (MyData && OtherData)
+		{
+			MyData->SwapEntry(OtherData);
+		}
+	}
+}
+
+void UMItemTileWidget::OnItemDoubleClick()
+{
+	if (ItemHandle.IsValid())
+	{
+		APlayerController* Controller = GetOwningPlayer();
+		UPMInventoryManagerComponent* InventoryManagerComp = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
+		if (InventoryManagerComp)
+		{
+			InventoryManagerComp->Server_UseItem(ItemHandle);
+		}
+		else
+		{
+			MCHAE_WARNING("Can't found InventoryComponent!");
+		}
+	}
 }

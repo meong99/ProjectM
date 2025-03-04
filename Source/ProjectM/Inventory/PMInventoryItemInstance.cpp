@@ -13,6 +13,7 @@ void UPMInventoryItemInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 
 	DOREPLIFETIME(ThisClass, StatTags);
 	DOREPLIFETIME(ThisClass, ItemDef);
+	DOREPLIFETIME(ThisClass, ItemHandle);
 }
 
 const UPMInventoryItemFragment* UPMInventoryItemInstance::FindFragmentByClass(TSubclassOf<UPMInventoryItemFragment> FragmentClass) const
@@ -30,15 +31,14 @@ const UPMInventoryItemFragment* UPMInventoryItemInstance::FindFragmentByClass(TS
 	return nullptr;
 }
 
-void UPMInventoryItemInstance::UseItem()
+int32 UPMInventoryItemInstance::UseItem()
 {
 	if (CanUseItem())
 	{
-		if (RemoveStatTagStack(FPMGameplayTags::Get().Item_Quentity, 1) == 0)
-		{
-#pragma TODO("아이템 제거 델리게이트 발동해야함")
-		}
+		return RemoveStatTagStack(FPMGameplayTags::Get().Item_Quentity, 1);
 	}
+
+	return GetStatTagStackCount(FPMGameplayTags::Get().Item_Quentity);
 }
 
 int32 UPMInventoryItemInstance::AddStatTagStack(FGameplayTag Tag, int32 StackCount)

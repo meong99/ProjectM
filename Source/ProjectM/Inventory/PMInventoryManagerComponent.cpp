@@ -148,6 +148,11 @@ FMItemHandle UPMInventoryManagerComponent::AddItemDefinition_Impl(TSubclassOf<UP
 	return Handle;
 }
 
+void UPMInventoryManagerComponent::Multicast_OnRemoveItem_Implementation(const FMItemHandle& ItemHandle, const EMItemType ItemType)
+{
+	Delegate_OnRemoveItem.Broadcast(ItemHandle, ItemType);
+}
+
 UPMInventoryItemInstance* UPMInventoryManagerComponent::FindItemInstance(const FMItemHandle& ItemHandle)
 {
 	FPMInventoryItemList* ItemList = GetItemList(ItemHandle.ItemType);
@@ -227,7 +232,10 @@ void UPMInventoryManagerComponent::Server_UseItem_Implementation(const FMItemHan
 	UPMInventoryItemInstance* ItemInstance = FindItemInstance(ItemHandle);
 	if (ItemInstance)
 	{
-		ItemInstance->UseItem();
+		if (ItemInstance->UseItem() == 0)
+		{
+			RemoveItem(ItemHandle);
+		}
 	}
 }
 
@@ -252,7 +260,8 @@ void UPMInventoryManagerComponent::RemoveItem(const FMItemHandle& ItemHandle)
 				RemoveReplicatedSubObject(Entry->Instance);
 			}
 
-			InventoryList.RemoveEntry(ItemHandle);
+			ItemList->RemoveEntry(ItemHandle);
+			Multicast_OnRemoveItem(ItemHandle, ItemList->OwnedItemType);
 		}
 	}
 	

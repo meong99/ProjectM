@@ -16,6 +16,10 @@
 #include "Inventory/PMInventoryItemInstance.h"
 #include "GameModes/AsyncAction_ExperienceReady.h"
 
+#include "Equipment/PMEquipmentManagerComponent.h"
+#include "Engine/Engine.h"
+#include "System/MDataTableManager.h"
+
 #define PLAYER_ID 1
 #define PLAYER_NAME TEXT("PlayerName")
 
@@ -135,8 +139,7 @@ void APMPlayerState::UpdateCurrentData()
 
 	if (InventoryManager && QuickBarComp)
 	{
-		PlayerSaveData->EquipmentItems.Empty();
-		PlayerSaveData->ConsumableItems.Empty();
+		PlayerSaveData->ItemDefinitions.Empty();
 
 		const FPMInventoryItemList& EquipmentItemList = InventoryManager->GetEquipmentItemList();
 		for (const FPMInventoryEntry& Entry : EquipmentItemList.Entries)
@@ -144,7 +147,7 @@ void APMPlayerState::UpdateCurrentData()
 			TSubclassOf<UPMInventoryItemDefinition> ItemDef = Entry.GetItemDefinition();
 			if (ItemDef)
 			{
-				PlayerSaveData->EquipmentItems.Add(ItemDef);
+				PlayerSaveData->ItemDefinitions.Add(ItemDef);
 			}
 		}
 
@@ -154,7 +157,7 @@ void APMPlayerState::UpdateCurrentData()
 			TSubclassOf<UPMInventoryItemDefinition> ItemDef = Entry.GetItemDefinition();
 			if (ItemDef)
 			{
-				PlayerSaveData->ConsumableItems.Add(ItemDef);
+				PlayerSaveData->ItemDefinitions.Add(ItemDef);
 			}
 		}
 
@@ -173,25 +176,52 @@ void APMPlayerState::UpdateCurrentData()
 void APMPlayerState::ApplyLoadedData()
 {
 	APlayerController* Controller = GetPlayerController();
-	UPMInventoryManagerComponent* InventoryManager = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
-	UPMQuickBarComponent* QuickBarComp = Controller ? Controller->FindComponentByClass<UPMQuickBarComponent>() : nullptr;
+	if (Controller == nullptr)
+	{
+		return;
+	}
+
+	UPMInventoryManagerComponent* InventoryManager = Controller->FindComponentByClass<UPMInventoryManagerComponent>();
+	UPMQuickBarComponent* QuickBarComp = Controller->FindComponentByClass<UPMQuickBarComponent>();
 
 	if (InventoryManager && QuickBarComp)
 	{
-		for (const TSubclassOf<UPMInventoryItemDefinition>& ItemDef : PlayerSaveData->EquipmentItems)
+		for (const TSubclassOf<UPMInventoryItemDefinition>& ItemDef : PlayerSaveData->ItemDefinitions)
 		{
-			const FMItemHandle& ItemHandle = InventoryManager->AddItemDefinition(ItemDef);
-			UPMInventoryItemInstance* ItemInstance = InventoryManager->FindItemInstance(ItemHandle);
-			QuickBarComp->AddItemToSlot(0, ItemInstance);
-			QuickBarComp->SetActiveSlotIndex(0);
-		}
-		for (const TSubclassOf<UPMInventoryItemDefinition>& ItemDef : PlayerSaveData->ConsumableItems)
-		{
-			InventoryManager->AddItemDefinition(ItemDef);
+			UPMInventoryItemDefinition* DefCDO = ItemDef->GetDefaultObject<UPMInventoryItemDefinition>();
+			if (DefCDO && DefCDO->ItemType == EMItemType::Equipment)
+			{
+				const FMItemHandle& ItemHandle = InventoryManager->AddItemDefinition(ItemDef);
+				if (QuickBarComp->GetActiveSlotIndex() == INDEX_NONE)
+				{
+					UPMInventoryItemInstance* ItemInstance = InventoryManager->FindItemInstance(ItemHandle);
+					QuickBarComp->AddItemToSlot(0, ItemInstance);
+					QuickBarComp->SetActiveSlotIndex(0);
+				}
+			}
+			else if (DefCDO)
+			{
+				InventoryManager->AddItemDefinition(ItemDef);
+			}
 		}
 		if (PlayerSaveData->EquippedItem)
 		{
 #pragma TODO("장비 슬롯 개발되면 여기서 추가하고 인벤토리 장비 아이템과 분리")
+		}
+		if (QuickBarComp->GetActiveSlotIndex() == INDEX_NONE && GEngine)
+		{
+			UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
+			if (TableManager)
+			{
+				const TSubclassOf<UPMInventoryItemDefinition>& ItemDef = TableManager->GetItemDefinition(EMItemIdType::Equipment, 0);
+				if (ItemDef)
+				{
+					const FMItemHandle& ItemHandle = InventoryManager->AddItemDefinition(ItemDef);
+					UPMInventoryItemInstance* ItemInstance = InventoryManager->FindItemInstance(ItemHandle);
+					QuickBarComp->AddItemToSlot(0, ItemInstance);
+					QuickBarComp->SetActiveSlotIndex(0);
+				}
+			}
 		}
 	}
 	else

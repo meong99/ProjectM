@@ -21,9 +21,21 @@ EMItemType FPMInventoryEntry::GetItemType() const
 		return Instance->GetItemType();
 	}
 
-	MCHAE_WARNING("Item is not instanced.");
+	MCHAE_WARNING("Item instance is not valid.");
 
 	return EMItemType::None;
+}
+
+FMItemHandle FPMInventoryEntry::GetItemHandle() const
+{
+	if (Instance)
+	{
+		return Instance->ItemHandle;
+	}
+
+	MCHAE_WARNING("Item instance is not valid.");
+
+	return FMItemHandle{};
 }
 
 TSubclassOf<UPMInventoryItemDefinition> FPMInventoryEntry::GetItemDefinition() const
@@ -59,12 +71,10 @@ FPMInventoryItemList::FPMInventoryItemList(UPMInventoryManagerComponent* InOwner
 
 void FPMInventoryItemList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
 {
-	// 	for (int32 Index : RemovedIndices)
-	// 	{
-	// 		FPMInventoryEntry& Stack = Entries[Index];
-	// 		BroadcastChangeMessage(Stack, /*OldCount=*/ Stack.StackCount, /*NewCount=*/ 0);
-	// 		Stack.LastObservedCount = 0;
-	// 	}
+	 	for (int32 Index : RemovedIndices)
+	 	{
+	 		FPMInventoryEntry& Stack = Entries[Index];
+	 	}
 }
 
 void FPMInventoryItemList::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
@@ -166,6 +176,7 @@ FMItemHandle FPMInventoryItemList::AddEntry(TSubclassOf<UPMInventoryItemDefiniti
 	NewEntry.ItemUid = TempItemUid;
 	NewHandle.ItemUid = TempItemUid;
 	NewHandle.ItemType = ItemInstance->GetItemType();
+	ItemInstance->ItemHandle = NewHandle;
 	TempItemUid++;
 	MarkItemDirty(NewEntry);
 

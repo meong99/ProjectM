@@ -57,17 +57,6 @@ void UPMPawnExtensionComponent::InitializeAbilitySystem(UPMAbilitySystemComponen
 
 	// 어빌리티 준비 완료됐다고 호출
 	OnAbilitySystemInitialized.Broadcast();
-
-	#pragma NOTE("임시. 장비 완전 구현되고나면 제거")
-
-	if (Pawn->HasAuthority())
-	{
-		APMCharacterBase* OwnerCharacter = Cast<APMCharacterBase>(Pawn);
-		if (OwnerCharacter)
-		{
-			OwnerCharacter->Test_OnInitASC();
-		}
-	}
 }
 
 void UPMPawnExtensionComponent::UninitializeAbilitySystem()

@@ -6,6 +6,10 @@
 #include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/ActorChannel.h"
+#include "System/MDataTableManager.h"
+#include "Table/Item/MTable_EquipmentItem.h"
+#include "Inventory/PMInventoryManagerComponent.h"
+#include "PMQuickBarComponent.h"
 
 FPMEquipmentList::FPMEquipmentList()
 {

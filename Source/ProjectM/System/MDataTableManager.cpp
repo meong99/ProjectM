@@ -23,6 +23,26 @@ const UDataTable* UMDataTableManager::GetDataTable(EMItemIdType TableType) const
 	return TableMap.FindRef(TableType);
 }
 
+
+const TSubclassOf<UPMInventoryItemDefinition> UMDataTableManager::GetItemDefinition(EMItemIdType TableType, int32 ItemId) const
+{
+	const UDataTable* DataTable = GetDataTable(TableType);
+	if (DataTable)
+	{
+		const TArray<FName>& Names = DataTable->GetRowNames();
+		if (Names.IsValidIndex(ItemId))
+		{
+			FMTable_ItemBase* Item = DataTable->FindRow<FMTable_ItemBase>(Names[ItemId], Names[ItemId].ToString());
+			if (Item)
+			{
+				return Item->ItemDefinition;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
 void UMDataTableManager::LoadDataTables()
 {
 	UPMAssetManager& AssetManager = UPMAssetManager::Get();
@@ -42,11 +62,11 @@ void UMDataTableManager::LoadDataTables()
 
 				if (IsValid(TableAsset))
 				{
-					for (UDataTable* Table :TableAsset->Tables)
+					for (const FMTableDefinition& TableDefinition : TableAsset->TableDefinitions)
 					{
-						if (Table && TableAsset->TableType != EMItemIdType::None)
+						if (TableDefinition.TableType != EMItemIdType::None)
 						{
-							TableMap.Add(TableAsset->TableType, Table);
+							TableMap.Add(TableDefinition.TableType, TableDefinition.Table);
 						}
 						else
 						{

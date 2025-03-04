@@ -25,6 +25,8 @@ public:
 #pragma TODO("아이템 변경 델리게이트 적용")
 	bool IsValid() const { return ItemEntry.IsValid(); }
 	void SetNewEntry(const FPMInventoryEntry& NewItemEntry);
+	void SwapEntry(UMItemDetailData& Other);
+	void SwapEntry(UMItemDetailData* Other);
 
 	FPMInventoryEntry ItemEntry;
 
@@ -52,19 +54,18 @@ public:
 	virtual void	NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 	virtual bool	NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual void	NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
-	virtual FReply	NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
-	/*
+/*
 * Member Functions
 */
 public:
-	void UpdateItemData();
-	void SetSlotIndex(const int32 InIndex);
+	void SwapItemData(UMItemTileWidget* Other);
+	void OnItemDoubleClick();
 
 protected:
+	void UpdateItemData();
+	void SetSlotIndex(const int32 InIndex);
 	void ResetItemSlot();
-
-	static void SwapItemData(UMItemDetailData* Lst, UMItemDetailData* Rst);
 
 /*
 * Member Variables

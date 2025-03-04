@@ -17,7 +17,8 @@ struct FPMInventoryEntry : public FFastArraySerializerItem
 
 	bool IsValid() const;
 
-	EMItemType GetItemType() const;
+	EMItemType		GetItemType() const;
+	FMItemHandle	GetItemHandle() const;
 
 	TSubclassOf<UPMInventoryItemDefinition> GetItemDefinition() const;
 

@@ -41,6 +41,7 @@ public:
 
 	//인벤토리에 존재하지 않던 새로운 아이템이 추가됨
 	void	Callback_AddNewItem(const FPMInventoryEntry& NewItemEntry);
+	void	Callback_RemoveItem(const FMItemHandle& ItemHandle, const EMItemType ItemType);
 
 protected:
 	void	BindDelegates();

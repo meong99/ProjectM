@@ -38,10 +38,7 @@ public:
 	int32 SaveIndex;
 
 	UPROPERTY()
-	TArray<TSubclassOf<UPMInventoryItemDefinition>> EquipmentItems;
-
-	UPROPERTY()
-	TArray<TSubclassOf<UPMInventoryItemDefinition>> ConsumableItems;
+	TArray<TSubclassOf<UPMInventoryItemDefinition>> ItemDefinitions;
 
 #pragma TODO("나중에 장비 장착 제대로 구현하면 배열로 바꿔야함")
 	UPROPERTY()

@@ -3,6 +3,17 @@
 #include "CommonWidgets/MTileView.h"
 #include "UI/Inventory/Items/MItemTileWidget.h"
 
+void UMTileView::OnItemDoubleClickedInternal(UObject* Item)
+{
+	Super::OnItemDoubleClickedInternal(Item);
+
+	UMItemTileWidget* EntryWidget = Cast<UMItemTileWidget>(GetEntryWidgetFromItem(Item));
+	if (EntryWidget)
+	{
+		EntryWidget->OnItemDoubleClick();
+	}
+}
+
 void UMTileView::InitView(const FPMInventoryItemList& InventoryList, const int32 MaxInventoryCount)
 {
 	auto EntryIter = InventoryList.Entries.CreateConstIterator();
@@ -48,6 +59,21 @@ void UMTileView::AddNewItem(const FPMInventoryEntry& NewItemEntry)
 	}
 }
 
+void UMTileView::RemoveItem(const FMItemHandle& ItemHandle)
+{
+	const TArray<UObject*>& List = GetListItems();
+	for (UObject* Item : List)
+	{
+		UMItemDetailData* Data = Cast<UMItemDetailData>(Item);
+		if (Data && Data->ItemEntry.ItemUid == ItemHandle.ItemUid)
+		{
+			Data->SetNewEntry({});
+			RegenerateAllEntries();
+			break;
+		}
+	}
+}
+
 void UMTileView::AddNewEmptySlot(const int32 SlotIndex)
 {
 	EmptySlotHeap.Push(SlotIndex);
@@ -63,8 +89,7 @@ void UMTileView::RequestHeapify()
 	EmptySlotHeap.Heapify();
 }
 
-
-void UMTileView::UpdateEntryWidget(const int32 SlotIndex)
+void UMTileView::UpdateEmptySlot(const int32 SlotIndex)
 {
 	UMItemDetailData* SlotData = GetEmptySlotData(SlotIndex);
 	if (SlotData == nullptr)
@@ -80,11 +105,6 @@ void UMTileView::UpdateEntryWidget(const int32 SlotIndex)
 	{
 		AddNewEmptySlot(SlotIndex);
 	}
-}
-
-void UMTileView::OnCreate_NewSlotWidget(UObject* Item, UUserWidget* Widget)
-{
-
 }
 
 UMItemDetailData* UMTileView::GetEmptySlotData(const int32 SlotIndex)

@@ -55,6 +55,15 @@ void UMInventoryWidget::Callback_AddNewItem(const FPMInventoryEntry& NewItemEntr
 	}
 }
 
+void UMInventoryWidget::Callback_RemoveItem(const FMItemHandle& ItemHandle, const EMItemType ItemType)
+{
+	UMTileView* View = GetItemSlotView(ItemType);
+	if (View)
+	{
+		View->RemoveItem(ItemHandle);
+	}
+}
+
 void UMInventoryWidget::BindDelegates()
 {
 	APlayerController* PlayerController = GetOwningPlayer();
@@ -63,6 +72,7 @@ void UMInventoryWidget::BindDelegates()
 	{
 		InventoryComponent->CallOrRegister_OnInitInventory(FOnInitInventory::FDelegate::CreateUObject(this, &ThisClass::Callback_OnInitInventory));
 		InventoryComponent->Delegate_OnNewItemAdded.AddUObject(this, &ThisClass::Callback_AddNewItem);
+		InventoryComponent->Delegate_OnRemoveItem.AddUObject(this, &ThisClass::Callback_RemoveItem);
 	}
 	else
 	{

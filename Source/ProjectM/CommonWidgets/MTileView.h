@@ -9,6 +9,7 @@
 #include "MTileView.generated.h"
 
 class UMItemDetailData;
+class UMItemTileWidget;
 
 #pragma NOTE("이거 드래그앤드랍 사용할거면 타일뷰 쓰면 안돼 위젯 보존이 안돼")
 /**
@@ -23,6 +24,7 @@ class PROJECTM_API UMTileView : public UTileView
 * Overrided Function
 */
 public:
+	virtual void OnItemDoubleClickedInternal(UObject* Item) override;
 
 /*
 * Member Functions
@@ -30,18 +32,17 @@ public:
 public:
 	void InitView(const FPMInventoryItemList& InventoryList, const int32 MaxInventoryCount);
 	void AddNewItem(const FPMInventoryEntry& NewItemEntry);
-	void RequestHeapify();
-	void UpdateEntryWidget(const int32 SlotIndex);
+	void RemoveItem(const FMItemHandle& ItemHandle);
+	void UpdateEmptySlot(const int32 SlotIndex);
 
 protected:
-	UFUNCTION()
-	void OnCreate_NewSlotWidget(UObject* Item, UUserWidget* Widget);
-
 	UMItemDetailData* GetEmptySlotData(const int32 SlotIndex);
 
 	void AddNewEmptySlot(const int32 SlotIndex);
 	void RemoveEmptySlot(const int32 SlotIndex);
-/*
+	void RequestHeapify();
+
+	/*
 * Member Variables
 */
 protected:

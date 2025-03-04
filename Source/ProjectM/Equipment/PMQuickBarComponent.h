@@ -34,7 +34,8 @@ public:
 	void AddItemToSlot(const int32 SlotIndex, UPMInventoryItemInstance* Item);
 
 	UFUNCTION(BlueprintCallable)
-	void SetActiveSlotIndex(const int32 NewIndex);
+	void	SetActiveSlotIndex(const int32 NewIndex);
+	int32	GetActiveSlotIndex() const { return ActiveSlotIndex; }
 
 	UPMEquipmentManagerComponent* FindEquipmentManager() const;
 	void UnequipItemInSlot();
@@ -60,7 +61,7 @@ private:
 
 	// 현재 슬롯에서 장착중인 Index. 
 	UPROPERTY(ReplicatedUsing = OnRep_ActiveSlotIndex)
-	int32 ActiveSlotIndex = -1;
+	int32 ActiveSlotIndex = INDEX_NONE;
 
 	UPROPERTY()
 	TObjectPtr<UPMEquipmentInstance> EquippedItem;

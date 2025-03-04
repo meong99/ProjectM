@@ -102,6 +102,8 @@ public:
 		return (T*)GetFirstInstanceOfType(T::StaticClass());
 	}
 
+protected:
+
 /*
 * Member Variables
 */

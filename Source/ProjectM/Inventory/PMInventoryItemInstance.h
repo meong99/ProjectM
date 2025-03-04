@@ -36,7 +36,7 @@ public:
 		return (ResultClass*)FindFragmentByClass(ResultClass::StaticClass());
 	}
 
-	virtual void UseItem();
+	virtual int32 UseItem();
 	virtual bool CanUseItem() const { return true; }
 
 	/** add/remove stack count to stat tag(=gameplay-tag stack) */
@@ -62,4 +62,7 @@ public:
 	/** gameplay-tag stacks for inventory item instance */
 	UPROPERTY(Replicated)
 	FPMGameplayTagStackContainer StatTags;
+
+	UPROPERTY(Replicated)
+	FMItemHandle ItemHandle;
 };
