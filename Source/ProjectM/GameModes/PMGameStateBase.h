@@ -16,6 +16,7 @@ class PROJECTM_API APMGameStateBase : public AGameStateBase
 */
 public:
 	APMGameStateBase();
+	virtual void BeginPlay() override;
 
 /*
 * Member Functions

@@ -9,6 +9,20 @@
 
 class UPMInventoryItemInstance;
 class UTexture2D;
+class UGameplayEffect;
+class UCurveTable;
+
+USTRUCT(Blueprintable)
+struct FMApplyEffectDefinition 
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> EffectClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	int32 EffectLevel = 1;
+};
 
 /* Remind
 * Item의 Component라고 이해하면 편하다.
@@ -52,7 +66,7 @@ public:
 */
 public:
 	//아이템의 고유 Id
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Display")
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Display")
 	int32 ItemId = INDEX_NONE;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Display")
@@ -67,6 +81,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "InstanceClassType")
 	TSubclassOf<UPMInventoryItemInstance> InstanceType;
+
+	UPROPERTY(EditDefaultsOnly, Category = "ProjectM | Effect")
+	TArray<FMApplyEffectDefinition> ApplyEffectToSelf;
 
 	// 아이템의 컴포넌트라고 생각할 수 있다.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, meta = (AllowPrivateAccess = true), Category = "Display")

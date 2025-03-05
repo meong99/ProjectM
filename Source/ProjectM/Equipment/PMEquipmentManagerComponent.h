@@ -7,8 +7,8 @@
 
 #include "PMEquipmentManagerComponent.generated.h"
 
-class UPMEquipmentDefinition;
-class UPMEquipmentInstance;
+class UMEquipmentItemDefinition;
+class UMEquipmentItemInstance;
 
 USTRUCT(BlueprintType)
 struct FPMAppliedEquipmentEntry : public FFastArraySerializerItem
@@ -16,10 +16,10 @@ struct FPMAppliedEquipmentEntry : public FFastArraySerializerItem
 	GENERATED_BODY()
 
 	UPROPERTY()
-	TSubclassOf<UPMEquipmentDefinition> EquipmentDefinition;
+	TSubclassOf<UMEquipmentItemDefinition> EquipmentDefinition;
 
 	UPROPERTY()
-	TObjectPtr<UPMEquipmentInstance> Instance = nullptr;
+	TObjectPtr<UMEquipmentItemInstance> Instance = nullptr;
 
 	// 장비 장착시 부여된 어빌리티들의 핸들
 	UPROPERTY(NotReplicated)
@@ -40,8 +40,8 @@ struct FPMEquipmentList : public FFastArraySerializer
 	void PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize);
 	//~End of FFastArraySerializer contract
 
-	UPMEquipmentInstance* AddEntry(TSubclassOf<UPMEquipmentDefinition> EquipmentDefinition);
-	void RemoveEntry(UPMEquipmentInstance* Instance);
+	UMEquipmentItemInstance* AddEntry(TSubclassOf<UMEquipmentItemDefinition> EquipmentDefinition);
+	void RemoveEntry(UMEquipmentItemInstance* Instance);
 
 	UPMAbilitySystemComponent* GetAbilitySystemComponent();
 
@@ -74,27 +74,27 @@ class PROJECTM_API UPMEquipmentManagerComponent : public UPawnComponent
 {
 	GENERATED_BODY()
 
-/*
-* Overrided Functions
-*/
+	/*
+	* Overrided Functions
+	*/
 public:
 	UPMEquipmentManagerComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 	virtual void ReadyForReplication() override;
 
-/*
-* Member Functions
-*/
+	/*
+	* Member Functions
+	*/
 public:
-	UPMEquipmentInstance* EquipItem(TSubclassOf<UPMEquipmentDefinition> EquipmentDefinition);
-	void UnequipItem(UPMEquipmentInstance* ItemInstance);
+	UMEquipmentItemInstance* EquipItem(TSubclassOf<UMEquipmentItemDefinition> EquipmentDefinition);
+	void UnequipItem(UMEquipmentItemInstance* ItemInstance);
 
 	UFUNCTION(BlueprintCallable)
-	TArray<UPMEquipmentInstance*> GetEquipmentInstancesOfType(TSubclassOf<UPMEquipmentInstance> InstanceType) const;
+	TArray<UMEquipmentItemInstance*> GetEquipmentInstancesOfType(TSubclassOf<UMEquipmentItemInstance> InstanceType) const;
 
 	const FPMEquipmentList& GetEquipmentList() const { return EquipmentList; }
 
-	UPMEquipmentInstance* GetFirstInstanceOfType(TSubclassOf<UPMEquipmentInstance> InstanceType);
+	UMEquipmentItemInstance* GetFirstInstanceOfType(TSubclassOf<UMEquipmentItemInstance> InstanceType);
 
 	template <typename T>
 	T* GetFirstInstanceOfType()

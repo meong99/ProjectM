@@ -7,7 +7,7 @@
 #include "PMQuickBarComponent.generated.h"
 
 class UPMInventoryItemInstance;
-class UPMEquipmentInstance;
+class UMEquipmentItemInstance;
 class UPMEquipmentManagerComponent;
 
 /**
@@ -64,5 +64,5 @@ private:
 	int32 ActiveSlotIndex = INDEX_NONE;
 
 	UPROPERTY()
-	TObjectPtr<UPMEquipmentInstance> EquippedItem;
+	TObjectPtr<UMEquipmentItemInstance> EquippedItem;
 };

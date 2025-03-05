@@ -8,18 +8,6 @@
 class UGameplayEffect;
 class UCurveTable;
 
-USTRUCT(Blueprintable)
-struct FMApplyEffectDefinition 
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UGameplayEffect> EffectClass;
-
-	UPROPERTY(EditDefaultsOnly)
-	int32 EffectLevel = 1;
-};
-
 UCLASS()
 class PROJECTM_API UMConsumableItemDefinition : public UPMInventoryItemDefinition
 {
@@ -27,7 +15,4 @@ class PROJECTM_API UMConsumableItemDefinition : public UPMInventoryItemDefinitio
 
 public:
 	UMConsumableItemDefinition();
-
-	UPROPERTY(EditDefaultsOnly, Category = "ProjectM | Effect")
-	TArray<FMApplyEffectDefinition> ApplyEffectToSelf;
 };

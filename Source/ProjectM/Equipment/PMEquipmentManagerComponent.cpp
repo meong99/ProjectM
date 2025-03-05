@@ -10,6 +10,8 @@
 #include "Table/Item/MTable_EquipmentItem.h"
 #include "Inventory/PMInventoryManagerComponent.h"
 #include "PMQuickBarComponent.h"
+#include "Item/Equipment/MEquipmentItemInstance.h"
+#include "Item/Equipment/MEquipmentItemDefinition.h"
 
 FPMEquipmentList::FPMEquipmentList()
 {
@@ -65,24 +67,31 @@ void FPMEquipmentList::PostReplicatedChange(const TArrayView<int32> ChangedIndic
 /*
 * FPMEquipmentList
 */
-UPMEquipmentInstance* FPMEquipmentList::AddEntry(TSubclassOf<UPMEquipmentDefinition> EquipmentDefinition)
+UMEquipmentItemInstance* FPMEquipmentList::AddEntry(TSubclassOf<UMEquipmentItemDefinition> EquipmentDefinition)
 {
-	UPMEquipmentInstance* Result = nullptr;
+	UMEquipmentItemInstance* Result = nullptr;
 	check(EquipmentDefinition != nullptr);
 	check(OwnerComponent);
 	check(OwnerComponent->GetOwner()->HasAuthority());
 
-	const UPMEquipmentDefinition* EquipmentCDO = GetDefault<UPMEquipmentDefinition>(EquipmentDefinition);
+	const UMEquipmentItemDefinition* EquipmentCDO = GetDefault<UMEquipmentItemDefinition>(EquipmentDefinition);
 
-	TSubclassOf<UPMEquipmentInstance> InstanceType = EquipmentCDO->InstanceType;
+	TSubclassOf<UPMInventoryItemInstance> InstanceType = EquipmentCDO->InstanceType;
 	if (!InstanceType)
 	{
-		InstanceType = UPMEquipmentInstance::StaticClass();
+		InstanceType = UMEquipmentItemInstance::StaticClass();
 	}
 
 	FPMAppliedEquipmentEntry& NewEntry = Entries.AddDefaulted_GetRef();
 	NewEntry.EquipmentDefinition = EquipmentDefinition;
-	NewEntry.Instance = NewObject<UPMEquipmentInstance>(OwnerComponent->GetOwner(), InstanceType);
+	NewEntry.Instance = NewObject<UMEquipmentItemInstance>(OwnerComponent->GetOwner(), InstanceType);
+	for (const UPMInventoryItemFragment* Fragment : GetDefault<UMEquipmentItemDefinition>(EquipmentDefinition)->GetFragments())
+	{
+		if (Fragment)
+		{
+			Fragment->OnInstanceCreated(NewEntry.Instance);
+		}
+	}
 	Result = NewEntry.Instance;
 
 	MarkItemDirty(NewEntry);
@@ -105,7 +114,7 @@ UPMEquipmentInstance* FPMEquipmentList::AddEntry(TSubclassOf<UPMEquipmentDefinit
 	return Result;
 }
 
-void FPMEquipmentList::RemoveEntry(UPMEquipmentInstance* Instance)
+void FPMEquipmentList::RemoveEntry(UMEquipmentItemInstance* Instance)
 {
 	for (auto EntryIt = Entries.CreateIterator(); EntryIt; ++EntryIt)
 	{
@@ -147,7 +156,7 @@ bool UPMEquipmentManagerComponent::ReplicateSubobjects(UActorChannel* Channel, F
 
 	for (FPMAppliedEquipmentEntry& Entry : EquipmentList.Entries)
 	{
-		UPMEquipmentInstance* Instance = Entry.Instance;
+		UMEquipmentItemInstance* Instance = Entry.Instance;
 
 		if (IsValid(Instance))
 		{
@@ -162,12 +171,12 @@ void UPMEquipmentManagerComponent::ReadyForReplication()
 {
 	Super::ReadyForReplication();
 
-		// Register existing LyraEquipmentInstances
+	// Register existing LyraEquipmentInstances
 	if (IsUsingRegisteredSubObjectList())
 	{
 		for (const FPMAppliedEquipmentEntry& Entry : EquipmentList.Entries)
 		{
-			UPMEquipmentInstance* Instance = Entry.Instance;
+			UMEquipmentItemInstance* Instance = Entry.Instance;
 
 			if (IsValid(Instance))
 			{
@@ -184,9 +193,9 @@ void UPMEquipmentManagerComponent::GetLifetimeReplicatedProps(TArray< FLifetimeP
 	DOREPLIFETIME(ThisClass, EquipmentList);
 }
 
-UPMEquipmentInstance* UPMEquipmentManagerComponent::EquipItem(TSubclassOf<UPMEquipmentDefinition> EquipmentDefinition)
+UMEquipmentItemInstance* UPMEquipmentManagerComponent::EquipItem(TSubclassOf<UMEquipmentItemDefinition> EquipmentDefinition)
 {
-	UPMEquipmentInstance* Result = nullptr;
+	UMEquipmentItemInstance* Result = nullptr;
 	if (EquipmentDefinition)
 	{
 		Result = EquipmentList.AddEntry(EquipmentDefinition);
@@ -204,7 +213,7 @@ UPMEquipmentInstance* UPMEquipmentManagerComponent::EquipItem(TSubclassOf<UPMEqu
 	return Result;
 }
 
-void UPMEquipmentManagerComponent::UnequipItem(UPMEquipmentInstance* ItemInstance)
+void UPMEquipmentManagerComponent::UnequipItem(UMEquipmentItemInstance* ItemInstance)
 {
 	if (ItemInstance)
 	{
@@ -219,13 +228,13 @@ void UPMEquipmentManagerComponent::UnequipItem(UPMEquipmentInstance* ItemInstanc
 	}
 }
 
-TArray<UPMEquipmentInstance*> UPMEquipmentManagerComponent::GetEquipmentInstancesOfType(TSubclassOf<UPMEquipmentInstance> InstanceType) const
+TArray<UMEquipmentItemInstance*> UPMEquipmentManagerComponent::GetEquipmentInstancesOfType(TSubclassOf<UMEquipmentItemInstance> InstanceType) const
 {
-	TArray<UPMEquipmentInstance*> Result;
+	TArray<UMEquipmentItemInstance*> Result;
 
 	for (const FPMAppliedEquipmentEntry& Entry : EquipmentList.Entries)
 	{
-		if (UPMEquipmentInstance* Instance = Entry.Instance)
+		if (UMEquipmentItemInstance* Instance = Entry.Instance)
 		{
 			if (Instance->IsA(InstanceType))
 			{
@@ -237,11 +246,11 @@ TArray<UPMEquipmentInstance*> UPMEquipmentManagerComponent::GetEquipmentInstance
 	return Result;
 }
 
-UPMEquipmentInstance* UPMEquipmentManagerComponent::GetFirstInstanceOfType(TSubclassOf<UPMEquipmentInstance> InstanceType)
+UMEquipmentItemInstance* UPMEquipmentManagerComponent::GetFirstInstanceOfType(TSubclassOf<UMEquipmentItemInstance> InstanceType)
 {
 	for (FPMAppliedEquipmentEntry& Entry : EquipmentList.Entries)
 	{
-		if (UPMEquipmentInstance* Instance = Entry.Instance)
+		if (UMEquipmentItemInstance* Instance = Entry.Instance)
 		{
 			if (Instance->IsA(InstanceType))
 			{

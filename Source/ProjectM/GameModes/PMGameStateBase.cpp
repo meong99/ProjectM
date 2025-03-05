@@ -7,6 +7,11 @@ APMGameStateBase::APMGameStateBase()
 	ExperienceManagerComponent = CreateDefaultSubobject<UPMExperienceManagerComponent>(TEXT("ExperienceManagerComponent"));
 }
 
+void APMGameStateBase::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void APMGameStateBase::Server_SaveGame_Implementation()
 {
 	for (APlayerState* PlayerState : PlayerArray)

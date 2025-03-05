@@ -1,8 +1,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Equipment/PMEquipmentInstance.h"
+#include "Item/Equipment/MEquipmentItemInstance.h"
 #include "Cosmetics/PMCosmeticAnimationTypes.h"
+#include "Animation/AnimMontage.h"
 
 #include "PMWeaponInstance.generated.h"
 
@@ -12,7 +13,7 @@ class UAnimInstance;
  *
  */
 UCLASS()
-class PROJECTM_API UPMWeaponInstance : public UPMEquipmentInstance
+class PROJECTM_API UPMWeaponInstance : public UMEquipmentItemInstance
 {
 	GENERATED_BODY()
 
@@ -22,10 +23,14 @@ class PROJECTM_API UPMWeaponInstance : public UPMEquipmentInstance
 public:
 	UPMWeaponInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-/*
+	virtual void OnEquipped() override;
+	virtual void OnUnequipped() override;
+
+	/*
 * Member Functions
 */
 public:
+	void DetermineCosmeticTag();
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Animation")
 	TSubclassOf<UAnimInstance> PickBestAnimLayer(bool bEquipped, const FGameplayTagContainer& CosmeticTags) const;
 
@@ -38,4 +43,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Animation")
 	FPMAnimInstanceSelectionSet UnEquippedAnimSet;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Animation")
+	UAnimMontage* WeaponMontageToPlay;
+
+	FGameplayTagContainer CosmeticAnimStyle;
 };

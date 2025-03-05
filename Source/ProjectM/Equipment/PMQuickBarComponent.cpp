@@ -4,6 +4,7 @@
 #include "PMEquipmentInstance.h"
 #include "Inventory/PMInventoryItemInstance.h"
 #include "Net/UnrealNetwork.h"
+#include "Item/Equipment/MEquipmentItemInstance.h"
 
 #pragma TODO("퀵바를 RPG스럽게 다룰 수 있는지 확인해보고, 추후 기능들을 추가할 때 한 번 더 봐보자")
 
@@ -83,18 +84,13 @@ void UPMQuickBarComponent::EquipItemInSlot()
 
 	if (UPMInventoryItemInstance* SlotItemInstance = Slots[ActiveSlotIndex])
 	{
-		if (const UPMInventoryFragment_EquippableItem* EquipInfo = SlotItemInstance->FindFragmentByClass<UPMInventoryFragment_EquippableItem>())
 		{
-			TSubclassOf<UPMEquipmentDefinition> EquipDef = EquipInfo->GetEquipmentDefinition();
+			TSubclassOf<UMEquipmentItemDefinition> EquipDef = SlotItemInstance->ItemDef.Get();
 			if (EquipDef)
 			{
 				if (UPMEquipmentManagerComponent* EquipmentManager = FindEquipmentManager())
 				{
 					EquippedItem = EquipmentManager->EquipItem(EquipDef);
-					if (EquippedItem)
-					{
-						EquippedItem->SetInstigator(SlotItemInstance);
-					}
 				}
 			}
 		}

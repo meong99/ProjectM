@@ -3,27 +3,12 @@
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
 #include "GameFramework/Actor.h"
+#include "Item/Equipment/MEquipmentItemDefinition.h"
 
 #include "PMEquipmentDefinition.generated.h"
 
 class UPMEquipmentInstance;
 class UPMAbilitySet;
-
-USTRUCT()
-struct FPMEquipmentActorToSpawn
-{
-	GENERATED_BODY()
-
-	// Spawn할 Actor의 클래스. 기능을 가진다기 보다는 실제 월드에 소환되는 클래스
-	UPROPERTY(EditAnywhere, Category = "Equipment")
-	TSubclassOf<AActor> ActorToSpawn;
-
-	UPROPERTY(EditAnywhere, Category = "Equipment")
-	FName AttachSocket;
-
-	UPROPERTY(EditAnywhere, Category = "Equipment")
-	FTransform AttachTransform;
-};
 
 UCLASS(BlueprintType, Blueprintable)
 class PROJECTM_API UPMEquipmentDefinition : public UObject

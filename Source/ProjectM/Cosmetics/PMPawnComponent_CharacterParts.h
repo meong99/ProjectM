@@ -110,7 +110,6 @@ public:
 	FPMCharacterPartHandle AddCharacterPart(const FPMCharacterPart& NewPart);
 	void RemoveCharacterPart(FPMCharacterPartHandle Handle);
 
-private:
 	// 설정되어있는 CharacterPartList에 Tag에 맞는 TaggedActor의 Tag를 모두 가져와주는데 지금은 비어있다
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Cosmetics", meta = (AllowPrivateAccess = true))
 	FGameplayTagContainer GetCombinedTags(FGameplayTag RequiredPrefix) const;

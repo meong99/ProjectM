@@ -1,6 +1,6 @@
 #include "PMEquipmentInstance.h"
-#include "GameFramework/Character.h"
 #include "PMEquipmentDefinition.h"
+#include "GameFramework/Character.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/World.h"
 #include "Net/UnrealNetwork.h"

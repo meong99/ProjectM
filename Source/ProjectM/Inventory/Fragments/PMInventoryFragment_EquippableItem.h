@@ -18,8 +18,7 @@ public:
 * Member Functions
 */
 public:
-
-	TSubclassOf<UPMEquipmentDefinition> GetEquipmentDefinition() const { return EquipmentDefinition ;}
+	TSubclassOf<UPMEquipmentDefinition> GetEquipmentDefinition() const { return EquipmentDefinition; }
 
 /*
 * Member Variables

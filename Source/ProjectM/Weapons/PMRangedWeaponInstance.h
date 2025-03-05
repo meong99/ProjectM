@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "PMWeaponInstance.h"
+#include "PMGameplayTags.h"
 #include "PMRangedWeaponInstance.generated.h"
 
 /**
