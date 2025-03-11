@@ -154,7 +154,7 @@ void AGomVoxelChunk::AddVoxelMesh(TArray<FVector>& Vertices, TArray<int32>& Tria
 		Vertices.Add((VoxelCoord * (VoxelSize)) + (CubeVertices[i] * VoxelSize));  // 정점 추가
 	}
 
-	for (int i = asd; i < 36; i++)
+	for (int i = 0; i < 36; i++)
 	{
 		Triangles.Add(StartIndex + CubeTriangles[i]);  // 삼각형 추가
 	}
