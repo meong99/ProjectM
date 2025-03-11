@@ -15,7 +15,6 @@ void AGomVoxelWorld::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ThisClass, VoxelChunks);
 }
 
-
 void AGomVoxelWorld::Destroyed()
 {
 	for (int32 i = 0; i < VoxelChunks.Num(); i++)
@@ -45,8 +44,17 @@ void AGomVoxelWorld::DeleteVoxel()
 			VoxelChunks[i]->Destroy();
 		}
 	}
+}
 
-	VoxelChunks.Empty();
+void AGomVoxelWorld::RegenerateVoxel()
+{
+	for (int32 i = 0; i < VoxelChunks.Num(); i++)
+	{
+		if (VoxelChunks[i])
+		{
+			VoxelChunks[i]->RegenerateVoxel();
+		}
+	}
 }
 
 void AGomVoxelWorld::CreateNewChunk()

@@ -54,22 +54,34 @@ public:
 	AGomVoxelChunk();
 	virtual void PostActorCreated() override;
 	virtual void Destroyed() override;
-
-protected:
-	void InitializeVoxelData();
-	void GenerateChunkMesh() const;
-	void AddVoxelMesh(TArray<FVector>& Vertices, TArray<int32>& Triangles, TArray<FVector2D>& UVs, int32 VoxelSize, const FVector& VoxelCoord) const;
 /*
 * Member Functions
 */
 public:
+	void RegenerateVoxel();
+
+protected:
+	void InitializeVoxelData();
+	void GenerateChunkMesh() const;
+	void AddVoxelMesh(TArray<FVector>& Vertices, TArray<int32>& Triangles, TArray<FVector2D>& UVs, const FVector& VoxelCoord) const;
+	bool IsContactedFace(const FVector& Coord) const;
 
 /*
 * Member Variables
 */
 protected:
-	UPROPERTY(VisibleAnywhere, Category="Voxel")
+	UPROPERTY(VisibleAnywhere, Category="GomVoxelProperty")
     UGomProceduralMeshComponent* MeshComponent;
+
+	// X * X * X
+	UPROPERTY(EditAnywhere, Category="GomVoxelProperty")
+	int32 ChunkSize = 4;
+
+	UPROPERTY(EditAnywhere, Category = "GomVoxelProperty")
+	int32 BlockSize = 30;
+
+	UPROPERTY(EditAnywhere, Category = "GomVoxelProperty")
+	int32 Padding = 0;
 
 	TMap<FVector, FVoxelData> VoxelData;
 };

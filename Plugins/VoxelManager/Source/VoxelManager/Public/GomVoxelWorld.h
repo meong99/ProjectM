@@ -29,10 +29,12 @@ public:
 * Member Functions
 */
 public:
-	UFUNCTION(CallInEditor, Category = "VoxelGenerator")
+	UFUNCTION(CallInEditor, Category = "GomVoxelProperty")
 	void GenerateVoxel();
-	UFUNCTION(CallInEditor, Category = "VoxelGenerator")
+	UFUNCTION(CallInEditor, Category = "GomVoxelProperty")
 	void DeleteVoxel();
+	UFUNCTION(CallInEditor, Category = "GomVoxelProperty")
+	void RegenerateVoxel();
 
 protected:
 	void CreateNewChunk();
@@ -40,13 +42,13 @@ protected:
 * Member Variables
 */
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Instanced)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Instanced, Category = "GomVoxelProperty")
 	TObjectPtr<UGomVoxelDefinition> VoxelDefinition;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Instanced)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Instanced, Category = "GomVoxelProperty")
 	TArray<TObjectPtr<UGomVoxelComponent>> VoxelComponents;
 
 #pragma TODO("이거 Fast로 바꿔야함")
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "GomVoxelProperty")
 	TArray<TObjectPtr<AGomVoxelChunk>> VoxelChunks;
 };
