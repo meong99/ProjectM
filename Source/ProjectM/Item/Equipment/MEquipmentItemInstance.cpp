@@ -110,13 +110,13 @@ void UMEquipmentItemInstance::DestroyEquipmentActors()
 APawn* UMEquipmentItemInstance::GetPawn() const
 {
 	return Cast<APawn>(GetOuter());
-	APlayerController* Controller = Cast<APlayerController>(GetOuter());
-	if (Controller)
-	{
-		return Controller->GetPawn();
-	}
+	//APlayerController* Controller = Cast<APlayerController>(GetOuter());
+	//if (Controller)
+	//{
+	//	return Controller->GetPawn();
+	//}
 
-	return nullptr;
+	//return nullptr;
 }
 
 APawn* UMEquipmentItemInstance::GetTypedPawn(TSubclassOf<APawn> PawnType) const
