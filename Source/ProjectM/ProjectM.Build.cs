@@ -39,6 +39,8 @@ public class ProjectM : ModuleRules
 			"NetCore",           // 네트워크 관련
 // 			"Serialization",     // FFastArraySerializer 관련
 // 			"GuidUtilities"      // FGuidReferences 관련
+
+			"VoxelManager",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

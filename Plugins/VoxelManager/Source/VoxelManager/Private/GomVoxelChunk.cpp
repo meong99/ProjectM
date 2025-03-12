@@ -12,6 +12,15 @@ AGomVoxelChunk::AGomVoxelChunk()
 	RootComponent = MeshComponent;
 }
 
+void AGomVoxelChunk::PostLoad()
+{
+	Super::PostLoad();
+	if (VoxelData.IsEmpty())
+	{
+		RegenerateVoxel();
+	}
+}
+
 void AGomVoxelChunk::PostActorCreated()
 {
 	InitializeVoxelData();
@@ -28,6 +37,20 @@ void AGomVoxelChunk::RegenerateVoxel()
 {
 	InitializeVoxelData();
 	GenerateChunkMesh();
+}
+
+void AGomVoxelChunk::HitVoxel(const FHitResult& HitResult)
+{
+	FVector HitLocation = HitResult.Location;
+	FVector ChunkLocation = GetActorLocation();
+	FVector Destination = ((HitLocation - ChunkLocation) / (BlockSize + Padding)) + (-HitResult.Normal * 0.5);
+
+	Destination = FVector{
+		FMath::FloorToFloat(Destination.X),
+		FMath::FloorToFloat(Destination.Y),
+		FMath::FloorToFloat(Destination.Z)};
+
+	DeleteVoxelBox(Destination);
 }
 
 void AGomVoxelChunk::InitializeVoxelData()
@@ -142,5 +165,14 @@ bool AGomVoxelChunk::IsContactedFace(const FVector& Coord) const
 	}
 
 	return false;
+}
+
+void AGomVoxelChunk::DeleteVoxelBox(const FVector& Coord)
+{
+	if (VoxelData.Find(Coord))
+	{
+		VoxelData.Remove(Coord);
+		GenerateChunkMesh();
+	}
 }
 

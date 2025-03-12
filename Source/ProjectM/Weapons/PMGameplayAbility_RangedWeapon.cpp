@@ -11,6 +11,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/PMGameplayAbilityTargetData_SingleTarget.h"
 #include "DrawDebugHelpers.h"
+#include "GomVoxelChunk.h"
 
 bool UPMGameplayAbility_RangedWeapon::bShowDebug_Console = false;
 static FAutoConsoleVariableRef CVarMyBoolVar(
@@ -87,6 +88,12 @@ void UPMGameplayAbility_RangedWeapon::StartRangedWeaponTargeting()
 			NewTargetData->HitResult = FoundHit;
 			NewTargetData->CartridgeID = CartridgeID;
 			TargetData.Add(NewTargetData);
+
+			AGomVoxelChunk* HitActor = Cast<AGomVoxelChunk>(FoundHit.GetActor());
+			if (HitActor)
+			{
+				HitActor->HitVoxel(FoundHit);
+			}
 		}
 	}
 

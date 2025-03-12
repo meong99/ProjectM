@@ -52,19 +52,23 @@ class VOXELMANAGER_API AGomVoxelChunk : public AActor
 */
 public:
 	AGomVoxelChunk();
+	virtual void PostLoad() override;
 	virtual void PostActorCreated() override;
 	virtual void Destroyed() override;
-/*
+
+	/*
 * Member Functions
 */
 public:
 	void RegenerateVoxel();
+	void HitVoxel(const FHitResult& HitResult);
 
 protected:
 	void InitializeVoxelData();
 	void GenerateChunkMesh() const;
 	void AddVoxelMesh(TArray<FVector>& Vertices, TArray<int32>& Triangles, TArray<FVector2D>& UVs, const FVector& VoxelCoord) const;
 	bool IsContactedFace(const FVector& Coord) const;
+	void DeleteVoxelBox(const FVector& Coord);
 
 /*
 * Member Variables
