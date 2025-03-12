@@ -31,13 +31,15 @@ struct FVoxelData
 {
 	GENERATED_BODY()
 
-	FVoxelData() {}
-	FVoxelData(const FVector& InVoxelCoord, EVoxelType InVoxelType)
+	FVoxelData()
+	: VoxelType(INDEX_NONE)
+	{}
+	FVoxelData(const FVector& InVoxelCoord, int32 InVoxelType)
 	: VoxelType(InVoxelType)
 	, VoxelCoord(InVoxelCoord)
 	{}
 
-	EVoxelType				VoxelType = EVoxelType::None;
+	int32					VoxelType;
 	FVector					VoxelCoord;
 	TArray<FVertextData>	VertexData;
 };
@@ -66,7 +68,7 @@ public:
 protected:
 	void InitializeVoxelData();
 	void GenerateChunkMesh() const;
-	void AddVoxelMesh(TArray<FVector>& Vertices, TArray<int32>& Triangles, TArray<FVector2D>& UVs, const FVector& VoxelCoord) const;
+	void AddVoxelMesh(TArray<FVector>& Vertices, TArray<int32>& Triangles, TArray<FVector2D>& UVs, const FVector& VoxelCoord, int32 VoxelType) const;
 	bool IsContactedFace(const FVector& Coord) const;
 	void DeleteVoxelBox(const FVector& Coord);
 
@@ -88,4 +90,7 @@ protected:
 	int32 Padding = 0;
 
 	TMap<FVector, FVoxelData> VoxelData;
+
+	UPROPERTY(EditAnywhere, Category="GomVoxelProperty")
+	int32 TestVoxelType = 0;
 };

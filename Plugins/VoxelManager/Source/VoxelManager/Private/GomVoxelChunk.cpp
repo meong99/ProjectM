@@ -64,7 +64,7 @@ void AGomVoxelChunk::InitializeVoxelData()
 			for (float Z = -Half; Z < Half; Z++)
 			{
 				FVector Coord = FVector(X, Y, Z);
-				VoxelData.Emplace(Coord, FVoxelData{ Coord, EVoxelType::Rock });
+				VoxelData.Emplace(Coord, FVoxelData{ Coord, TestVoxelType });
 			}
 		}
 	}
@@ -79,20 +79,20 @@ void AGomVoxelChunk::GenerateChunkMesh() const
 	for (auto& Elem : VoxelData)
 	{
 		FVector VoxelCoord = Elem.Key;
-		EVoxelType VoxelType = Elem.Value.VoxelType;
+		int32 VoxelType = Elem.Value.VoxelType;
 
-		if (VoxelType == EVoxelType::None)
+		if (VoxelType == INDEX_NONE)
 		{
 			continue;
 		}
 
-		AddVoxelMesh(Vertices, Triangles, UVs, VoxelCoord);
+		AddVoxelMesh(Vertices, Triangles, UVs, VoxelCoord, VoxelType);
 	}
 
 	MeshComponent->CreateMeshSection_LinearColor(0, Vertices, Triangles, TArray<FVector>(), UVs, TArray<FLinearColor>(), TArray<FProcMeshTangent>(), true);
 }
 
-void AGomVoxelChunk::AddVoxelMesh(TArray<FVector>& Vertices, TArray<int32>& Triangles, TArray<FVector2D>& UVs, const FVector& VoxelCoord) const
+void AGomVoxelChunk::AddVoxelMesh(TArray<FVector>& Vertices, TArray<int32>& Triangles, TArray<FVector2D>& UVs, const FVector& VoxelCoord, int32 VoxelType) const
 {
 	FVector CubeVertices[8] =
 	{
@@ -108,21 +108,21 @@ void AGomVoxelChunk::AddVoxelMesh(TArray<FVector>& Vertices, TArray<int32>& Tria
 
 	int32 FaceVertex[6][4] =
 	{
-		{0, 1, 2, 3},	// 전
+		{3, 0, 1, 2},	// 전
 		{4, 7, 6, 5},	// 후
 		{5, 6, 2, 1},	// 상
-		{4, 0, 3, 7},	// 하
-		{4, 5, 1, 0},	// 좌
-		{3, 2, 6, 7}	// 우
+		{0, 3, 7, 4},	// 하
+		{0, 4, 5, 1},	// 좌
+		{7, 3, 2, 6}	// 우
 	};
 
-	FVector2D FaceUVs[4] =
+	/*FVector2D FaceUVs[4] =
 	{
 		FVector2D(0, 0),
-		FVector2D(1, 0),
 		FVector2D(1, 1),
-		FVector2D(0, 1)
-	};
+		FVector2D(0, 1),
+		FVector2D(1, 0),
+	};*/
 
 	FVector FaceChecks[6] =
 	{
@@ -132,6 +132,25 @@ void AGomVoxelChunk::AddVoxelMesh(TArray<FVector>& Vertices, TArray<int32>& Tria
 		FVector(0.0f,  0.0f, -1.0f),	// 하
 		FVector(0.0f, -1.0f,  0.0f),	// 좌
 		FVector(0.0f, +1.0f,  0.0f),	// 우
+	};
+
+	const float TileSize = 1.0f / 16.0f;  // 16x16 블록 크기
+	int32 X = VoxelType % 16;
+	int32 Y = VoxelType / 16;
+
+	FVector2D UVOffset = FVector2D(X * TileSize, Y * TileSize);
+
+	/*FVector2D FaceUVs[4] = {
+		FVector2D(UVOffset.X, UVOffset.Y),
+		FVector2D(UVOffset.X + TileSize, UVOffset.Y + TileSize),
+		FVector2D(UVOffset.X, UVOffset.Y + TileSize),
+		FVector2D(UVOffset.X + TileSize, UVOffset.Y)
+	};*/
+	FVector2D FaceUVs[4] = {
+		UVOffset + FVector2D(0, TileSize),            // 좌상단 (0,1)
+		UVOffset + FVector2D(TileSize, TileSize),      // 우상단 (1,1)
+		UVOffset + FVector2D(TileSize, 0),            // 우하단 (1,0)
+		UVOffset,                                      // 좌하단 (0,0)
 	};
 
 	for (int i = 0; i < 6; i++)
@@ -145,15 +164,9 @@ void AGomVoxelChunk::AddVoxelMesh(TArray<FVector>& Vertices, TArray<int32>& Tria
 		for (int j = 0; j < 4; j++)
 		{
 			Vertices.Add(((VoxelCoord * (BlockSize + Padding))) + (CubeVertices[FaceVertex[i][j]] * BlockSize));
+			UVs.Add(FaceUVs[j]);
 		}
-		Triangles.Add(StartIndex + 0);
-		Triangles.Add(StartIndex + 1);
-		Triangles.Add(StartIndex + 2);
-		Triangles.Add(StartIndex + 0);
-		Triangles.Add(StartIndex + 2);
-		Triangles.Add(StartIndex + 3);
-
-		UVs.Append({ FaceUVs[0], FaceUVs[1], FaceUVs[2], FaceUVs[0], FaceUVs[2], FaceUVs[3] });
+		Triangles.Append({StartIndex + 0, StartIndex + 1, StartIndex + 2, StartIndex + 0, StartIndex + 2, StartIndex + 3});
 	}
 }
 
