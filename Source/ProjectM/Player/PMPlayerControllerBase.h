@@ -19,7 +19,7 @@ public:
 
 	void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 
-/*
+	/*
 * Member Functions
 */
 public:

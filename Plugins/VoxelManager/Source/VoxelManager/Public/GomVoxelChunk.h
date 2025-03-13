@@ -7,24 +7,7 @@
 #include "GomVoxelChunk.generated.h"
 
 class UGomProceduralMeshComponent;
-
-UENUM(BlueprintType)
-enum class EVoxelType : uint8
-{
-	None UMETA(DisplayName = None),
-	Rock UMETA(DisplayName = Rock),
-};
-
-struct FVertextData
-{
-	FVertextData(const FVector& Coord)
-	: Vertex(Coord)
-	, ReferenceCount(1)
-	{}
-
-	FVector Vertex;
-	uint8	ReferenceCount;
-};
+class UGomVoxelDataObject;
 
 USTRUCT()
 struct FVoxelData
@@ -34,14 +17,17 @@ struct FVoxelData
 	FVoxelData()
 	: VoxelType(INDEX_NONE)
 	{}
-	FVoxelData(const FVector& InVoxelCoord, int32 InVoxelType)
+	FVoxelData(const FVector& InVoxelCoord, int32 InVoxelType, UGomVoxelDataObject* InVoxelObject)
 	: VoxelType(InVoxelType)
 	, VoxelCoord(InVoxelCoord)
+	, VoxelDataObject(InVoxelObject)
 	{}
 
-	int32					VoxelType;
-	FVector					VoxelCoord;
-	TArray<FVertextData>	VertexData;
+	int32							VoxelType;
+	FVector							VoxelCoord;
+
+	UPROPERTY()
+	TObjectPtr<UGomVoxelDataObject>	VoxelDataObject;
 };
 
 UCLASS()
@@ -58,7 +44,7 @@ public:
 	virtual void PostActorCreated() override;
 	virtual void Destroyed() override;
 
-	/*
+/*
 * Member Functions
 */
 public:
@@ -71,6 +57,10 @@ protected:
 	void AddVoxelMesh(TArray<FVector>& Vertices, TArray<int32>& Triangles, TArray<FVector2D>& UVs, const FVector& VoxelCoord, int32 VoxelType) const;
 	bool IsContactedFace(const FVector& Coord) const;
 	void DeleteVoxelBox(const FVector& Coord);
+	void DeleteVoxelBox_Internal(const FVector& Coord);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_OnDeleteVoxel(const FVector& Coord);
 
 /*
 * Member Variables
@@ -89,8 +79,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GomVoxelProperty")
 	int32 Padding = 0;
 
-	TMap<FVector, FVoxelData> VoxelData;
-
-	UPROPERTY(EditAnywhere, Category="GomVoxelProperty")
+	UPROPERTY(EditAnywhere, Category = "GomVoxelProperty")
 	int32 TestVoxelType = 0;
+
+	UPROPERTY(EditAnywhere, Category = "GomVoxelProperty")
+	TSubclassOf<UGomVoxelDataObject> VoxelDataClass;
+
+	UPROPERTY()
+	TMap<FVector, FVoxelData> VoxelData;
 };

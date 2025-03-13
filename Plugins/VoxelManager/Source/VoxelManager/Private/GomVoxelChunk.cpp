@@ -1,13 +1,14 @@
 #include "GomVoxelChunk.h"
 #include "GomProceduralMeshComponent.h"
 #include "ProceduralMeshComponent.h"
+#include "Net/UnrealNetwork.h"
+#include "GomVoxelDataObject.h"
 
-// Sets default values
 AGomVoxelChunk::AGomVoxelChunk()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	SetReplicates(true);
 	MeshComponent = CreateDefaultSubobject<UGomProceduralMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;
 }
@@ -15,16 +16,13 @@ AGomVoxelChunk::AGomVoxelChunk()
 void AGomVoxelChunk::PostLoad()
 {
 	Super::PostLoad();
-	if (VoxelData.IsEmpty())
-	{
-		RegenerateVoxel();
-	}
+
+	RegenerateVoxel();
 }
 
 void AGomVoxelChunk::PostActorCreated()
 {
-	InitializeVoxelData();
-	GenerateChunkMesh();
+	RegenerateVoxel();
 	MCHAE_LOG("AGomVoxelChunk::PostActorCreated");
 }
 
@@ -35,6 +33,10 @@ void AGomVoxelChunk::Destroyed()
 
 void AGomVoxelChunk::RegenerateVoxel()
 {
+	if (!VoxelDataClass)
+	{
+		VoxelDataClass = UGomVoxelDataObject::StaticClass();
+	}
 	InitializeVoxelData();
 	GenerateChunkMesh();
 }
@@ -57,6 +59,7 @@ void AGomVoxelChunk::InitializeVoxelData()
 {
 	VoxelData.Empty();
 	int32 Half = (ChunkSize / 2);
+	TMap<FVector, FVoxelData> Tmp;
 	for (float X = -Half; X < Half; X++)
 	{
 		for (float Y = -Half; Y < Half; Y++)
@@ -64,8 +67,20 @@ void AGomVoxelChunk::InitializeVoxelData()
 			for (float Z = -Half; Z < Half; Z++)
 			{
 				FVector Coord = FVector(X, Y, Z);
-				VoxelData.Emplace(Coord, FVoxelData{ Coord, TestVoxelType });
+				UGomVoxelDataObject* DataObject = NewObject<UGomVoxelDataObject>(this, VoxelDataClass);
+				DataObject->Coord = Coord;
+				Tmp.Emplace(Coord, FVoxelData{ Coord, TestVoxelType, DataObject});
 			}
+		}
+	}
+
+	VoxelData = MoveTemp(Tmp);
+
+	for (const auto& Iter : VoxelData)
+	{
+		if (Iter.Value.VoxelDataObject)
+		{
+			Iter.Value.VoxelDataObject->OnInitVoxelDataObject(VoxelData);
 		}
 	}
 }
@@ -116,14 +131,6 @@ void AGomVoxelChunk::AddVoxelMesh(TArray<FVector>& Vertices, TArray<int32>& Tria
 		{7, 3, 2, 6}	// 우
 	};
 
-	/*FVector2D FaceUVs[4] =
-	{
-		FVector2D(0, 0),
-		FVector2D(1, 1),
-		FVector2D(0, 1),
-		FVector2D(1, 0),
-	};*/
-
 	FVector FaceChecks[6] =
 	{
 		FVector(+1.0f,  0.0f,  0.0f),	// 전
@@ -137,15 +144,7 @@ void AGomVoxelChunk::AddVoxelMesh(TArray<FVector>& Vertices, TArray<int32>& Tria
 	const float TileSize = 1.0f / 16.0f;  // 16x16 블록 크기
 	int32 X = VoxelType % 16;
 	int32 Y = VoxelType / 16;
-
 	FVector2D UVOffset = FVector2D(X * TileSize, Y * TileSize);
-
-	/*FVector2D FaceUVs[4] = {
-		FVector2D(UVOffset.X, UVOffset.Y),
-		FVector2D(UVOffset.X + TileSize, UVOffset.Y + TileSize),
-		FVector2D(UVOffset.X, UVOffset.Y + TileSize),
-		FVector2D(UVOffset.X + TileSize, UVOffset.Y)
-	};*/
 	FVector2D FaceUVs[4] = {
 		UVOffset + FVector2D(0, TileSize),            // 좌상단 (0,1)
 		UVOffset + FVector2D(TileSize, TileSize),      // 우상단 (1,1)
@@ -182,10 +181,34 @@ bool AGomVoxelChunk::IsContactedFace(const FVector& Coord) const
 
 void AGomVoxelChunk::DeleteVoxelBox(const FVector& Coord)
 {
-	if (VoxelData.Find(Coord))
+	FVoxelData* InternalData = VoxelData.Find(Coord);
+	if (InternalData)
 	{
-		VoxelData.Remove(Coord);
-		GenerateChunkMesh();
+		if (InternalData->VoxelDataObject)
+		{
+			InternalData->VoxelDataObject->Delegate_ExecuteDeleteVoxel.AddLambda([this, InternalData, Coord]() -> void
+				{
+					Multicast_OnDeleteVoxel(Coord);
+				});
+			InternalData->VoxelDataObject->OnReadyDeleteDataObject();
+		}
+		else
+		{
+			Multicast_OnDeleteVoxel(Coord);
+		}
 	}
 }
 
+void AGomVoxelChunk::Multicast_OnDeleteVoxel_Implementation(const FVector& Coord)
+{
+	FVoxelData* InternalData = VoxelData.Find(Coord);
+	if (InternalData)
+	{
+		if (InternalData->VoxelDataObject)
+		{
+			InternalData->VoxelDataObject->OnDeleteVoxelDataObject();
+		}
+		VoxelData.Remove(InternalData->VoxelCoord);
+		GenerateChunkMesh();
+	}
+}

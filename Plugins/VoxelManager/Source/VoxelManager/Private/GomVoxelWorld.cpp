@@ -2,10 +2,12 @@
 #include "GomVoxelComponent.h"
 #include "GomVoxelDefinition.h"
 #include "GomVoxelChunk.h"
+#include "Net/UnrealNetwork.h"
 
 AGomVoxelWorld::AGomVoxelWorld()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	SetReplicates(true);
 }
 
 void AGomVoxelWorld::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -15,18 +17,15 @@ void AGomVoxelWorld::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ThisClass, VoxelChunks);
 }
 
-void AGomVoxelWorld::Destroyed()
+void AGomVoxelWorld::BeginDestroy()
 {
-	for (int32 i = 0; i < VoxelChunks.Num(); i++)
-	{
-		if (VoxelChunks[i])
-		{
-			VoxelChunks[i]->Destroy();
-		}
-	}
+	DeleteVoxel();
+	Super::BeginDestroy();
+}
 
-	VoxelChunks.Empty();
-	Super::Destroyed();
+void AGomVoxelWorld::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
 }
 
 void AGomVoxelWorld::GenerateVoxel()
@@ -44,6 +43,7 @@ void AGomVoxelWorld::DeleteVoxel()
 			VoxelChunks[i]->Destroy();
 		}
 	}
+	VoxelChunks.Empty();
 }
 
 void AGomVoxelWorld::RegenerateVoxel()

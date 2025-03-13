@@ -18,6 +18,7 @@ class VOXELMANAGER_API UGomProceduralMeshComponent : public UProceduralMeshCompo
 */
 public:
 	UGomProceduralMeshComponent(const FObjectInitializer& ObjectInitializer);
+	virtual void InitializeComponent() override;
 
 /*
 * Member Functions

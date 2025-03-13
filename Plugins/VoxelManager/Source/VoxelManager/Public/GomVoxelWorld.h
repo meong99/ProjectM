@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Net/UnrealNetwork.h"
 #include "Engine/World.h"
 #include "GomVoxelWorld.generated.h"
 
@@ -22,10 +21,10 @@ class VOXELMANAGER_API AGomVoxelWorld : public AActor
 */
 public:
 	AGomVoxelWorld();
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	virtual void Destroyed() override;
+	virtual void PostInitializeComponents() override;
+	virtual void BeginDestroy() override;
 
-	/*
+/*
 * Member Functions
 */
 public:

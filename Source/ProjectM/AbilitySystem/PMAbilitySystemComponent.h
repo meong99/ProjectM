@@ -17,6 +17,8 @@ class PROJECTM_API UPMAbilitySystemComponent : public UAbilitySystemComponent
 public:
 	UPMAbilitySystemComponent();
 	virtual void InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor) override;
+	virtual void AbilitySpecInputPressed(FGameplayAbilitySpec& Spec) override;
+	virtual void AbilitySpecInputReleased(FGameplayAbilitySpec& Spec) override;
 
 protected:
 
