@@ -68,14 +68,6 @@ void UPMGameplayAbility_RangedWeapon::StartRangedWeaponTargeting()
 	UAbilitySystemComponent* MyAbilityComponent = CurrentActorInfo->AbilitySystemComponent.Get();
 	check(MyAbilityComponent);
 
-	if (HasAuthority(&CurrentActivationInfo))
-	{
-		MCHAE_LOG("Server");
-	}
-	else
-	{
-		MCHAE_LOG("Client");
-	}
 	// 총알 궤적 계산 및 Hit 정보 계산
 	TArray<FHitResult> FoundHits;
 	PerformLocalTargeting(FoundHits);

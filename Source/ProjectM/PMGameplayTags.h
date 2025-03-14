@@ -26,6 +26,7 @@ struct FPMGameplayTags
 	* Input Tags
 	*/
 	FGameplayTag InputTag_Move;
+	FGameplayTag InputTag_Jump;
 	FGameplayTag InputTag_Look_Mouse;
 
 	/*

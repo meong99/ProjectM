@@ -14,6 +14,7 @@
 #include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "UI/MViewportClient.h"
 #include "Engine/GameInstance.h"
+#include "GameFramework/Character.h"
 
 const FName UPMCharacterInitComponent::NAME_ActorFeatureName{"CharacterInit"};
 const FName UPMCharacterInitComponent::NAME_BindInputsNow{"BindInputsNow"};
@@ -251,6 +252,7 @@ void UPMCharacterInitComponent::InitializePlayerInput(UInputComponent* PlayerInp
 				// 기본 입력 관련 Action 바인딩 (복잡한 Value가진 값 Vector... 등)
 				InputComponent->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, false);
 				InputComponent->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, false);
+				InputComponent->BindNativeAction(InputConfig, GameplayTags.InputTag_Jump, ETriggerEvent::Triggered, this, &ThisClass::Input_Jump, false);
 
 				// 어빌리티와 관련된 InputAction 바인딩
 				TArray<uint32> BindHandles;
@@ -268,22 +270,6 @@ void UPMCharacterInitComponent::InitializePlayerInput(UInputComponent* PlayerInp
 
 void UPMCharacterInitComponent::Input_Move(const FInputActionValue& InputActionValue)
 {
-
-//	{
-//#include "Misc/DateTime.h"
-//
-//		static FDateTime LastTime = FDateTime::Now();
-//		static int32 test = 0;
-//
-//		FDateTime CurrentTime = FDateTime::Now();
-//		if ((CurrentTime - LastTime).GetSeconds() > 1)
-//		{
-//			UE_LOG(LogTemp, Log, TEXT("mchae : %d"), test);
-//			test = 0;
-//			LastTime = FDateTime::Now();
-//		}
-//		test++;
-//	}
 	APawn* Pawn = GetPawn<APawn>();
 	AController* Controller = Pawn ? Pawn->GetController() : nullptr;
 
@@ -303,6 +289,15 @@ void UPMCharacterInitComponent::Input_Move(const FInputActionValue& InputActionV
 			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
 			Pawn->AddMovementInput(MovementDirection, Value.Y);
 		}
+	}
+}
+
+void UPMCharacterInitComponent::Input_Jump(const FInputActionValue& InputActionValue)
+{
+	ACharacter* Character = GetPawn<ACharacter>();
+	if (Character && Character->CanJump())
+	{
+		Character->Jump();
 	}
 }
 

@@ -31,6 +31,7 @@ void FPMGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	* Input Tags
 	*/
 	AddTag(InputTag_Move, "InputTag.Move", "");
+	AddTag(InputTag_Jump, "InputTag.Jump", "");
 	AddTag(InputTag_Look_Mouse, "InputTag.Look.Mouse", "");
 
 	/*
