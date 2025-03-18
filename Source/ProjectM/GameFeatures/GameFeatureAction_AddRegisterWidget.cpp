@@ -50,6 +50,14 @@ void UGameFeatureAction_AddRegisterWidget::AddWidgetRegister(FGameFeatureStateCh
 			{
 				ViewportClient->AddWidgetRegister(RegisterHandle.WidgetRegister->RegisterTag, WidgetRegister);
 			}
+
+			if (bAddToLayer)
+			{
+				for (const auto& Iter : WidgetRegister->MappedWidgetData.WidgetData)
+				{
+					ViewportClient->AddWidgetToLayer(Iter.Key, LayerId);
+				}
+			}
 		}
 	}
 }

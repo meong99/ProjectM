@@ -51,8 +51,14 @@ private:
 * Member Variables
 */
 protected:
-	UPROPERTY(EditAnywhere, Category = UI)
+	UPROPERTY(EditDefaultsOnly, Category = UI)
 	TArray<FMWidgetRegisterHandle> WidgetRegisterHandles;
+
+	UPROPERTY(EditDefaultsOnly, Category = UI)
+	bool bAddToLayer = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = UI)
+	int32 LayerId = 0;
 
 	TMap<FGameFeatureStateChangeContext, FPerContextData> ContextData;
 };

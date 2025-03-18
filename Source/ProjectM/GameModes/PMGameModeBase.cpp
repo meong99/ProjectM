@@ -12,6 +12,7 @@
 #include "Character/Components/PMPawnExtensionComponent.h"
 #include "UI/PMHUD.h"
 #include "Misc/CommandLine.h"
+#include "MWorldSettings.h"
 
 APMGameModeBase::APMGameModeBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -163,6 +164,14 @@ void APMGameModeBase::HandleMatchAssignmentIfNotExpectingOne()
 			{
 				ExperienceId = FPrimaryAssetId(FPrimaryAssetType(UPMExperienceDefinition::StaticClass()->GetFName()), FName(*ExperienceFromCommandLine));
 			}
+		}
+	}
+
+	if (!ExperienceId.IsValid())
+	{
+		if (AMWorldSettings* TypedWorldSettings = Cast<AMWorldSettings>(GetWorldSettings()))
+		{
+			ExperienceId = TypedWorldSettings->GetDefaultGameplayExperience();
 		}
 	}
 

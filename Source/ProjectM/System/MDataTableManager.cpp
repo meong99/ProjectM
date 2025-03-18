@@ -23,7 +23,6 @@ const UDataTable* UMDataTableManager::GetDataTable(EMItemIdType TableType) const
 	return TableMap.FindRef(TableType);
 }
 
-
 const TSubclassOf<UPMInventoryItemDefinition> UMDataTableManager::GetItemDefinition(EMItemIdType TableType, int32 ItemId) const
 {
 	const UDataTable* DataTable = GetDataTable(TableType);
