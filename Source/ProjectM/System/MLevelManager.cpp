@@ -30,7 +30,7 @@ void UMLevelManager::TravelLevel(UPMUserFacingExperienceDefinition* UFED, const 
 
 void UMLevelManager::OnLevelLoaded(UWorld* NewWorld)
 {
-	UGameInstance* GameInstance = NewWorld->GetGameInstance();
+	/*UGameInstance* GameInstance = NewWorld->GetGameInstance();
 	if (GameInstance)
 	{
 		UMViewportClient* ViewportClient = Cast<UMViewportClient>(GameInstance->GetGameViewportClient());
@@ -38,7 +38,7 @@ void UMLevelManager::OnLevelLoaded(UWorld* NewWorld)
 		{
 			ViewportClient->ApplyWidgetLayout();
 		}
-	}
+	}*/
 }
 
 UCommonSessionSubSystem* UMLevelManager::GetSessionSubsystem() const

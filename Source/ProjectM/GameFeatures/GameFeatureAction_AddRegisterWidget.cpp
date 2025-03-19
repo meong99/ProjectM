@@ -3,6 +3,7 @@
 #include "Engine/GameInstance.h"
 #include "GameFramework/Pawn.h"
 #include "UI/MViewportClient.h"
+#include "UI/PMHUD.h"
 
 void UGameFeatureAction_AddRegisterWidget::AddToWorld(const FWorldContext& WorldContext, const FGameFeatureStateChangeContext& ChangeContext)
 {
@@ -17,12 +18,13 @@ void UGameFeatureAction_AddRegisterWidget::AddToWorld(const FWorldContext& World
 			UGameFrameworkComponentManager::FExtensionHandlerDelegate AddConfigDelegate =
 				UGameFrameworkComponentManager::FExtensionHandlerDelegate::CreateUObject(this, &ThisClass::HandleWidgetRegistry, ChangeContext);
 
-			TSharedPtr<FComponentRequestHandle> ExtensionRequestHandle = ComponentManager->AddExtensionHandler(APawn::StaticClass(), AddConfigDelegate);
+			TSharedPtr<FComponentRequestHandle> ExtensionRequestHandle = ComponentManager->AddExtensionHandler(APMHUD::StaticClass(), AddConfigDelegate);
 			ActiveData.ComponentRequests = ExtensionRequestHandle;
 			ActiveData.GameInstance = GameInstance;
 		}
 	}
 }
+
 void UGameFeatureAction_AddRegisterWidget::HandleWidgetRegistry(AActor* Actor, FName EventName, FGameFeatureStateChangeContext ChangeContext)
 {
 	if (EventName == UGameFrameworkComponentManager::NAME_ReceiverRemoved)
@@ -50,6 +52,8 @@ void UGameFeatureAction_AddRegisterWidget::AddWidgetRegister(FGameFeatureStateCh
 			{
 				ViewportClient->AddWidgetRegister(RegisterHandle.WidgetRegister->RegisterTag, WidgetRegister);
 			}
+
+			ViewportClient->ApplyWidgetLayout();
 
 			if (bAddToLayer)
 			{

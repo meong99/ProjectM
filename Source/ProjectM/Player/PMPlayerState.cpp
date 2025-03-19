@@ -59,17 +59,6 @@ void APMPlayerState::PostInitializeComponents()
 void APMPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (HasAuthority())
-	{
-		UAsyncAction_ExperienceReady* ExperienceReady = UAsyncAction_ExperienceReady::WaitForExperienceReady(this);
-		if (ExperienceReady)
-		{
-			ExperienceReady->OnReady.AddDynamic(this, &ThisClass::Server_LoadPlayerData);
-			ExperienceReady->Activate();
-		}
-		//Server_LoadPlayerData();
-	}
 }
 
 void APMPlayerState::OnExperienceLoaded(const UPMExperienceDefinition* CurrentExperience)
@@ -81,6 +70,12 @@ void APMPlayerState::OnExperienceLoaded(const UPMExperienceDefinition* CurrentEx
 		if (NewPawnData)
 		{
 			SetPawnData(NewPawnData);
+			UAsyncAction_ExperienceReady* ExperienceReady = UAsyncAction_ExperienceReady::WaitForExperienceReady(this);
+			if (ExperienceReady)
+			{
+				ExperienceReady->OnReady.AddDynamic(this, &ThisClass::Server_LoadPlayerData);
+				ExperienceReady->Activate();
+			}
 		}
 	}
 }

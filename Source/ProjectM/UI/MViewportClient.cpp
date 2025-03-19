@@ -64,8 +64,6 @@ void UMViewportClient::LoadDefaultWidgetRegister()
 					MCHAE_ERROR("WidgetRegistar or RegisterTag is not valid! Check!");
 				}
 			}
-
-			ApplyWidgetLayout();
 		})
 	);
 }
