@@ -32,6 +32,9 @@ public:
 	void TravelLevel(UPMUserFacingExperienceDefinition* UFED, const FString& Ip = "127.0.0.1:7777");
 
 protected:
+	UFUNCTION()
+	void OnLevelLoaded(UWorld* NewWorld);
+
 	UCommonSessionSubSystem* GetSessionSubsystem() const;
 	APlayerController* GetPlayerController() const;
 /*

@@ -4,6 +4,7 @@
 #include "Engine/GameInstance.h"
 #include "CommonSessionSubSystem.h"
 #include "Engine/LocalPlayer.h"
+#include "UI/MViewportClient.h"
 
 UMLevelManager::UMLevelManager()
 {
@@ -12,6 +13,7 @@ UMLevelManager::UMLevelManager()
 void UMLevelManager::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
+	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UMLevelManager::OnLevelLoaded);
 }
 
 void UMLevelManager::TravelLevel(UPMUserFacingExperienceDefinition* UFED, const FString& Ip)
@@ -22,6 +24,19 @@ void UMLevelManager::TravelLevel(UPMUserFacingExperienceDefinition* UFED, const 
 		if (Session)
 		{
  			Session->HostSession(GetPlayerController(), UFED->CreateHostingRequst(Ip));
+		}
+	}
+}
+
+void UMLevelManager::OnLevelLoaded(UWorld* NewWorld)
+{
+	UGameInstance* GameInstance = NewWorld->GetGameInstance();
+	if (GameInstance)
+	{
+		UMViewportClient* ViewportClient = Cast<UMViewportClient>(GameInstance->GetGameViewportClient());
+		if (ViewportClient)
+		{
+			ViewportClient->ApplyWidgetLayout();
 		}
 	}
 }

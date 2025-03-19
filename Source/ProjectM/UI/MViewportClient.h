@@ -51,9 +51,9 @@ public:
 	// Widget의 Instance를 반환한다. 만약 Instancing되지 않았다면 Class를 찾아 Instancing후 반환한다.
 	UMWidgetBase* GetWidgetInstance(const FGameplayTag& WidgetTag);
 
-private:
-	void OnLoaded_DefaultWidgetRegister();
+	// Layout 적용
 	void ApplyWidgetLayout();
+private:
 	UMWidgetInstanceList* CreateNewWidgetInstanceList(const FGameplayTag& RegisterTag);
 	UMWidgetRegister* GetWidgetRegister(const FGameplayTag& Tag);
 /*

@@ -105,6 +105,7 @@ void UMWidgetLayout::SetInputMode(uint8 NewInputMode) const
 		{
 			FInputModeUIOnly NewMode;
 			PlayerController->SetInputMode(NewMode);
+			PlayerController->bShowMouseCursor = true;
 			break;
 		}
 		case EMWidgetInputMode::GameAndUIWithShowMouse:

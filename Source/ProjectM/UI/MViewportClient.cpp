@@ -65,7 +65,7 @@ void UMViewportClient::LoadDefaultWidgetRegister()
 				}
 			}
 
-			OnLoaded_DefaultWidgetRegister();
+			ApplyWidgetLayout();
 		})
 	);
 }
@@ -74,12 +74,21 @@ void UMViewportClient::AddWidgetRegister(const FGameplayTag& RegisterTag, UMWidg
 {
 	if (RegisterTag.IsValid() && InWidgetRegister)
 	{
+		RemoveWidgetRegister(RegisterTag);
 		WidgetRegisterMap.Emplace(RegisterTag, InWidgetRegister);
 	}
 }
 
 void UMViewportClient::RemoveWidgetRegister(const FGameplayTag& RegisterTag)
 {
+	UMWidgetRegister* Register = WidgetRegisterMap.FindRef(RegisterTag);
+	if (Register)
+	{
+		for (const auto& Iter : Register->MappedWidgetData.WidgetData)
+		{
+			RemoveWidgetFromLayer(Iter.Key);
+		}
+	}
 	WidgetRegisterMap.Remove(RegisterTag);
 	WidgetInstanceListMap.Remove(RegisterTag);
 }
@@ -212,11 +221,6 @@ UMWidgetRegister* UMViewportClient::GetWidgetRegister(const FGameplayTag& Tag)
 	}
 
 	return WidgetRegister;
-}
-
-void UMViewportClient::OnLoaded_DefaultWidgetRegister()
-{
-	ApplyWidgetLayout();
 }
 
 void UMViewportClient::ApplyWidgetLayout()
