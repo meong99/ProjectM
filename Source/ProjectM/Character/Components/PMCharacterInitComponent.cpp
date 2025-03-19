@@ -162,16 +162,6 @@ void UPMCharacterInitComponent::HandleChangeInitState(UGameFrameworkComponentMan
  				InitializePlayerInput(Pawn->InputComponent);
  			}
  		}
-		
-#pragma TODO("Actionset에서 등록하는거로 변경하자")
-		// WidgetLayout설정
-		UGameInstance* GameInstance = GetGameInstance<UGameInstance>();
-		UMViewportClient* ViewportClient = GameInstance ? Cast<UMViewportClient>(GameInstance->GetGameViewportClient()) : nullptr;
-		if (ViewportClient)
-		{
-			//ViewportClient->AddWidgetToViewport(FPMGameplayTags::Get().UI_Registry_Layout_DefaultLayout);
-			//ViewportClient->AddWidgetToLayer((FPMGameplayTags::Get().UI_Registry_HUD_MainHUD));
-		}
 	}
 }
 
