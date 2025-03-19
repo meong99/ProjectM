@@ -5,21 +5,11 @@
 #include "Engine/LocalPlayer.h"
 #include "AssetRegistry/AssetData.h"
 #include "Engine/World.h"
+#include "TimerManager.h"
 
 /**
  * UCommonSession_HostSessionRequest
  */
-
-FString UCommonSession_HostSessionRequest::GetMapName() const
-{
-	FAssetData MapAssetData;
-	if (UAssetManager::Get().GetPrimaryAssetData(MapId, MapAssetData))
-	{
-		return MapAssetData.PackageName.ToString();
-	}
-
-	return FString();
-}
 
 FString UCommonSession_HostSessionRequest::ConstructTravelURL() const
 {
@@ -42,7 +32,7 @@ FString UCommonSession_HostSessionRequest::ConstructTravelURL() const
 		}
 	}
 
-	return FString::Printf(TEXT("%s%s"), *GetMapName(), *combinedExtraArgs);
+	return FString::Printf(TEXT("%s%s"), *URL, *combinedExtraArgs);
 }
 
 /**
@@ -58,5 +48,24 @@ void UCommonSessionSubSystem::HostSession(APlayerController* HostingPlayer, UCom
 		return;
 	}
 
-	GetWorld()->ServerTravel(Request->ConstructTravelURL());
+	Handle_TravelFailDelegate = GEngine->TravelFailureEvent.AddUObject(this, &UCommonSessionSubSystem::OnFailure_ClientTravel);
+	Handle_NetworkDelegate = GEngine->OnNetworkFailure().AddUObject(this, &UCommonSessionSubSystem::OnFailureNetwork_ClientTravel);
+	HostingPlayer->ClientTravel(Request->ConstructTravelURL(), ETravelType::TRAVEL_Absolute, true);
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer(Handle, [this]()->void
+		{
+			//GEngine->TravelFailureEvent.Broadcast(GetWorld(), ETravelFailure::Type::ClientTravelFailure, TEXT("TimeOver"));
+		}, 1, false);
+}
+
+void UCommonSessionSubSystem::OnFailure_ClientTravel(UWorld* World, ETravelFailure::Type FailType, const FString& ErrorString)
+{
+	MCHAE_WARNING("CientTravel on fail Because ", *ErrorString);
+	GEngine->TravelFailureEvent.Remove(Handle_TravelFailDelegate);
+}
+
+void UCommonSessionSubSystem::OnFailureNetwork_ClientTravel(UWorld* World, UNetDriver* Driver, ENetworkFailure::Type FailType, const FString& ErrorString)
+{
+	MCHAE_WARNING("Network on fail Because ", *ErrorString);
+	GEngine->TravelFailureEvent.Remove(Handle_NetworkDelegate);
 }

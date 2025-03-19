@@ -6,6 +6,9 @@
 #include "Subsystems/LocalPlayerSubsystem.h"
 #include "MLevelManager.generated.h"
 
+class UPMUserFacingExperienceDefinition;
+class UCommonSessionSubSystem;
+
 /**
  *
  */
@@ -25,7 +28,12 @@ public:
 * Member Functions
 */
 public:
+	UFUNCTION(BlueprintCallable)
+	void TravelLevel(UPMUserFacingExperienceDefinition* UFED, const FString& Ip = "127.0.0.1:7777");
 
+protected:
+	UCommonSessionSubSystem* GetSessionSubsystem() const;
+	APlayerController* GetPlayerController() const;
 /*
 * Member Variables
 */
