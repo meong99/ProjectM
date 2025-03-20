@@ -1,6 +1,8 @@
 #include "PMGameInstance.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "PMGameplayTags.h"
+#include "GameFeaturesSubsystem.h"
+#include "GameFeatureData.h"
 
 UPMGameInstance::UPMGameInstance()
 {
@@ -27,5 +29,20 @@ void UPMGameInstance::Init()
 
 void UPMGameInstance::Shutdown()
 {
+	// 에디터에서 플레이를 종료해도 피쳐가 엔진 서브스템이라 비활성화가 안됨.
+#ifdef WITH_EDITOR
+	TArray<const UGameFeatureData*> ActivePluginFeatureDatas;
+	UGameFeaturesSubsystem::Get().GetGameFeatureDataForActivePlugins(ActivePluginFeatureDatas);
+	for (const auto& Data : ActivePluginFeatureDatas)
+	{
+		FString PluginName;
+		Data->GetPluginName(PluginName);
+		FString PluginURL;
+		if (UGameFeaturesSubsystem::Get().GetPluginURLByName(PluginName, PluginURL))
+		{
+			UGameFeaturesSubsystem::Get().DeactivateGameFeaturePlugin(PluginURL);
+		}
+	}
+#endif
 	Super::Shutdown();
 }

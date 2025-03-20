@@ -23,6 +23,9 @@ enum class EMWidgetLayout : uint8
 
 	// 미정. 기타 등등
 	OtherLayout UMETA(DisplayName = "OtherLayout"),
+
+
+	None UMETA(DisplayName = "None"),
 };
 
 UCLASS()

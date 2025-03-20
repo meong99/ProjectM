@@ -33,9 +33,9 @@ void UMWidgetLayout::RemoveWidgetToCurrentLayout(UMWidgetBase* Widget) const
 
 void UMWidgetLayout::AddWidgetToLayout(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const
 {
-	if (Widget == nullptr)
+	if (Widget == nullptr || Widget->IsInLayer())
 	{
-		MCHAE_WARNING("Widget Instance is null!");
+		MCHAE_WARNING("Widget Instance is null or already in layer");
 		return;
 	}
 
@@ -49,6 +49,7 @@ void UMWidgetLayout::AddWidgetToLayout(UMWidgetBase* Widget, EMWidgetLayout Widg
 			OverlaySlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Fill);
 
 			SetInputMode((uint8)Widget->GetInputMode());
+			Widget->SetActivate(true);
 		}
 	}
 }

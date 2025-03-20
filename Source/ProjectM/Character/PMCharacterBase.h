@@ -20,7 +20,7 @@ class PROJECTM_API APMCharacterBase : public AModularCharacter, public IAbilityS
 * Overrided Function
 */
 public:
-	APMCharacterBase();
+	APMCharacterBase(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	virtual void PossessedBy(AController* NewController) override;

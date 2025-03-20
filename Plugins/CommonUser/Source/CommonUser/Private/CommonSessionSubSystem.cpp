@@ -51,21 +51,21 @@ void UCommonSessionSubSystem::HostSession(APlayerController* HostingPlayer, UCom
 	Handle_TravelFailDelegate = GEngine->TravelFailureEvent.AddUObject(this, &UCommonSessionSubSystem::OnFailure_ClientTravel);
 	Handle_NetworkDelegate = GEngine->OnNetworkFailure().AddUObject(this, &UCommonSessionSubSystem::OnFailureNetwork_ClientTravel);
 	HostingPlayer->ClientTravel(Request->ConstructTravelURL(), ETravelType::TRAVEL_Absolute, true);
-	FTimerHandle Handle;
-	GetWorld()->GetTimerManager().SetTimer(Handle, [this]()->void
-		{
-			//GEngine->TravelFailureEvent.Broadcast(GetWorld(), ETravelFailure::Type::ClientTravelFailure, TEXT("TimeOver"));
-		}, 1, false);
+	//FTimerHandle Handle;
+	//GetWorld()->GetTimerManager().SetTimer(Handle, [this]()->void
+	//	{
+	//		GEngine->TravelFailureEvent.Broadcast(GetWorld(), ETravelFailure::Type::ClientTravelFailure, TEXT("TimeOver"));
+	//	}, 5, false);
 }
 
 void UCommonSessionSubSystem::OnFailure_ClientTravel(UWorld* World, ETravelFailure::Type FailType, const FString& ErrorString)
 {
-	MCHAE_WARNING("CientTravel on fail Because ", *ErrorString);
+	MCHAE_WARNING("CientTravel on fail Because %s", *ErrorString);
 	GEngine->TravelFailureEvent.Remove(Handle_TravelFailDelegate);
 }
 
 void UCommonSessionSubSystem::OnFailureNetwork_ClientTravel(UWorld* World, UNetDriver* Driver, ENetworkFailure::Type FailType, const FString& ErrorString)
 {
-	MCHAE_WARNING("Network on fail Because ", *ErrorString);
+	MCHAE_WARNING("Network on fail Because %s", *ErrorString);
 	GEngine->TravelFailureEvent.Remove(Handle_NetworkDelegate);
 }

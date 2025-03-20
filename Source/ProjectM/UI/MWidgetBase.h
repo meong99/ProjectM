@@ -43,6 +43,8 @@ public:
 
 	void SetWidgetTag(const FGameplayTag& InWidgetTag) { WidgetTag = InWidgetTag; }
 	void SetActivate(const bool bNewActivate) { bIsActivate = bNewActivate; }
+	UFUNCTION(BlueprintCallable)
+	bool IsInLayer() const { return bIsActivate; }
 /*
 * Member Variables
 */

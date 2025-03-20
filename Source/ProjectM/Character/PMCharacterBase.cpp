@@ -6,8 +6,10 @@
 #include "Input/PMInputComponent.h"
 #include "UI/MViewportClient.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/MCharacterMovementComponent.h"
 
-APMCharacterBase::APMCharacterBase()
+APMCharacterBase::APMCharacterBase(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UMCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	// 초기화 단계 검사를 틱으로 하지 않고 이벤트 발생 형태로 가기 때문에 틱을 끈다. 하위 클래스에서 필요할 때 켠다.
 	PrimaryActorTick.bStartWithTickEnabled = false;

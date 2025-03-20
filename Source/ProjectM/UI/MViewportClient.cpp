@@ -132,7 +132,6 @@ void UMViewportClient::AddWidgetToLayer(const FGameplayTag& WidgetTag, const int
 	if (WidgetLayout && Widget)
 	{
 		WidgetLayout->AddWidgetToLayout(GetWidgetInstance(WidgetTag), (EMWidgetLayout)LayerId);
-		Widget->SetActivate(true);
 	}
 	else
 	{
@@ -225,7 +224,10 @@ void UMViewportClient::ApplyWidgetLayout()
 {
 	if (WidgetLayout)
 	{
-		WidgetLayout->AddToViewport();
+		if (!WidgetLayout->IsInViewport())
+		{
+			WidgetLayout->AddToViewport();
+		}
 		return;
 	}
 
