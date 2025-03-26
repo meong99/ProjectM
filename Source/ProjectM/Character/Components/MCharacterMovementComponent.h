@@ -6,6 +6,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MCharacterMovementComponent.generated.h"
 
+class AActor;
+
 /**
  * 
  */
@@ -17,6 +19,7 @@ class PROJECTM_API UMCharacterMovementComponent : public UCharacterMovementCompo
 * Overrided Function
 */
 public:
+	virtual void InitializeComponent() override;
 	virtual void OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity) override;
 	virtual void AddInputVector(FVector WorldVector, bool bForce = false) override;
 
@@ -29,4 +32,5 @@ public:
 * Member Variables
 */
 protected:
+	TArray<AActor*> VoxelWorlds;
 };
