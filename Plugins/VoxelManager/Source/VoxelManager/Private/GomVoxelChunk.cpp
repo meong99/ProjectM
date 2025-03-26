@@ -308,8 +308,8 @@ void AGomVoxelChunk::GreedyMeshScan(TArray<bool>& Processed, TArray<bool>& IsVis
 			{
 				Index = Get2DIndex(j + Width, i, VoxelRange);
 				bool bIsValid = !Processed[Index] &&
-					IsVisible[Index] &&
-					BlockType[Index] == Type;
+								IsVisible[Index] &&
+								BlockType[Index] == Type;
 				if (bIsValid)
 				{
 					break;
@@ -322,12 +322,12 @@ void AGomVoxelChunk::GreedyMeshScan(TArray<bool>& Processed, TArray<bool>& IsVis
 			while ((i + Height) < VoxelRange)
 			{
 				bool valid = true;
-				for (int dx = 0; dx < Width; ++dx)
+				for (int dy = 0; dy < Height; dy++)
 				{
 					Index = Get2DIndex(j, i + Height, VoxelRange);
 					if (Processed[Index] ||
-						!IsVisible[Index] ||
-						BlockType[Index] != Type)
+						!IsVisible[Index]/* ||
+						BlockType[Index] != Type*/)
 					{
 						valid = false;
 						break;
@@ -343,15 +343,15 @@ void AGomVoxelChunk::GreedyMeshScan(TArray<bool>& Processed, TArray<bool>& IsVis
 
 			// 쿼드 생성
 			FVector Origin = FVector(j, i, Z) * (BlockSize + Padding);
-			FVector Size = FVector(Width, Height, 1) * BlockSize;
+			FVector Size = FVector(Width, Height, Z) * (BlockSize + Padding);
 			AddQuad(Origin, Size, Type, FVector::UpVector);
 
 			// 처리 마킹
-			for (int dx = 0; dx < Width; ++dx)
+			for (int dy = 0; dy < Height; dy++)
 			{
-				for (int dy = 0; dy < Height; ++dy)
+				for (int dx = 0; dx < Width; dx++)
 				{
-					Index = Get2DIndex(i + dy, j + dx, VoxelRange);
+					Index = Get2DIndex(j + dx, i + dy, VoxelRange);
 					Processed[Index] = true;
 				}
 			}
