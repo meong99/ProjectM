@@ -428,28 +428,47 @@ void AGomVoxelChunk::AddQuad(const FVector& Origin, const FVector& Size, int32 V
 	FVector2D UV2 = UVOffset + FVector2D(TileSize, 0);         // 우하단
 	FVector2D UV3 = UVOffset + FVector2D(0, 0);                // 좌하단
 
-	if (NormalDirection == FVector::DownVector || NormalDirection == FVector::BackwardVector || NormalDirection == FVector::LeftVector)
-	{
-		Swap(V1, V3);
-
-// 		_UVs.Add(UV1);
-// 		_UVs.Add(UV2);
-// 		_UVs.Add(UV3);
-// 		_UVs.Add(UV0);
-	}
-// 	else
-	{
-		_UVs.Add(UV0);
-		_UVs.Add(UV1);
-		_UVs.Add(UV2);
-		_UVs.Add(UV3);
-	}
-
 	int32 StartIndex = _Vertices.Num();
-	_Vertices.Add(V0);
-	_Vertices.Add(V1);
-	_Vertices.Add(V2);
-	_Vertices.Add(V3);
+	if (NormalDirection == FVector::UpVector || NormalDirection == FVector::RightVector)
+	{
+		_Vertices.Add(V0);
+		_Vertices.Add(V1);
+		_Vertices.Add(V2);
+		_Vertices.Add(V3);
+	}
+	else if (NormalDirection == FVector::ForwardVector)
+	{
+		_Vertices.Add(V3);
+		_Vertices.Add(V0);
+		_Vertices.Add(V1);
+		_Vertices.Add(V2);
+	}
+	else if (NormalDirection == FVector::BackwardVector)
+	{
+		_Vertices.Add(V0);
+		_Vertices.Add(V3);
+		_Vertices.Add(V2);
+		_Vertices.Add(V1);
+	}
+	else if (NormalDirection == FVector::LeftVector)
+	{
+		_Vertices.Add(V1);
+		_Vertices.Add(V0);
+		_Vertices.Add(V3);
+		_Vertices.Add(V2);
+	}
+	else
+	{
+		_Vertices.Add(V3);
+		_Vertices.Add(V2);
+		_Vertices.Add(V1);
+		_Vertices.Add(V0);
+	}
+
+	_UVs.Add(UV0);
+	_UVs.Add(UV1);
+	_UVs.Add(UV2);
+	_UVs.Add(UV3);
 
 	_Triangles.Append({	StartIndex + 0, StartIndex + 1, StartIndex + 2,
 						StartIndex + 0, StartIndex + 2, StartIndex + 3 });
