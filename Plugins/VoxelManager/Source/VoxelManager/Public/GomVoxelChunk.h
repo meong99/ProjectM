@@ -99,8 +99,8 @@ protected:
 	TSubclassOf<UGomVoxelDataObject> VoxelDataClass;
 
 	void	ScanZ();
-	void	ScanTopFaceSlice(int32 Z);
-	void	GreedyMeshScan(TArray<bool>& Processed, TArray<bool>& IsVisible, TArray<int32>& BlockType, int32 Z);
+	void	ScanTopFaceSlice(int32 i, int32 Symbol, FVector Dir);
+	void	GreedyMeshScan(TArray<bool>& Processed, TArray<bool>& IsVisible, TArray<int32>& BlockType, int32 i, FVector Dir, int32 Symbol);
 	void	AddQuad(const FVector& Origin, const FVector& Size, int32 VoxelType, const FVector& NormalDirection);
 
 	int32	Get2DIndex(int32 X, int32 Y, int32 Width);

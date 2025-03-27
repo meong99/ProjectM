@@ -4,8 +4,8 @@ void UMVoxelDataObject::OnInitVoxelDataObject(TMap<FVector, FVoxelData>& VoxelDa
 {
 	for (auto& Iter : VoxelData)
 	{
-		int r = rand() % 50;
-		Iter.Value.VoxelType = r;
+		//int r = rand() % 50;
+		Iter.Value.VoxelType = 12;
 	}
 }
 

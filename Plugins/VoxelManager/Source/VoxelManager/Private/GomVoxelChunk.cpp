@@ -248,13 +248,18 @@ void AGomVoxelChunk::Multicast_ActivateChunk_Implementation()
 
 void AGomVoxelChunk::ScanZ()
 {
-	for (int32 Z = 0; Z < VoxelRange; Z++)
+	for (int32 i = 0; i < VoxelRange; i++)
 	{
-		ScanTopFaceSlice(Z);
+		ScanTopFaceSlice(i, 1, FVector::UpVector);
+		ScanTopFaceSlice(i, -1, FVector::DownVector);
+		ScanTopFaceSlice(i, 1, FVector::RightVector);
+		ScanTopFaceSlice(i, -1, FVector::LeftVector);
+		ScanTopFaceSlice(i, 1, FVector::ForwardVector);
+		ScanTopFaceSlice(i, -1, FVector::BackwardVector);
 	}
 }
 
-void AGomVoxelChunk::ScanTopFaceSlice(int32 Z)
+void AGomVoxelChunk::ScanTopFaceSlice(int32 i, int32 Symbol, FVector Dir)
 {
 	TArray<bool>	Processed;
 	TArray<bool>	IsVisible;
@@ -263,34 +268,65 @@ void AGomVoxelChunk::ScanTopFaceSlice(int32 Z)
 	IsVisible.Init(false, VoxelRange * VoxelRange);
 	BlockType.Init(0, VoxelRange * VoxelRange);
 
-	for (int32 i = 0; i < VoxelRange; i++)
-	{
-		for (int32 j = 0; j < VoxelRange; j++)
+	auto CoordGenerator = [this](float x, float y, float i, int32 Symbol, FVector Dir)->FVector
 		{
-			FVector CurrentCoord{ (float)i, (float)j, (float)Z };
-			FVector AboveCoord{ (float)i, (float)j, (float)Z + 1 };
+			if (Dir == FVector::UpVector || Dir == FVector::DownVector)
+			{
+				return FVector { x, y, i + Symbol };
+			}
+			else if (Dir == FVector::RightVector || Dir == FVector::LeftVector)
+			{
+				return FVector{ x, i + Symbol, y };
+			}
+			else
+			{
+				return FVector{ i + Symbol, x, y };
+			}
+		};
+
+	for (int32 y = 0; y < VoxelRange; y++)
+	{
+		for (int32 x = 0; x < VoxelRange; x++)
+		{
+			FVector CurrentCoord = CoordGenerator(x, y, i, 0, Dir);
+			FVector NextCoord = CoordGenerator(x, y, i, Symbol, Dir);
 			const FVoxelData* CurrentData = VoxelWrapper.VoxelDataMap.Find(CurrentCoord);
-			const FVoxelData* AboveData = VoxelWrapper.VoxelDataMap.Find(AboveCoord);
+			const FVoxelData* NextData = VoxelWrapper.VoxelDataMap.Find(NextCoord);
 
 			bool IsSolid = CurrentData && CurrentData->VoxelType != INDEX_NONE;
-			bool IsAboveSolid = AboveData && AboveData->VoxelType != INDEX_NONE;
-			int32 Index = Get2DIndex(j, i, VoxelRange);
-			IsVisible[Index] = IsSolid && !IsAboveSolid;
+			bool IsNextSolid = NextData && NextData->VoxelType != INDEX_NONE;
+			int32 Index = Get2DIndex(x, y, VoxelRange);
+			IsVisible[Index] = IsSolid && !IsNextSolid;
 			BlockType[Index] = IsSolid ? CurrentData->VoxelType : INDEX_NONE;
 			Processed[Index] = false;
 		}
 	}
 
-	GreedyMeshScan(Processed, IsVisible, BlockType, Z);
+	GreedyMeshScan(Processed, IsVisible, BlockType, i, Dir, Symbol);
 }
 
-void AGomVoxelChunk::GreedyMeshScan(TArray<bool>& Processed, TArray<bool>& IsVisible, TArray<int32>& BlockType, int32 Z)
+void AGomVoxelChunk::GreedyMeshScan(TArray<bool>& Processed, TArray<bool>& IsVisible, TArray<int32>& BlockType, int32 i, FVector Dir, int32 Symbol)
 {
-	for (int32 i = 0; i < VoxelRange; ++i)
-	{
-		for (int32 j = 0; j < VoxelRange; ++j)
+	auto CoordGenerator = [this](float x, float y, float i, FVector Dir)->FVector
 		{
-			int32 Index = Get2DIndex(j, i, VoxelRange);
+			if (Dir == FVector::UpVector || Dir == FVector::DownVector)
+			{
+				return FVector{ x, y, i };
+			}
+			else if (Dir == FVector::RightVector || Dir == FVector::LeftVector)
+			{
+				return FVector{ x, i, y };
+			}
+			else
+			{
+				return FVector{ i, x, y };
+			}
+		};
+	for (int32 y = 0; y < VoxelRange; y++)
+	{
+		for (int32 x = 0; x < VoxelRange; x++)
+		{
+			int32 Index = Get2DIndex(x, y, VoxelRange);
 			if (Processed[Index])
 			{
 				continue;
@@ -304,13 +340,13 @@ void AGomVoxelChunk::GreedyMeshScan(TArray<bool>& Processed, TArray<bool>& IsVis
 
 			// width 확장
 			int32 Width = 1;
-			while ((j + Width) < VoxelRange)
+			while ((x + Width) < VoxelRange)
 			{
-				Index = Get2DIndex(j + Width, i, VoxelRange);
+				Index = Get2DIndex(x + Width, y, VoxelRange);
 				bool bIsValid = !Processed[Index] &&
 								IsVisible[Index] &&
 								BlockType[Index] == Type;
-				if (bIsValid)
+				if (!bIsValid)
 				{
 					break;
 				}
@@ -319,12 +355,12 @@ void AGomVoxelChunk::GreedyMeshScan(TArray<bool>& Processed, TArray<bool>& IsVis
 
 			// height 확장
 			int32 Height = 1;
-			while ((i + Height) < VoxelRange)
+			while ((y + Height) < VoxelRange)
 			{
 				bool valid = true;
 				for (int dy = 0; dy < Height; dy++)
 				{
-					Index = Get2DIndex(j, i + Height, VoxelRange);
+					Index = Get2DIndex(x, y + Height, VoxelRange);
 					if (Processed[Index] ||
 						!IsVisible[Index]/* ||
 						BlockType[Index] != Type*/)
@@ -342,16 +378,16 @@ void AGomVoxelChunk::GreedyMeshScan(TArray<bool>& Processed, TArray<bool>& IsVis
 			}
 
 			// 쿼드 생성
-			FVector Origin = FVector(j, i, Z) * (BlockSize + Padding);
-			FVector Size = FVector(Width, Height, Z) * (BlockSize + Padding);
-			AddQuad(Origin, Size, Type, FVector::UpVector);
+			FVector Origin = CoordGenerator(x, y, i + (Symbol < 0 ? 0 : Symbol), Dir) * (BlockSize + Padding);
+			FVector Size = FVector(Width, Height, 1) * (BlockSize + Padding);
+			AddQuad(Origin, Size, Type, Dir);
 
 			// 처리 마킹
 			for (int dy = 0; dy < Height; dy++)
 			{
 				for (int dx = 0; dx < Width; dx++)
 				{
-					Index = Get2DIndex(j + dx, i + dy, VoxelRange);
+					Index = Get2DIndex(x + dx, y + dy, VoxelRange);
 					Processed[Index] = true;
 				}
 			}
@@ -361,9 +397,7 @@ void AGomVoxelChunk::GreedyMeshScan(TArray<bool>& Processed, TArray<bool>& IsVis
 
 void AGomVoxelChunk::AddQuad(const FVector& Origin, const FVector& Size, int32 VoxelType, const FVector& NormalDirection)
 {
-	// 방향 벡터를 기준으로 면의 축 정하기
 	FVector Tangent, Bitangent;
-
 	if (NormalDirection == FVector::UpVector || NormalDirection == FVector::DownVector)
 	{
 		Tangent = FVector::ForwardVector;
@@ -371,13 +405,13 @@ void AGomVoxelChunk::AddQuad(const FVector& Origin, const FVector& Size, int32 V
 	}
 	else if (NormalDirection == FVector::ForwardVector || NormalDirection == FVector::BackwardVector)
 	{
-		Tangent = FVector::UpVector;
-		Bitangent = FVector::RightVector;
+		Tangent = FVector::RightVector;
+		Bitangent = FVector::UpVector;
 	}
 	else
 	{
-		Tangent = FVector::ForwardVector;
-		Bitangent = FVector::UpVector;
+		Tangent = FVector::UpVector;
+		Bitangent = FVector::ForwardVector;
 	}
 
 	FVector V0 = Origin;
@@ -385,10 +419,30 @@ void AGomVoxelChunk::AddQuad(const FVector& Origin, const FVector& Size, int32 V
 	FVector V2 = Origin + Tangent * Size.X + Bitangent * Size.Y;
 	FVector V3 = Origin + Tangent * Size.X;
 
-	// 방향에 따라 순서 바꾸기 (면 뒤집힘 방지)
+	const float TileSize = 1.0f / 16.0f;
+	int32 X = VoxelType % 16;
+	int32 Y = VoxelType / 16;
+	FVector2D UVOffset = FVector2D(X * TileSize, Y * TileSize);
+	FVector2D UV0 = UVOffset + FVector2D(0, TileSize);         // 좌상단
+	FVector2D UV1 = UVOffset + FVector2D(TileSize, TileSize);  // 우상단
+	FVector2D UV2 = UVOffset + FVector2D(TileSize, 0);         // 우하단
+	FVector2D UV3 = UVOffset + FVector2D(0, 0);                // 좌하단
+
 	if (NormalDirection == FVector::DownVector || NormalDirection == FVector::BackwardVector || NormalDirection == FVector::LeftVector)
 	{
 		Swap(V1, V3);
+
+// 		_UVs.Add(UV1);
+// 		_UVs.Add(UV2);
+// 		_UVs.Add(UV3);
+// 		_UVs.Add(UV0);
+	}
+// 	else
+	{
+		_UVs.Add(UV0);
+		_UVs.Add(UV1);
+		_UVs.Add(UV2);
+		_UVs.Add(UV3);
 	}
 
 	int32 StartIndex = _Vertices.Num();
@@ -397,21 +451,8 @@ void AGomVoxelChunk::AddQuad(const FVector& Origin, const FVector& Size, int32 V
 	_Vertices.Add(V2);
 	_Vertices.Add(V3);
 
-	_Triangles.Append({
-		StartIndex + 0, StartIndex + 1, StartIndex + 2,
-		StartIndex + 0, StartIndex + 2, StartIndex + 3
-		});
-
-	// UV 계산 (타일 시트 기준)
-	const float TileSize = 1.0f / 16.0f;
-	int32 X = VoxelType % 16;
-	int32 Y = VoxelType / 16;
-	FVector2D UVOffset = FVector2D(X * TileSize, Y * TileSize);
-
-	_UVs.Add(UVOffset + FVector2D(0, TileSize));         // 좌상단
-	_UVs.Add(UVOffset + FVector2D(TileSize, TileSize));  // 우상단
-	_UVs.Add(UVOffset + FVector2D(TileSize, 0));         // 우하단
-	_UVs.Add(UVOffset + FVector2D(0, 0));                // 좌하단
+	_Triangles.Append({	StartIndex + 0, StartIndex + 1, StartIndex + 2,
+						StartIndex + 0, StartIndex + 2, StartIndex + 3 });
 }
 
 int32 AGomVoxelChunk::Get2DIndex(int32 X, int32 Y, int32 Width)
