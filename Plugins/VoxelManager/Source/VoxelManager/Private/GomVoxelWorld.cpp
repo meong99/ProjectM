@@ -13,6 +13,10 @@ AGomVoxelWorld::AGomVoxelWorld()
 void AGomVoxelWorld::PostLoad()
 {
 	Super::PostLoad();
+	if (ChunkPool.IsEmpty() && DeactivatedVoxelChunks.IsEmpty())
+	{
+		CreateChunkPool();
+	}
 	CachingChunkDefinition(VoxelDefinition);
 	ActivateVoxel();
 }

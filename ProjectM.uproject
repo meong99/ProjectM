@@ -12,8 +12,14 @@
 				"Engine",
 				"GameplayAbilities",
 				"CommonUI",
-				"UMG"
+				"UMG",
+				"DeveloperSettings"
 			]
+		},
+		{
+			"Name": "ProjectMEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [

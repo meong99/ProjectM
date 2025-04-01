@@ -36,6 +36,8 @@ public class ProjectM : ModuleRules
 			"GameplayTasks",
 			"GameplayAbilities",
 
+			"ProjectMEditor",
+
 			"NetCore",           // 네트워크 관련
 // 			"Serialization",     // FFastArraySerializer 관련
 // 			"GuidUtilities"      // FGuidReferences 관련
