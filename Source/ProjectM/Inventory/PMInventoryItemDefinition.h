@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "Inventory\MInventoryTypes.h"
+#include "Inventory/MInventoryTypes.h"
 #include "Templates/SubclassOf.h"
 
 #include "PMInventoryItemDefinition.generated.h"
