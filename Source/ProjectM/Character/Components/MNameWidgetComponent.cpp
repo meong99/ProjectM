@@ -14,34 +14,6 @@ UMNameWidgetComponent::UMNameWidgetComponent()
 	bWantsInitializeComponent = true;
 }
 
-#pragma TODO("이거 Tick말고 beginoverlap으로 바꿔")
-void UMNameWidgetComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (WeakPlayerPawn.IsValid() && WeakOwnerCharacter.IsValid() && NameWidget)
-	{
-		FVector PlayerLocation = WeakPlayerPawn->GetActorLocation();
-		FVector OwnerLocation = WeakOwnerCharacter->GetActorLocation();
-		double Dist = FVector::Dist(PlayerLocation, OwnerLocation);
-		if (Dist > MaxDist)
-		{
-			NameWidget->SetVisibility(ESlateVisibility::Hidden);
-		}
-		else if (NameWidget->GetVisibility() == ESlateVisibility::Hidden)
-		{
-			NameWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		}
-	}
-	else if (!WeakPlayerPawn.IsValid())
-	{
-		APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-		if (PlayerController)
-		{
-			WeakPlayerPawn = PlayerController->GetPawn();
-		}
-	}
-}
-
 void UMNameWidgetComponent::InitWidget()
 {
 	Super::InitWidget();
@@ -54,14 +26,22 @@ void UMNameWidgetComponent::InitWidget()
 	}
 }
 
-void UMNameWidgetComponent::BeginPlay()
+void UMNameWidgetComponent::EnableNameWidget()
 {
-	Super::BeginPlay();
+	if (NameWidget)
+	{
+		SetTickMode(ETickMode::Enabled);
+		NameWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
 }
 
-void UMNameWidgetComponent::InitializeComponent()
+void UMNameWidgetComponent::DisableNameWidget()
 {
-	Super::InitializeComponent();
+	if (NameWidget)
+	{
+		SetTickMode(ETickMode::Disabled);
+		NameWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
 }
 
 void UMNameWidgetComponent::InitNameWidget()

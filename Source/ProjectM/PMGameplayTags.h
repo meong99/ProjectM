@@ -37,6 +37,8 @@ struct FPMGameplayTags
 	FGameplayTag UI_Registry_Layout_DefaultLayout;
 	FGameplayTag UI_Registry_HUD_MainHUD;
 
+	FGameplayTag UI_Game_NameWidget;
+
 	/*
 	* Item
 	*/

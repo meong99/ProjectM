@@ -8,6 +8,7 @@
 
 class UMNameWidgetComponent;
 class UMNpcDefinition;
+class UMInteractionComponent;
 
 /**
  * 
@@ -37,4 +38,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Instanced, Category = "NPC")
 	UMNpcDefinition* NpcDefinition;
+
+	UPROPERTY(EditDefaultsOnly, Category = "NPC")
+	UMInteractionComponent* InteractionComponent;
 };

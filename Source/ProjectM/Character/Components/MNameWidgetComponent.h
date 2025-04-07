@@ -26,15 +26,14 @@ class PROJECTM_API UMNameWidgetComponent : public UWidgetComponent
 public:
 	UMNameWidgetComponent();
 
-	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void InitWidget() override;
-	virtual void BeginPlay() override;
-	virtual void InitializeComponent() override;
 
-	/*
+/*
 * Member Functions
 */
 public:
+	void EnableNameWidget();
+	void DisableNameWidget();
 
 protected:
 	void InitNameWidget();

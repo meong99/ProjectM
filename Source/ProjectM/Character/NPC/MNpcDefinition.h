@@ -11,7 +11,7 @@ class UMNameWidgetComponent;
 /**
  *
  */
-UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew)
+UCLASS(Abstract, Blueprintable, DefaultToInstanced, EditInlineNew)
 class PROJECTM_API UMNpcDefinition : public UObject
 {
 	GENERATED_BODY()
