@@ -51,6 +51,14 @@ void UMWidgetLayout::AddWidgetToLayout(UMWidgetBase* Widget, EMWidgetLayout Widg
 			SetInputMode((uint8)Widget->GetInputMode());
 			Widget->SetActivate(true);
 		}
+		else
+		{
+			MCHAE_WARNING("OverlaySlot is null");
+		}
+	}
+	else
+	{
+		MCHAE_WARNING("CurrentLayout is null");
 	}
 }
 
@@ -67,6 +75,8 @@ void UMWidgetLayout::RemoveWidgetFromLayout(UMWidgetBase* Widget, EMWidgetLayout
 	{
 		CurrentLayout->RemoveChild(Widget);
 	}
+
+	Widget->SetActivate(false);
 
 	APlayerController* PlayerController = GetOwningPlayer();
 	if (PlayerController)
@@ -107,6 +117,7 @@ void UMWidgetLayout::SetInputMode(uint8 NewInputMode) const
 			FInputModeUIOnly NewMode;
 			PlayerController->SetInputMode(NewMode);
 			PlayerController->bShowMouseCursor = true;
+			PlayerController->FlushPressedKeys();
 			break;
 		}
 		case EMWidgetInputMode::GameAndUIWithShowMouse:
@@ -114,6 +125,7 @@ void UMWidgetLayout::SetInputMode(uint8 NewInputMode) const
 			FInputModeGameAndUI NewMode;
 			PlayerController->SetInputMode(NewMode);
 			PlayerController->bShowMouseCursor = true;
+			PlayerController->FlushPressedKeys();
 			break;
 		}
 		default:

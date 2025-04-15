@@ -34,15 +34,19 @@ public:
 * Member Functions
 */
 public:
+	UFUNCTION(BlueprintCallable)
 	void AddWidgetToLayer(const int32 LayerId = 0/*GameLayer*/);
+	UFUNCTION(BlueprintCallable)
 	void RemoveWidgetFromLayer(const int32 LayerId = 0/*GameLayer*/);
 
 	const FGameplayTag& GetWidgetTag() const { return WidgetTag; }
 	bool				IsActivate() const { return bIsActivate; }
 	EMWidgetInputMode	GetInputMode() const { return InputMode; }
+	UObject*			GetWidgetInstigator() const { return WidgetInstigator; }
 
 	void SetWidgetTag(const FGameplayTag& InWidgetTag) { WidgetTag = InWidgetTag; }
 	void SetActivate(const bool bNewActivate) { bIsActivate = bNewActivate; }
+	void SetWidgetInstigator(UObject* InInstigator) { WidgetInstigator = InInstigator; }
 	UFUNCTION(BlueprintCallable)
 	bool IsInLayer() const { return bIsActivate; }
 /*
@@ -58,4 +62,7 @@ protected:
 	// Layer에 등록된 위젯의 활성화 여부
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsActivate = false;
+
+	UPROPERTY(BlueprintReadOnly)
+	UObject* WidgetInstigator;
 };

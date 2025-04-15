@@ -54,6 +54,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UPMInventoryItemInstance*	FindItemInstance(const FMItemHandle& ItemHandle);
 	FPMInventoryEntry*			FindEntry(const FMItemHandle& ItemHandle);
+	FPMInventoryEntry*			FindEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
 	int32						GetMaxInventoryCount() const { return MaxInventoryCount; }
 	const FPMInventoryItemList& GetEquipmentItemList() const { return InventoryList; }

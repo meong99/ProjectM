@@ -188,12 +188,12 @@ void APMPlayerState::ApplyLoadedData()
 			if (DefCDO && DefCDO->ItemType == EMItemType::Equipment)
 			{
 				const FMItemHandle& ItemHandle = InventoryManager->AddItemDefinition(ItemDef);
-				if (QuickBarComp->GetActiveSlotIndex() == INDEX_NONE)
-				{
-					UPMInventoryItemInstance* ItemInstance = InventoryManager->FindItemInstance(ItemHandle);
-					QuickBarComp->AddItemToSlot(0, ItemInstance);
-					QuickBarComp->SetActiveSlotIndex(0);
-				}
+// 				if (QuickBarComp->GetActiveSlotIndex() == INDEX_NONE)
+// 				{
+// 					UPMInventoryItemInstance* ItemInstance = InventoryManager->FindItemInstance(ItemHandle);
+// 					QuickBarComp->AddItemToSlot(0, ItemInstance);
+// 					QuickBarComp->SetActiveSlotIndex(0);
+// 				}
 			}
 			else if (DefCDO)
 			{
@@ -206,18 +206,18 @@ void APMPlayerState::ApplyLoadedData()
 		}
 		if (QuickBarComp->GetActiveSlotIndex() == INDEX_NONE && GEngine)
 		{
-			UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
-			if (TableManager)
-			{
-				const TSubclassOf<UPMInventoryItemDefinition>& ItemDef = TableManager->GetItemDefinition(EMItemIdType::Equipment, 0);
-				if (ItemDef)
-				{
-					const FMItemHandle& ItemHandle = InventoryManager->AddItemDefinition(ItemDef);
-					UPMInventoryItemInstance* ItemInstance = InventoryManager->FindItemInstance(ItemHandle);
-					QuickBarComp->AddItemToSlot(0, ItemInstance);
-					QuickBarComp->SetActiveSlotIndex(0);
-				}
-			}
+// 			UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
+// 			if (TableManager)
+// 			{
+// 				const TSubclassOf<UPMInventoryItemDefinition>& ItemDef = TableManager->GetItemDefinition(EMItemIdType::Equipment, 0);
+// 				if (ItemDef)
+// 				{
+// 					const FMItemHandle& ItemHandle = InventoryManager->AddItemDefinition(ItemDef);
+// 					UPMInventoryItemInstance* ItemInstance = InventoryManager->FindItemInstance(ItemHandle);
+// 					QuickBarComp->AddItemToSlot(0, ItemInstance);
+// 					QuickBarComp->SetActiveSlotIndex(0);
+// 				}
+// 			}
 		}
 	}
 	else

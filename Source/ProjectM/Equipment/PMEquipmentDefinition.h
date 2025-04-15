@@ -10,6 +10,7 @@
 class UPMEquipmentInstance;
 class UPMAbilitySet;
 
+#pragma TODO("Deprecated! EquipmentItemDefinition으로 변경해야함")
 UCLASS(BlueprintType, Blueprintable)
 class PROJECTM_API UPMEquipmentDefinition : public UObject
 {

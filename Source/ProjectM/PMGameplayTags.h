@@ -28,6 +28,7 @@ struct FPMGameplayTags
 	FGameplayTag InputTag_Move;
 	FGameplayTag InputTag_Jump;
 	FGameplayTag InputTag_Look_Mouse;
+	FGameplayTag InputTag_Togle_Interaction;
 
 	/*
 	* Widget Tags
@@ -38,6 +39,7 @@ struct FPMGameplayTags
 	FGameplayTag UI_Registry_HUD_MainHUD;
 
 	FGameplayTag UI_Game_NameWidget;
+	FGameplayTag UI_Registry_Game_InteractionList;
 
 	/*
 	* Item

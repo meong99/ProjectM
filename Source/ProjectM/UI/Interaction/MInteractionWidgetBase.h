@@ -1,13 +1,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UI/MWidgetBase.h"
+#include "UI/MWorldBaseWidget.h"
 #include "MInteractionWidgetBase.generated.h"
 
 class AActor;
 
 UCLASS()
-class PROJECTM_API UMInteractionWidgetBase : public UMWidgetBase
+class PROJECTM_API UMInteractionWidgetBase : public UMWorldBaseWidget
 {
 	GENERATED_BODY()
 
@@ -26,6 +26,4 @@ public:
 * Member Variables
 */
 protected:
-	UPROPERTY(BlueprintReadOnly)
-	AActor* Instigator;
 };

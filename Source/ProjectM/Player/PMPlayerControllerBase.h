@@ -1,10 +1,15 @@
 #pragma once
 
 #include "CommonPlayerController.h"
+#include "GameModes/PMExperienceManagerComponent.h"
+#include "Character/PMCharacterBase.h"
 #include "PMPlayerControllerBase.generated.h"
 
 class APMPlayerState;
 class UPMAbilitySystemComponent;
+class UPMInventoryManagerComponent;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPossessed, APMCharacterBase* /*Character*/);
 
 UCLASS()
 class PROJECTM_API APMPlayerControllerBase : public ACommonPlayerController
@@ -17,16 +22,27 @@ class PROJECTM_API APMPlayerControllerBase : public ACommonPlayerController
 public:
 	APMPlayerControllerBase();
 
-	void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
+	virtual void OnPossess(APawn* aPawn) override;
+	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 
-	/*
+/*
 * Member Functions
 */
 public:
+	void CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate&& Delegate);
+	void CallOrRegister_OnPossessed(FOnPossessed::FDelegate&& Delegate);
+
 	APMPlayerState* GetPlayerState() const;
 	UPMAbilitySystemComponent* GetAbilitySystemComponent() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure=false)
+	void Debug_WidgetControl(const FGameplayTag& WidgetTag, bool bAddWidget, UObject* WidgetInstigator = nullptr) const;
 /*
 * Member Variables
 */
-public:
+protected:
+UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPMInventoryManagerComponent* InventoryManagerComponent;
+
+	FOnPossessed Delegate_OnPossessed;
 };

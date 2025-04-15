@@ -22,10 +22,10 @@ struct FPMInventoryEntry : public FFastArraySerializerItem
 
 	TSubclassOf<UPMInventoryItemDefinition> GetItemDefinition() const;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	int32 ItemUid = INDEX_NONE;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UPMInventoryItemInstance> Instance = nullptr;
 };
 
@@ -58,6 +58,7 @@ public:
 	FMItemHandle AddEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
 	void RemoveEntry(const FMItemHandle& ItemHandle);
 	FPMInventoryEntry* FindEntry(const FMItemHandle& ItemHandle);
+	FPMInventoryEntry* FindEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
 /*
 * Member Variables
 */

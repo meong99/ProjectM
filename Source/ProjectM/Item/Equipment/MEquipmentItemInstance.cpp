@@ -109,14 +109,14 @@ void UMEquipmentItemInstance::DestroyEquipmentActors()
 
 APawn* UMEquipmentItemInstance::GetPawn() const
 {
-	return Cast<APawn>(GetOuter());
-	//APlayerController* Controller = Cast<APlayerController>(GetOuter());
-	//if (Controller)
-	//{
-	//	return Controller->GetPawn();
-	//}
+	APlayerController* Controller = Cast<APlayerController>(GetOuter());
+	if (Controller)
+	{
+		return Controller->GetPawn();
+	}
 
-	//return nullptr;
+	// 이전 코드가 PawnComponent에서 생성됐기때문에 이전 코드들 호환용. 현재코드에서는 null
+	return Cast<APawn>(GetOuter());
 }
 
 APawn* UMEquipmentItemInstance::GetTypedPawn(TSubclassOf<APawn> PawnType) const

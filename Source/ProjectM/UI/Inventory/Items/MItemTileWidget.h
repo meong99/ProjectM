@@ -16,7 +16,7 @@ class UMInventoryWidget;
 class UTextBlock;
 class UMTileView;
 
-UCLASS()
+UCLASS(BlueprintType)
 class UMItemDetailData : public UObject
 {
 	GENERATED_BODY()
@@ -27,19 +27,26 @@ public:
 	void SetNewEntry(const FPMInventoryEntry& NewItemEntry);
 	void SwapEntry(UMItemDetailData& Other);
 	void SwapEntry(UMItemDetailData* Other);
+	void OnChangeItemQuantity(const FMItemHandle& ItemHandle);
+	void InitDelegate(const FPMInventoryEntry& NewItemEntry);
 
+	UPROPERTY(BlueprintReadWrite)
 	FPMInventoryEntry ItemEntry;
 
+	UPROPERTY(BlueprintReadWrite)
 	int32 SlotIndex = INDEX_NONE;
 
+	UPROPERTY(BlueprintReadWrite)
 	EMItemType SlotType = EMItemType::None;
 
+	UPROPERTY(BlueprintReadWrite)
 	float EntryHeight;
 
+	UPROPERTY(BlueprintReadWrite)
 	float EntryWidth;
 };
 
-UCLASS()
+UCLASS(BlueprintType)
 class PROJECTM_API UMItemTileWidget : public UMDragableWidget, public IUserObjectListEntry
 {
 	GENERATED_BODY()
@@ -62,6 +69,11 @@ public:
 	void SwapItemData(UMItemTileWidget* Other);
 	void OnItemDoubleClick();
 
+	UFUNCTION(BlueprintCallable)
+	UMItemDetailData* GetItemDatailData() const;
+	UFUNCTION(BlueprintImplementableEvent)
+	void K2_UpdateItemData();
+
 protected:
 	void UpdateItemData();
 	void SetSlotIndex(const int32 InIndex);
@@ -71,13 +83,18 @@ protected:
 * Member Variables
 */
 protected:
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	UMTileView* OwnerWidget;
 
+	UPROPERTY(BlueprintReadOnly)
 	int32 SlotIndex = INDEX_NONE;
+	
+// 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+// 	UTextBlock* ItemNum;
 
-	UPROPERTY(meta=(BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	UTextBlock* Index;
 
+	UPROPERTY(BlueprintReadOnly)
 	FMItemHandle ItemHandle;
 };

@@ -9,20 +9,22 @@
 #include "Inventory/PMInventoryManagerComponent.h"
 #include "Components/TextBlock.h"
 #include "CommonWidgets/MTileView.h"
+#include "Kismet/GameplayStatics.h"
 
 /*
 * UMItemDetailData
 */
 void UMItemDetailData::SetNewEntry(const FPMInventoryEntry& NewItemEntry)
 {
+	InitDelegate(NewItemEntry);
 	ItemEntry = NewItemEntry;
 }
 
 void UMItemDetailData::SwapEntry(UMItemDetailData& Other)
 {
 	FPMInventoryEntry Tmp = Other.ItemEntry;
-	ItemEntry = Other.ItemEntry;
-	Other.ItemEntry = Tmp;
+	Other.SetNewEntry(ItemEntry);
+	SetNewEntry(Tmp);
 }
 
 void UMItemDetailData::SwapEntry(UMItemDetailData* Other)
@@ -34,8 +36,35 @@ void UMItemDetailData::SwapEntry(UMItemDetailData* Other)
 	}
 
 	FPMInventoryEntry Tmp = Other->ItemEntry;
-	Other->ItemEntry = ItemEntry;
-	ItemEntry = Tmp;
+	Other->SetNewEntry(ItemEntry);
+	SetNewEntry(Tmp);
+}
+
+void UMItemDetailData::OnChangeItemQuantity(const FMItemHandle& ItemHandle)
+{
+	UMTileView* MtileView = Cast<UMTileView>(GetOuter());
+	if (MtileView)
+	{
+		MtileView->RegenerateAllEntries();
+	}
+}
+
+void UMItemDetailData::InitDelegate(const FPMInventoryEntry& NewItemEntry)
+{
+	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
+	UPMInventoryManagerComponent* InventoryManager = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
+	if (InventoryManager)
+	{
+		if (ItemEntry.IsValid())
+		{
+			InventoryManager->Delegate_OnChangeInventory.Remove(ItemEntry.GetItemHandle().ItemUid);
+		}
+
+		if (NewItemEntry.IsValid())
+		{
+			InventoryManager->AddDelegateOnChangeInventory(NewItemEntry.GetItemHandle().ItemUid, FOnChangeInventory::FDelegate::CreateUObject(this, &ThisClass::OnChangeItemQuantity));
+		}
+	}
 }
 
 /*
@@ -68,6 +97,11 @@ void UMItemTileWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 		MCHAE_FETAL("Item slot index is not valid! Must be set slot index!");
 	}
 
+	if (ItemData->ItemEntry.IsValid())
+	{
+		ItemData->InitDelegate(ItemData->ItemEntry);
+	}
+
 	OwnerWidget = Cast<UMTileView>(ItemData->GetOuter());
 	if (OwnerWidget == nullptr)
 	{
@@ -80,6 +114,7 @@ void UMItemTileWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 	}
 
 	UpdateItemData();
+	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
 }
 
 void UMItemTileWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
@@ -142,7 +177,14 @@ void UMItemTileWidget::UpdateItemData()
 
 		ItemHandle.ItemUid = NewItemEntry.ItemUid;
 		ItemHandle.ItemType = NewItemEntry.GetItemType();
+
+// 		if (ItemNum)
+// 		{
+// 			ItemNum->SetText(NewItemEntry->Instance->GetStatTagStackCount());
+// 		}
 	}
+
+	K2_UpdateItemData();
 
 	if (OwnerWidget)
 	{
@@ -196,4 +238,9 @@ void UMItemTileWidget::OnItemDoubleClick()
 			MCHAE_WARNING("Can't found InventoryComponent!");
 		}
 	}
+}
+
+UMItemDetailData* UMItemTileWidget::GetItemDatailData() const
+{
+	return GetListItem<UMItemDetailData>();
 }

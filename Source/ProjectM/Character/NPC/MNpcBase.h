@@ -9,6 +9,7 @@
 class UMNameWidgetComponent;
 class UMNpcDefinition;
 class UMInteractionComponent;
+class USphereComponent;
 
 /**
  * 
@@ -23,22 +24,28 @@ class PROJECTM_API AMNpcBase : public ACharacter
 public:
 	AMNpcBase();
 	virtual void BeginPlay() override;
+	virtual void PostInitializeComponents() override;
 
 	/*
 * Member Functions
 */
 public:
 	UMNpcDefinition* GetNpcDefinition() const { return NpcDefinition; }
+	USphereComponent* GetInteractionShpere() const { return InteractionShpere; }
+
 /*
 * Member Variables
 */
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "NPC")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	USphereComponent* InteractionShpere;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "NPC")
 	UMNameWidgetComponent* NpcNameComp;
 
-	UPROPERTY(EditDefaultsOnly, Instanced, Category = "NPC")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "NPC")
 	UMNpcDefinition* NpcDefinition;
 
-	UPROPERTY(EditDefaultsOnly, Category = "NPC")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "NPC")
 	UMInteractionComponent* InteractionComponent;
 };

@@ -13,6 +13,7 @@ enum class EMItemIdType : uint8
 {
 	Equipment UMETA(DisplayName="Equipment"),
 	Consumable UMETA(DisplayName = "Consumable"),
+	Shop UMETA(DisplayName = "Shop"),
 
 	None UMETA(DisplayName = "None"),
 };

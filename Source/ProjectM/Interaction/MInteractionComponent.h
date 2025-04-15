@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameplayTagContainer.h"
+#include "Components/InputComponent.h"
 #include "MInteractionComponent.generated.h"
 
 class UMInteractionActivity_Base;
-class USphereComponent;
+class UInputComponent;
+class UPMInputComponent;
 
 UCLASS()
 class PROJECTM_API UMInteractionComponent : public UActorComponent
@@ -19,9 +22,9 @@ class PROJECTM_API UMInteractionComponent : public UActorComponent
 */
 public:
 	UMInteractionComponent(const FObjectInitializer& ObjectInitializer);
-	virtual void InitializeComponent() override;
+	virtual void BeginPlay() override;
 
-/*
+	/*
 * Member Functions
 */
 public:
@@ -29,16 +32,25 @@ public:
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+protected:
+	void OnInteract(const FGameplayTag& Tag);
+	void Callback_OnSetInputComponent(UInputComponent* InInputComponent);
+	void BindDelegate();
+	void UnbindDelegate();
+	UFUNCTION(BlueprintCallable)
+	void ActivateAllOverlapAction();
+	UFUNCTION(BlueprintCallable)
+	void DeactivateAllOverlapAction();
+
+	UPMInputComponent* GetInputComponent() const;
 /*
 * Member Variables
 */
 protected:
-	UPROPERTY(EditDefaultsOnly)
-	USphereComponent* InteractionShpere;
-
-	UPROPERTY(EditDefaultsOnly, Instanced)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Instanced)
 	TArray<TObjectPtr<UMInteractionActivity_Base>> Action_OnBeginOverlap;
 
-	UPROPERTY(EditDefaultsOnly, Instanced)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Instanced)
 	TArray<TObjectPtr<UMInteractionActivity_Base>> Action_OnInteract;
 };

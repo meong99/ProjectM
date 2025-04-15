@@ -2,6 +2,7 @@
 #include "PMInventoryItemDefinition.h"
 #include "Net/UnrealNetwork.h"
 #include "PMGameplayTags.h"
+#include "PMInventoryManagerComponent.h"
 
 UPMInventoryItemInstance::UPMInventoryItemInstance(const FObjectInitializer& ObjectInitializer)
 {
@@ -33,9 +34,11 @@ const UPMInventoryItemFragment* UPMInventoryItemInstance::FindFragmentByClass(TS
 
 int32 UPMInventoryItemInstance::UseItem()
 {
-	if (CanUseItem())
+	AActor* Outer = Cast<AActor>(GetOuter());
+	UPMInventoryManagerComponent* InventoryComp = Outer ? Outer->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
+	if (InventoryComp && CanUseItem())
 	{
-		return RemoveStatTagStack(FPMGameplayTags::Get().Item_Quentity, 1);
+		return InventoryComp->ChangeItemQuantity(ItemHandle, -1);
 	}
 
 	return GetStatTagStackCount(FPMGameplayTags::Get().Item_Quentity);
@@ -43,12 +46,16 @@ int32 UPMInventoryItemInstance::UseItem()
 
 int32 UPMInventoryItemInstance::AddStatTagStack(FGameplayTag Tag, int32 StackCount)
 {
-	return StatTags.AddStack(Tag, StackCount);
+	int32 Count = StatTags.AddStack(Tag, StackCount);
+
+	return Count;
 }
 
 int32 UPMInventoryItemInstance::RemoveStatTagStack(FGameplayTag Tag, int32 StackCount)
 {
-	return StatTags.RemoveStack(Tag, StackCount);
+	int32 Count = StatTags.RemoveStack(Tag, StackCount);
+
+	return Count;
 }
 
 bool UPMInventoryItemInstance::HasStatTag(FGameplayTag Tag) const

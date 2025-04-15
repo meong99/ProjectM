@@ -5,6 +5,7 @@
 #include "Engine/Engine.h"
 #include "Table/Item/MTable_ConsumableItem.h"
 #include "Misc/MessageDialog.h"
+#include "Table/Item/MTable_ItemBase.h"
 
 void UMDataTableManager::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -23,6 +24,12 @@ const UDataTable* UMDataTableManager::GetDataTable(EMItemIdType TableType) const
 	return TableMap.FindRef(TableType);
 }
 
+
+const UDataTable* UMDataTableManager::GetDataTable(int32 TableId) const
+{
+	return TableMap.FindRef((EMItemIdType)TableId);
+}
+
 const TSubclassOf<UPMInventoryItemDefinition> UMDataTableManager::GetItemDefinition(EMItemIdType TableType, int32 ItemId) const
 {
 	const UDataTable* DataTable = GetDataTable(TableType);
@@ -35,6 +42,26 @@ const TSubclassOf<UPMInventoryItemDefinition> UMDataTableManager::GetItemDefinit
 			if (Item)
 			{
 				return Item->ItemDefinition;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+
+UPMInventoryItemDefinition* UMDataTableManager::GetItemDefinition(int32 TableId, int32 ItemId) const
+{
+	const UDataTable* DataTable = GetDataTable(TableId);
+	if (DataTable)
+	{
+		const TArray<FName>& Names = DataTable->GetRowNames();
+		if (Names.IsValidIndex(ItemId))
+		{
+			FMTable_ItemBase* Item = DataTable->FindRow<FMTable_ItemBase>(Names[ItemId], Names[ItemId].ToString());
+			if (Item)
+			{
+				return Item->ItemDefinition->GetDefaultObject<UPMInventoryItemDefinition>();
 			}
 		}
 	}

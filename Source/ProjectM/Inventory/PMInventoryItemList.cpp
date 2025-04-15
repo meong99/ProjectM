@@ -127,7 +127,7 @@ int32 FPMInventoryItemList::ChangeItemQuantity(const FMItemHandle& ItemHandle, i
 	}
 	else if (ChangeNum < 0)
 	{
-		return Entry->Instance->RemoveStatTagStack(FPMGameplayTags::Get().Item_Quentity, ChangeNum);
+		return Entry->Instance->RemoveStatTagStack(FPMGameplayTags::Get().Item_Quentity, ChangeNum * -1);
 	}
 
 	MCHAE_WARNING("StackCount is zero");
@@ -203,6 +203,20 @@ FPMInventoryEntry* FPMInventoryItemList::FindEntry(const FMItemHandle& ItemHandl
 	{
 		FPMInventoryEntry& Entry = *EntryIt;
 		if (Entry.ItemUid == ItemHandle.ItemUid)
+		{
+			return &Entry;
+		}
+	}
+
+	return nullptr;
+}
+
+FPMInventoryEntry* FPMInventoryItemList::FindEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef)
+{
+	for (auto EntryIt = Entries.CreateIterator(); EntryIt; ++EntryIt)
+	{
+		FPMInventoryEntry& Entry = *EntryIt;
+		if (Entry.GetItemDefinition() == ItemDef)
 		{
 			return &Entry;
 		}

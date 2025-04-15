@@ -50,7 +50,7 @@ void FPMEquipmentList::PostReplicatedAdd(const TArrayView<int32> AddedIndices, i
 		const FPMAppliedEquipmentEntry& Entry = Entries[Index];
 		if (Entry.Instance != nullptr)
 		{
-			Entry.Instance->OnEquipped();
+// 			Entry.Instance->OnEquipped();
 		}
 	}
 }

@@ -33,6 +33,7 @@ void FPMGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Move, "InputTag.Move", "");
 	AddTag(InputTag_Jump, "InputTag.Jump", "");
 	AddTag(InputTag_Look_Mouse, "InputTag.Look.Mouse", "");
+	AddTag(InputTag_Togle_Interaction, "InputTag.Togle.Interaction", "");
 
 	/*
 	* Widget Tags
@@ -43,6 +44,7 @@ void FPMGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(UI_Registry_HUD_MainHUD, "UI.Registry.HUD.MainHUD", "각 게임 모드 별 HUD. 등록한다면 Character가 초기화된 후 자동으로 위젯이 켜진다");
 
 	AddTag(UI_Game_NameWidget, "UI.Game.NameWidget", "");
+	AddTag(UI_Registry_Game_InteractionList, "UI.Registry.Game.InteractionList", "");
 	/*
 	* Item
 	*/

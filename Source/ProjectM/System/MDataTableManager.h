@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Subsystems/EngineSubsystem.h"
 #include "Table/MTableAsset.h"
+#include "Templates/SubclassOf.h"
+#include "Inventory/PMInventoryItemDefinition.h"
 #include "MDataTableManager.generated.h"
 
 class UDataTable;
@@ -27,7 +29,11 @@ public:
 	*/
 public:
 	const UDataTable* GetDataTable(EMItemIdType TableType) const;
+	UFUNCTION(BlueprintCallable)
+	const UDataTable* GetDataTable(int32 TableId) const;
 	const TSubclassOf<UPMInventoryItemDefinition> GetItemDefinition(EMItemIdType TableType, int32 ItemId) const;
+	UFUNCTION(BlueprintCallable)
+	UPMInventoryItemDefinition* GetItemDefinition(int32 TableId, int32 ItemId) const;
 
 	int32 GetTableNum() const { return TableMap.Num(); }
 private:

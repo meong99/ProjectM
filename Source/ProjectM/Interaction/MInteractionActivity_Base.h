@@ -7,8 +7,9 @@
 #include "MInteractionActivity_Base.generated.h"
 
 class UMInteractionComponent;
+class APMPlayerControllerBase;
 
-UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew)
+UCLASS(Blueprintable, BlueprintType, DefaultToInstanced, EditInlineNew)
 class PROJECTM_API UMInteractionActivity_Base : public UObject
 {
 	GENERATED_BODY()
@@ -24,12 +25,24 @@ public:
 */
 public:
 	virtual void InitAction(UMInteractionComponent* InOwner);
-	virtual void ActivateAction() {};
-	virtual void DeactivateAction() {};
+	UFUNCTION(BlueprintCallable)
+	virtual void ActivateAction();
+	UFUNCTION(BlueprintCallable)
+	virtual void DeactivateAction();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void K2_InitAction(UMInteractionComponent* InOwner, APMPlayerControllerBase* Controller);
+	UFUNCTION(BlueprintImplementableEvent)
+	void K2_ActivateAction();
+	UFUNCTION(BlueprintImplementableEvent)
+	void K2_DeactivateAction();
 
 /*
 * Member Variables
 */
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FText ActionName;
+
 	TWeakObjectPtr<UMInteractionComponent> Owner;
 };

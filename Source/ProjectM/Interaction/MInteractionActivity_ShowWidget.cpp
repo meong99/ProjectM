@@ -16,32 +16,13 @@ UMInteractionActivity_ShowWidget::UMInteractionActivity_ShowWidget(const FObject
 void UMInteractionActivity_ShowWidget::InitAction(UMInteractionComponent* InOwner)
 {
 	Super::InitAction(InOwner);
-
-	UMViewportClient* ViewportClient = nullptr; 
-	if (GetWorld() && GetWorld()->GetGameInstance())
-	{
-		ViewportClient = Cast<UMViewportClient>(GetWorld()->GetGameInstance()->GetGameViewportClient());
-	}
-
-	if (ViewportClient && InOwner)
-	{
-		FGameplayTag NameWidgetTag = FPMGameplayTags::Get().UI_Game_NameWidget;
-		for (const FGameplayTag& Tag : WidgetTags)
-		{
-			UMInteractionWidgetBase* Widget = Cast<UMInteractionWidgetBase>(ViewportClient->GetWidgetInstance(Tag));
-			if (Widget)
-			{
-				Widget->Init(InOwner->GetOwner());
-			}
-		}
-	}
 }
 
 void UMInteractionActivity_ShowWidget::ActivateAction()
 {
 	UMViewportClient* ViewportClient = Cast<UMViewportClient>(GetWorld()->GetGameInstance()->GetGameViewportClient());
 
-	if (ViewportClient)
+	if (ViewportClient && Owner.IsValid())
 	{
 		FGameplayTag NameWidgetTag = FPMGameplayTags::Get().UI_Game_NameWidget;
 		for (const FGameplayTag& Tag : WidgetTags)
@@ -52,7 +33,7 @@ void UMInteractionActivity_ShowWidget::ActivateAction()
 			}
 			else
 			{
-				ViewportClient->AddWidgetToLayer(Tag);
+				ViewportClient->AddWidgetToLayer(Tag, 0, Owner->GetOwner());
 			}
 		}
 	}

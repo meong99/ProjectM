@@ -4,18 +4,42 @@
 #include "Animation/AnimInstance.h"
 #include "Character/PMCharacterBase.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Equipment/PMQuickBarComponent.h"
 
 UPMWeaponInstance::UPMWeaponInstance(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 }
 
+int32 UPMWeaponInstance::UseItem()
+{
+	int32 ItemNum = Super::UseItem();
+	OnUnequipped();
+	OnEquipped();
+	return ItemNum;
+}
+
 void UPMWeaponInstance::OnEquipped()
 {
 	DetermineCosmeticTag();
+
+	#pragma TODO("Quickbar사용하지 않고 장착할 수 있어야함")
+	AActor* Outer = Cast<AActor>(GetOuter());
+	UPMQuickBarComponent* QuickBarComp = Outer ? Outer->FindComponentByClass<UPMQuickBarComponent>() : nullptr;
+	if (QuickBarComp)
+	{
+		QuickBarComp->AddItemToSlot(0, this);
+		QuickBarComp->SetActiveSlotIndex(0);
+	}
 }
 
 void UPMWeaponInstance::OnUnequipped()
 {
+	AActor* Outer = Cast<AActor>(GetOuter());
+	UPMQuickBarComponent* QuickBarComp = Outer ? Outer->FindComponentByClass<UPMQuickBarComponent>() : nullptr;
+	if (QuickBarComp && QuickBarComp->GetActiveSlotIndex() != INDEX_NONE)
+	{
+		QuickBarComp->UnequipItemInSlot();
+	}
 }
 
 void UPMWeaponInstance::DetermineCosmeticTag()

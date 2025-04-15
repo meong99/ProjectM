@@ -6,6 +6,8 @@
 #include "MInteractionActivity_Base.h"
 #include "MInteractionActivity_Shop.generated.h"
 
+class UInputComponent;
+
 UCLASS()
 class PROJECTM_API UMInteractionActivity_Shop : public UMInteractionActivity_Base
 {
@@ -17,14 +19,19 @@ class PROJECTM_API UMInteractionActivity_Shop : public UMInteractionActivity_Bas
 public:
 	UMInteractionActivity_Shop(const FObjectInitializer& ObjectInitializer);
 
-	virtual void ActivateAction() override {};
-	virtual void DeactivateAction() override {};
+	virtual void InitAction(UMInteractionComponent* InOwner) override;
+	virtual void ActivateAction() override;
+	virtual void DeactivateAction() override;
+
 /*
 * Member Functions
 */
 public:
+
 /*
 * Member Variables
 */
 protected:
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsActivated = false;
 };

@@ -24,9 +24,9 @@ struct FMItemHandle
 		return ItemUid != INDEX_NONE;
 	}
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	int32 ItemUid = INDEX_NONE;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	EMItemType ItemType = EMItemType::None;
 };

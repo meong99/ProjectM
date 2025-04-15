@@ -28,7 +28,7 @@ void UMBindWidgetByInputComponent::BeginPlay()
 void UMBindWidgetByInputComponent::BindWidgetByInput(UInputComponent* InInputComponent)
 {
 	UMWidgetInstanceList* WidgetInstanceList = GetWidgetInstanceList();
-	
+
 	if (WidgetInstanceList == nullptr)
 	{
 		MCHAE_WARNING("WidgetInstanceList is null!");

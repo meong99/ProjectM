@@ -42,7 +42,7 @@ public:
 /**
  *
  */
-UCLASS(Blueprintable)
+UCLASS(Blueprintable, BlueprintType)
 class PROJECTM_API UPMInventoryItemDefinition : public UObject
 {
 	GENERATED_BODY()
@@ -66,26 +66,32 @@ public:
 */
 public:
 	//아이템의 고유 Id
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Display")
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Item")
 	int32 ItemId = INDEX_NONE;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Display")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Item")
 	EMItemType ItemType = EMItemType::None;
 
 	//아이템의 이름
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Display")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Item")
 	FText DisplayName;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Display")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Item")
 	UTexture2D* ItemIcon;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "InstanceClassType")
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	TSubclassOf<UPMInventoryItemInstance> InstanceType;
 
-	UPROPERTY(EditDefaultsOnly, Category = "ProjectM | Effect")
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	TArray<FMApplyEffectDefinition> ApplyEffectToSelf;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Item")
+	int32 SellPrice = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Item")
+	int32 BuyPrice = 0;
+
 	// 아이템의 컴포넌트라고 생각할 수 있다.
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, meta = (AllowPrivateAccess = true), Category = "Display")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, meta = (AllowPrivateAccess = true), Category = "Item")
 	TArray<TObjectPtr<UPMInventoryItemFragment>> Fragments;
 };

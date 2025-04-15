@@ -8,6 +8,7 @@
 #include "Engine/DataTable.h"
 #include "Table/Item/MTable_ConsumableItem.h"
 #include "Table/MTableAsset.h"
+#include "Table/Item/MTable_EquipmentItem.h"
 
 /*
 * UPMInventoryManagerComponent -------------------------------
@@ -117,7 +118,16 @@ FMItemHandle UPMInventoryManagerComponent::AddItemDefinition(TSubclassOf<UPMInve
 		FPMInventoryItemList* ItemList = GetItemList(CDO->ItemType);
 		if (ItemList)
 		{
-			return AddItemDefinition_Impl(ItemDef, *ItemList);
+			FPMInventoryEntry* Entry = ItemList->FindEntry(ItemDef);
+			if (Entry && ItemList->OwnedItemType != EMItemType::Equipment)
+			{
+				ItemList->ChangeItemQuantity(Handle, 1);
+				return Entry->GetItemHandle();
+			}
+			else
+			{
+				return AddItemDefinition_Impl(ItemDef, *ItemList);
+			}
 		}
 	}
 
@@ -179,6 +189,21 @@ FPMInventoryEntry* UPMInventoryManagerComponent::FindEntry(const FMItemHandle& I
 	return nullptr;
 }
 
+FPMInventoryEntry* UPMInventoryManagerComponent::FindEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef)
+{
+	UPMInventoryItemDefinition* CDO = ItemDef->GetDefaultObject<UPMInventoryItemDefinition>();
+	if (CDO)
+	{
+		FPMInventoryItemList* ItemList = GetItemList(CDO->ItemType);
+		if (ItemList)
+		{
+			return ItemList->FindEntry(ItemDef);
+		}
+	}
+
+	return nullptr;
+}
+
 int32 UPMInventoryManagerComponent::ChangeItemQuantity(const FMItemHandle& ItemHandle, int32 ChangeNum)
 {
 	FPMInventoryItemList* ItemList = GetItemList(ItemHandle.ItemType);
@@ -191,10 +216,13 @@ int32 UPMInventoryManagerComponent::ChangeItemQuantity(const FMItemHandle& ItemH
 			RemoveItem(ItemHandle);
 		}
 
-		FOnChangeInventory* InventoryDelegates = Delegate_OnChangeInventory.Find(ItemHandle.ItemUid);
-		if (InventoryDelegates)
+		if (HasAuthority())
 		{
-			InventoryDelegates->Broadcast(ItemHandle);
+			FOnChangeInventory* InventoryDelegates = Delegate_OnChangeInventory.Find(ItemHandle.ItemUid);
+			if (InventoryDelegates)
+			{
+				InventoryDelegates->Broadcast(ItemHandle);
+			}
 		}
 
 		return CurrentItemQuentity;
@@ -287,27 +315,50 @@ FPMInventoryItemList* UPMInventoryManagerComponent::GetItemList(const EMItemType
 	}
 }
 
-void UPMInventoryManagerComponent::Debug_AddItem(int32 TableId, int32 ItemId)
+void UPMInventoryManagerComponent::Debug_AddItem(const int32 TableId, const int32 ItemId)
 {
 	if (GEngine)
 	{
 		UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
 		if (TableManager)
 		{
-			const UDataTable* DataTable = TableManager->GetDataTable(EMItemIdType::Consumable);
-			if (DataTable)
+			if (TableId == 0)
 			{
-				const TArray<FName>& Names = DataTable->GetRowNames();
-				if (Names.IsValidIndex(ItemId))
+				const UDataTable* DataTable = TableManager->GetDataTable(EMItemIdType::Equipment);
+				if (DataTable)
 				{
-					FMTable_ConsumableItem* Item = DataTable->FindRow<FMTable_ConsumableItem>(Names[ItemId], Names[ItemId].ToString());
-					if (Item)
+					const TArray<FName>& Names = DataTable->GetRowNames();
+					if (Names.IsValidIndex(ItemId))
 					{
-						DebugServer_AddItem(Item->ItemDefinition);
+						FMTable_EquipmentItem* Item = DataTable->FindRow<FMTable_EquipmentItem>(Names[ItemId], Names[ItemId].ToString());
+						if (Item)
+						{
+							DebugServer_AddItem(Item->ItemDefinition);
+						}
+						else
+						{
+							MCHAE_LOG("Can't Found Item. ItemId = %d", ItemId);
+						}
 					}
-					else
+				}
+			}
+			else if (TableId == 1)
+			{
+				const UDataTable* DataTable = TableManager->GetDataTable(EMItemIdType::Consumable);
+				if (DataTable)
+				{
+					const TArray<FName>& Names = DataTable->GetRowNames();
+					if (Names.IsValidIndex(ItemId))
 					{
-						MCHAE_LOG("Can't Found Item. ItemId = %d", ItemId);
+						FMTable_ConsumableItem* Item = DataTable->FindRow<FMTable_ConsumableItem>(Names[ItemId], Names[ItemId].ToString());
+						if (Item)
+						{
+							DebugServer_AddItem(Item->ItemDefinition);
+						}
+						else
+						{
+							MCHAE_LOG("Can't Found Item. ItemId = %d", ItemId);
+						}
 					}
 				}
 			}

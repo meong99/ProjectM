@@ -44,25 +44,26 @@ public:
 	int32 RemoveStatTagStack(FGameplayTag Tag, int32 StackCount);
 
 	/** whether stat tag has in StatTags */
+	UFUNCTION(BlueprintCallable, Category = Inventory)
 	bool HasStatTag(FGameplayTag Tag) const;
 
 	/** get the current count of gameplay-tag stack */
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 	int32 GetStatTagStackCount(FGameplayTag Tag) const;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = Inventory)
 	EMItemType GetItemType() const;
 /*
 * Member Variables
 */
 public:
-	UPROPERTY(Replicated)
+	UPROPERTY(BlueprintReadOnly, Replicated)
 	TSubclassOf<UPMInventoryItemDefinition> ItemDef;
 
 	/** gameplay-tag stacks for inventory item instance */
-	UPROPERTY(Replicated)
+	UPROPERTY(BlueprintReadOnly, Replicated)
 	FPMGameplayTagStackContainer StatTags;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(BlueprintReadOnly, Replicated)
 	FMItemHandle ItemHandle;
 };

@@ -31,6 +31,9 @@ public:
 * Member Variables
 */
 public:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName NpcName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int32 ShopTableId = INDEX_NONE;
 };

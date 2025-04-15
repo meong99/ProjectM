@@ -1,47 +1,47 @@
 #include "MInteractionComponent.h"
 #include "MInteractionActivity_Base.h"
-#include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
-#include "GameModes/PMExperienceManagerComponent.h"
 #include "GameFramework/GameState.h"
+#include "Kismet/GameplayStatics.h"
+#include "Character/PMCharacterBase.h"
+#include "Player/PMPlayerControllerBase.h"
+#include "Input/PMInputComponent.h"
+#include "PMGameplayTags.h"
+#include "Util/MGameplayStatics.h"
+#include "UI/MViewportClient.h"
+#include "Character/NPC/MNpcBase.h"
 
 UMInteractionComponent::UMInteractionComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	InteractionShpere = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionCapsule"));
-
-	bWantsInitializeComponent = true;
 }
 
-void UMInteractionComponent::InitializeComponent()
+void UMInteractionComponent::BeginPlay()
 {
-	Super::InitializeComponent();
+	Super::BeginPlay();
 
-	InteractionShpere->OnComponentBeginOverlap.AddDynamic(this, &UMInteractionComponent::OnBeginOverlap);
-	InteractionShpere->OnComponentEndOverlap.AddDynamic(this, &UMInteractionComponent::OnEndOverlap);
-
-	if (GetWorld()->GetGameState())
+	if (AMNpcBase* Owner = Cast<AMNpcBase>(GetOwner()))
 	{
-		UPMExperienceManagerComponent* ExperienceManager = GetWorld()->GetGameState()->FindComponentByClass<UPMExperienceManagerComponent>();
-		if (ExperienceManager)
+		USphereComponent* InteractionShpere = Owner->FindComponentByClass<USphereComponent>();
+		if (InteractionShpere)
 		{
-			ExperienceManager->CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate::CreateWeakLambda(this, [this](const UPMExperienceDefinition* LoadedExperienceDefinition)->void
-				{
-					for (UMInteractionActivity_Base* Action : Action_OnBeginOverlap)
-					{
-						if (Action)
-						{
-							Action->InitAction(this);
-						}
-					}
-					for (UMInteractionActivity_Base* Action : Action_OnInteract)
-					{
-						if (Action)
-						{
-							Action->InitAction(this);
-						}
-					}
-				}));
+			InteractionShpere->OnComponentBeginOverlap.AddDynamic(this, &UMInteractionComponent::OnBeginOverlap);
+			InteractionShpere->OnComponentEndOverlap.AddDynamic(this, &UMInteractionComponent::OnEndOverlap);
+		}
+	}
+
+	for (UMInteractionActivity_Base* Action : Action_OnBeginOverlap)
+	{
+		if (Action)
+		{
+			Action->InitAction(this);
+		}
+	}
+	for (UMInteractionActivity_Base* Action : Action_OnInteract)
+	{
+		if (Action)
+		{
+			Action->InitAction(this);
 		}
 	}
 }
@@ -51,14 +51,10 @@ void UMInteractionComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedCompo
 	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
 	if (Controller && Controller->GetPawn() == OtherActor)
 	{
-		for (UMInteractionActivity_Base* Action : Action_OnBeginOverlap)
-		{
-			if (Action)
-			{
-				Action->ActivateAction();
-			}
-		}
+		ActivateAllOverlapAction();
 	}
+
+	BindDelegate();
 }
 
 void UMInteractionComponent::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -66,12 +62,83 @@ void UMInteractionComponent::OnEndOverlap(UPrimitiveComponent* OverlappedCompone
 	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
 	if (Controller && Controller->GetPawn() == OtherActor)
 	{
-		for (UMInteractionActivity_Base* Action : Action_OnBeginOverlap)
+		DeactivateAllOverlapAction();
+	}
+
+	UnbindDelegate();
+}
+
+void UMInteractionComponent::OnInteract(const FGameplayTag& Tag)
+{
+	UMViewportClient* ViewportClient = UMGameplayStatics::GetViewportClient(this);
+	if (ViewportClient)
+	{
+		ViewportClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_Game_InteractionList, 0, GetOwner());
+	}
+}
+
+void UMInteractionComponent::Callback_OnSetInputComponent(UInputComponent* InInputComponent)
+{
+	UPMInputComponent* InputComponent = Cast<UPMInputComponent>(InInputComponent);
+	if (InputComponent)
+	{
+		InputComponent->InputActionDelegateMap.Emplace(FPMGameplayTags::Get().InputTag_Togle_Interaction, FInputActionDelegate::FDelegate::CreateUObject(this, &ThisClass::OnInteract));
+	}
+}
+
+void UMInteractionComponent::BindDelegate()
+{
+	UPMInputComponent* InputComponent = GetInputComponent();
+	if (InputComponent)
+	{
+		InputComponent->InputActionDelegateMap.Emplace(FPMGameplayTags::Get().InputTag_Togle_Interaction, FInputActionDelegate::FDelegate::CreateUObject(this, &ThisClass::OnInteract));
+	}
+}
+
+void UMInteractionComponent::UnbindDelegate()
+{
+	UPMInputComponent* InputComponent = GetInputComponent();
+	if (InputComponent)
+	{
+		InputComponent->InputActionDelegateMap.Remove(FPMGameplayTags::Get().InputTag_Togle_Interaction);
+	}
+
+	UMViewportClient* ViewportClient = UMGameplayStatics::GetViewportClient(this);
+	if (ViewportClient)
+	{
+		ViewportClient->RemoveWidgetFromLayer(FPMGameplayTags::Get().UI_Registry_Game_InteractionList);
+	}
+}
+
+void UMInteractionComponent::ActivateAllOverlapAction()
+{
+	for (UMInteractionActivity_Base* Action : Action_OnBeginOverlap)
+	{
+		if (Action)
 		{
-			if (Action)
-			{
-				Action->DeactivateAction();
-			}
+			Action->ActivateAction();
 		}
 	}
+}
+
+void UMInteractionComponent::DeactivateAllOverlapAction()
+{
+	for (UMInteractionActivity_Base* Action : Action_OnBeginOverlap)
+	{
+		if (Action)
+		{
+			Action->DeactivateAction();
+		}
+	}
+}
+
+UPMInputComponent* UMInteractionComponent::GetInputComponent() const
+{
+	APMPlayerControllerBase* Controller = Cast<APMPlayerControllerBase>(UGameplayStatics::GetPlayerController(this, 0));
+	if (Controller && Controller->GetPawn())
+	{
+		return Cast<UPMInputComponent>(Controller->GetPawn()->InputComponent);
+	}
+
+	return nullptr;
 }

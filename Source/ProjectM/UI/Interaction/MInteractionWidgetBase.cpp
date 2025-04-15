@@ -6,5 +6,5 @@ UMInteractionWidgetBase::UMInteractionWidgetBase(const FObjectInitializer& Objec
 
 void UMInteractionWidgetBase::Init(AActor* InInstigator)
 {
-	Instigator = InInstigator;
+	WidgetInstigator = InInstigator;
 }
