@@ -97,14 +97,15 @@ void UPMQuickBarComponent::EquipItemInSlot()
 	}
 }
 
-const UPMInventoryItemInstance* UPMQuickBarComponent::GetEquippedItemDef() const
+const UPMInventoryItemInstance* UPMQuickBarComponent::GetEquippedItemInstance() const
 {
-	if (ActiveSlotIndex != INDEX_NONE && Slots.IsValidIndex(ActiveSlotIndex))
-	{
-		return Slots[ActiveSlotIndex];
-	}
-
-	return nullptr;
+	return EquippedItem;
+// 	if (ActiveSlotIndex != INDEX_NONE && Slots.IsValidIndex(ActiveSlotIndex))
+// 	{
+// 		return Slots[ActiveSlotIndex];
+// 	}
+// 
+// 	return nullptr;
 }
 
 void UPMQuickBarComponent::OnRep_Slots()

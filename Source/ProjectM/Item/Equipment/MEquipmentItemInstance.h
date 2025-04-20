@@ -23,6 +23,7 @@ class PROJECTM_API UMEquipmentItemInstance : public UPMInventoryItemInstance
 public:
 	UMEquipmentItemInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual bool IsSupportedForNetworking() const override { return true; }
 
 	virtual int32 UseItem() override;

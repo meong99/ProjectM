@@ -6,6 +6,7 @@
 class UPMCameraMode;
 class UPMInputConfig;
 class UPMAbilitySet;
+class UPMInventoryItemDefinition;
 
 UCLASS()
 class PROJECTM_API UPMPawnData : public UPrimaryDataAsset
@@ -29,7 +30,7 @@ public:
 /*
 * Member Variables
 */
-private:
+public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "ProjectM | Pawn")
 	TSubclassOf<APawn> PawnClass;
 
@@ -42,4 +43,7 @@ private:
 	// Character가 기본적으로 사용하게 될 Ability
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "ProjectM | Abilities")
 	TArray<TObjectPtr<UPMAbilitySet>> AbilitySets;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "ProjectM | Equipment")
+	TSubclassOf<UPMInventoryItemDefinition> DefaultEquipment;
 };

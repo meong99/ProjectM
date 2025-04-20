@@ -6,23 +6,29 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/PlayerState.h"
-
-UE_DISABLE_OPTIMIZATION
+#include "Character/MCharacterBase.h"
 
 UMNameWidgetComponent::UMNameWidgetComponent()
 {
 	bWantsInitializeComponent = true;
+	PrimaryComponentTick.bAllowTickOnDedicatedServer = false;
+	PrimaryComponentTick.bStartWithTickEnabled = false;
 }
 
 void UMNameWidgetComponent::InitWidget()
 {
 	Super::InitWidget();
+
 	NameWidget = Cast<UMNameWidget>(GetWidget());
 	WeakOwnerCharacter = Cast<ACharacter>(GetOwner());
 	if (WeakOwnerCharacter.IsValid())
 	{
 		InitNameWidget();
 		AdjustNameWidgetCompLocation();
+	}
+	if (NameWidget)
+	{
+		NameWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 
@@ -46,27 +52,13 @@ void UMNameWidgetComponent::DisableNameWidget()
 
 void UMNameWidgetComponent::InitNameWidget()
 {
-	if (NameWidget && WeakOwnerCharacter.IsValid())
+	AMCharacterBase* CharacterBase = Cast<AMCharacterBase>(WeakOwnerCharacter.Get());
+	if (NameWidget && CharacterBase)
 	{
-		FName Name;
-		if (AMNpcBase* Npc = Cast<AMNpcBase>(WeakOwnerCharacter.Get()))
-		{
-			UMNpcDefinition* NpcDefinition = Npc->GetNpcDefinition();
-			if (NpcDefinition)
-			{
-				Name = NpcDefinition->NpcName;
-			}
-		}
-		else if (APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0))
-		{
-			APlayerState* State = PlayerController->GetPlayerState<APlayerState>();
-			if (State)
-			{
-				Name = *State->GetPlayerName();
-			}
-		}
+		FName Name = CharacterBase->GetCharacterName();
 
 		NameWidget->SetName(Name);
+		NameWidget->SetWidgetInstigator(this);
 	}
 }
 
@@ -76,8 +68,6 @@ void UMNameWidgetComponent::AdjustNameWidgetCompLocation()
 	if (Capsule)
 	{
 		float Height = Capsule->GetScaledCapsuleHalfHeight();
-		SetRelativeLocation(WeakOwnerCharacter->GetActorLocation() + FVector::UpVector * (Height * 1.5));
+		SetRelativeLocation(FVector::UpVector * (Height * 1.5));
 	}
 }
-
-UE_ENABLE_OPTIMIZATION

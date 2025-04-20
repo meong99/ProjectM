@@ -2,14 +2,14 @@
 
 #include "CommonPlayerController.h"
 #include "GameModes/PMExperienceManagerComponent.h"
-#include "Character/PMCharacterBase.h"
+#include "Character/MPlayerCharacterBase.h"
 #include "PMPlayerControllerBase.generated.h"
 
 class APMPlayerState;
 class UPMAbilitySystemComponent;
 class UPMInventoryManagerComponent;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnPossessed, APMCharacterBase* /*Character*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPossessed, AMPlayerCharacterBase* /*Character*/);
 
 UCLASS()
 class PROJECTM_API APMPlayerControllerBase : public ACommonPlayerController

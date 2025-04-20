@@ -16,7 +16,7 @@ void APMPlayerControllerBase::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
 
-	APMCharacterBase* MyCharacter = Cast<APMCharacterBase>(GetPawn());
+	AMPlayerCharacterBase* MyCharacter = Cast<AMPlayerCharacterBase>(GetPawn());
 	if (MyCharacter)
 	{
 		Delegate_OnPossessed.Broadcast(MyCharacter);
@@ -47,7 +47,7 @@ void APMPlayerControllerBase::CallOrRegister_OnExperienceLoaded(FOnExperienceLoa
 
 void APMPlayerControllerBase::CallOrRegister_OnPossessed(FOnPossessed::FDelegate&& Delegate)
 {
-	APMCharacterBase* MyCharacter = Cast<APMCharacterBase>(GetPawn());
+	AMPlayerCharacterBase* MyCharacter = Cast<AMPlayerCharacterBase>(GetPawn());
 	if (MyCharacter)
 	{
 		Delegate.Execute(MyCharacter);

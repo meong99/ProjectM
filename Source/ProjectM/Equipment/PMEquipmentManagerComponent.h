@@ -69,7 +69,7 @@ struct TStructOpsTypeTraits<FPMEquipmentList> : public TStructOpsTypeTraitsBase2
 /**
  *
  */
-UCLASS(Blueprintable, BlueprintType, meta = (BlueprintSpawnableComponent))
+UCLASS(BlueprintType)
 class PROJECTM_API UPMEquipmentManagerComponent : public UPawnComponent
 {
 	GENERATED_BODY()

@@ -63,6 +63,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsActivate = false;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	UObject* WidgetInstigator;
 };

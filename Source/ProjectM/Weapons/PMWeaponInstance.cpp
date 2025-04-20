@@ -2,7 +2,7 @@
 #include "Cosmetics/PMCosmeticAnimationTypes.h"
 #include "Cosmetics/PMPawnComponent_CharacterParts.h"
 #include "Animation/AnimInstance.h"
-#include "Character/PMCharacterBase.h"
+#include "Character/MPlayerCharacterBase.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Equipment/PMQuickBarComponent.h"
 
@@ -52,7 +52,7 @@ void UPMWeaponInstance::DetermineCosmeticTag()
 		const TSubclassOf<UAnimInstance>& AnimInstance = PickBestAnimLayer(true, CosmeticAnimStyle);
 		if (AnimInstance)
 		{
-			APMCharacterBase* Character = Cast<APMCharacterBase>(GetTypedPawn(APMCharacterBase::StaticClass()));
+			AMPlayerCharacterBase* Character = Cast<AMPlayerCharacterBase>(GetTypedPawn(AMPlayerCharacterBase::StaticClass()));
 			if (Character)
 			{
 				USkeletalMeshComponent* Mesh = Character->GetMesh();

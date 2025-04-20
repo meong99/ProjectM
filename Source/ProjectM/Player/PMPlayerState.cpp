@@ -59,6 +59,17 @@ void APMPlayerState::PostInitializeComponents()
 void APMPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
+
+	const UPMHealthSet* Set = AbilitySystemComponent->GetSet<UPMHealthSet>();
+
+	if (Set)
+	{
+		MCHAE_LOG("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@player state name = %s", *Set->GetName());
+	}
+	else
+	{
+		MCHAE_LOG("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@player state 못찾음");
+	}
 }
 
 void APMPlayerState::OnExperienceLoaded(const UPMExperienceDefinition* CurrentExperience)
@@ -157,7 +168,7 @@ void APMPlayerState::UpdateCurrentData()
 			}
 		}
 
-		const UPMInventoryItemInstance* EquippedItem = QuickBarComp->GetEquippedItemDef();
+		const UPMInventoryItemInstance* EquippedItem = QuickBarComp->GetEquippedItemInstance();
 		if (EquippedItem)
 		{
 			PlayerSaveData->EquippedItem = EquippedItem->ItemDef;
@@ -206,18 +217,15 @@ void APMPlayerState::ApplyLoadedData()
 		}
 		if (QuickBarComp->GetActiveSlotIndex() == INDEX_NONE && GEngine)
 		{
-// 			UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
-// 			if (TableManager)
-// 			{
-// 				const TSubclassOf<UPMInventoryItemDefinition>& ItemDef = TableManager->GetItemDefinition(EMItemIdType::Equipment, 0);
-// 				if (ItemDef)
-// 				{
-// 					const FMItemHandle& ItemHandle = InventoryManager->AddItemDefinition(ItemDef);
-// 					UPMInventoryItemInstance* ItemInstance = InventoryManager->FindItemInstance(ItemHandle);
-// 					QuickBarComp->AddItemToSlot(0, ItemInstance);
-// 					QuickBarComp->SetActiveSlotIndex(0);
-// 				}
-// 			}
+			const TSubclassOf<UPMInventoryItemDefinition>& ItemDef = PawnData->DefaultEquipment;
+			if (ItemDef)
+			{
+				const FMItemHandle& ItemHandle = InventoryManager->AddItemDefinition(ItemDef);
+				InventoryManager->Server_UseItem(ItemHandle);
+// 				UPMInventoryItemInstance* ItemInstance = InventoryManager->FindItemInstance(ItemHandle);
+// 				QuickBarComp->AddItemToSlot(0, ItemInstance);
+// 				QuickBarComp->SetActiveSlotIndex(0);
+			}
 		}
 	}
 	else

@@ -1,22 +1,27 @@
 #include "MNpcBase.h"
-#include "Character/Components/MNameWidgetComponent.h"
 #include "Interaction/MInteractionComponent.h"
-#include "Components/SphereComponent.h"
+#include "MNpcDefinition.h"
 
-AMNpcBase::AMNpcBase()
+AMNpcBase::AMNpcBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	if (!IsRunningDedicatedServer())
 	{
-		NpcNameComp = CreateDefaultSubobject<UMNameWidgetComponent>(TEXT("NpcNameComp"));
 		InteractionComponent = CreateDefaultSubobject<UMInteractionComponent>(TEXT("InteractionComponent"));
-		InteractionShpere = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionCapsule"));
+		InteractionComponent->SetupAttachment(GetRootComponent());
 	}
 }
 
 void AMNpcBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	InteractionShpere->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
+}
+
+void AMNpcBase::InitCharacterName()
+{
+	if (NpcDefinition)
+	{
+		CharacterName = NpcDefinition->NpcName;
+	}
 }
 
 void AMNpcBase::BeginPlay()

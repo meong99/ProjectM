@@ -3,17 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
 #include "GameplayTagContainer.h"
-#include "Components/InputComponent.h"
+#include "Components/SphereComponent.h"
 #include "MInteractionComponent.generated.h"
 
 class UMInteractionActivity_Base;
 class UInputComponent;
 class UPMInputComponent;
+class USphereComponent;
 
-UCLASS()
-class PROJECTM_API UMInteractionComponent : public UActorComponent
+UCLASS(meta = (BlueprintSpawnableComponent))
+class PROJECTM_API UMInteractionComponent : public USphereComponent
 {
 	GENERATED_BODY()
 
@@ -22,9 +22,10 @@ class PROJECTM_API UMInteractionComponent : public UActorComponent
 */
 public:
 	UMInteractionComponent(const FObjectInitializer& ObjectInitializer);
+	virtual void InitializeComponent() override;
 	virtual void BeginPlay() override;
 
-	/*
+/*
 * Member Functions
 */
 public:

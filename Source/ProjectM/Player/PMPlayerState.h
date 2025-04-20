@@ -48,15 +48,14 @@ protected:
 */
 private:
 	//이미 Definition에 존재하지만, 빠르게 사용하기 위해 캐싱.
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, meta=(AllowPrivateAccess))
 	TObjectPtr<const UPMPawnData> PawnData;
 
-	UPROPERTY(VisibleAnywhere, Category = "ProjectM | PlayerState")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess), Category = "ProjectM | PlayerState")
 	TObjectPtr<UPMAbilitySystemComponent> AbilitySystemComponent;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess))
 	TObjectPtr<UMPlayerSaveGame> PlayerSaveData;
-
 
 //DEBUG
 public:

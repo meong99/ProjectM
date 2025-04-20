@@ -3,46 +3,38 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "Character/MCharacterBase.h"
 #include "MNpcBase.generated.h"
 
-class UMNameWidgetComponent;
 class UMNpcDefinition;
 class UMInteractionComponent;
-class USphereComponent;
 
 /**
  * 
  */
 UCLASS()
-class PROJECTM_API AMNpcBase : public ACharacter
+class PROJECTM_API AMNpcBase : public AMCharacterBase
 {
 	GENERATED_BODY()
 /*
 * Overrided Function
 */
 public:
-	AMNpcBase();
+	AMNpcBase(const FObjectInitializer& ObjectInitializer);
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;
+	virtual void InitCharacterName() override;
 
-	/*
+/*
 * Member Functions
 */
 public:
 	UMNpcDefinition* GetNpcDefinition() const { return NpcDefinition; }
-	USphereComponent* GetInteractionShpere() const { return InteractionShpere; }
-
 /*
+
 * Member Variables
 */
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	USphereComponent* InteractionShpere;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "NPC")
-	UMNameWidgetComponent* NpcNameComp;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "NPC")
 	UMNpcDefinition* NpcDefinition;
 

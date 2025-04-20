@@ -41,7 +41,8 @@ public:
 	void UnequipItemInSlot();
 	void EquipItemInSlot();
 
-	const UPMInventoryItemInstance* GetEquippedItemDef() const;
+	UFUNCTION(BlueprintCallable)
+	const UPMInventoryItemInstance* GetEquippedItemInstance() const;
 
 protected:
 	UFUNCTION()

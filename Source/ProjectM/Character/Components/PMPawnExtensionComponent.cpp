@@ -4,7 +4,7 @@
 #include "GameFramework/Controller.h"
 #include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "Net/UnrealNetwork.h"
-#include "Character/PMCharacterBase.h"
+#include "Character/MPlayerCharacterBase.h"
 
 const FName UPMPawnExtensionComponent::NAME_ActorFeatureName{"PawnExtension"};
 

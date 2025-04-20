@@ -4,7 +4,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/GameState.h"
 #include "Kismet/GameplayStatics.h"
-#include "Character/PMCharacterBase.h"
+#include "Character/MPlayerCharacterBase.h"
 #include "Player/PMPlayerControllerBase.h"
 #include "Input/PMInputComponent.h"
 #include "PMGameplayTags.h"
@@ -14,21 +14,20 @@
 
 UMInteractionComponent::UMInteractionComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	bWantsInitializeComponent = true;
+}
+
+void UMInteractionComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+
+	OnComponentBeginOverlap.AddDynamic(this, &UMInteractionComponent::OnBeginOverlap);
+	OnComponentEndOverlap.AddDynamic(this, &UMInteractionComponent::OnEndOverlap);
 }
 
 void UMInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (AMNpcBase* Owner = Cast<AMNpcBase>(GetOwner()))
-	{
-		USphereComponent* InteractionShpere = Owner->FindComponentByClass<USphereComponent>();
-		if (InteractionShpere)
-		{
-			InteractionShpere->OnComponentBeginOverlap.AddDynamic(this, &UMInteractionComponent::OnBeginOverlap);
-			InteractionShpere->OnComponentEndOverlap.AddDynamic(this, &UMInteractionComponent::OnEndOverlap);
-		}
-	}
 
 	for (UMInteractionActivity_Base* Action : Action_OnBeginOverlap)
 	{

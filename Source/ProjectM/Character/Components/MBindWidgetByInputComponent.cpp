@@ -5,7 +5,7 @@
 #include "UI/MWidgetInstanceList.h"
 #include "UI/MWidgetBase.h"
 #include "Input/PMInputComponent.h"
-#include "Character/PMCharacterBase.h"
+#include "Character/MPlayerCharacterBase.h"
 
 UMBindWidgetByInputComponent::UMBindWidgetByInputComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -17,7 +17,7 @@ void UMBindWidgetByInputComponent::BeginPlay()
 
 	if (GetNetMode() != ENetMode::NM_DedicatedServer)
 	{
-		APMCharacterBase* OwnerCharacter = GetPawn<APMCharacterBase>();
+		AMPlayerCharacterBase* OwnerCharacter = GetPawn<AMPlayerCharacterBase>();
 		if (IsValid(OwnerCharacter))
 		{
 			OwnerCharacter->CallOrRegister_OnSetInputComponent(FOnSetInputComponent::FDelegate::CreateUObject(this, &ThisClass::BindWidgetByInput));
