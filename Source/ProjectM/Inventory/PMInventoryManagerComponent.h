@@ -98,7 +98,7 @@ private:
 // DEBUG
 private:
 	UFUNCTION(Exec)
-	void Debug_AddItem(int32 TableId, int32 ItemId);
+	void Debug_AddItem(const FString& ElementId);
 	UFUNCTION(Server, Reliable)
 	void DebugServer_AddItem(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
 };

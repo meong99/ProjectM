@@ -2,6 +2,7 @@
 #include "Abilities/PMGameplayAbility.h"
 #include "Animation/PMAnimInstance.h"
 #include "GameFramework/Pawn.h"
+#include "GameplayAbilities/Public/AbilitySystemInterface.h"
 
 UPMAbilitySystemComponent::UPMAbilitySystemComponent()
 {
@@ -147,4 +148,60 @@ void UPMAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 
 	InputPressedSpecHandles.Reset();
 	InputReleasedSpecHandles.Reset();
+}
+
+FActiveGameplayEffectHandle UPMAbilitySystemComponent::ApplyEffectToTargetWithSetByCaller(TSubclassOf<UGameplayEffect> EffectClass, AActor* Target, AActor* EffectCauser, TMap<FGameplayTag, float> SetbyCallerMap, float Level/* = 0*/)
+{
+	IAbilitySystemInterface* TargetASCInterface = Cast<IAbilitySystemInterface>(Target);
+	if (TargetASCInterface == nullptr)
+	{
+		MCHAE_WARNING("Target actor is not inheritanced IAbilitySystemInterface.");
+		return FActiveGameplayEffectHandle{};
+	}
+
+	UAbilitySystemComponent* TargetASC = TargetASCInterface->GetAbilitySystemComponent();
+	if (TargetASC == nullptr)
+	{
+		MCHAE_WARNING("AbilitySystemComponent is not valid. Check Target's abilitysystemcomponent");
+		return FActiveGameplayEffectHandle{};
+	}
+
+	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
+	ContextHandle.AddInstigator(GetOwner(), EffectCauser);
+
+	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingSpec(EffectClass, Level, ContextHandle);
+	FGameplayEffectSpec* Spec = EffectSpecHandle.Data.Get();
+	if (Spec == nullptr)
+	{
+		MCHAE_WARNING("EffectSpec is not valid");
+		return FActiveGameplayEffectHandle{};
+	}
+
+	for (const auto& Iter : SetbyCallerMap)
+	{
+		Spec->SetSetByCallerMagnitude(Iter.Key, Iter.Value);
+	}
+
+	return TargetASC->ApplyGameplayEffectSpecToSelf(*Spec);
+}
+
+FActiveGameplayEffectHandle UPMAbilitySystemComponent::ApplyEffectToSelfWithSetByCaller(TSubclassOf<UGameplayEffect> EffectClass, AActor* EffectCauser, TMap<FGameplayTag, float> SetbyCallerMap, float Level /*= 0*/)
+{
+	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
+	ContextHandle.AddInstigator(GetOwner(), EffectCauser);
+
+	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingSpec(EffectClass, Level, ContextHandle);
+	FGameplayEffectSpec* Spec = EffectSpecHandle.Data.Get();
+	if (Spec == nullptr)
+	{
+		MCHAE_WARNING("EffectSpec is not valid");
+		return FActiveGameplayEffectHandle{};
+	}
+
+	for (const auto& Iter : SetbyCallerMap)
+	{
+		Spec->SetSetByCallerMagnitude(Iter.Key, Iter.Value);
+	}
+
+	return ApplyGameplayEffectSpecToSelf(*Spec);
 }

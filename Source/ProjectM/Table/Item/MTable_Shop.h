@@ -1,14 +1,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/DataTable.h"
+#include "Table/MTable_TableBase.h"
 #include "MTable_Shop.generated.h"
 
 /**
  *
  */
 USTRUCT(BlueprintType, Blueprintable)
-struct FMTable_Shop : public FTableRowBase
+struct FMTable_Shop : public FMTable_TableBase
 {
 	GENERATED_BODY()
 

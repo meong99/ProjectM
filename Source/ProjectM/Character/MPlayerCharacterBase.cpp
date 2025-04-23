@@ -69,6 +69,11 @@ UAbilitySystemComponent* AMPlayerCharacterBase::GetAbilitySystemComponent() cons
 	return PawnExtComp->GetPMAbilitySystemComponent();
 }
 
+UPMAbilitySystemComponent* AMPlayerCharacterBase::GetMAbilitySystemComponent() const
+{
+	return Cast<UPMAbilitySystemComponent>(GetAbilitySystemComponent());
+}
+
 void AMPlayerCharacterBase::OnAbilitySystemInitialized()
 {
 	UPMAbilitySystemComponent* ASC = Cast<UPMAbilitySystemComponent>(GetAbilitySystemComponent());

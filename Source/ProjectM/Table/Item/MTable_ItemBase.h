@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/DataTable.h"
+#include "Table/MTable_TableBase.h"
 #include "Templates/SubclassOf.h"
 #include "MTable_ItemBase.generated.h"
 
@@ -22,7 +22,7 @@ enum class EMItemIdType : uint8
  *
  */
 USTRUCT(BlueprintType, Blueprintable)
-struct FMTable_ItemBase : public FTableRowBase
+struct FMTable_ItemBase : public FMTable_TableBase
 {
 	GENERATED_BODY()
 

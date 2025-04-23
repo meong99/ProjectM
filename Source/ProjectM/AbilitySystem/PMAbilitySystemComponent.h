@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
+#include "GameplayAbilities/Public/ActiveGameplayEffectHandle.h"
+#include "GameplayTagContainer.h"
 #include "PMAbilitySystemComponent.generated.h"
 
 UCLASS()
@@ -29,6 +31,11 @@ public:
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 	void ProcessAbilityInput(float DeltaTime, bool bGamePaused);
+
+	UFUNCTION(BlueprintCallable)
+	FActiveGameplayEffectHandle ApplyEffectToTargetWithSetByCaller(TSubclassOf<UGameplayEffect> EffectClass, AActor* Target, AActor* EffectCauser, TMap<FGameplayTag, float> SetbyCallerMap, float Level = 0);
+	UFUNCTION(BlueprintCallable)
+	FActiveGameplayEffectHandle ApplyEffectToSelfWithSetByCaller(TSubclassOf<UGameplayEffect> EffectClass, AActor* EffectCauser, TMap<FGameplayTag, float> SetbyCallerMap, float Level = 0);
 
 /*
 * Member Variables

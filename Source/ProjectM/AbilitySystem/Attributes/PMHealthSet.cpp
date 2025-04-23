@@ -1,7 +1,7 @@
 #include "PMHealthSet.h"
 #include "GameplayEffectExtension.h"
 
-UPMHealthSet::UPMHealthSet() : Super(), Health(50), MaxHealth(100)
+UPMHealthSet::UPMHealthSet() : Super(), Health(100), MaxHealth(100)
 {
 }
 
@@ -48,5 +48,9 @@ void UPMHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackDat
 	else if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(), MinimumHealth, GetMaxHealth()));
+		if (Data.EvaluatedData.Magnitude < 0)
+		{
+			Delegate_OnDamaged.Broadcast(Data.EffectSpec.GetEffectContext().GetInstigator());
+		}
 	}
 }

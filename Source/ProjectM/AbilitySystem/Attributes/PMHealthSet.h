@@ -7,6 +7,10 @@
 #include "AbilitySystemComponent.h"
 #include "PMHealthSet.generated.h"
 
+class AActor;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDamaged, AActor*, Instigator);
+
 /**
  * 
  */
@@ -28,12 +32,15 @@ public:
 	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
-	UPROPERTY(BlueprintReadOnly, Category = "ProjectM | Health")
+	UPROPERTY(BlueprintAssignable, Category = "ProjectM | Health")
+	FOnDamaged Delegate_OnDamaged;
+
+	UPROPERTY(BlueprintReadWrite, Category = "ProjectM | Health")
 	FGameplayAttributeData Health;
 
-	UPROPERTY(BlueprintReadOnly, Category = "ProjectM | Health")
+	UPROPERTY(BlueprintReadWrite, Category = "ProjectM | Health")
 	FGameplayAttributeData MaxHealth;
 
-	UPROPERTY(BlueprintReadOnly, Category = "ProjectM | Health")
+	UPROPERTY(BlueprintReadWrite, Category = "ProjectM | Health")
 	FGameplayAttributeData Healing;
 };

@@ -24,25 +24,40 @@ class PROJECTM_API UMDataTableManager : public UEngineSubsystem
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
-	/*
-	* Member Functions
-	*/
+/*
+* Member Functions
+*/
 public:
-	const UDataTable* GetDataTable(EMItemIdType TableType) const;
-	UFUNCTION(BlueprintCallable)
-	const UDataTable* GetDataTable(int32 TableId) const;
-	const TSubclassOf<UPMInventoryItemDefinition> GetItemDefinition(EMItemIdType TableType, int32 ItemId) const;
-	UFUNCTION(BlueprintCallable)
-	UPMInventoryItemDefinition* GetItemDefinition(int32 TableId, int32 ItemId) const;
+	static int32 ChangeElementIdToTableId(const FString& ElementId);
+	static int32 ChangeElementIdToIndex(const FString& ElementId);
 
-	int32 GetTableNum() const { return TableMap.Num(); }
+
+	UFUNCTION(BlueprintCallable)
+	const UDataTable* GetDataTable(const FString& ElementId) const;
+	//Deprecated
+	const UDataTable* GetDataTable(int32 TableId) const;
+	//Deprecated
+	const UDataTable* GetDataTable(EMItemIdType TableType) const;
+
+	UFUNCTION(BlueprintCallable)
+	UPMInventoryItemDefinition*						GetItemDefinition(int32 TableId, int32 ItemId) const;
+	const TSubclassOf<UPMInventoryItemDefinition>	GetItemDefinition(EMItemIdType TableType, int32 ItemId) const;
+
+	int32 GetTableNum() const { return Deprecated_TableMap.Num(); }
 private:
 	void LoadDataTables();
+	void OnLoadedDataTables();
+	void ParseTableMap(UMTableAsset* TableAsset);
 
-	/*
-	* Member Variables
-	*/
+/*
+* Member Variables
+*/
 public:
 	UPROPERTY(BlueprintReadOnly)
-	TMap<EMItemIdType, UDataTable*> TableMap;
+	TMap<EMItemIdType, UDataTable*> Deprecated_TableMap;
+
+	UPROPERTY(BlueprintReadOnly)
+	TMap<int32/*table id*/, UDataTable*> TableMap;
+
+	TArray<FPrimaryAssetId>	PrimaryAssetIdList;
 };

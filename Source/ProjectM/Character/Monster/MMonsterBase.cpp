@@ -3,6 +3,7 @@
 #include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/PMHealthSet.h"
 #include "Character/Components/PMHealthComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -19,6 +20,13 @@ AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Supe
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 	AbilitySystemComponent->bWantsInitializeComponent = true;
 	HealthSet = CreateDefaultSubobject<UPMHealthSet>(TEXT("HealthSet"));
+
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetCharacterMovement()->bRequestedMoveUseAcceleration = true;
+
+	PrimaryActorTick.bCanEverTick = true;
+	bUseControllerRotationYaw = false;
 }
 
 void AMMonsterBase::PostInitializeComponents()
@@ -56,6 +64,11 @@ void AMMonsterBase::InitCharacterName()
 UAbilitySystemComponent* AMMonsterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+void AMMonsterBase::InitMonster(const FMMonsterInfo& InMonsterInfo)
+{
+	MonsterInfo = InMonsterInfo;
 }
 
 UPMAbilitySystemComponent* AMMonsterBase::GetMAbilitySystemComponent() const

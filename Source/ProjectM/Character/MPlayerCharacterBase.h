@@ -8,6 +8,7 @@ class UPMPawnExtensionComponent;
 class UPMCameraComponent;
 class UPMHealthComponent;
 class UInputComponent;
+class UPMAbilitySystemComponent;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnSetInputComponent, UInputComponent* PlayerInputComponent);
 
@@ -27,6 +28,8 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	UFUNCTION(BlueprintCallable)
+	UPMAbilitySystemComponent* GetMAbilitySystemComponent() const;
 
 /*
 * Member Functions

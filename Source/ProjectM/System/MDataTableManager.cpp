@@ -6,6 +6,8 @@
 #include "Table/Item/MTable_ConsumableItem.h"
 #include "Misc/MessageDialog.h"
 #include "Table/Item/MTable_ItemBase.h"
+#include "Table/MTable_TableBase.h"
+#include "Util/MGameplayStatics.h"
 
 void UMDataTableManager::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -19,15 +21,21 @@ void UMDataTableManager::Initialize(FSubsystemCollectionBase& Collection)
 	);
 }
 
+const UDataTable* UMDataTableManager::GetDataTable(const FString& ElementId) const
+{
+	int32 Key = ChangeElementIdToTableId(ElementId);
+	return TableMap.FindRef(Key);
+}
+
 const UDataTable* UMDataTableManager::GetDataTable(EMItemIdType TableType) const
 {
-	return TableMap.FindRef(TableType);
+	return Deprecated_TableMap.FindRef(TableType);
 }
 
 
-const UDataTable* UMDataTableManager::GetDataTable(int32 TableId) const
+const UDataTable* UMDataTableManager::GetDataTable(int32 ItemId) const
 {
-	return TableMap.FindRef((EMItemIdType)TableId);
+	return Deprecated_TableMap.FindRef((EMItemIdType)ItemId);
 }
 
 const TSubclassOf<UPMInventoryItemDefinition> UMDataTableManager::GetItemDefinition(EMItemIdType TableType, int32 ItemId) const
@@ -69,47 +77,106 @@ UPMInventoryItemDefinition* UMDataTableManager::GetItemDefinition(int32 TableId,
 	return nullptr;
 }
 
+int32 UMDataTableManager::ChangeElementIdToTableId(const FString& ElementId)
+{
+	return FCString::Atoi(*ElementId.Left(3));
+}
+
+int32 UMDataTableManager::ChangeElementIdToIndex(const FString& ElementId)
+{
+	return FCString::Atoi(*ElementId.Right(5));
+}
+
 void UMDataTableManager::LoadDataTables()
 {
 	UPMAssetManager& AssetManager = UPMAssetManager::Get();
 	check(UPMAssetManager::IsInitialized());
 
 	FPrimaryAssetType		AssetType{ UMTableAsset::StaticClass()->GetFName() };
-	TArray<FPrimaryAssetId>	PrimaryAssetIdList;
 	AssetManager.GetPrimaryAssetIdList(AssetType, PrimaryAssetIdList);
 
 	TArray<FName> LoadBundles;
-	AssetManager.LoadPrimaryAssets(PrimaryAssetIdList, LoadBundles, FSimpleMulticastDelegate::FDelegate::CreateLambda(
-		[this, PrimaryAssetIdList, &AssetManager]()->void
-		{
-			for (const FPrimaryAssetId& AssetId : PrimaryAssetIdList)
-			{
-				UMTableAsset* TableAsset = AssetManager.GetPrimaryAssetObject<UMTableAsset>(AssetId);
+	AssetManager.LoadPrimaryAssets(PrimaryAssetIdList, LoadBundles, FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnLoadedDataTables));
+}
 
-				if (IsValid(TableAsset))
+void UMDataTableManager::OnLoadedDataTables()
+{
+	UPMAssetManager& AssetManager = UPMAssetManager::Get();
+
+	for (const FPrimaryAssetId& AssetId : PrimaryAssetIdList)
+	{
+		UMTableAsset* TableAsset = AssetManager.GetPrimaryAssetObject<UMTableAsset>(AssetId);
+
+		if (IsValid(TableAsset))
+		{
+			ParseTableMap(TableAsset);
+
+
+			// ↓ Deprecated
+			for (const FMTableDefinition& TableDefinition : TableAsset->TableDefinitions)
+			{
+				if (TableDefinition.TableType != EMItemIdType::None)
 				{
-					for (const FMTableDefinition& TableDefinition : TableAsset->TableDefinitions)
-					{
-						if (TableDefinition.TableType != EMItemIdType::None)
-						{
-							TableMap.Add(TableDefinition.TableType, TableDefinition.Table);
-						}
-						else
-						{
-#if WITH_EDITOR
-							FMessageDialog::Open(EAppMsgType::Ok, 
-								FText::FromString(TEXT("Table Data Error! - TableName : \"") + TableAsset->GetName() + TEXT("\"\n테이블 데이터가 비정상적입니다. 테이블이 비어있는지, 타입은 설정됐는지 확인하세요.")));
-#else
-							MCHAE_ERROR("Table Data Error! - TableName : \"%s\", Check the TableAsset is currently setted or tabletype is not setted", *TableAsset->GetName());
-#endif
-						}
-					}
+					Deprecated_TableMap.Add(TableDefinition.TableType, TableDefinition.Table);
 				}
 				else
 				{
-					MCHAE_ERROR("Can't Get TableAsset");
+#if WITH_EDITOR
+					FMessageDialog::Open(EAppMsgType::Ok,
+						FText::FromString(TEXT("Table Data Error! - TableName : \"") + TableAsset->GetName() + TEXT("\"\n테이블 데이터가 비정상적입니다. 테이블이 비어있는지, 타입은 설정됐는지 확인하세요.")));
+#else
+					MCHAE_ERROR("Table Data Error! - TableName : \"%s\", Check the TableAsset is currently setted or tabletype is not setted", *TableAsset->GetName());
+#endif
 				}
 			}
-		})
-	);
+		}
+		else
+		{
+			MCHAE_ERROR("Can't Get TableAsset");
+		}
+	}
+}
+
+void UMDataTableManager::ParseTableMap(UMTableAsset* TableAsset)
+{
+	for (const FMTableDefinition& TableDefinition : TableAsset->TableDefinitions)
+	{
+		UDataTable* DataTable = TableDefinition.Table;
+		TArray<FMTable_TableBase*> TableArray;
+		DataTable->GetAllRows<FMTable_TableBase>(TEXT("UMDataTableManager::ParseTableMap"), TableArray);
+
+		int32 Key = INDEX_NONE;
+		int32 Index = 1;
+		for (const FMTable_TableBase* TableRow : TableArray)
+		{
+			if (!TableRow)
+			{
+				UMGameplayStatics::ShowErrorOrLog(
+					FString::Printf(TEXT("Table Data Error! - TableName : %s\"\"\n 테이블은 모두 FMTable_TableBase의 하위여야합니다"), *DataTable->GetName()));
+				continue;
+			}
+			if (!TableRow->IsValidId())
+			{
+				UMGameplayStatics::ShowErrorOrLog(
+					FString::Printf(TEXT("Table Data Error! - TableName : %s\"\"\n테이블 속성의 ID가 잘못됐습니다!\n속성의 ID는 xxxyyyyy의 형태여야합니다! Id = %s"), *DataTable->GetName(), *TableRow->Id));
+				continue;
+			}
+			if (TableRow->GetElementId() != Index)
+			{
+				UMGameplayStatics::ShowErrorOrLog(
+						FString::Printf(TEXT("Table Data Error! - TableName : %s\"\"\n테이블 속성의 순서가 맞지 않습니다! 테이블 속성은 1~n까지 순서대로 있어야합니다!\nNumber%d"),Index));
+				continue;
+			}
+			Index++;
+			if (Key == INDEX_NONE)
+			{
+				Key = TableRow->GetKey();
+			}
+		}
+
+		if (Key == INDEX_NONE)
+		{
+			TableMap.Emplace(Key, DataTable);
+		}
+	}
 }

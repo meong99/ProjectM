@@ -315,50 +315,28 @@ FPMInventoryItemList* UPMInventoryManagerComponent::GetItemList(const EMItemType
 	}
 }
 
-void UPMInventoryManagerComponent::Debug_AddItem(const int32 TableId, const int32 ItemId)
+void UPMInventoryManagerComponent::Debug_AddItem(const FString& ElementId)
 {
 	if (GEngine)
 	{
 		UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
 		if (TableManager)
 		{
-			if (TableId == 0)
+			const UDataTable* DataTable = TableManager->GetDataTable(ElementId);
+			if (DataTable)
 			{
-				const UDataTable* DataTable = TableManager->GetDataTable(EMItemIdType::Equipment);
-				if (DataTable)
+				int32 ItemId = UMDataTableManager::ChangeElementIdToIndex(ElementId);
+				const TArray<FName>& Names = DataTable->GetRowNames();
+				if (Names.IsValidIndex(ItemId))
 				{
-					const TArray<FName>& Names = DataTable->GetRowNames();
-					if (Names.IsValidIndex(ItemId))
+					FMTable_EquipmentItem* Item = DataTable->FindRow<FMTable_EquipmentItem>(Names[ItemId], Names[ItemId].ToString());
+					if (Item)
 					{
-						FMTable_EquipmentItem* Item = DataTable->FindRow<FMTable_EquipmentItem>(Names[ItemId], Names[ItemId].ToString());
-						if (Item)
-						{
-							DebugServer_AddItem(Item->ItemDefinition);
-						}
-						else
-						{
-							MCHAE_LOG("Can't Found Item. ItemId = %d", ItemId);
-						}
+						DebugServer_AddItem(Item->ItemDefinition);
 					}
-				}
-			}
-			else if (TableId == 1)
-			{
-				const UDataTable* DataTable = TableManager->GetDataTable(EMItemIdType::Consumable);
-				if (DataTable)
-				{
-					const TArray<FName>& Names = DataTable->GetRowNames();
-					if (Names.IsValidIndex(ItemId))
+					else
 					{
-						FMTable_ConsumableItem* Item = DataTable->FindRow<FMTable_ConsumableItem>(Names[ItemId], Names[ItemId].ToString());
-						if (Item)
-						{
-							DebugServer_AddItem(Item->ItemDefinition);
-						}
-						else
-						{
-							MCHAE_LOG("Can't Found Item. ItemId = %d", ItemId);
-						}
+						MCHAE_LOG("Can't Found Item. ItemId = %d", ItemId);
 					}
 				}
 			}

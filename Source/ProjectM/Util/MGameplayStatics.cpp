@@ -4,6 +4,7 @@
 #include "Engine/GameInstance.h"
 #include "GameFramework/GameStateBase.h"
 #include "GameModes/PMExperienceManagerComponent.h"
+#include "Misc/MessageDialog.h"
 
 UMViewportClient* UMGameplayStatics::GetViewportClient(const UObject* WorldContext)
 {
@@ -33,5 +34,14 @@ UPMExperienceManagerComponent* UMGameplayStatics::GetExperienceManagerComponent(
 	}
 
 	return nullptr;
+}
+
+void UMGameplayStatics::ShowErrorOrLog(const FString& Error)
+{
+#if WITH_EDITOR
+	FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(Error));
+#else
+	MCHAE_ERROR(Error);
+#endif
 }
 
