@@ -13,7 +13,7 @@ class AMMonsterBase;
 /**
  *
  */
-UCLASS(Abstract, Blueprintable, DefaultToInstanced, EditInlineNew)
+UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew)
 class PROJECTM_API UMMonsterDefinition : public UObject
 {
 	GENERATED_BODY()

@@ -128,6 +128,21 @@ void APMPlayerState::Server_LoadPlayerData_Implementation()
 		{
 			ApplyLoadedData();
 		}
+		else
+		{
+			APlayerController* Controller = GetPlayerController();
+			UPMInventoryManagerComponent* InventoryManager = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
+			const TSubclassOf<UPMInventoryItemDefinition>& ItemDef = PawnData->DefaultEquipment;
+			if (ItemDef && InventoryManager)
+			{
+				const FMItemHandle& ItemHandle = InventoryManager->AddItemDefinition(ItemDef);
+				InventoryManager->Server_UseItem(ItemHandle);
+			}
+		}
+	}
+	else
+	{
+		ApplyLoadedData();
 	}
 }
 
@@ -215,7 +230,7 @@ void APMPlayerState::ApplyLoadedData()
 		{
 #pragma TODO("장비 슬롯 개발되면 여기서 추가하고 인벤토리 장비 아이템과 분리")
 		}
-		if (QuickBarComp->GetActiveSlotIndex() == INDEX_NONE && GEngine)
+		else if (QuickBarComp->GetActiveSlotIndex() == INDEX_NONE && GEngine)
 		{
 			const TSubclassOf<UPMInventoryItemDefinition>& ItemDef = PawnData->DefaultEquipment;
 			if (ItemDef)

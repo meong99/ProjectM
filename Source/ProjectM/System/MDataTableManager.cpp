@@ -8,6 +8,8 @@
 #include "Table/Item/MTable_ItemBase.h"
 #include "Table/MTable_TableBase.h"
 #include "Util/MGameplayStatics.h"
+#include "Table/MTable_MonsterTable.h"
+#include "Definitions/MMonsterDefinition.h"
 
 void UMDataTableManager::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -21,32 +23,38 @@ void UMDataTableManager::Initialize(FSubsystemCollectionBase& Collection)
 	);
 }
 
-const UDataTable* UMDataTableManager::GetDataTable(const FString& ElementId) const
-{
-	int32 Key = ChangeElementIdToTableId(ElementId);
-	return TableMap.FindRef(Key);
-}
-
 const UDataTable* UMDataTableManager::GetDataTable(EMItemIdType TableType) const
 {
 	return Deprecated_TableMap.FindRef(TableType);
 }
 
-
-const UDataTable* UMDataTableManager::GetDataTable(int32 ItemId) const
+const UDataTable* UMDataTableManager::GetDataTable(int32 RowId) const
 {
-	return Deprecated_TableMap.FindRef((EMItemIdType)ItemId);
+	int32 Key = ChangeElementIdToTableId(RowId);
+	return TableMap.FindRef(Key);
 }
 
-const TSubclassOf<UPMInventoryItemDefinition> UMDataTableManager::GetItemDefinition(EMItemIdType TableType, int32 ItemId) const
+UPMInventoryItemDefinition* UMDataTableManager::GetItemDefinition(int32 RowId, FString ContextString) const
 {
-	const UDataTable* DataTable = GetDataTable(TableType);
+	const TSubclassOf<UPMInventoryItemDefinition>& ItemDefinition = GetItemDefinition(RowId);
+	if (ItemDefinition)
+	{
+		return Cast<UPMInventoryItemDefinition>(DuplicateObject(ItemDefinition->GetDefaultObject<UPMInventoryItemDefinition>(), GetTransientPackage()));
+	}
+	
+	return nullptr;
+}
+
+const TSubclassOf<UPMInventoryItemDefinition> UMDataTableManager::GetItemDefinition(int32 RowId) const
+{
+	const UDataTable* DataTable = GetDataTable(RowId);
 	if (DataTable)
 	{
+		int32 ElementIndex = ChangeRowIdToElementId(RowId) - 1;
 		const TArray<FName>& Names = DataTable->GetRowNames();
-		if (Names.IsValidIndex(ItemId))
+		if (Names.IsValidIndex(ElementIndex))
 		{
-			FMTable_ItemBase* Item = DataTable->FindRow<FMTable_ItemBase>(Names[ItemId], Names[ItemId].ToString());
+			FMTable_ItemBase* Item = DataTable->FindRow<FMTable_ItemBase>(Names[ElementIndex], Names[ElementIndex].ToString());
 			if (Item)
 			{
 				return Item->ItemDefinition;
@@ -57,19 +65,19 @@ const TSubclassOf<UPMInventoryItemDefinition> UMDataTableManager::GetItemDefinit
 	return nullptr;
 }
 
-
-UPMInventoryItemDefinition* UMDataTableManager::GetItemDefinition(int32 TableId, int32 ItemId) const
+UMMonsterDefinition* UMDataTableManager::GetMonsterDefinition(int32 RowId) const
 {
-	const UDataTable* DataTable = GetDataTable(TableId);
+	const UDataTable* DataTable = GetDataTable(RowId);
 	if (DataTable)
 	{
+		int32 ElementIndex = ChangeRowIdToElementId(RowId) - 1;
 		const TArray<FName>& Names = DataTable->GetRowNames();
-		if (Names.IsValidIndex(ItemId))
+		if (Names.IsValidIndex(ElementIndex))
 		{
-			FMTable_ItemBase* Item = DataTable->FindRow<FMTable_ItemBase>(Names[ItemId], Names[ItemId].ToString());
-			if (Item)
+			FMTable_MonsterTable* Row = DataTable->FindRow<FMTable_MonsterTable>(Names[ElementIndex], Names[ElementIndex].ToString());
+			if (Row && Row->MonsterDefinition)
 			{
-				return Item->ItemDefinition->GetDefaultObject<UPMInventoryItemDefinition>();
+				return Cast<UMMonsterDefinition>(DuplicateObject(Row->MonsterDefinition->GetDefaultObject<UMMonsterDefinition>(), GetTransientPackage()));
 			}
 		}
 	}
@@ -77,14 +85,38 @@ UPMInventoryItemDefinition* UMDataTableManager::GetItemDefinition(int32 TableId,
 	return nullptr;
 }
 
-int32 UMDataTableManager::ChangeElementIdToTableId(const FString& ElementId)
+int32 UMDataTableManager::ChangeElementIdToTableId(int32 RowId)
 {
-	return FCString::Atoi(*ElementId.Left(3));
+	int32 Temp = RowId / 100000;
+	int32 TableId = INDEX_NONE;
+	if (!Temp)
+	{
+		MCHAE_ERROR("RowId is not valid!!!!!id = % d", RowId);
+		return TableId;
+	}
+
+	while (Temp)
+	{
+		TableId += Temp % 10;
+		Temp /= 10;
+	}
+
+	return TableId;
 }
 
-int32 UMDataTableManager::ChangeElementIdToIndex(const FString& ElementId)
+int32 UMDataTableManager::ChangeRowIdToElementId(int32 RowId)
 {
-	return FCString::Atoi(*ElementId.Right(5));
+	int32 ElementId = INDEX_NONE;
+
+	if (!(RowId / 100000))
+	{
+		MCHAE_ERROR("RowId is not valid!!!!!id = % d", RowId);
+		return ElementId;
+	}
+
+	ElementId = RowId % 100000;
+
+	return ElementId;
 }
 
 void UMDataTableManager::LoadDataTables()
@@ -95,8 +127,11 @@ void UMDataTableManager::LoadDataTables()
 	FPrimaryAssetType		AssetType{ UMTableAsset::StaticClass()->GetFName() };
 	AssetManager.GetPrimaryAssetIdList(AssetType, PrimaryAssetIdList);
 
-	TArray<FName> LoadBundles;
-	AssetManager.LoadPrimaryAssets(PrimaryAssetIdList, LoadBundles, FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnLoadedDataTables));
+	TArray<FSoftObjectPath> Paths;
+	AssetManager.GetPrimaryAssetPathList(AssetType, Paths);
+	AssetManager.GetStreamableManager().RequestSyncLoad(Paths);
+	OnLoadedDataTables();
+// 	AssetManager.LoadPrimaryAssets(PrimaryAssetIdList, {}, FStreamableDelegate::CreateUObject(this, &ThisClass::OnLoadedDataTables));
 }
 
 void UMDataTableManager::OnLoadedDataTables()
@@ -142,6 +177,11 @@ void UMDataTableManager::ParseTableMap(UMTableAsset* TableAsset)
 	for (const FMTableDefinition& TableDefinition : TableAsset->TableDefinitions)
 	{
 		UDataTable* DataTable = TableDefinition.Table;
+		if (DataTable == nullptr)
+		{
+			UMGameplayStatics::ShowErrorOrLog(TEXT("Table Data Error!\n 비어있는 데이터테이블이 있습니다!"));
+			continue;
+		}
 		TArray<FMTable_TableBase*> TableArray;
 		DataTable->GetAllRows<FMTable_TableBase>(TEXT("UMDataTableManager::ParseTableMap"), TableArray);
 
@@ -158,7 +198,7 @@ void UMDataTableManager::ParseTableMap(UMTableAsset* TableAsset)
 			if (!TableRow->IsValidId())
 			{
 				UMGameplayStatics::ShowErrorOrLog(
-					FString::Printf(TEXT("Table Data Error! - TableName : %s\"\"\n테이블 속성의 ID가 잘못됐습니다!\n속성의 ID는 xxxyyyyy의 형태여야합니다! Id = %s"), *DataTable->GetName(), *TableRow->Id));
+					FString::Printf(TEXT("Table Data Error! - TableName : %s\"\"\n테이블 속성의 ID가 잘못됐습니다!\n속성의 ID는 x..yyyyy의 형태여야합니다! Id = %d"), *DataTable->GetName(), TableRow->RowId));
 				continue;
 			}
 			if (TableRow->GetElementId() != Index)
@@ -167,6 +207,7 @@ void UMDataTableManager::ParseTableMap(UMTableAsset* TableAsset)
 						FString::Printf(TEXT("Table Data Error! - TableName : %s\"\"\n테이블 속성의 순서가 맞지 않습니다! 테이블 속성은 1~n까지 순서대로 있어야합니다!\nNumber%d"),Index));
 				continue;
 			}
+
 			Index++;
 			if (Key == INDEX_NONE)
 			{
@@ -174,7 +215,7 @@ void UMDataTableManager::ParseTableMap(UMTableAsset* TableAsset)
 			}
 		}
 
-		if (Key == INDEX_NONE)
+		if (Key != INDEX_NONE)
 		{
 			TableMap.Emplace(Key, DataTable);
 		}

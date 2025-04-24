@@ -315,28 +315,28 @@ FPMInventoryItemList* UPMInventoryManagerComponent::GetItemList(const EMItemType
 	}
 }
 
-void UPMInventoryManagerComponent::Debug_AddItem(const FString& ElementId)
+void UPMInventoryManagerComponent::Debug_AddItem(int32 RowId)
 {
 	if (GEngine)
 	{
 		UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
 		if (TableManager)
 		{
-			const UDataTable* DataTable = TableManager->GetDataTable(ElementId);
+			const UDataTable* DataTable = TableManager->GetDataTable(RowId);
 			if (DataTable)
 			{
-				int32 ItemId = UMDataTableManager::ChangeElementIdToIndex(ElementId);
+				int32 ElementId = UMDataTableManager::ChangeRowIdToElementId(RowId);
 				const TArray<FName>& Names = DataTable->GetRowNames();
-				if (Names.IsValidIndex(ItemId))
+				if (Names.IsValidIndex(ElementId))
 				{
-					FMTable_EquipmentItem* Item = DataTable->FindRow<FMTable_EquipmentItem>(Names[ItemId], Names[ItemId].ToString());
+					FMTable_ItemBase* Item = DataTable->FindRow<FMTable_ItemBase>(Names[ElementId], Names[ElementId].ToString());
 					if (Item)
 					{
 						DebugServer_AddItem(Item->ItemDefinition);
 					}
 					else
 					{
-						MCHAE_LOG("Can't Found Item. ItemId = %d", ItemId);
+						MCHAE_LOG("Can't Found Item. RowId = %d", RowId);
 					}
 				}
 			}

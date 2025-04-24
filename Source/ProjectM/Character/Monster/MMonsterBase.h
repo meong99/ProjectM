@@ -11,7 +11,7 @@ class UPMHealthComponent;
 class UPMHealthSet;
 class UMMonsterDefinition;
 
-UCLASS()
+UCLASS(Blueprintable)
 class PROJECTM_API AMMonsterBase : public AMCharacterBase, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
@@ -43,22 +43,22 @@ protected:
 // 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "NPC")
 // 	UMMonsterDefinition* MonsterDefinition;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Monster")
+	UPROPERTY(BlueprintReadOnly, Category = "Monster")
 	TObjectPtr<UPMAbilitySystemComponent> AbilitySystemComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Monster")
+	UPROPERTY(BlueprintReadOnly, Category = "Monster")
 	TObjectPtr<UMInteractionComponent> InteractionComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Monster")
+	UPROPERTY(BlueprintReadOnly, Category = "Monster")
 	TObjectPtr<UPMHealthComponent> HealthComponent;
 
-	#pragma TODO("이거 삭제")
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "Monster")
-	UMMonsterDefinition* MonsterDefinition;
+// 	#pragma TODO("이거 삭제")
+// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "Monster")
+// 	UMMonsterDefinition* MonsterDefinition;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Monster")
 	FMMonsterInfo MonsterInfo;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Monster")
+	UPROPERTY(BlueprintReadOnly, Category = "Monster")
 	TObjectPtr<UPMHealthSet> HealthSet;
 };

@@ -16,23 +16,20 @@ struct FMTable_TableBase : public FTableRowBase
 * Overrided Functions
 */
 public:
-	virtual void OnPostDataImport(const UDataTable* InDataTable, const FName InRowName, TArray<FString>& OutCollectedImportProblems) override;
 
 /*
 * Member Functions
 */
 public:
-	bool IsValidId() const;
-	int32 GetKey() const;
-	int32 GetElementId() const;
+	bool	IsValidId() const;
+	int32	GetKey() const;
+	int32	GetElementId() const;
 /*
 * Member Variables
 */
 public:
-	static TMap<int32/*table id*/, FMTable_TableBase*> TableMap;
-
-	// xxxyyyyy
-	// x = TableId(001~999) y = ElementId(00001~99999)
+	// x...xyyyyyy
+	// x = TableId(1~nnn...), y = ElementId(00001~99999)
 	UPROPERTY(EditDefaultsOnly)
-	FString Id;
+	int32 RowId = INDEX_NONE;
 };

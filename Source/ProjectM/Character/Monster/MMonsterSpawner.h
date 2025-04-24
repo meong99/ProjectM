@@ -15,17 +15,23 @@ class PROJECTM_API AMMonsterSpawner : public AActor
 */
 public:
 	AMMonsterSpawner(const FObjectInitializer& ObjectInitializer);
-	virtual void BeginPlay() override;
+	virtual void PostLoad() override;
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual void PostInitializeComponents() override;
+	virtual void BeginPlay() override;
 
 /*
 * Member Functions
 */
 public:
+	void ChangeMonsterDefinition();
 /*
 * Member Variables
 */
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Instanced, Category = "Monster")
-	UMMonsterDefinition* MonsterDefinition;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Monster")
+	const UMMonsterDefinition* MonsterDefinition;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Monster")
+	int32 MonsterRowId = INDEX_NONE;
 };

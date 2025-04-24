@@ -10,6 +10,7 @@
 #include "MDataTableManager.generated.h"
 
 class UDataTable;
+class UMMonsterDefinition;
 
 /**
  * 
@@ -28,20 +29,18 @@ public:
 * Member Functions
 */
 public:
-	static int32 ChangeElementIdToTableId(const FString& ElementId);
-	static int32 ChangeElementIdToIndex(const FString& ElementId);
+	static int32 ChangeElementIdToTableId(int32 RowId);
+	static int32 ChangeRowIdToElementId(int32 RowId);
 
-
-	UFUNCTION(BlueprintCallable)
-	const UDataTable* GetDataTable(const FString& ElementId) const;
-	//Deprecated
-	const UDataTable* GetDataTable(int32 TableId) const;
+	const UDataTable* GetDataTable(int32 RowId) const;
 	//Deprecated
 	const UDataTable* GetDataTable(EMItemIdType TableType) const;
 
 	UFUNCTION(BlueprintCallable)
-	UPMInventoryItemDefinition*						GetItemDefinition(int32 TableId, int32 ItemId) const;
-	const TSubclassOf<UPMInventoryItemDefinition>	GetItemDefinition(EMItemIdType TableType, int32 ItemId) const;
+	UPMInventoryItemDefinition*						GetItemDefinition(int32 RowId, FString ContextString) const;
+	const TSubclassOf<UPMInventoryItemDefinition>	GetItemDefinition(int32 RowId) const;
+	UFUNCTION(BlueprintCallable)
+	UMMonsterDefinition* GetMonsterDefinition(int32 RowId) const;
 
 	int32 GetTableNum() const { return Deprecated_TableMap.Num(); }
 private:

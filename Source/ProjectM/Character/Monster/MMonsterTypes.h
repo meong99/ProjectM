@@ -2,7 +2,7 @@
 
 #include "MMonsterTypes.generated.h"
 
-USTRUCT(BlueprintType)
+USTRUCT(BlueprintType, Blueprintable)
 struct FMMonsterInfo
 {
 	GENERATED_BODY()
