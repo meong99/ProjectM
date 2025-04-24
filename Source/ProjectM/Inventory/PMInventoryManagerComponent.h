@@ -42,6 +42,7 @@ public:
 
 	// 아이템을 추가하고 Instancing해서 저장한다.
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
+	FMItemHandle	AddItemDefinition(int32 ItemRowId);
 	FMItemHandle	AddItemDefinition(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
 	int32			ChangeItemQuantity(const FMItemHandle& ItemHandle, int32 ChangeNum);

@@ -1,21 +1,33 @@
 #pragma once
 
 #include "MMonsterTypes.generated.h"
+USTRUCT(BlueprintType, Blueprintable)
+struct FMDropInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1100001, ClampMax = 1199999))
+	int32 ItemId = INDEX_NONE;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=0.0f, ClampMax=1.0f))
+	float DropChance = 0.0f;
+};
 
 USTRUCT(BlueprintType, Blueprintable)
 struct FMMonsterInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName MonsterName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 MonsterHp;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1, ClampMax = 2147483647))
+	int32 MonsterHp = 1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 MonsterReward;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 0, ClampMax = 2147483647))
+	int32 MonsterReward = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 MonsterRewardItemId;
+	// Key = ItemId, Value = 확률
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<FMDropInfo> ItemDropTable;
 };

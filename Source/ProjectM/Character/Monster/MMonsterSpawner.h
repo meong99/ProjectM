@@ -32,6 +32,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Monster")
 	const UMMonsterDefinition* MonsterDefinition;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Monster")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Monster", meta = (ClampMin = 1400001, ClampMax = 1499999))
 	int32 MonsterRowId = INDEX_NONE;
 };

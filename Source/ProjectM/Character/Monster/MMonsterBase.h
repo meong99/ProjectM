@@ -30,7 +30,6 @@ public:
 * Member Functions
 */
 public:
-// 	UMMonsterDefinition* GetMonsterDefinition() const { return MonsterDefinition; }
 	UFUNCTION(BlueprintCallable)
 	void InitMonster(const FMMonsterInfo& InMonsterInfo);
 
@@ -40,9 +39,6 @@ public:
 * Member Variables
 */
 protected:
-// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "NPC")
-// 	UMMonsterDefinition* MonsterDefinition;
-
 	UPROPERTY(BlueprintReadOnly, Category = "Monster")
 	TObjectPtr<UPMAbilitySystemComponent> AbilitySystemComponent;
 
@@ -51,10 +47,6 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Monster")
 	TObjectPtr<UPMHealthComponent> HealthComponent;
-
-// 	#pragma TODO("이거 삭제")
-// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "Monster")
-// 	UMMonsterDefinition* MonsterDefinition;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Monster")
 	FMMonsterInfo MonsterInfo;

@@ -109,6 +109,17 @@ void UPMInventoryManagerComponent::ReadyForReplication()
 	}
 }
 
+FMItemHandle UPMInventoryManagerComponent::AddItemDefinition(int32 ItemRowId)
+{
+	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
+	if (TableManager)
+	{
+		return AddItemDefinition(TableManager->GetDefinition<UPMInventoryItemDefinition>(ItemRowId));
+	}
+
+	return {};
+}
+
 FMItemHandle UPMInventoryManagerComponent::AddItemDefinition(TSubclassOf<UPMInventoryItemDefinition> ItemDef)
 {
 	FMItemHandle Handle = FMItemHandle{};

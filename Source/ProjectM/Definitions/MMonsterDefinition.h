@@ -34,15 +34,15 @@ public:
 * Member Variables
 */
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FMMonsterInfo MonsterInfo;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1, ClampMax = 5000))
 	int32 MonsterSpawningCooldown = 5;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 MaximumSpawnNum;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1, ClampMax = 10))
+	int32 MaximumSpawnNum = 1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<AMMonsterBase> MonsterClass;
 };
