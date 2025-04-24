@@ -163,7 +163,7 @@ FMItemHandle UPMInventoryManagerComponent::AddItemDefinition_Impl(TSubclassOf<UP
 	{
 		AddReplicatedSubObject(ItemInstance);
 	}
-
+	Delegate_NotifyItemAdded.Broadcast(*Entry);
 	Delegate_OnNewItemAdded.Broadcast(*Entry);
 
 	return Handle;

@@ -35,7 +35,7 @@ public:
 public:
 	// x...xyyyyyy
 	// x = TableId(1~nnn...), y = ElementId(00001~99999)
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32 RowId = INDEX_NONE;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

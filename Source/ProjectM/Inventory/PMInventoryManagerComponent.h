@@ -11,6 +11,7 @@ class ULocalPlayerSaveGame;
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnChangeInventory, const FMItemHandle& ItemHandle);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnRemoveItem, const FMItemHandle& ItemHandle, const EMItemType ItemType);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnNewItemAdded, const FPMInventoryEntry& ItemEntry);
+DECLARE_MULTICAST_DELEGATE_OneParam(FNotifyItemAdded, const FPMInventoryEntry& ItemEntry);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnInitInventory, const FPMInventoryItemList& InventoryList);
 
 /**
@@ -79,6 +80,7 @@ protected:
 public:
 	FOnRemoveItem					Delegate_OnRemoveItem;
 	FOnNewItemAdded					Delegate_OnNewItemAdded;
+	FNotifyItemAdded				Delegate_NotifyItemAdded;
 	TMap<int32, FOnChangeInventory> Delegate_OnChangeInventory;
 	
 private:
