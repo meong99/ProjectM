@@ -10,7 +10,6 @@ AMCharacterBase::AMCharacterBase(const FObjectInitializer& ObjectInitializer)
 void AMCharacterBase::PreInitializeComponents()
 {
 	Super::PreInitializeComponents();
-	InitCharacterName();
 }
 
 void AMCharacterBase::PostInitializeComponents()
@@ -18,9 +17,16 @@ void AMCharacterBase::PostInitializeComponents()
 	Super::PostInitializeComponents();
 }
 
+void AMCharacterBase::BeginPlay()
+{
+	Super::BeginPlay();
+	InitCharacterName();
+}
+
 void AMCharacterBase::InitCharacterName()
 {
 	K2_InitCharacterName();
+	NameComponent->InitNameWidget();
 }
 
 const FName& AMCharacterBase::GetCharacterName() const

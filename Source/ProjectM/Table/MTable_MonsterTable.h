@@ -28,6 +28,4 @@ public:
 	* Member Variables
 	*/
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UMMonsterDefinition> MonsterDefinition;
 };

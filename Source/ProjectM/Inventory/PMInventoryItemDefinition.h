@@ -4,6 +4,7 @@
 #include "UObject/Object.h"
 #include "Inventory/MInventoryTypes.h"
 #include "Templates/SubclassOf.h"
+#include "Definitions/MDefinitionBase.h"
 
 #include "PMInventoryItemDefinition.generated.h"
 
@@ -43,7 +44,7 @@ public:
  *
  */
 UCLASS(Blueprintable, BlueprintType)
-class PROJECTM_API UPMInventoryItemDefinition : public UObject
+class PROJECTM_API UPMInventoryItemDefinition : public UMDefinitionBase
 {
 	GENERATED_BODY()
 

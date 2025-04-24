@@ -17,6 +17,7 @@ public:
 	AMCharacterBase(const FObjectInitializer& ObjectInitializer);
 	virtual void PreInitializeComponents() override;
 	virtual void PostInitializeComponents() override;
+	virtual void BeginPlay() override;
 
 /*
 * Member Functions

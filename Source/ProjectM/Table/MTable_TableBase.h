@@ -2,7 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
+#include "Templates/SubclassOf.h"
 #include "MTable_TableBase.generated.h"
+
+class UMDefinitionBase;
 
 /**
  *
@@ -21,6 +24,8 @@ public:
 * Member Functions
 */
 public:
+	template<class T>
+	TSubclassOf<T> GetDefinition() const { return Definition.Get(); }
 	bool	IsValidId() const;
 	int32	GetKey() const;
 	int32	GetElementId() const;
@@ -32,4 +37,7 @@ public:
 	// x = TableId(1~nnn...), y = ElementId(00001~99999)
 	UPROPERTY(EditDefaultsOnly)
 	int32 RowId = INDEX_NONE;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UMDefinitionBase> Definition;
 };

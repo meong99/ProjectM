@@ -329,10 +329,10 @@ void UPMInventoryManagerComponent::Debug_AddItem(int32 RowId)
 				const TArray<FName>& Names = DataTable->GetRowNames();
 				if (Names.IsValidIndex(ElementId))
 				{
-					FMTable_ItemBase* Item = DataTable->FindRow<FMTable_ItemBase>(Names[ElementId], Names[ElementId].ToString());
+					FMTable_TableBase* Item = DataTable->FindRow<FMTable_TableBase>(Names[ElementId], Names[ElementId].ToString());
 					if (Item)
 					{
-						DebugServer_AddItem(Item->ItemDefinition);
+						DebugServer_AddItem(Item->GetDefinition<UPMInventoryItemDefinition>());
 					}
 					else
 					{

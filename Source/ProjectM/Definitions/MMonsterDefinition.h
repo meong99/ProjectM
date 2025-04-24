@@ -6,6 +6,7 @@
 #include "UObject/Object.h"
 #include "Character/Monster/MMonsterTypes.h"
 #include "Templates/SubclassOf.h"
+#include "MDefinitionBase.h"
 #include "MMonsterDefinition.generated.h"
 
 class AMMonsterBase;
@@ -14,7 +15,7 @@ class AMMonsterBase;
  *
  */
 UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew)
-class PROJECTM_API UMMonsterDefinition : public UObject
+class PROJECTM_API UMMonsterDefinition : public UMDefinitionBase
 {
 	GENERATED_BODY()
 

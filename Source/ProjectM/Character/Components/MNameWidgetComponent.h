@@ -15,7 +15,7 @@ class UMNameWidget;
 /**
  * 
  */
-UCLASS(meta = (BlueprintSpawnableComponent))
+UCLASS(BlueprintType, meta = (BlueprintSpawnableComponent))
 class PROJECTM_API UMNameWidgetComponent : public UWidgetComponent
 {
 	GENERATED_BODY()
@@ -28,15 +28,16 @@ public:
 
 	virtual void InitWidget() override;
 
-	/*
+/*
 * Member Functions
 */
 public:
+	UFUNCTION(BlueprintCallable)
+	void InitNameWidget();
 	void EnableNameWidget();
 	void DisableNameWidget();
 
 protected:
-	void InitNameWidget();
 	void AdjustNameWidgetCompLocation();
 
 /*

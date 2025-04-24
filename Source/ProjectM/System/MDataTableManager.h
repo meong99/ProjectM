@@ -37,10 +37,11 @@ public:
 	const UDataTable* GetDataTable(EMItemIdType TableType) const;
 
 	UFUNCTION(BlueprintCallable)
-	UPMInventoryItemDefinition*						GetItemDefinition(int32 RowId, FString ContextString) const;
-	const TSubclassOf<UPMInventoryItemDefinition>	GetItemDefinition(int32 RowId) const;
+	UPMInventoryItemDefinition*	GetItemDefinition(int32 RowId, FString ContextString) const;
 	UFUNCTION(BlueprintCallable)
-	UMMonsterDefinition* GetMonsterDefinition(int32 RowId) const;
+	UMMonsterDefinition*		GetMonsterDefinition(int32 RowId) const;
+	template<class T>
+	const TSubclassOf<T>		GetDefinition(int32 RowId) const;
 
 	int32 GetTableNum() const { return Deprecated_TableMap.Num(); }
 private:
@@ -60,3 +61,24 @@ public:
 
 	TArray<FPrimaryAssetId>	PrimaryAssetIdList;
 };
+
+template<class T>
+const TSubclassOf<T> UMDataTableManager::GetDefinition(int32 RowId) const
+{
+	const UDataTable* DataTable = GetDataTable(RowId);
+	if (DataTable)
+	{
+		int32 ElementIndex = ChangeRowIdToElementId(RowId) - 1;
+		const TArray<FName>& Names = DataTable->GetRowNames();
+		if (Names.IsValidIndex(ElementIndex))
+		{
+			FMTable_TableBase* RowData = DataTable->FindRow<FMTable_TableBase>(Names[ElementIndex], Names[ElementIndex].ToString());
+			if (RowData)
+			{
+				return RowData->Definition.Get();
+			}
+		}
+	}
+
+	return nullptr;
+}

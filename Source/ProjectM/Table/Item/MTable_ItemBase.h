@@ -40,6 +40,4 @@ public:
 * Member Variables
 */
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UPMInventoryItemDefinition> ItemDefinition;
 };

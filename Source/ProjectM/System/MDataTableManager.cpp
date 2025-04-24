@@ -36,7 +36,7 @@ const UDataTable* UMDataTableManager::GetDataTable(int32 RowId) const
 
 UPMInventoryItemDefinition* UMDataTableManager::GetItemDefinition(int32 RowId, FString ContextString) const
 {
-	const TSubclassOf<UPMInventoryItemDefinition>& ItemDefinition = GetItemDefinition(RowId);
+	const TSubclassOf<UPMInventoryItemDefinition>& ItemDefinition = GetDefinition<UPMInventoryItemDefinition>(RowId);
 	if (ItemDefinition)
 	{
 		return Cast<UPMInventoryItemDefinition>(DuplicateObject(ItemDefinition->GetDefaultObject<UPMInventoryItemDefinition>(), GetTransientPackage()));
@@ -45,41 +45,12 @@ UPMInventoryItemDefinition* UMDataTableManager::GetItemDefinition(int32 RowId, F
 	return nullptr;
 }
 
-const TSubclassOf<UPMInventoryItemDefinition> UMDataTableManager::GetItemDefinition(int32 RowId) const
-{
-	const UDataTable* DataTable = GetDataTable(RowId);
-	if (DataTable)
-	{
-		int32 ElementIndex = ChangeRowIdToElementId(RowId) - 1;
-		const TArray<FName>& Names = DataTable->GetRowNames();
-		if (Names.IsValidIndex(ElementIndex))
-		{
-			FMTable_ItemBase* Item = DataTable->FindRow<FMTable_ItemBase>(Names[ElementIndex], Names[ElementIndex].ToString());
-			if (Item)
-			{
-				return Item->ItemDefinition;
-			}
-		}
-	}
-
-	return nullptr;
-}
-
 UMMonsterDefinition* UMDataTableManager::GetMonsterDefinition(int32 RowId) const
 {
-	const UDataTable* DataTable = GetDataTable(RowId);
-	if (DataTable)
+	const TSubclassOf<UMMonsterDefinition>& MonsterDefinition = GetDefinition<UMMonsterDefinition>(RowId);
+	if (MonsterDefinition)
 	{
-		int32 ElementIndex = ChangeRowIdToElementId(RowId) - 1;
-		const TArray<FName>& Names = DataTable->GetRowNames();
-		if (Names.IsValidIndex(ElementIndex))
-		{
-			FMTable_MonsterTable* Row = DataTable->FindRow<FMTable_MonsterTable>(Names[ElementIndex], Names[ElementIndex].ToString());
-			if (Row && Row->MonsterDefinition)
-			{
-				return Cast<UMMonsterDefinition>(DuplicateObject(Row->MonsterDefinition->GetDefaultObject<UMMonsterDefinition>(), GetTransientPackage()));
-			}
-		}
+		return Cast<UMMonsterDefinition>(DuplicateObject(MonsterDefinition->GetDefaultObject<UMMonsterDefinition>(), GetTransientPackage()));
 	}
 
 	return nullptr;

@@ -34,7 +34,6 @@ void AMMonsterSpawner::PostEditChangeProperty(FPropertyChangedEvent& PropertyCha
 void AMMonsterSpawner::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
 }
 
 void AMMonsterSpawner::BeginPlay()
