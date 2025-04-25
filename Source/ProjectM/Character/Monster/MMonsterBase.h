@@ -32,6 +32,7 @@ public:
 * Member Functions
 */
 public:
+	// Beginplay이전에 호출
 	UFUNCTION(BlueprintCallable)
 	void InitMonster(UMMonsterDefinition* InMonsterDefinition, AMMonsterSpawner* InSpawner);
 

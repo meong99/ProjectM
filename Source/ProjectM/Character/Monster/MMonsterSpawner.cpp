@@ -115,7 +115,6 @@ void AMMonsterSpawner::SpawnMonster()
 		Transform.SetLocation(Location);
 
 		SpawnedMonster->FinishSpawning(Transform);
-		SpawnedMonster->SpawnDefaultController();
 		SpawnedMonsters.Add(SpawnedMonster);
 	}
 }

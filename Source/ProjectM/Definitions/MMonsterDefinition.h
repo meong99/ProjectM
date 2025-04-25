@@ -52,6 +52,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	const TArray<FMDropInfo>&	GetItemDropTable() const { return MonsterInfo.ItemDropTable; }
+
+	UFUNCTION(BlueprintCallable)
+	TSubclassOf<UGameplayEffect> GetDefaultApplyEffect() const { return MonsterInfo.DefaultApplyEffect; }
+
 /*
 * Member Variables
 */
