@@ -1,4 +1,16 @@
 #include "MTable_TableBase.h"
+#include "Definitions/MDefinitionBase.h"
+
+void FMTable_TableBase::OnDataTableChanged(const UDataTable* InDataTable, const FName InRowName)
+{
+#if WITH_EDITOR
+	UMDefinitionBase* DefinitionCDO = Cast<UMDefinitionBase>(Definition.GetDefaultObject());
+	if (DefinitionCDO)
+	{
+		DefinitionCDO->RowId = RowId;
+	}
+#endif
+}
 
 bool FMTable_TableBase::IsValidId() const
 {

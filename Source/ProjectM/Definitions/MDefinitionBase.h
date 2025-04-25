@@ -24,8 +24,12 @@ public:
 * Member Functions
 */
 public:
+	UFUNCTION(BlueprintCallable)
+	int32 GetRowId() const { return RowId; }
 /*
 * Member Variables
 */
 public:
+	UPROPERTY(VisibleAnywhere)
+	int32 RowId = INDEX_NONE;
 };

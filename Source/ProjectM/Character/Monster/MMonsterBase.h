@@ -10,8 +10,9 @@ class UPMAbilitySystemComponent;
 class UPMHealthComponent;
 class UPMHealthSet;
 class UMMonsterDefinition;
+class AMMonsterSpawner;
 
-UCLASS(Blueprintable)
+UCLASS(Blueprintable, BlueprintType)
 class PROJECTM_API AMMonsterBase : public AMCharacterBase, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
@@ -21,8 +22,9 @@ class PROJECTM_API AMMonsterBase : public AMCharacterBase, public IAbilitySystem
 */
 public:
 	AMMonsterBase(const FObjectInitializer& ObjectInitializer);
-	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 	virtual void InitCharacterName() override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
@@ -31,10 +33,17 @@ public:
 */
 public:
 	UFUNCTION(BlueprintCallable)
-	void InitMonster(const FMMonsterInfo& InMonsterInfo);
+	void InitMonster(UMMonsterDefinition* InMonsterDefinition, AMMonsterSpawner* InSpawner);
 
 	UFUNCTION(BlueprintCallable)
 	UPMAbilitySystemComponent* GetMAbilitySystemComponent() const;
+
+	UMMonsterDefinition* GetMonsterDefinition() { return MonsterDefinition; }
+
+protected:
+	UFUNCTION()
+	void Callback_OnDamaged(AActor* Attacker);
+	void OnDead();
 /*
 * Member Variables
 */
@@ -49,8 +58,13 @@ protected:
 	TObjectPtr<UPMHealthComponent> HealthComponent;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Monster")
-	FMMonsterInfo MonsterInfo;
+	UMMonsterDefinition* MonsterDefinition;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Monster")
 	TObjectPtr<UPMHealthSet> HealthSet;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Monster")
+	AActor* LastAttacker;
+
+	TWeakObjectPtr<AMMonsterSpawner> Spawner;
 };

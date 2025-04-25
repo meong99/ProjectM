@@ -4,6 +4,12 @@
 #include "AbilitySystem/Attributes/PMHealthSet.h"
 #include "Character/Components/PMHealthComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PlayerState.h"
+#include "Inventory/PMInventoryManagerComponent.h"
+#include "Character/Components/MWalletComponent.h"
+#include "AIController.h"
+#include "MMonsterSpawner.h"
+#include "Definitions/MMonsterDefinition.h"
 
 AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -32,6 +38,9 @@ AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Supe
 void AMMonsterBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	SetCharacterState(EMCharacterState::Spawned);
+	HealthSet->Delegate_OnDamaged.AddDynamic(this, &AMMonsterBase::Callback_OnDamaged);
 }
 
 void AMMonsterBase::BeginPlay()
@@ -40,25 +49,25 @@ void AMMonsterBase::BeginPlay()
 
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	HealthComponent->InitializeWithAbilitySystem(AbilitySystemComponent);
-	const UPMHealthSet* Set = AbilitySystemComponent->GetSet<UPMHealthSet>();
+}
 
-	if (Set)
+void AMMonsterBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	if (HealthSet->GetHealth() <= 0.0f && CharacterState & EMCharacterState::Alive)
 	{
-		MCHAE_LOG("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@name = %s", *Set->GetName());
-	}
-	else
-	{
-		MCHAE_LOG("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@못찾음");
+		SetCharacterState(EMCharacterState::ReadyToDead);
+		OnDead();
 	}
 }
 
 void AMMonsterBase::InitCharacterName()
 {
+	if (MonsterDefinition)
+	{
+		CharacterName = MonsterDefinition->GetMonsterName();
+	}
 	Super::InitCharacterName();
-	// 	if (MonsterDefinition)
-	// 	{
-	// 		CharacterName = MonsterDefinition->MonsterName;
-	// 	}
 }
 
 UAbilitySystemComponent* AMMonsterBase::GetAbilitySystemComponent() const
@@ -66,12 +75,67 @@ UAbilitySystemComponent* AMMonsterBase::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-void AMMonsterBase::InitMonster(const FMMonsterInfo& InMonsterInfo)
+void AMMonsterBase::InitMonster(UMMonsterDefinition* InMonsterDefinition, AMMonsterSpawner* InSpawner)
 {
-	MonsterInfo = InMonsterInfo;
+	MonsterDefinition = InMonsterDefinition;
+	InitCharacterName();
+	AbilitySystemComponent->ApplyEffectToSelfWithSetByCaller(nullptr, nullptr, {});
+
+
+
+
+
+	SetCharacterState(EMCharacterState::Alive);
 }
 
 UPMAbilitySystemComponent* AMMonsterBase::GetMAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+void AMMonsterBase::Callback_OnDamaged(AActor* Attacker)
+{
+	LastAttacker = Attacker;
+}
+
+void AMMonsterBase::OnDead()
+{
+	SetCharacterState(EMCharacterState::Dead);
+
+	APlayerState* AttackerPlayerState = Cast<APlayerState>(LastAttacker);
+	if (AttackerPlayerState && MonsterDefinition)
+	{
+		APlayerController* AttackerController = AttackerPlayerState->GetPlayerController();
+		UMWalletComponent* WalletComp = AttackerController ? AttackerController->FindComponentByClass<UMWalletComponent>() : nullptr;
+		UPMInventoryManagerComponent* InvenComp = AttackerController ? AttackerController->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
+		if (WalletComp)
+		{
+			WalletComp->AddGold(MonsterDefinition->GetMonsterReward());
+		}
+		if (InvenComp)
+		{
+			for (const FMDropInfo& DropInfo : MonsterDefinition->GetItemDropTable())
+			{
+				#pragma TODO("확률적용해야함")
+				InvenComp->AddItemDefinition(DropInfo.ItemId);
+			}
+		}
+	}
+
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (AIController)
+	{
+		AIController->UnPossess();
+	}
+
+	SetCharacterState(EMCharacterState::ReadyToDestroy);
+
+	if (Spawner.IsValid())
+	{
+		Spawner->OnDeadMonster(this);
+	}
+	else
+	{
+		Destroy();
+	}
 }

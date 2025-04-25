@@ -1,6 +1,11 @@
 #pragma once
 
+#include "Templates/SubclassOf.h"
 #include "MMonsterTypes.generated.h"
+
+class UBehaviorTree;
+class AMMonsterBase;
+
 USTRUCT(BlueprintType, Blueprintable)
 struct FMDropInfo
 {
@@ -17,6 +22,12 @@ USTRUCT(BlueprintType, Blueprintable)
 struct FMMonsterInfo
 {
 	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<AMMonsterBase> MonsterClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UBehaviorTree> BehaviorTree;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName MonsterName;

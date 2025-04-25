@@ -19,8 +19,9 @@ struct FMTable_TableBase : public FTableRowBase
 * Overrided Functions
 */
 public:
+	virtual void OnDataTableChanged(const UDataTable* InDataTable, const FName InRowName) override;
 
-/*
+	/*
 * Member Functions
 */
 public:

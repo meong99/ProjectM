@@ -114,7 +114,7 @@ FMItemHandle UPMInventoryManagerComponent::AddItemDefinition(int32 ItemRowId)
 	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
 	if (TableManager)
 	{
-		return AddItemDefinition(TableManager->GetDefinition<UPMInventoryItemDefinition>(ItemRowId));
+		return AddItemDefinition(TableManager->GetDefinitionClass<UPMInventoryItemDefinition>(ItemRowId));
 	}
 
 	return {};

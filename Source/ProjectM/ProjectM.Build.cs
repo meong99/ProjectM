@@ -41,6 +41,7 @@ public class ProjectM : ModuleRules
 // 			"GuidUtilities"      // FGuidReferences 관련
 
 			"VoxelManager",
+			"AIModule",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

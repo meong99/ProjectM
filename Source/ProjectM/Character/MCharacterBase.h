@@ -5,6 +5,18 @@
 
 class UMNameWidgetComponent;
 
+enum EMCharacterState
+{
+	NoFlags			= 0x00000000,
+	WaitToSpawn		= 0x00000001,
+	Spawned			= 0x00000002,
+	Alive			= 0x00000004,
+	ReadyToDead		= 0x00000008,
+	Dead			= 0x00000010,
+	ReadyToDestroy	= 0x00000020,
+	Destroied		= 0x00000040,
+};
+
 UCLASS()
 class PROJECTM_API AMCharacterBase : public AModularCharacter
 {
@@ -27,7 +39,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void K2_InitCharacterName();
 
-	const FName& GetCharacterName() const;
+	const FName&	GetCharacterName() const;
+	void			SetCharacterState(int32 InState) { CharacterState = InState; }
 /*
 * Member Variables
 */
@@ -37,4 +50,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite)
 	FName CharacterName = TEXT("None");
+
+	UPROPERTY(BlueprintReadWrite)
+	int32 CharacterState = EMCharacterState::WaitToSpawn;
 };
