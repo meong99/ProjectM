@@ -16,15 +16,16 @@ void AMNpcBase::PostInitializeComponents()
 	Super::PostInitializeComponents();
 }
 
+void AMNpcBase::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void AMNpcBase::InitCharacterName()
 {
 	if (NpcDefinition)
 	{
 		CharacterName = NpcDefinition->NpcName;
 	}
-}
-
-void AMNpcBase::BeginPlay()
-{
-	Super::BeginPlay();
+	Super::InitCharacterName();
 }

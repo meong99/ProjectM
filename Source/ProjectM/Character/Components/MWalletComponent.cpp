@@ -8,7 +8,7 @@ void UMWalletComponent::SubtractGold(int64 AdjustGold)
 {
 	if (AdjustGold > 0)
 	{
-		return;
+		AdjustGold *= -1;
 	}
 	int64 Temp = Gold;
 
@@ -29,7 +29,7 @@ void UMWalletComponent::AddGold(int64 AdjustGold)
 {
 	if (AdjustGold < 0)
 	{
-		return;
+		AdjustGold *= -1;
 	}
 
 	int64 Temp = Gold;

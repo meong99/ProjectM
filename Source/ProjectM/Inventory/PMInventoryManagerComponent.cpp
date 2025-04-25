@@ -132,7 +132,8 @@ FMItemHandle UPMInventoryManagerComponent::AddItemDefinition(TSubclassOf<UPMInve
 			FPMInventoryEntry* Entry = ItemList->FindEntry(ItemDef);
 			if (Entry && ItemList->OwnedItemType != EMItemType::Equipment)
 			{
-				ItemList->ChangeItemQuantity(Handle, 1);
+				ItemList->ChangeItemQuantity(Entry->GetItemHandle(), 1);
+				Delegate_NotifyItemAdded.Broadcast(*Entry);
 				return Entry->GetItemHandle();
 			}
 			else

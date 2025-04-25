@@ -21,8 +21,8 @@ class PROJECTM_API AMNpcBase : public AMCharacterBase
 */
 public:
 	AMNpcBase(const FObjectInitializer& ObjectInitializer);
-	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;
+	virtual void BeginPlay() override;
 	virtual void InitCharacterName() override;
 
 /*
