@@ -45,8 +45,15 @@ void FPMGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 
 	AddTag(UI_Game_NameWidget, "UI.Game.NameWidget", "");
 	AddTag(UI_Registry_Game_InteractionList, "UI.Registry.Game.InteractionList", "");
+
 	/*
 	* Item
 	*/
 	AddTag(Item_Quentity, "Item.Quentity", "Item의 수량");
+
+	/*
+	* GameplayEffects
+	*/
+	AddTag(Ability_Effect_SetByCaller_Health, "Ability.Effect.SetByCaller.Health", "");
+	AddTag(Ability_Effect_SetByCaller_MaxHealth, "Ability.Effect.SetByCaller.MaxHealth", "");
 }

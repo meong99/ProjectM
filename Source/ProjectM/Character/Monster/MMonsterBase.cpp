@@ -10,6 +10,7 @@
 #include "AIController.h"
 #include "MMonsterSpawner.h"
 #include "Definitions/MMonsterDefinition.h"
+#include "PMGameplayTags.h"
 
 AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -39,16 +40,25 @@ void AMMonsterBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	SetCharacterState(EMCharacterState::Spawned);
 	HealthSet->Delegate_OnDamaged.AddDynamic(this, &AMMonsterBase::Callback_OnDamaged);
+
+	if (MonsterDefinition)
+	{
+		TMap<FGameplayTag, float> SetMap;
+		SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_Health, MonsterDefinition->GetMonsterHp());
+		SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_MaxHealth, MonsterDefinition->GetMonsterHp());
+		AbilitySystemComponent->ApplyEffectToSelfWithSetByCaller(MonsterDefinition->GetMonsterInfo().DefaultApplyEffect, nullptr, SetMap);
+	}
+	HealthComponent->InitializeWithAbilitySystem(AbilitySystemComponent);
 }
 
 void AMMonsterBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	HealthComponent->InitializeWithAbilitySystem(AbilitySystemComponent);
+	SpawnDefaultController();
+	SetCharacterState(EMCharacterState::Alive);
 }
 
 void AMMonsterBase::Tick(float DeltaSeconds)
@@ -78,14 +88,8 @@ UAbilitySystemComponent* AMMonsterBase::GetAbilitySystemComponent() const
 void AMMonsterBase::InitMonster(UMMonsterDefinition* InMonsterDefinition, AMMonsterSpawner* InSpawner)
 {
 	MonsterDefinition = InMonsterDefinition;
+	Spawner = InSpawner;
 	InitCharacterName();
-	AbilitySystemComponent->ApplyEffectToSelfWithSetByCaller(nullptr, nullptr, {});
-
-
-
-
-
-	SetCharacterState(EMCharacterState::Alive);
 }
 
 UPMAbilitySystemComponent* AMMonsterBase::GetMAbilitySystemComponent() const

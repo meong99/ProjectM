@@ -5,6 +5,7 @@
 
 class UBehaviorTree;
 class AMMonsterBase;
+class UGameplayEffect;
 
 USTRUCT(BlueprintType, Blueprintable)
 struct FMDropInfo
@@ -41,4 +42,7 @@ struct FMMonsterInfo
 	// Key = ItemId, Value = 확률
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<FMDropInfo> ItemDropTable;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> DefaultApplyEffect;
 };

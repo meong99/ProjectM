@@ -46,6 +46,12 @@ struct FPMGameplayTags
 	*/
 	FGameplayTag Item_Quentity;
 
+	/*
+	* GameplayEffects
+	*/
+	FGameplayTag Ability_Effect_SetByCaller_Health;
+	FGameplayTag Ability_Effect_SetByCaller_MaxHealth;
+
 private:
 	static FPMGameplayTags GameplayTags;
 };

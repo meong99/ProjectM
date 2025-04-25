@@ -33,3 +33,11 @@ const FName& AMCharacterBase::GetCharacterName() const
 {
 	return CharacterName;
 }
+
+void AMCharacterBase::SetCharacterState(int32 InState)
+{
+	if (InState > CharacterState)
+	{
+		CharacterState = InState;
+	}
+}

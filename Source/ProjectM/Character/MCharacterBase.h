@@ -40,7 +40,7 @@ public:
 	void K2_InitCharacterName();
 
 	const FName&	GetCharacterName() const;
-	void			SetCharacterState(int32 InState) { CharacterState = InState; }
+	void			SetCharacterState(int32 InState);
 /*
 * Member Variables
 */
