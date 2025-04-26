@@ -1,0 +1,8 @@
+{
+	"BuildId": "fcd44fb8-1233-4449-9160-2cfce6b44540",
+	"Modules": 
+	{
+		"ProjectM": "UnrealEditor-ProjectM.dll",
+		"ProjectMEditor": "UnrealEditor-ProjectMEditor.dll"
+	}
+}
