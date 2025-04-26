@@ -37,7 +37,7 @@ public:
 	void InitMonster(UMMonsterDefinition* InMonsterDefinition, AMMonsterSpawner* InSpawner);
 
 	UFUNCTION(BlueprintCallable)
-	UPMAbilitySystemComponent* GetMAbilitySystemComponent() const;
+	virtual UPMAbilitySystemComponent* GetMAbilitySystemComponent() const override;
 
 	UMMonsterDefinition* GetMonsterDefinition() { return MonsterDefinition; }
 

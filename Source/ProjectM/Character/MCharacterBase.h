@@ -4,6 +4,7 @@
 #include "MCharacterBase.generated.h"
 
 class UMNameWidgetComponent;
+class UPMAbilitySystemComponent;
 
 enum EMCharacterState
 {
@@ -35,6 +36,7 @@ public:
 * Member Functions
 */
 public:
+	virtual UPMAbilitySystemComponent* GetMAbilitySystemComponent() const { return nullptr; }
 	virtual void InitCharacterName();
 	UFUNCTION(BlueprintImplementableEvent)
 	void K2_InitCharacterName();

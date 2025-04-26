@@ -61,7 +61,7 @@ protected:
 /*
 * Member Variables
 */
-protected:
+public:
 	// EquipmentDefinition에 따라서 Instancing된 Actor들
 	UPROPERTY(Replicated)
 	TArray<TObjectPtr<AActor>> SpawnedActors;

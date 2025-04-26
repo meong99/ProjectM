@@ -48,7 +48,7 @@ void UPMEquipmentManagerComponent::EquipItem(UMEquipmentItemInstance* ItemInstan
 {
 	if (IsValid(ItemInstance))
 	{
-		UMEquipmentItemDefinition* ItemCDO = ItemInstance->ItemDef->GetDefaultObject<UMEquipmentItemDefinition>();
+		const UMEquipmentItemDefinition* ItemCDO = ItemInstance->ItemDef->GetDefaultObject<UMEquipmentItemDefinition>();
 		if (ItemCDO)
 		{
 			if (FindEquippedItem((int32)ItemInstance->GetEquipmentItemType()))

@@ -8,6 +8,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/World.h"
 #include "MEquipmentItemDefinition.h"
+#include "Equipment/MEquipableActorBase.h"
 
 UMEquipmentItemInstance::UMEquipmentItemInstance(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -98,6 +99,11 @@ void UMEquipmentItemInstance::SpawnEquipmentActors(const TArray<FPMEquipmentActo
 			NewActor->SetActorRelativeTransform(SpawnInfo.AttachTransform);
 
 			NewActor->AttachToComponent(AttachTarget, FAttachmentTransformRules::KeepRelativeTransform, SpawnInfo.AttachSocket);
+			AMEquipableActorBase* EquippableActor = Cast<AMEquipableActorBase>(NewActor);
+			if (EquippableActor)
+			{
+				EquippableActor->SetItemDef(ItemDef.Get());
+			}
 
 			SpawnedActors.Add(NewActor);
 		}

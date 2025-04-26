@@ -29,7 +29,7 @@ protected:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UFUNCTION(BlueprintCallable)
-	UPMAbilitySystemComponent* GetMAbilitySystemComponent() const;
+	virtual UPMAbilitySystemComponent* GetMAbilitySystemComponent() const override;
 
 /*
 * Member Functions

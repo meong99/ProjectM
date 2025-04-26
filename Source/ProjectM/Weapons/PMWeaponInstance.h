@@ -27,7 +27,7 @@ public:
 	virtual void OnEquipped() override;
 	virtual void OnUnequipped() override;
 
-	/*
+/*
 * Member Functions
 */
 public:
@@ -38,7 +38,7 @@ public:
 /*
 * Member Variables
 */
-private:
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Animation")
 	FPMAnimInstanceSelectionSet EquippedAnimSet;
 
