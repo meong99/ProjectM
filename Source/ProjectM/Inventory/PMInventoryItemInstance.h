@@ -36,6 +36,8 @@ public:
 		return (ResultClass*)FindFragmentByClass(ResultClass::StaticClass());
 	}
 
+	virtual void OnInstanceCreated() {};
+
 	virtual int32 UseItem();
 	virtual bool CanUseItem() const { return true; }
 

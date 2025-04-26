@@ -56,9 +56,17 @@ public:
 	int32 ChangeItemQuantity(const FMItemHandle& ItemHandle, int32 ChangeNum);
 
 	FMItemHandle AddEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
+	FMItemHandle AddEntry(UPMInventoryItemInstance* Instance);
 	void RemoveEntry(const FMItemHandle& ItemHandle);
+
 	FPMInventoryEntry* FindEntry(const FMItemHandle& ItemHandle);
 	FPMInventoryEntry* FindEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
+
+protected:
+	FPMInventoryEntry*	MakeEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
+	FPMInventoryEntry*	MakeEntry(UPMInventoryItemInstance* Instance);
+	FMItemHandle		AddEntry_Impl(FPMInventoryEntry& Entry);
+
 /*
 * Member Variables
 */

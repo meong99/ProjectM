@@ -136,20 +136,83 @@ int32 FPMInventoryItemList::ChangeItemQuantity(const FMItemHandle& ItemHandle, i
 
 FMItemHandle FPMInventoryItemList::AddEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef)
 {
-	FMItemHandle NewHandle = FMItemHandle{};
 	if (!ItemDef || !OwnerComponent)
 	{
 		MCHAE_WARNING("ItemDefinition is not valid");
-		return NewHandle;
+		return {};
 	}
 
 	AActor* OwningActor = OwnerComponent->GetOwner();
 	if (!OwningActor->HasAuthority())
 	{
 		MCHAE_WARNING("AddEntry only allowed on authority. You called on client");
+		return {};
+	}
+
+
+	FPMInventoryEntry* NewEntry = MakeEntry(ItemDef);
+	AddEntry_Impl(*NewEntry);
+
+	return NewEntry->GetItemHandle();
+}
+
+FMItemHandle FPMInventoryItemList::AddEntry(UPMInventoryItemInstance* Instance)
+{
+	if (!Instance)
+	{
+		MCHAE_WARNING("정상적이지 않은 ItemInstance가 Entry에 추가되려합니다.");
+		return {};
+	}
+
+	FPMInventoryEntry* NewEntry = MakeEntry(Instance);
+	AddEntry_Impl(*NewEntry);
+
+	return NewEntry->GetItemHandle();
+}
+
+FMItemHandle FPMInventoryItemList::AddEntry_Impl(FPMInventoryEntry& Entry)
+{
+	FMItemHandle NewHandle = FMItemHandle{};
+
+	if (!Entry.Instance)
+	{
+		ensure(false);
+		MCHAE_WARNING("ItemInstance is not valid!");
+
 		return NewHandle;
 	}
 
+	static int32 ItemUid = 0;
+
+	NewHandle.ItemUid = ItemUid;
+	NewHandle.ItemType = Entry.Instance->GetItemType();
+
+	Entry.ItemUid = ItemUid;
+	Entry.Instance->ItemHandle = NewHandle;
+
+	ItemUid++;
+
+	MarkItemDirty(Entry);
+
+	return NewHandle;
+}
+
+void FPMInventoryItemList::RemoveEntry(const FMItemHandle& ItemHandle)
+{
+	for (auto EntryIt = Entries.CreateIterator(); EntryIt; ++EntryIt)
+	{
+		FPMInventoryEntry& Entry = *EntryIt;
+		if (Entry.ItemUid == ItemHandle.ItemUid)
+		{
+			EntryIt.RemoveCurrent();
+			MarkArrayDirty();
+		}
+	}
+}
+
+FPMInventoryEntry* FPMInventoryItemList::MakeEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef)
+{
+	AActor* OwningActor = OwnerComponent->GetOwner();
 	const UPMInventoryItemDefinition* ItemDefCDO = GetDefault<UPMInventoryItemDefinition>(ItemDef);
 	TSubclassOf<UPMInventoryItemInstance> InstanceType = ItemDefCDO->InstanceType;
 	if (!InstanceType)
@@ -169,31 +232,25 @@ FMItemHandle FPMInventoryItemList::AddEntry(TSubclassOf<UPMInventoryItemDefiniti
 		}
 	}
 
-	UPMInventoryItemInstance* ItemInstance = NewEntry.Instance;
+	NewEntry.Instance->OnInstanceCreated();
 
-#pragma TODO("이거 static쓰지말고 해싱값을 쓰던 뭘 하던 해야함")
-	static int32 TempItemUid = 0;
-	NewEntry.ItemUid = TempItemUid;
-	NewHandle.ItemUid = TempItemUid;
-	NewHandle.ItemType = ItemInstance->GetItemType();
-	ItemInstance->ItemHandle = NewHandle;
-	TempItemUid++;
-	MarkItemDirty(NewEntry);
-
-	return NewHandle;
+	return &NewEntry;
 }
 
-void FPMInventoryItemList::RemoveEntry(const FMItemHandle& ItemHandle)
+FPMInventoryEntry* FPMInventoryItemList::MakeEntry(UPMInventoryItemInstance* Instance)
 {
-	for (auto EntryIt = Entries.CreateIterator(); EntryIt; ++EntryIt)
+	FPMInventoryEntry& NewEntry = Entries.AddDefaulted_GetRef();
+	NewEntry.Instance = Instance;
+
+	for (const UPMInventoryItemFragment* Fragment : GetDefault<UPMInventoryItemDefinition>(Instance->ItemDef)->GetFragments())
 	{
-		FPMInventoryEntry& Entry = *EntryIt;
-		if (Entry.ItemUid == ItemHandle.ItemUid)
+		if (Fragment)
 		{
-			EntryIt.RemoveCurrent();
-			MarkArrayDirty();
+			Fragment->OnInstanceCreated(NewEntry.Instance);
 		}
 	}
+
+	return &NewEntry;
 }
 
 FPMInventoryEntry* FPMInventoryItemList::FindEntry(const FMItemHandle& ItemHandle)

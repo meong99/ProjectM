@@ -12,251 +12,144 @@
 #include "PMQuickBarComponent.h"
 #include "Item/Equipment/MEquipmentItemInstance.h"
 #include "Item/Equipment/MEquipmentItemDefinition.h"
-
-FPMEquipmentList::FPMEquipmentList()
-{
-	if (GEngine && GEngine->GetWorld() && GEngine->GetWorld()->GetGameInstance()
-		&& IsValid(OwnerComponent) == false)
-	{
-		MCHAE_FETAL("OwnerComponent must be set!!");
-	}
-}
-
-FPMEquipmentList::FPMEquipmentList(UActorComponent* InOwnerComponent)
-	: OwnerComponent(InOwnerComponent)
-{
-	if (IsValid(OwnerComponent) == false)
-	{
-		MCHAE_FETAL("OwnerComponent must be set!!");
-	}
-}
-
-void FPMEquipmentList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
-{
-	for (int32 Index : RemovedIndices)
-	{
-		const FPMAppliedEquipmentEntry& Entry = Entries[Index];
-		if (Entry.Instance != nullptr)
-		{
-			Entry.Instance->OnUnequipped();
-		}
-	}
-}
-
-void FPMEquipmentList::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
-{
-	for (int32 Index : AddedIndices)
-	{
-		const FPMAppliedEquipmentEntry& Entry = Entries[Index];
-		if (Entry.Instance != nullptr)
-		{
-// 			Entry.Instance->OnEquipped();
-		}
-	}
-}
-
-void FPMEquipmentList::PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize)
-{
-// 	for (int32 Index : ChangedIndices)
-// 	{
-// 		const FGameplayTagStack& Stack = Stacks[Index];
-// 		TagToCountMap[Stack.Tag] = Stack.StackCount;
-// 	}
-}
-
-/*
-* FPMEquipmentList
-*/
-UMEquipmentItemInstance* FPMEquipmentList::AddEntry(TSubclassOf<UMEquipmentItemDefinition> EquipmentDefinition)
-{
-	UMEquipmentItemInstance* Result = nullptr;
-	check(EquipmentDefinition != nullptr);
-	check(OwnerComponent);
-	check(OwnerComponent->GetOwner()->HasAuthority());
-
-	const UMEquipmentItemDefinition* EquipmentCDO = GetDefault<UMEquipmentItemDefinition>(EquipmentDefinition);
-
-	TSubclassOf<UPMInventoryItemInstance> InstanceType = EquipmentCDO->InstanceType;
-	if (!InstanceType)
-	{
-		InstanceType = UMEquipmentItemInstance::StaticClass();
-	}
-
-	FPMAppliedEquipmentEntry& NewEntry = Entries.AddDefaulted_GetRef();
-	NewEntry.EquipmentDefinition = EquipmentDefinition;
-	NewEntry.Instance = NewObject<UMEquipmentItemInstance>(OwnerComponent->GetOwner(), InstanceType);
-	for (const UPMInventoryItemFragment* Fragment : GetDefault<UMEquipmentItemDefinition>(EquipmentDefinition)->GetFragments())
-	{
-		if (Fragment)
-		{
-			Fragment->OnInstanceCreated(NewEntry.Instance);
-		}
-	}
-	Result = NewEntry.Instance;
-
-	MarkItemDirty(NewEntry);
-
-	// 장비에서 보유중인 어빌리티 부여
-	UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
-	if (ASC == nullptr)
-	{
-		MCHAE_ERROR("ASC is null");
-		return nullptr;
-	}
-
-	for (const UPMAbilitySet* AbilitySet : EquipmentCDO->AbilitySetsToGrant)
-	{
-		AbilitySet->GiveToAbilitySystem(ASC, &NewEntry.GrantedHandles, Result);
-	}
-
-	Result->SpawnEquipmentActors(EquipmentCDO->ActorsToSpawn);
-
-	return Result;
-}
-
-void FPMEquipmentList::RemoveEntry(UMEquipmentItemInstance* Instance)
-{
-	for (auto EntryIt = Entries.CreateIterator(); EntryIt; ++EntryIt)
-	{
-		FPMAppliedEquipmentEntry& Entry = *EntryIt;
-		if (Entry.Instance == Instance)
-		{
-			UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
-			check(ASC);
-			Entry.GrantedHandles.TakeFromAbilitySystem(ASC);
-
-			Instance->DestroyEquipmentActors();
-			EntryIt.RemoveCurrent();
-			MarkArrayDirty();
-		}
-	}
-}
-
-UPMAbilitySystemComponent* FPMEquipmentList::GetAbilitySystemComponent()
-{
-	check(OwnerComponent);
-	AActor* OwningActor = OwnerComponent->GetOwner();
-
-	return Cast<UPMAbilitySystemComponent>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OwningActor));
-}
+#include "AbilitySystem/PMAbilitySet.h"
+#include "Player/PMPlayerControllerBase.h"
 
 /*
 * UPMEquipmentManagerComponent
 */
 UPMEquipmentManagerComponent::UPMEquipmentManagerComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
-	, EquipmentList(this) // 이것도 필수!!!
 {
 	SetIsReplicatedByDefault(true);
-}
-
-bool UPMEquipmentManagerComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
-{
-	bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
-
-	for (FPMAppliedEquipmentEntry& Entry : EquipmentList.Entries)
-	{
-		UMEquipmentItemInstance* Instance = Entry.Instance;
-
-		if (IsValid(Instance))
-		{
-			WroteSomething |= Channel->ReplicateSubobject(Instance, *Bunch, *RepFlags);
-		}
-	}
-
-	return WroteSomething;
-}
-
-void UPMEquipmentManagerComponent::ReadyForReplication()
-{
-	Super::ReadyForReplication();
-
-	// Register existing LyraEquipmentInstances
-	if (IsUsingRegisteredSubObjectList())
-	{
-		for (const FPMAppliedEquipmentEntry& Entry : EquipmentList.Entries)
-		{
-			UMEquipmentItemInstance* Instance = Entry.Instance;
-
-			if (IsValid(Instance))
-			{
-				AddReplicatedSubObject(Instance);
-			}
-		}
-	}
 }
 
 void UPMEquipmentManagerComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ThisClass, EquipmentList);
+	DOREPLIFETIME(ThisClass, EquippedItems);
 }
 
-UMEquipmentItemInstance* UPMEquipmentManagerComponent::EquipItem(TSubclassOf<UMEquipmentItemDefinition> EquipmentDefinition)
+void UPMEquipmentManagerComponent::BeginDestroy()
 {
-	UMEquipmentItemInstance* Result = nullptr;
-	if (EquipmentDefinition)
-	{
-		Result = EquipmentList.AddEntry(EquipmentDefinition);
-		if (Result)
-		{
-			Result->OnEquipped();
+	Super::BeginDestroy();
 
-			if (IsUsingRegisteredSubObjectList() && IsReadyForReplication())
+	for (UMEquipmentItemInstance* Instance : EquippedItems)
+	{
+		if (IsValid(Instance))
+		{
+			Instance->DestroyEquipmentActors();
+		}
+	}
+}
+
+void UPMEquipmentManagerComponent::EquipItem(UMEquipmentItemInstance* ItemInstance)
+{
+	if (IsValid(ItemInstance))
+	{
+		UMEquipmentItemDefinition* ItemCDO = ItemInstance->ItemDef->GetDefaultObject<UMEquipmentItemDefinition>();
+		if (ItemCDO)
+		{
+			if (FindEquippedItem((int32)ItemInstance->GetEquipmentItemType()))
 			{
-				AddReplicatedSubObject(Result);
+				UnequipItem((int32)ItemInstance->GetEquipmentItemType());
 			}
-		}
-	}
 
-	return Result;
-}
-
-void UPMEquipmentManagerComponent::UnequipItem(UMEquipmentItemInstance* ItemInstance)
-{
-	if (ItemInstance)
-	{
-		if (IsUsingRegisteredSubObjectList())
-		{
-			RemoveReplicatedSubObject(ItemInstance);
-		}
-
-		ItemInstance->OnUnequipped();
-
-		EquipmentList.RemoveEntry(ItemInstance);
-	}
-}
-
-TArray<UMEquipmentItemInstance*> UPMEquipmentManagerComponent::GetEquipmentInstancesOfType(TSubclassOf<UMEquipmentItemInstance> InstanceType) const
-{
-	TArray<UMEquipmentItemInstance*> Result;
-
-	for (const FPMAppliedEquipmentEntry& Entry : EquipmentList.Entries)
-	{
-		if (UMEquipmentItemInstance* Instance = Entry.Instance)
-		{
-			if (Instance->IsA(InstanceType))
+			UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+			if (ASC == nullptr)
 			{
-				Result.Add(Instance);
+				ensure(false);
+				MCHAE_ERROR("Can't access to abilitysystem when equip item. So item equip sequence will be canceled.");
+				return ;
 			}
+
+			FPMAbilitySet_GrantedHandles TempGrantedHandles;
+			for (const UPMAbilitySet* AbilitySet : ItemCDO->AbilitySetsToGrant)
+			{
+				AbilitySet->GiveToAbilitySystem(ASC, &TempGrantedHandles, ItemInstance);
+			}
+
+			GrantedHandles.Add(ItemInstance->ItemHandle.ItemUid, TempGrantedHandles);
+
+			ItemInstance->SpawnEquipmentActors(ItemCDO->ActorsToSpawn);
+			EquippedItems.Add(ItemInstance);
+			OnRep_OnChangeEquipedItem();
 		}
 	}
-
-	return Result;
 }
 
-UMEquipmentItemInstance* UPMEquipmentManagerComponent::GetFirstInstanceOfType(TSubclassOf<UMEquipmentItemInstance> InstanceType)
+void UPMEquipmentManagerComponent::UnequipItem(int32 EquipmentItemType)
 {
-	for (FPMAppliedEquipmentEntry& Entry : EquipmentList.Entries)
+	UMEquipmentItemInstance* UnEquippedItem = nullptr;
+
+	int32 i = 0;
+	for (; i < EquippedItems.Num(); i++)
 	{
-		if (UMEquipmentItemInstance* Instance = Entry.Instance)
+		if (EquippedItems[i] && EquipmentItemType == (int32)EquippedItems[i]->GetEquipmentItemType())
 		{
-			if (Instance->IsA(InstanceType))
-			{
-				return Instance;
-			}
+			UnEquippedItem = EquippedItems[i];
+			break;
 		}
 	}
+
+	if (UnEquippedItem)
+	{
+		AActor* Controller = GetOwner();
+		UPMInventoryManagerComponent* InvenManager = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
+		if (InvenManager)
+		{
+			InvenManager->AddItem(UnEquippedItem);
+		}
+
+		UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+		if (ASC == nullptr)
+		{
+			ensure(false);
+			MCHAE_ERROR("Can't access to abilitysystem when equip item. So item equip sequence will be canceled.");
+			return ;
+		}
+		FPMAbilitySet_GrantedHandles TempGrantedHandles;
+		GrantedHandles.RemoveAndCopyValue(UnEquippedItem->ItemHandle.ItemUid, TempGrantedHandles);
+		TempGrantedHandles.TakeFromAbilitySystem(ASC);
+
+		UnEquippedItem->OnUnequipped();
+		UnEquippedItem->DestroyEquipmentActors();
+
+		EquippedItems.RemoveAt(i);
+
+		OnRep_OnChangeEquipedItem();
+	}
+
+}
+
+UMEquipmentItemInstance* UPMEquipmentManagerComponent::FindEquippedItem(int32 EquipmentItemType)
+{
+	EMEquipmentItemType ItemType = (EMEquipmentItemType)EquipmentItemType;
+
+	for (UMEquipmentItemInstance* Instance : EquippedItems)
+	{
+		if (Instance && Instance->GetEquipmentItemType() == ItemType)
+		{
+			return Instance;
+		}
+	}
+
+	return nullptr;
+}
+
+void UPMEquipmentManagerComponent::OnRep_OnChangeEquipedItem()
+{
+
+}
+
+UPMAbilitySystemComponent* UPMEquipmentManagerComponent::GetAbilitySystemComponent() const
+{
+	APMPlayerControllerBase* Controller = GetOwner<APMPlayerControllerBase>();
+	if (Controller)
+	{
+		return Controller->GetAbilitySystemComponent();
+	}
+
 	return nullptr;
 }

@@ -124,26 +124,45 @@ FMItemHandle UPMInventoryManagerComponent::AddItemDefinition(TSubclassOf<UPMInve
 {
 	FMItemHandle Handle = FMItemHandle{};
 	UPMInventoryItemDefinition* CDO = ItemDef->GetDefaultObject<UPMInventoryItemDefinition>();
-	if (CDO)
+	if (!CDO)
 	{
-		FPMInventoryItemList* ItemList = GetItemList(CDO->ItemType);
-		if (ItemList)
+		ensure(false);
+		MCHAE_WARNING("ItemCDO is not valid");
+		return Handle;
+	}
+
+	FPMInventoryItemList* ItemList = GetItemList(CDO->ItemType);
+	if (ItemList)
+	{
+		FPMInventoryEntry* Entry = ItemList->FindEntry(ItemDef);
+		if (Entry && ItemList->OwnedItemType != EMItemType::Equipment)
 		{
-			FPMInventoryEntry* Entry = ItemList->FindEntry(ItemDef);
-			if (Entry && ItemList->OwnedItemType != EMItemType::Equipment)
-			{
-				ItemList->ChangeItemQuantity(Entry->GetItemHandle(), 1);
-				Delegate_NotifyItemAdded.Broadcast(*Entry);
-				return Entry->GetItemHandle();
-			}
-			else
-			{
-				return AddItemDefinition_Impl(ItemDef, *ItemList);
-			}
+			ItemList->ChangeItemQuantity(Entry->GetItemHandle(), 1);
+			Delegate_NotifyItemAdded.Broadcast(*Entry);
+			return Entry->GetItemHandle();
+		}
+		else
+		{
+			return AddItemDefinition_Impl(ItemDef, *ItemList);
 		}
 	}
 
 	return Handle;
+}
+
+FMItemHandle UPMInventoryManagerComponent::AddItem(UPMInventoryItemInstance* Instance)
+{
+	if (Instance)
+	{
+		FPMInventoryItemList* ItemList = GetItemList(Instance->GetItemType());
+
+		if (ItemList)
+		{
+			return ItemList->AddEntry(Instance);
+		}
+	}
+
+	return {};
 }
 
 FMItemHandle UPMInventoryManagerComponent::AddItemDefinition_Impl(TSubclassOf<UPMInventoryItemDefinition> ItemDef, FPMInventoryItemList& ItemList)
@@ -164,6 +183,7 @@ FMItemHandle UPMInventoryManagerComponent::AddItemDefinition_Impl(TSubclassOf<UP
 	{
 		AddReplicatedSubObject(ItemInstance);
 	}
+
 	Delegate_NotifyItemAdded.Broadcast(*Entry);
 	Delegate_OnNewItemAdded.Broadcast(*Entry);
 

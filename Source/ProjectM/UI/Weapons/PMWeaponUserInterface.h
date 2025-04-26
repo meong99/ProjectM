@@ -10,7 +10,7 @@
 class UPMWeaponInstance;
 
 /**
- * 
+ * Deprecated
  */
 UCLASS()
 class PROJECTM_API UPMWeaponUserInterface : public UCommonUserWidget

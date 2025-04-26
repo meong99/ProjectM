@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/World.h"
+#include "MEquipmentItemDefinition.h"
 
 UMEquipmentItemInstance::UMEquipmentItemInstance(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -16,6 +17,15 @@ void UMEquipmentItemInstance::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ThisClass, SpawnedActors);
+}
+
+void UMEquipmentItemInstance::OnInstanceCreated()
+{
+	UMEquipmentItemDefinition* ItemCDO = ItemDef->GetDefaultObject<UMEquipmentItemDefinition>();
+	if (ItemCDO)
+	{
+		EquipmentItemType = ItemCDO->EquipmentItemType;
+	}
 }
 
 int32 UMEquipmentItemInstance::UseItem()
@@ -40,8 +50,6 @@ int32 UMEquipmentItemInstance::UseItem()
 				MCHAE_ERROR("Effect class is not defined! check item definition! Definition name is %s", *ItemDefCDO->GetName());
 			}
 		}
-
-		MCHAE_TEST("ItemUse");
 	}
 
 	return Super::UseItem();

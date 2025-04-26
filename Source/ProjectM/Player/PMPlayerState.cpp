@@ -211,36 +211,17 @@ void APMPlayerState::ApplyLoadedData()
 		for (const TSubclassOf<UPMInventoryItemDefinition>& ItemDef : PlayerSaveData->ItemDefinitions)
 		{
 			UPMInventoryItemDefinition* DefCDO = ItemDef->GetDefaultObject<UPMInventoryItemDefinition>();
-			if (DefCDO && DefCDO->ItemType == EMItemType::Equipment)
-			{
-				const FMItemHandle& ItemHandle = InventoryManager->AddItemDefinition(ItemDef);
-// 				if (QuickBarComp->GetActiveSlotIndex() == INDEX_NONE)
-// 				{
-// 					UPMInventoryItemInstance* ItemInstance = InventoryManager->FindItemInstance(ItemHandle);
-// 					QuickBarComp->AddItemToSlot(0, ItemInstance);
-// 					QuickBarComp->SetActiveSlotIndex(0);
-// 				}
-			}
-			else if (DefCDO)
+			if (DefCDO)
 			{
 				InventoryManager->AddItemDefinition(ItemDef);
 			}
 		}
-		if (PlayerSaveData->EquippedItem)
+
+		const TSubclassOf<UPMInventoryItemDefinition>& ItemDef = PawnData->DefaultEquipment;
+		if (ItemDef)
 		{
-#pragma TODO("장비 슬롯 개발되면 여기서 추가하고 인벤토리 장비 아이템과 분리")
-		}
-		else if (QuickBarComp->GetActiveSlotIndex() == INDEX_NONE && GEngine)
-		{
-			const TSubclassOf<UPMInventoryItemDefinition>& ItemDef = PawnData->DefaultEquipment;
-			if (ItemDef)
-			{
-				const FMItemHandle& ItemHandle = InventoryManager->AddItemDefinition(ItemDef);
-				InventoryManager->Server_UseItem(ItemHandle);
-// 				UPMInventoryItemInstance* ItemInstance = InventoryManager->FindItemInstance(ItemHandle);
-// 				QuickBarComp->AddItemToSlot(0, ItemInstance);
-// 				QuickBarComp->SetActiveSlotIndex(0);
-			}
+			const FMItemHandle& ItemHandle = InventoryManager->AddItemDefinition(ItemDef);
+			InventoryManager->Server_UseItem(ItemHandle);
 		}
 	}
 	else

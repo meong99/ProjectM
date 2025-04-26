@@ -45,8 +45,11 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
 	FMItemHandle	AddItemDefinition(int32 ItemRowId);
 	FMItemHandle	AddItemDefinition(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
+	FMItemHandle	AddItem(UPMInventoryItemInstance* Instance);
+
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
 	int32			ChangeItemQuantity(const FMItemHandle& ItemHandle, int32 ChangeNum);
+
 	FDelegateHandle AddDelegateOnChangeInventory(const int32 ItemUid, FOnChangeInventory::FDelegate&& Delegate);
 	void			RemoveDelegateOnChangeInventory(const int32 ItemUid, const FDelegateHandle& DelegateHandle);
 
@@ -57,18 +60,21 @@ public:
 	UPMInventoryItemInstance*	FindItemInstance(const FMItemHandle& ItemHandle);
 	FPMInventoryEntry*			FindEntry(const FMItemHandle& ItemHandle);
 	FPMInventoryEntry*			FindEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
+
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
 	int32						GetMaxInventoryCount() const { return MaxInventoryCount; }
 	const FPMInventoryItemList& GetEquipmentItemList() const { return InventoryList; }
 	const FPMInventoryItemList& GetConsumableItemList() const { return ConsumableItemList; }
 
 protected:
+	FMItemHandle AddItemDefinition_Impl(TSubclassOf<UPMInventoryItemDefinition> ItemDef, FPMInventoryItemList& ItemList);
+
 	UFUNCTION()
 	void InitInventory();
+
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
 	void RemoveItem(const FMItemHandle& ItemHandle);
 
-	FMItemHandle AddItemDefinition_Impl(TSubclassOf<UPMInventoryItemDefinition> ItemDef, FPMInventoryItemList& ItemList);
 	// 이걸 서버와 클라가 한 번의 함수 호출로 동시에 작동되도록 하는 방법은 멀티캐스트 말곤 없을까?...
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_OnRemoveItem(const FMItemHandle& ItemHandle, const EMItemType ItemType);

@@ -7,6 +7,13 @@
 class UPMAbilitySet;
 class UMEquipmentItemInstance;
 
+UENUM(BlueprintType)
+enum class EMEquipmentItemType : uint8
+{
+	None UMETA(DisplayName = "None"),
+	Weapon UMETA(DisplayName = "Weapon"),
+};
+
 USTRUCT()
 struct FPMEquipmentActorToSpawn
 {
@@ -49,4 +56,7 @@ public:
 	// 장비 장착으로 부여될 어빌리티
 	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
 	TArray<TObjectPtr<UPMAbilitySet>> AbilitySetsToGrant;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
+	EMEquipmentItemType EquipmentItemType;
 };
