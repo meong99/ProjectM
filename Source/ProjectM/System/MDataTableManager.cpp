@@ -34,7 +34,7 @@ const UDataTable* UMDataTableManager::GetDataTable(int32 RowId) const
 	return TableMap.FindRef(Key);
 }
 
-UPMInventoryItemDefinition* UMDataTableManager::GetItemDefinition(int32 RowId, FString ContextString) const
+UPMInventoryItemDefinition* UMDataTableManager::GetItemDefinition(int32 RowId) const
 {
 	const TSubclassOf<UPMInventoryItemDefinition>& ItemDefinition = GetDefinitionClass<UPMInventoryItemDefinition>(RowId);
 	if (ItemDefinition)

@@ -67,7 +67,7 @@ void UPMEquipmentManagerComponent::EquipItem(UMEquipmentItemInstance* ItemInstan
 			FPMAbilitySet_GrantedHandles TempGrantedHandles;
 			for (const UPMAbilitySet* AbilitySet : ItemCDO->AbilitySetsToGrant)
 			{
-				AbilitySet->GiveToAbilitySystem(ASC, &TempGrantedHandles, ItemInstance);
+				AbilitySet->GiveToAbilitySystem(ASC, &TempGrantedHandles, ItemInstance, ItemCDO->RowId);
 			}
 
 			GrantedHandles.Add(ItemInstance->ItemHandle.ItemUid, TempGrantedHandles);

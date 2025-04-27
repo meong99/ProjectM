@@ -14,6 +14,14 @@
 
 AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	bReplicates = true;
+	PrimaryActorTick.bCanEverTick = true;
+	bUseControllerRotationYaw = false;
+
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetCharacterMovement()->bRequestedMoveUseAcceleration = true;
+
 	if (!IsRunningDedicatedServer())
 	{
 		InteractionComponent = CreateDefaultSubobject<UMInteractionComponent>(TEXT("InteractionComponent"));
@@ -26,14 +34,8 @@ AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Supe
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 	AbilitySystemComponent->bWantsInitializeComponent = true;
+	AbilitySystemComponent->SetIsReplicated(true);
 	HealthSet = CreateDefaultSubobject<UPMHealthSet>(TEXT("HealthSet"));
-
-	GetCharacterMovement()->bUseControllerDesiredRotation = true;
-	GetCharacterMovement()->bOrientRotationToMovement = false;
-	GetCharacterMovement()->bRequestedMoveUseAcceleration = true;
-
-	PrimaryActorTick.bCanEverTick = true;
-	bUseControllerRotationYaw = false;
 }
 
 void AMMonsterBase::PostInitializeComponents()

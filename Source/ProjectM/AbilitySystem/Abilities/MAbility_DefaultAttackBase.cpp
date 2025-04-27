@@ -2,6 +2,9 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Weapons/PMWeaponInstance.h"
 #include "Weapons/MWeaponBase.h"
+#include "System/MDataTableManager.h"
+#include "Engine/Engine.h"
+#include "Item/Equipment/MWeaponItemDefinition.h"
 
 UMAbility_DefaultAttackBase::UMAbility_DefaultAttackBase()
 {
@@ -13,12 +16,14 @@ void UMAbility_DefaultAttackBase::ActivateAbility(const FGameplayAbilitySpecHand
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	FGameplayAbilitySpec* Spec = GetCurrentAbilitySpec();
-	UPMWeaponInstance* WeaponInstance = Cast<UPMWeaponInstance>(Spec->SourceObject);
-	if (WeaponInstance)
+	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
+	UMWeaponItemDefinition* ItemDef = TableManager ? Cast<UMWeaponItemDefinition>(TableManager->GetItemDefinition(Spec->InputID)) : nullptr;
+
+	if (ItemDef)
 	{
 		UAbilityTask_PlayMontageAndWait* PlayMontageAndWait = nullptr;
 		PlayMontageAndWait = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-			   this, FName(GetName()), WeaponInstance->WeaponMontageToPlay);
+			   this, FName(GetName()), ItemDef->DefaultAttackMontage);
 
 		if (PlayMontageAndWait)
 		{
@@ -28,7 +33,15 @@ void UMAbility_DefaultAttackBase::ActivateAbility(const FGameplayAbilitySpecHand
 			PlayMontageAndWait->OnInterrupted.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageCanceledCallBack);
 
 			PlayMontageAndWait->ReadyForActivation();
+		}
+		else
+		{
+			NotifyMontageCanceledCallBack();
+		}
 
+		UPMWeaponInstance* WeaponInstance = Cast<UPMWeaponInstance>(Spec->SourceObject);
+		if (HasAuthority(&ActivationInfo) && WeaponInstance)
+		{
 			for (AActor* SpawnedActor : WeaponInstance->SpawnedActors)
 			{
 				AMWeaponBase* Weapon = Cast<AMWeaponBase>(SpawnedActor);
@@ -38,10 +51,10 @@ void UMAbility_DefaultAttackBase::ActivateAbility(const FGameplayAbilitySpecHand
 				}
 			}
 		}
-		else
-		{
-			NotifyMontageCanceledCallBack();
-		}
+	}
+	else
+	{
+		NotifyMontageCanceledCallBack();
 	}
 }
 
@@ -50,7 +63,8 @@ void UMAbility_DefaultAttackBase::EndAbility(const FGameplayAbilitySpecHandle Ha
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 	FGameplayAbilitySpec* Spec = GetCurrentAbilitySpec();
 	UPMWeaponInstance* WeaponInstance = Cast<UPMWeaponInstance>(Spec->SourceObject);
-	if (WeaponInstance)
+
+	if (HasAuthority(&ActivationInfo) && WeaponInstance)
 	{
 		for (AActor* SpawnedActor : WeaponInstance->SpawnedActors)
 		{
@@ -65,5 +79,9 @@ void UMAbility_DefaultAttackBase::EndAbility(const FGameplayAbilitySpecHandle Ha
 
 void UMAbility_DefaultAttackBase::NotifyMontageCanceledCallBack()
 {
-	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
+	if (HasAuthority(&ActivationInfo))
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
 }

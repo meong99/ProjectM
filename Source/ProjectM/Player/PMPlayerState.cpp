@@ -33,6 +33,8 @@ APMPlayerState::APMPlayerState()
 	CreateDefaultSubobject<UPMCombatSet>(TEXT("CombatSet"));
 
 	NetUpdateFrequency = 100.0f;
+	bReplicates = true;
+	AbilitySystemComponent->SetIsReplicated(true);
 }
 
 void APMPlayerState::PostInitializeComponents()

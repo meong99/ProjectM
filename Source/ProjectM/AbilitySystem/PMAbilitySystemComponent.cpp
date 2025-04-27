@@ -124,7 +124,7 @@ void UPMAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 		}
 	}
 
-	// 어빌리티 실제로 부여한는 곳
+	// 어빌리티 실행
 	for (const FGameplayAbilitySpecHandle& AbilitySpecHandle : AbilitiesToActivate)
 	{
 		TryActivateAbility(AbilitySpecHandle);

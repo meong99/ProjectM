@@ -36,7 +36,7 @@ UPMAbilitySet::UPMAbilitySet()
 {
 }
 
-void UPMAbilitySet::GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystemComp, OUT FPMAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject) const
+void UPMAbilitySet::GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystemComp, OUT FPMAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject, int32 AdditiveInfo) const
 {
 	check(AbilitySystemComp);
 
@@ -60,6 +60,7 @@ void UPMAbilitySet::GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystem
 		FGameplayAbilitySpec AbilitySpec(AbilityCDO, AbilityToGrant.AbilityLevel);
 		AbilitySpec.SourceObject = SourceObject;
 		AbilitySpec.DynamicAbilityTags.AddTag(AbilityToGrant.InputTag);
+		AbilitySpec.InputID = AdditiveInfo;
 
 		const FGameplayAbilitySpecHandle AbilitySpecHandle = AbilitySystemComp->GiveAbility(AbilitySpec);
 		if (OutGrantedHandles)

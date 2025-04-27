@@ -38,13 +38,11 @@ public:
 	const UDataTable* GetDataTable(EMItemIdType TableType) const;
 
 	UFUNCTION(BlueprintCallable)
-	UPMInventoryItemDefinition*	GetItemDefinition(int32 RowId, FString ContextString) const;
+	UPMInventoryItemDefinition*	GetItemDefinition(int32 RowId) const;
 	UFUNCTION(BlueprintCallable)
 	UMMonsterDefinition*		GetMonsterDefinition(int32 RowId) const;
 	template<class T>
 	const TSubclassOf<T>		GetDefinitionClass(int32 RowId) const;
-	template<class T>
-	T* GetDefinitionObject(int32 RowId) const;
 
 	int32 GetTableNum() const { return Deprecated_TableMap.Num(); }
 private:
@@ -84,21 +82,4 @@ const TSubclassOf<T> UMDataTableManager::GetDefinitionClass(int32 RowId) const
 	}
 
 	return nullptr;
-}
-
-template<class T>
-T* UMDataTableManager::GetDefinitionObject(int32 RowId) const
-{
-	const TSubclassOf<T> Class = GetDefinitionClass(RowId);
-	T* DuplicatedObject = nullptr;
-	if (Class)
-	{
-		T* DuplicatedObject = DuplicateObject(Class->GetDefaultObject<T>(), GetTransientPackage());
-		if (UMDefinitionBase* Base = Cast<UMDefinitionBase>(DuplicatedObject))
-		{
-			Base->RowId = RowId;
-		}
-	}
-
-	return DuplicatedObject;
 }

@@ -60,7 +60,7 @@ public:
 * Member Functions
 */
 public:
-	void GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystemComp, OUT FPMAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject = nullptr) const;
+	void GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystemComp, OUT FPMAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject = nullptr, int32 AdditiveInfo = INDEX_NONE) const;
 
 /*
 * Member Variables
