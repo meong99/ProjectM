@@ -13,6 +13,8 @@ AMWeaponBase::AMWeaponBase(const FObjectInitializer& ObjectInitializer) : Super(
 	
 	WeaponCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("WeaponCapsule"));
 	WeaponCapsule->SetupAttachment(RootComponent);
+
+	bReplicates = true;
 }
 
 void AMWeaponBase::PostInitializeComponents()
