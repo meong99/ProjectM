@@ -78,7 +78,6 @@ protected:
 * Member Variables
 */
 public:
-	static bool bShowDebug_Console;
 
 protected:
 	FDelegateHandle OnTargetDataReadyCallbackDelegateHandle;

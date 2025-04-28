@@ -9,6 +9,7 @@
 class ACharacter;
 class AActor;
 class UMWeaponItemDefinition;
+class UPMWeaponInstance;
 
 UCLASS()
 class PROJECTM_API UMAbility_DefaultAttackBase : public UPMGameplayAbility
@@ -29,7 +30,7 @@ protected:
 * Member Functions
 */
 public:
-	virtual void TraceAttack(ACharacter* OwnerCharacter);
+	virtual void TraceAttack(ACharacter* OwnerCharacter, UPMWeaponInstance* WeaponInstance);
 	virtual void Callback_OnHit(const TArray<AActor*>& HitActors);
 
 protected:

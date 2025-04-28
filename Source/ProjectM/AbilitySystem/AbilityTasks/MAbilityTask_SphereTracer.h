@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/EngineTypes.h"
 #include "Abilities/Tasks/AbilityTask.h"
-#include "MAbilityTask_CapsuleTracer.generated.h"
+#include "MAbilityTask_SphereTracer.generated.h"
 
 class USkeletalMeshComponent;
 
@@ -13,18 +13,17 @@ DECLARE_DELEGATE_OneParam(FOnHit, const TArray<AActor*>& HitActors);
  *
  */
 UCLASS()
-class PROJECTM_API UMAbilityTask_CapsuleTracer : public UAbilityTask
+class PROJECTM_API UMAbilityTask_SphereTracer : public UAbilityTask
 {
 	GENERATED_BODY()
 /*
 * Overrided Functions
 */
 public:
-	static UMAbilityTask_CapsuleTracer* CreateCapsuleTracerTask(
+	static UMAbilityTask_SphereTracer* CreateSphereTracerTask(
 		UGameplayAbility* InOwningAbility,
 		const USkeletalMeshComponent* InSkeletalMeshComp,
 		float InRadius,
-		float InHalfHeight,
 		const FString& InStartSocketName,
 		const FString& InEndSocketName,
 		const TArray<TEnumAsByte<EObjectTypeQuery>>& InObjectTypes,
@@ -41,7 +40,6 @@ protected:
 */
 protected:
 	void Init(const USkeletalMeshComponent* InSkeletalMeshComp,
-		float InHalfHeight,
 		float InRadius,
 		const FString& InStartSocketName,
 		const FString& InEndSocketName,
@@ -58,9 +56,6 @@ protected:
 
 	UPROPERTY()
 	float Radius;
-
-	UPROPERTY()
-	float HalfHeight;
 
 	UPROPERTY()
 	FString StartSocketName;

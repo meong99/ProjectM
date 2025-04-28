@@ -8,10 +8,11 @@
 #include "GameFramework/Character.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "AbilitySystem/AbilityTasks/MAbilityTask_CapsuleTracer.h"
+#include "AbilitySystem/AbilityTasks/MAbilityTask_SphereTracer.h"
 #include "Character/Monster/MMonsterBase.h"
 #include "PMGameplayTags.h"
 #include "AbilitySystem/PMAbilitySystemComponent.h"
+#include "Equipment/PMEquipmentManagerComponent.h"
 
 UMAbility_DefaultAttackBase::UMAbility_DefaultAttackBase()
 {
@@ -50,9 +51,10 @@ void UMAbility_DefaultAttackBase::ActivateAbility(const FGameplayAbilitySpecHand
 		if (HasAuthority(&ActivationInfo) && WeaponInstance)
 		{
 			ACharacter* OwnerCharacter = Cast<ACharacter>(WeaponInstance->GetPawn());
+			
 			if (OwnerCharacter)
 			{
-				TraceAttack(OwnerCharacter);
+				TraceAttack(OwnerCharacter, WeaponInstance);
 			}
 		}
 	}
@@ -70,18 +72,32 @@ void UMAbility_DefaultAttackBase::EndAbility(const FGameplayAbilitySpecHandle Ha
 	ItemDef = nullptr;
 }
 
-void UMAbility_DefaultAttackBase::TraceAttack(ACharacter* OwnerCharacter)
+void UMAbility_DefaultAttackBase::TraceAttack(ACharacter* OwnerCharacter, UPMWeaponInstance* WeaponInstance)
 {
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes = { UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1) };
 	TArray<AActor*> ActorsToIgnore = { OwnerCharacter };
 	EDrawDebugTrace::Type DebugType = EDrawDebugTrace::None;
 	TArray<FHitResult> OutHits;
 
-	UMAbilityTask_CapsuleTracer* Task = UMAbilityTask_CapsuleTracer::CreateCapsuleTracerTask(
+	AActor* Weapon = nullptr;
+	if (WeaponInstance->GetSpawnedActors().Num() > 0)
+	{
+		Weapon = WeaponInstance->GetSpawnedActors()[0];
+	}
+
+	if (!Weapon || !Weapon->FindComponentByClass<USkeletalMeshComponent>())
+	{
+		ensure(false);
+		MCHAE_WARNING("Ability trace fail!! Because can't found weapon actor! Weapon actor must be spawned! ");
+		return;
+	}
+
+	UMAbilityTask_SphereTracer* Task = UMAbilityTask_SphereTracer::CreateSphereTracerTask(
 		this, 
-		OwnerCharacter, 
-		TEXT("weapon_start_r"),
-		TEXT("weapon_end_r"),
+		Weapon->FindComponentByClass<USkeletalMeshComponent>(),
+		30.f,
+		TEXT("weapon_start"),
+		TEXT("weapon_end"),
 		ObjectTypes, 
 		FOnHit::TDelegate::CreateUObject(this, &UMAbility_DefaultAttackBase::Callback_OnHit), 
 		ActorsToIgnore
@@ -94,7 +110,7 @@ void UMAbility_DefaultAttackBase::TraceAttack(ACharacter* OwnerCharacter)
 	else
 	{
 		ensure(false);
-		MCHAE_WARNING("Can't create CapsuleTracer!!");
+		MCHAE_WARNING("Can't create SphereTracer!!");
 	}
 }
 

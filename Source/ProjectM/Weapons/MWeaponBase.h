@@ -4,10 +4,10 @@
 #include "Equipment/MEquipableActorBase.h"
 #include "MWeaponBase.generated.h"
 
-class UStaticMeshComponent;
 class UCapsuleComponent;
 class UPrimitiveComponent;
 class UPMAbilitySystemComponent;
+class USkeletalMeshComponent;
 
 /**
  *
@@ -34,9 +34,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void DeactivateWeapon();
 
-	UFUNCTION()
-	virtual void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
 protected:
 	UPMAbilitySystemComponent* GetAbilitySystemComponent() const;
 
@@ -44,12 +41,6 @@ protected:
 * Member Variables
 */
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-	UCapsuleComponent* WeaponCapsule;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon")
-	UStaticMeshComponent* WeaponMesh;
-
-	UPROPERTY()
-	TSet<AActor*> OverlappedActors;
+	USkeletalMeshComponent* WeaponMesh;
 };
