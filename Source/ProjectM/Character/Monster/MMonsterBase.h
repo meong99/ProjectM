@@ -22,13 +22,14 @@ class PROJECTM_API AMMonsterBase : public AMCharacterBase, public IAbilitySystem
 */
 public:
 	AMMonsterBase(const FObjectInitializer& ObjectInitializer);
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void InitCharacterName() override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-/*
+	/*
 * Member Functions
 */
 public:
@@ -49,17 +50,14 @@ protected:
 * Member Variables
 */
 protected:
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Monster")
+	UMMonsterDefinition* MonsterDefinition;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Monster")
 	TObjectPtr<UPMAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Monster")
 	TObjectPtr<UMInteractionComponent> InteractionComponent;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Monster")
-	TObjectPtr<UPMHealthComponent> HealthComponent;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Monster")
-	UMMonsterDefinition* MonsterDefinition;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Monster")
 	TObjectPtr<UPMHealthSet> HealthSet;

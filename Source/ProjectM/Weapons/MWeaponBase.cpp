@@ -5,16 +5,24 @@
 #include "PMGameplayTags.h"
 #include "Item/Equipment/MWeaponItemDefinition.h"
 #include "Character/Monster/MMonsterBase.h"
+#include "Util/MGameplayStatics.h"
 
 AMWeaponBase::AMWeaponBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 	RootComponent = WeaponMesh;
-	
+
 	WeaponCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("WeaponCapsule"));
 	WeaponCapsule->SetupAttachment(RootComponent);
 
 	bReplicates = true;
+
+#if WITH_EDITOR
+	if (UMGameplayStatics::bShowDebug_Console)
+	{
+		WeaponCapsule->bHiddenInGame = false;
+	}
+#endif
 }
 
 void AMWeaponBase::PostInitializeComponents()

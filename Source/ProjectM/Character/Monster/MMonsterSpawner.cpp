@@ -11,16 +11,7 @@
 AMMonsterSpawner::AMMonsterSpawner(const FObjectInitializer& ObjectInitializer)
 {
 	SplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
-}
-
-void AMMonsterSpawner::PostLoad()
-{
-	Super::PostLoad();
-
-	if (GEngine && !HasAnyFlags(RF_ClassDefaultObject | RF_Transient) && !MonsterDefinition)
-	{
-		ChangeMonsterDefinition();
-	}
+	bNetLoadOnClient = false;
 }
 
 void AMMonsterSpawner::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
@@ -40,6 +31,11 @@ void AMMonsterSpawner::PostEditChangeProperty(FPropertyChangedEvent& PropertyCha
 void AMMonsterSpawner::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	if (!HasAnyFlags(RF_ClassDefaultObject | RF_Transient) && !MonsterDefinition)
+	{
+		ChangeMonsterDefinition();
+	}
 }
 
 void AMMonsterSpawner::BeginPlay()

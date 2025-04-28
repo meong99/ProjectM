@@ -11,6 +11,7 @@
 #include "MMonsterSpawner.h"
 #include "Definitions/MMonsterDefinition.h"
 #include "PMGameplayTags.h"
+#include "Net/UnrealNetwork.h"
 
 AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -28,56 +29,72 @@ AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Supe
 		InteractionComponent->SetupAttachment(GetRootComponent());
 	}
 
-	HealthComponent = CreateDefaultSubobject<UPMHealthComponent>(TEXT("HealthComponent"));
-
 	AbilitySystemComponent = CreateDefaultSubobject<UPMAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 	AbilitySystemComponent->bWantsInitializeComponent = true;
-	AbilitySystemComponent->SetIsReplicated(true);
 	HealthSet = CreateDefaultSubobject<UPMHealthSet>(TEXT("HealthSet"));
+}
+
+void AMMonsterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMMonsterBase, MonsterDefinition);
 }
 
 void AMMonsterBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	SetCharacterState(EMCharacterState::Spawned);
-	HealthSet->Delegate_OnDamaged.AddDynamic(this, &AMMonsterBase::Callback_OnDamaged);
-
-	if (MonsterDefinition)
+	if (HasAuthority())
 	{
-		TMap<FGameplayTag, float> SetMap;
-		SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_Health, MonsterDefinition->GetMonsterHp());
-		SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_MaxHealth, MonsterDefinition->GetMonsterHp());
-		AbilitySystemComponent->ApplyEffectToSelfWithSetByCaller(MonsterDefinition->GetMonsterInfo().DefaultApplyEffect, nullptr, SetMap);
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+		SetCharacterState(EMCharacterState::Spawned);
+		HealthSet->Delegate_OnDamaged.AddDynamic(this, &AMMonsterBase::Callback_OnDamaged);
+
+		if (MonsterDefinition)
+		{
+			TMap<FGameplayTag, float> SetMap;
+			SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_Health, MonsterDefinition->GetMonsterHp());
+			SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_MaxHealth, MonsterDefinition->GetMonsterHp());
+			AbilitySystemComponent->ApplyEffectToSelfWithSetByCaller(MonsterDefinition->GetMonsterInfo().DefaultApplyEffect, nullptr, SetMap);
+		}
 	}
-	HealthComponent->InitializeWithAbilitySystem(AbilitySystemComponent);
 }
 
 void AMMonsterBase::BeginPlay()
 {
 	Super::BeginPlay();
-	SpawnDefaultController();
-	SetCharacterState(EMCharacterState::Alive);
+
+	if (HasAuthority())
+	{
+		SpawnDefaultController();
+		SetCharacterState(EMCharacterState::Alive);
+	}
 }
 
 void AMMonsterBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	if (HealthSet->GetHealth() <= 0.0f && CharacterState & EMCharacterState::Alive)
+	if (HasAuthority())
 	{
-		SetCharacterState(EMCharacterState::ReadyToDead);
-		OnDead();
+		if (HealthSet->GetHealth() <= 0.0f && CharacterState & EMCharacterState::Alive)
+		{
+			SetCharacterState(EMCharacterState::ReadyToDead);
+			OnDead();
+		}
 	}
 }
 
 void AMMonsterBase::InitCharacterName()
 {
-	if (MonsterDefinition)
+	if (HasAuthority())
 	{
-		CharacterName = MonsterDefinition->GetMonsterName();
+		if (MonsterDefinition)
+		{
+			CharacterName = MonsterDefinition->GetMonsterName();
+		}
 	}
 	Super::InitCharacterName();
 }

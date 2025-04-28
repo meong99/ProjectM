@@ -1,10 +1,19 @@
 #include "MCharacterBase.h"
 #include "Components/MNameWidgetComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AMCharacterBase::AMCharacterBase(const FObjectInitializer& ObjectInitializer)
 {
 	NameComponent = CreateDefaultSubobject<UMNameWidgetComponent>(TEXT("NameComp"));
 	NameComponent->SetupAttachment(GetRootComponent());
+}
+
+void AMCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMCharacterBase, CharacterState);
+	DOREPLIFETIME(AMCharacterBase, CharacterName);
 }
 
 void AMCharacterBase::PreInitializeComponents()

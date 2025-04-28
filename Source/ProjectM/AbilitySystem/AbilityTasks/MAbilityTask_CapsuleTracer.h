@@ -1,0 +1,69 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Engine/EngineTypes.h"
+#include "Abilities/Tasks/AbilityTask.h"
+#include "MAbilityTask_CapsuleTracer.generated.h"
+
+class AActor;
+class ACharacter;
+
+DECLARE_DELEGATE_OneParam(FOnHit, const TArray<AActor*>& HitActors);
+
+/**
+ *
+ */
+UCLASS()
+class PROJECTM_API UMAbilityTask_CapsuleTracer : public UAbilityTask
+{
+	GENERATED_BODY()
+/*
+* Overrided Functions
+*/
+public:
+	static UMAbilityTask_CapsuleTracer* CreateCapsuleTracerTask(
+		UGameplayAbility* InOwningAbility,
+		const ACharacter* InOwnerCharacter,
+		const FString& InStartSocketName,
+		const FString& InEndSocketName,
+		const TArray<TEnumAsByte<EObjectTypeQuery>>& InObjectTypes,
+		FOnHit&& Callback,
+		const TArray<AActor*>& InActorsToIgnore);
+
+protected:
+    virtual void TickTask(float DeltaTime) override;
+    virtual void Activate() override;
+    virtual void OnDestroy(bool bInOwnerFinished) override;
+
+/*
+* Member Functions
+*/
+protected:
+	void Init(const ACharacter* InOwnerCharacter,
+		const FString& InStartSocketName,
+		const FString& InEndSocketName,
+		const TArray<TEnumAsByte<EObjectTypeQuery>>& InObjectTypes,
+		FOnHit&& Callback,
+		const TArray<AActor*>& InActorsToIgnore);
+
+/*
+* Member Variables
+*/
+protected:
+	UPROPERTY()
+	const ACharacter* OwnerCharacter;
+
+	UPROPERTY()
+	FString StartSocketName;
+
+	UPROPERTY()
+	FString EndSocketName;
+
+	UPROPERTY()
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+
+	UPROPERTY()
+	TArray<AActor*> ActorsToIgnore;
+
+	FOnHit Delegate_OnHit;
+};

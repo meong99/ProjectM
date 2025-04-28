@@ -50,9 +50,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Name")
 	UMNameWidgetComponent* NameComponent;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(Replicated, BlueprintReadWrite)
 	FName CharacterName = TEXT("None");
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(Replicated, BlueprintReadWrite)
 	int32 CharacterState = EMCharacterState::WaitToSpawn;
 };

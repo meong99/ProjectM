@@ -5,6 +5,13 @@
 #include "System/MDataTableManager.h"
 #include "Engine/Engine.h"
 #include "Item/Equipment/MWeaponItemDefinition.h"
+#include "GameFramework/Character.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "AbilitySystem/AbilityTasks/MAbilityTask_CapsuleTracer.h"
+#include "Character/Monster/MMonsterBase.h"
+#include "PMGameplayTags.h"
+#include "AbilitySystem/PMAbilitySystemComponent.h"
 
 UMAbility_DefaultAttackBase::UMAbility_DefaultAttackBase()
 {
@@ -17,7 +24,7 @@ void UMAbility_DefaultAttackBase::ActivateAbility(const FGameplayAbilitySpecHand
 
 	FGameplayAbilitySpec* Spec = GetCurrentAbilitySpec();
 	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
-	UMWeaponItemDefinition* ItemDef = TableManager ? Cast<UMWeaponItemDefinition>(TableManager->GetItemDefinition(Spec->InputID)) : nullptr;
+	ItemDef = TableManager ? Cast<UMWeaponItemDefinition>(TableManager->GetItemDefinition(Spec->InputID)) : nullptr;
 
 	if (ItemDef)
 	{
@@ -42,13 +49,10 @@ void UMAbility_DefaultAttackBase::ActivateAbility(const FGameplayAbilitySpecHand
 		UPMWeaponInstance* WeaponInstance = Cast<UPMWeaponInstance>(Spec->SourceObject);
 		if (HasAuthority(&ActivationInfo) && WeaponInstance)
 		{
-			for (AActor* SpawnedActor : WeaponInstance->SpawnedActors)
+			ACharacter* OwnerCharacter = Cast<ACharacter>(WeaponInstance->GetPawn());
+			if (OwnerCharacter)
 			{
-				AMWeaponBase* Weapon = Cast<AMWeaponBase>(SpawnedActor);
-				if (Weapon)
-				{
-					Weapon->ActivateWeapon();
-				}
+				TraceAttack(OwnerCharacter);
 			}
 		}
 	}
@@ -61,18 +65,58 @@ void UMAbility_DefaultAttackBase::ActivateAbility(const FGameplayAbilitySpecHand
 void UMAbility_DefaultAttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-	FGameplayAbilitySpec* Spec = GetCurrentAbilitySpec();
-	UPMWeaponInstance* WeaponInstance = Cast<UPMWeaponInstance>(Spec->SourceObject);
+	
+	OverlappedActors.Empty();
+	ItemDef = nullptr;
+}
 
-	if (HasAuthority(&ActivationInfo) && WeaponInstance)
+void UMAbility_DefaultAttackBase::TraceAttack(ACharacter* OwnerCharacter)
+{
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes = { UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1) };
+	TArray<AActor*> ActorsToIgnore = { OwnerCharacter };
+	EDrawDebugTrace::Type DebugType = EDrawDebugTrace::None;
+	TArray<FHitResult> OutHits;
+
+	UMAbilityTask_CapsuleTracer* Task = UMAbilityTask_CapsuleTracer::CreateCapsuleTracerTask(
+		this, 
+		OwnerCharacter, 
+		TEXT("weapon_start_r"),
+		TEXT("weapon_end_r"),
+		ObjectTypes, 
+		FOnHit::TDelegate::CreateUObject(this, &UMAbility_DefaultAttackBase::Callback_OnHit), 
+		ActorsToIgnore
+	);
+
+	if (Task)
 	{
-		for (AActor* SpawnedActor : WeaponInstance->SpawnedActors)
+		Task->ReadyForActivation();
+	}
+	else
+	{
+		ensure(false);
+		MCHAE_WARNING("Can't create CapsuleTracer!!");
+	}
+}
+
+void UMAbility_DefaultAttackBase::Callback_OnHit(const TArray<AActor*>& HitActors)
+{
+	for (AActor* HitActor : HitActors)
+	{
+		AMMonsterBase* Monster = Cast<AMMonsterBase>(HitActor);
+		if (Monster && !OverlappedActors.Contains(HitActor) && ItemDef)
 		{
-			AMWeaponBase* Weapon = Cast<AMWeaponBase>(SpawnedActor);
-			if (Weapon)
+			UPMAbilitySystemComponent* OwnerAbilitySystem = Cast<UPMAbilitySystemComponent>(GetCurrentActorInfo()->AbilitySystemComponent);
+			UMWeaponItemDefinition* WeaponDefCDO = Cast<UMWeaponItemDefinition>(ItemDef);
+
+			if (OwnerAbilitySystem && WeaponDefCDO)
 			{
-				Weapon->DeactivateWeapon();
+				TMap<FGameplayTag, float> SetbyCallerMap;
+	#pragma TODO("공격력 적용해야함")
+				SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_Health, -10/*이거 공격력으로*/);
+				OwnerAbilitySystem->ApplyEffectToTargetWithSetByCaller(WeaponDefCDO->DefaultAttackEffectClass, Monster, OwnerAbilitySystem->GetOwner(), SetbyCallerMap);
 			}
+
+			OverlappedActors.Add(HitActor);
 		}
 	}
 }

@@ -18,4 +18,6 @@ public:
 
 	// 에디터일땐 에디터팝업, 아닐때는 로그
 	static void	ShowErrorOrLog(const FString& Error);
+
+	static bool bShowDebug_Console;
 };

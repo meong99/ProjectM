@@ -6,6 +6,10 @@
 #include "PMGameplayAbility.h"
 #include "MAbility_DefaultAttackBase.generated.h"
 
+class ACharacter;
+class AActor;
+class UMWeaponItemDefinition;
+
 UCLASS()
 class PROJECTM_API UMAbility_DefaultAttackBase : public UPMGameplayAbility
 {
@@ -25,6 +29,8 @@ protected:
 * Member Functions
 */
 public:
+	virtual void TraceAttack(ACharacter* OwnerCharacter);
+	virtual void Callback_OnHit(const TArray<AActor*>& HitActors);
 
 protected:
 	UFUNCTION()
@@ -33,4 +39,9 @@ protected:
 * Member Variables
 */
 protected:
+	UPROPERTY();
+	UMWeaponItemDefinition* ItemDef;
+
+	UPROPERTY()
+	TSet<AActor*> OverlappedActors;
 };
