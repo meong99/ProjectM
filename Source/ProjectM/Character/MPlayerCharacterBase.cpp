@@ -7,6 +7,7 @@
 #include "UI/MViewportClient.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/MCharacterMovementComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 
 AMPlayerCharacterBase::AMPlayerCharacterBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UMCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -27,6 +28,7 @@ AMPlayerCharacterBase::AMPlayerCharacterBase(const FObjectInitializer& ObjectIni
 	HealthComponent = CreateDefaultSubobject<UPMHealthComponent>(TEXT("HealthComponent"));
 	
 	NetCullDistanceSquared = 900000000.0f;
+	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickMontagesAndRefreshBonesWhenPlayingMontages;
 }
 
 void AMPlayerCharacterBase::Test_ActivateWidget(const FGameplayTag& RegisterTag, const FGameplayTag& WidgetTag)
