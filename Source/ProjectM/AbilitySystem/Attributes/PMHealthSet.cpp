@@ -1,8 +1,17 @@
 #include "PMHealthSet.h"
 #include "GameplayEffectExtension.h"
+#include "Net/UnrealNetwork.h"
 
 UPMHealthSet::UPMHealthSet() : Super(), Health(100), MaxHealth(100)
 {
+}
+
+void UPMHealthSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UPMHealthSet, Health);
+	DOREPLIFETIME(UPMHealthSet, MaxHealth);
 }
 
 void UPMHealthSet::ClampAttribute(const FGameplayAttribute& Attribute, float& NewValue) const

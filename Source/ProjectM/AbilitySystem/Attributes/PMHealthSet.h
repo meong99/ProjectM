@@ -25,6 +25,8 @@ public:
 	ATTRIBUTE_ACCESSORS(UPMHealthSet, MaxHealth);
 	ATTRIBUTE_ACCESSORS(UPMHealthSet, Healing);
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	void ClampAttribute(const FGameplayAttribute& Attribute, float& NewValue) const;
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
@@ -35,10 +37,10 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "ProjectM | Health")
 	FOnDamaged Delegate_OnDamaged;
 
-	UPROPERTY(BlueprintReadWrite, Category = "ProjectM | Health")
+	UPROPERTY(BlueprintReadWrite, Replicated, Category = "ProjectM | Health")
 	FGameplayAttributeData Health;
 
-	UPROPERTY(BlueprintReadWrite, Category = "ProjectM | Health")
+	UPROPERTY(BlueprintReadWrite, Replicated, Category = "ProjectM | Health")
 	FGameplayAttributeData MaxHealth;
 
 	UPROPERTY(BlueprintReadWrite, Category = "ProjectM | Health")
