@@ -84,6 +84,7 @@ void FPMInventoryItemList::PostReplicatedAdd(const TArrayView<int32> AddedIndice
 		if (Entries.IsValidIndex(Index))
 		{
 	 		OwnerComponent->Delegate_OnNewItemAdded.Broadcast(Entries[Index]);
+			OwnerComponent->Delegate_NotifyItemAdded.Broadcast(Entries[Index]);
 		}
 	}
 }
@@ -95,6 +96,8 @@ void FPMInventoryItemList::PostReplicatedChange(const TArrayView<int32> ChangedI
 		if (Entries.IsValidIndex(Index))
 		{
 			FPMInventoryEntry& Entry = Entries[Index];
+
+			OwnerComponent->Delegate_NotifyItemAdded.Broadcast(Entry);
 			FOnChangeInventory Delegate = OwnerComponent->Delegate_OnChangeInventory.FindRef(Entry.ItemUid);
 
 			FMItemHandle Handle;

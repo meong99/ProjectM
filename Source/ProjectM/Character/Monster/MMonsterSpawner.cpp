@@ -12,6 +12,7 @@ AMMonsterSpawner::AMMonsterSpawner(const FObjectInitializer& ObjectInitializer)
 {
 	SplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
 	bNetLoadOnClient = false;
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void AMMonsterSpawner::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
