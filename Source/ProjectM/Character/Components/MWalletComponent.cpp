@@ -1,7 +1,14 @@
 #include "MWalletComponent.h"
+#include "Net/UnrealNetwork.h"
 
 UMWalletComponent::UMWalletComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+}
+
+void UMWalletComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UMWalletComponent, Gold);
 }
 
 void UMWalletComponent::SubtractGold(int64 AdjustGold)
@@ -22,7 +29,7 @@ void UMWalletComponent::SubtractGold(int64 AdjustGold)
 		Gold = Temp;
 	}
 
-	Delegate_OnChangeGold.Broadcast(AdjustGold, Gold);
+	OnRep_OnChangeGold(Temp);
 }
 
 void UMWalletComponent::AddGold(int64 AdjustGold)
@@ -44,10 +51,16 @@ void UMWalletComponent::AddGold(int64 AdjustGold)
 		Gold = Temp;
 	}
 
-	Delegate_OnChangeGold.Broadcast(AdjustGold, Gold);
+	OnRep_OnChangeGold(Temp);
 }
 
 #if WITH_EDITOR
+
+void UMWalletComponent::OnRep_OnChangeGold(const int64 OldGold)
+{
+	Delegate_OnChangeGold.Broadcast(Gold - OldGold, Gold);
+}
+
 void UMWalletComponent::Debug_AddGold(int64 AdjustGold)
 {
 	AddGold(AdjustGold);

@@ -8,9 +8,6 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnChangeGold, int64, AdjustNum, int64, NewGold);
 
-/*
-* 입력에 따라 위젯이 켜지고, 꺼지는 동작을 수행할 수 있도록 하는 컴포넌트
-*/
 UCLASS()
 class PROJECTM_API UMWalletComponent : public UControllerComponent
 {
@@ -21,8 +18,9 @@ class PROJECTM_API UMWalletComponent : public UControllerComponent
 */
 public:
 	UMWalletComponent(const FObjectInitializer& ObjectInitializer);
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
-/*
+	/*
 * Member Functions
 */
 public:
@@ -34,6 +32,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int64 GetGold() const { return Gold; }
+
+protected:
+	UFUNCTION()
+	void OnRep_OnChangeGold(const int64 OldGold);
 
 #if WITH_EDITOR
 	UFUNCTION(Exec)
@@ -49,6 +51,6 @@ public:
 	FOnChangeGold Delegate_OnChangeGold;
 
 protected:
-	UPROPERTY(meta=(ClampMin=0))
+	UPROPERTY(ReplicatedUsing = "OnRep_OnChangeGold", meta = (ClampMin = 0))
 	int64 Gold = 0;
 };
