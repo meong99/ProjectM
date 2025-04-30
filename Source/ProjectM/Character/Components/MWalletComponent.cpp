@@ -3,6 +3,7 @@
 
 UMWalletComponent::UMWalletComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	SetIsReplicatedByDefault(true);
 }
 
 void UMWalletComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -54,13 +55,13 @@ void UMWalletComponent::AddGold(int64 AdjustGold)
 	OnRep_OnChangeGold(Temp);
 }
 
-#if WITH_EDITOR
 
 void UMWalletComponent::OnRep_OnChangeGold(const int64 OldGold)
 {
 	Delegate_OnChangeGold.Broadcast(Gold - OldGold, Gold);
 }
 
+#if WITH_EDITOR
 void UMWalletComponent::Debug_AddGold(int64 AdjustGold)
 {
 	AddGold(AdjustGold);

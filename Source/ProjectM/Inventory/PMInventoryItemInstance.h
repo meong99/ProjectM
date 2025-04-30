@@ -55,10 +55,14 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 	EMItemType GetItemType() const;
+
 /*
 * Member Variables
 */
 public:
+	UPROPERTY(BlueprintReadOnly, Replicated)
+	int32 ItemRowId = INDEX_NONE;
+
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	TSubclassOf<UPMInventoryItemDefinition> ItemDef;
 

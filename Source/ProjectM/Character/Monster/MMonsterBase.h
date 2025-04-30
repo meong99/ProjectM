@@ -11,6 +11,7 @@ class UPMHealthComponent;
 class UPMHealthSet;
 class UMMonsterDefinition;
 class AMMonsterSpawner;
+class UMMonsterTradeComponent;
 
 UCLASS(Blueprintable, BlueprintType)
 class PROJECTM_API AMMonsterBase : public AMCharacterBase, public IAbilitySystemInterface
@@ -45,19 +46,23 @@ public:
 protected:
 	UFUNCTION()
 	void Callback_OnDamaged(AActor* Attacker);
+	void GiveRewardToPlayer();
 	void OnDead();
 /*
 * Member Variables
 */
 protected:
-	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Monster")
-	UMMonsterDefinition* MonsterDefinition;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Monster")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Monster")
 	TObjectPtr<UPMAbilitySystemComponent> AbilitySystemComponent;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Monster")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Monster")
 	TObjectPtr<UMInteractionComponent> InteractionComponent;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Monster")
+	TObjectPtr<UMMonsterTradeComponent> MonsterTradeComponent;
+
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Monster")
+	UMMonsterDefinition* MonsterDefinition;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Monster")
 	TObjectPtr<UPMHealthSet> HealthSet;

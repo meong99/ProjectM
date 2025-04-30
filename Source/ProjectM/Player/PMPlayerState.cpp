@@ -137,7 +137,7 @@ void APMPlayerState::Server_LoadPlayerData_Implementation()
 			const TSubclassOf<UPMInventoryItemDefinition>& ItemDef = PawnData->DefaultEquipment;
 			if (ItemDef && InventoryManager)
 			{
-				const FMItemHandle& ItemHandle = InventoryManager->AddItemDefinition(ItemDef);
+				const FMItemHandle& ItemHandle = InventoryManager->AddItemtoInventory(ItemDef);
 				InventoryManager->Server_UseItem(ItemHandle);
 			}
 		}
@@ -212,17 +212,16 @@ void APMPlayerState::ApplyLoadedData()
 	{
 		for (const TSubclassOf<UPMInventoryItemDefinition>& ItemDef : PlayerSaveData->ItemDefinitions)
 		{
-			UPMInventoryItemDefinition* DefCDO = ItemDef->GetDefaultObject<UPMInventoryItemDefinition>();
-			if (DefCDO)
+			if (ItemDef)
 			{
-				InventoryManager->AddItemDefinition(ItemDef);
+				InventoryManager->AddItemtoInventory(ItemDef);
 			}
 		}
 
 		const TSubclassOf<UPMInventoryItemDefinition>& ItemDef = PawnData->DefaultEquipment;
 		if (ItemDef)
 		{
-			const FMItemHandle& ItemHandle = InventoryManager->AddItemDefinition(ItemDef);
+			const FMItemHandle& ItemHandle = InventoryManager->AddItemtoInventory(ItemDef);
 			InventoryManager->Server_UseItem(ItemHandle);
 		}
 	}

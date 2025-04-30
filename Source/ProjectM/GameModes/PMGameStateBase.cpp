@@ -1,10 +1,12 @@
 #include "PMGameStateBase.h"
 #include "PMExperienceManagerComponent.h"
 #include "Player/PMPlayerState.h"
+#include "Components/MTradeManager.h"
 
 APMGameStateBase::APMGameStateBase()
 {
 	ExperienceManagerComponent = CreateDefaultSubobject<UPMExperienceManagerComponent>(TEXT("ExperienceManagerComponent"));
+	TradeManager = CreateDefaultSubobject<UMTradeManager>(TEXT("TradeManager"));
 }
 
 void APMGameStateBase::BeginPlay()

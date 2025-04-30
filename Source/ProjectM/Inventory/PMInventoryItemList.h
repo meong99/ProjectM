@@ -19,6 +19,7 @@ struct FPMInventoryEntry : public FFastArraySerializerItem
 
 	EMItemType		GetItemType() const;
 	FMItemHandle	GetItemHandle() const;
+	int32			GetItemRowId() const;
 
 	TSubclassOf<UPMInventoryItemDefinition> GetItemDefinition() const;
 

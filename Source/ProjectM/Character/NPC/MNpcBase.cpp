@@ -8,6 +8,7 @@ AMNpcBase::AMNpcBase(const FObjectInitializer& ObjectInitializer) : Super(Object
 	{
 		InteractionComponent = CreateDefaultSubobject<UMInteractionComponent>(TEXT("InteractionComponent"));
 		InteractionComponent->SetupAttachment(GetRootComponent());
+		InteractionComponent->SetSphereRadius(300.f);
 	}
 }
 

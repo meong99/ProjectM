@@ -5,11 +5,15 @@
 #include "Engine/GameInstance.h"
 #include "UI/MViewportClient.h"
 #include "Inventory/PMInventoryManagerComponent.h"
+#include "Components/MPlayerTradeComponent.h"
 
 APMPlayerControllerBase::APMPlayerControllerBase()
 {
 	PlayerCameraManagerClass = APMPlayerCameraManager::StaticClass();
 	InventoryManagerComponent = CreateDefaultSubobject<UPMInventoryManagerComponent>(TEXT("InventoryManagerComponent"));
+	PlayerTradeComponent = CreateDefaultSubobject<UMPlayerTradeComponent>(TEXT("PlayerTradeComponent"));
+
+	bReplicates = true;
 }
 
 void APMPlayerControllerBase::OnPossess(APawn* aPawn)

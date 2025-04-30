@@ -38,6 +38,16 @@ FMItemHandle FPMInventoryEntry::GetItemHandle() const
 	return FMItemHandle{};
 }
 
+int32 FPMInventoryEntry::GetItemRowId() const
+{
+	if (Instance)
+	{
+		return Instance->ItemRowId;
+	}
+
+	return 0;
+}
+
 TSubclassOf<UPMInventoryItemDefinition> FPMInventoryEntry::GetItemDefinition() const
 {
 	if (Instance)
@@ -71,10 +81,10 @@ FPMInventoryItemList::FPMInventoryItemList(UPMInventoryManagerComponent* InOwner
 
 void FPMInventoryItemList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
 {
-	 	for (int32 Index : RemovedIndices)
-	 	{
-	 		FPMInventoryEntry& Stack = Entries[Index];
-	 	}
+// 	for (int32 Index : RemovedIndices)
+// 	{
+// 		FPMInventoryEntry& Stack = Entries[Index];
+// 	}
 }
 
 void FPMInventoryItemList::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
@@ -126,10 +136,12 @@ int32 FPMInventoryItemList::ChangeItemQuantity(const FMItemHandle& ItemHandle, i
 
 	if (ChangeNum > 0)
 	{
+		MarkItemDirty(*Entry);
 		return Entry->Instance->AddStatTagStack(FPMGameplayTags::Get().Item_Quentity, ChangeNum);
 	}
 	else if (ChangeNum < 0)
 	{
+		MarkItemDirty(*Entry);
 		return Entry->Instance->RemoveStatTagStack(FPMGameplayTags::Get().Item_Quentity, ChangeNum * -1);
 	}
 
@@ -226,6 +238,7 @@ FPMInventoryEntry* FPMInventoryItemList::MakeEntry(TSubclassOf<UPMInventoryItemD
 	FPMInventoryEntry& NewEntry = Entries.AddDefaulted_GetRef();
 	NewEntry.Instance = NewObject<UPMInventoryItemInstance>(OwningActor, InstanceType);
 	NewEntry.Instance->ItemDef = ItemDef;
+	NewEntry.Instance->ItemRowId = ItemDefCDO->RowId;
 
 	for (const UPMInventoryItemFragment* Fragment : GetDefault<UPMInventoryItemDefinition>(ItemDef)->GetFragments())
 	{

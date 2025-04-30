@@ -14,6 +14,7 @@ void UPMInventoryItemInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 
 	DOREPLIFETIME(ThisClass, StatTags);
 	DOREPLIFETIME(ThisClass, ItemDef);
+	DOREPLIFETIME(ThisClass, ItemRowId);
 	DOREPLIFETIME(ThisClass, ItemHandle);
 }
 

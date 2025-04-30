@@ -5,6 +5,7 @@
 
 class UPMExperienceManagerComponent;
 class USaveGame;
+class UMTradeManager;
 
 UCLASS()
 class PROJECTM_API APMGameStateBase : public AGameStateBase
@@ -34,8 +35,11 @@ public:
 */
 private:
 	UPROPERTY()
-	UPMExperienceManagerComponent* ExperienceManagerComponent;
+	TObjectPtr<UPMExperienceManagerComponent> ExperienceManagerComponent;
 	
+	UPROPERTY()
+	TObjectPtr<UMTradeManager> TradeManager;
+
 	UPROPERTY()
 	TArray<TObjectPtr<USaveGame>> PlayerSaveDataArray;
 };

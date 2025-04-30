@@ -6,6 +6,8 @@ AMCharacterBase::AMCharacterBase(const FObjectInitializer& ObjectInitializer)
 {
 	NameComponent = CreateDefaultSubobject<UMNameWidgetComponent>(TEXT("NameComp"));
 	NameComponent->SetupAttachment(GetRootComponent());
+
+	bReplicates = true;
 }
 
 void AMCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

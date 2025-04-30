@@ -9,6 +9,7 @@
 #include "Table/Item/MTable_ConsumableItem.h"
 #include "Table/MTableAsset.h"
 #include "Table/Item/MTable_EquipmentItem.h"
+#include "PMGameplayTags.h"
 
 /*
 * UPMInventoryManagerComponent -------------------------------
@@ -109,18 +110,18 @@ void UPMInventoryManagerComponent::ReadyForReplication()
 	}
 }
 
-FMItemHandle UPMInventoryManagerComponent::AddItemDefinition(int32 ItemRowId)
+FMItemHandle UPMInventoryManagerComponent::AddItemtoInventory(int32 ItemRowId)
 {
 	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
 	if (TableManager)
 	{
-		return AddItemDefinition(TableManager->GetDefinitionClass<UPMInventoryItemDefinition>(ItemRowId));
+		return AddItemtoInventory(TableManager->GetDefinitionClass<UPMInventoryItemDefinition>(ItemRowId));
 	}
 
 	return {};
 }
 
-FMItemHandle UPMInventoryManagerComponent::AddItemDefinition(TSubclassOf<UPMInventoryItemDefinition> ItemDef)
+FMItemHandle UPMInventoryManagerComponent::AddItemtoInventory(TSubclassOf<UPMInventoryItemDefinition> ItemDef)
 {
 	FMItemHandle Handle = FMItemHandle{};
 	UPMInventoryItemDefinition* CDO = ItemDef->GetDefaultObject<UPMInventoryItemDefinition>();
@@ -138,7 +139,7 @@ FMItemHandle UPMInventoryManagerComponent::AddItemDefinition(TSubclassOf<UPMInve
 		if (Entry && ItemList->OwnedItemType != EMItemType::Equipment)
 		{
 			ItemList->ChangeItemQuantity(Entry->GetItemHandle(), 1);
-			Delegate_NotifyItemAdded.Broadcast(*Entry);
+			Broadcast_OnNewItemAdded(*Entry, true);
 			return Entry->GetItemHandle();
 		}
 		else
@@ -150,7 +151,7 @@ FMItemHandle UPMInventoryManagerComponent::AddItemDefinition(TSubclassOf<UPMInve
 	return Handle;
 }
 
-FMItemHandle UPMInventoryManagerComponent::AddItem(UPMInventoryItemInstance* Instance)
+FMItemHandle UPMInventoryManagerComponent::ReturnItem(UPMInventoryItemInstance* Instance)
 {
 	if (Instance)
 	{
@@ -184,15 +185,32 @@ FMItemHandle UPMInventoryManagerComponent::AddItemDefinition_Impl(TSubclassOf<UP
 		AddReplicatedSubObject(ItemInstance);
 	}
 
-	Delegate_NotifyItemAdded.Broadcast(*Entry);
-	Delegate_OnNewItemAdded.Broadcast(*Entry);
+	Broadcast_OnNewItemAdded(*Entry);
 
 	return Handle;
 }
 
-void UPMInventoryManagerComponent::Multicast_OnRemoveItem_Implementation(const FMItemHandle& ItemHandle, const EMItemType ItemType)
+void UPMInventoryManagerComponent::Broadcast_OnRemoveItem(const FMItemHandle& ItemHandle, const EMItemType ItemType)
 {
 	Delegate_OnRemoveItem.Broadcast(ItemHandle, ItemType);
+}
+
+void UPMInventoryManagerComponent::Broadcast_OnNewItemAdded(const FPMInventoryEntry& ItemEntry, bool bOnlyNotify)
+{
+	Delegate_NotifyItemAdded.Broadcast(ItemEntry);
+	if (!bOnlyNotify)
+	{
+		Delegate_OnNewItemAdded.Broadcast(ItemEntry);
+	}
+}
+
+void UPMInventoryManagerComponent::Broadcast_OnChangeInventory(const FMItemHandle& ItemHandle)
+{
+	FOnChangeInventory* InventoryDelegates = Delegate_OnChangeInventory.Find(ItemHandle.ItemUid);
+	if (InventoryDelegates)
+	{
+		InventoryDelegates->Broadcast(ItemHandle);
+	}
 }
 
 UPMInventoryItemInstance* UPMInventoryManagerComponent::FindItemInstance(const FMItemHandle& ItemHandle)
@@ -236,6 +254,35 @@ FPMInventoryEntry* UPMInventoryManagerComponent::FindEntry(TSubclassOf<UPMInvent
 	return nullptr;
 }
 
+int32 UPMInventoryManagerComponent::GetItemQuantity(const int32 ItemRowId)
+{
+	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
+	UPMInventoryItemDefinition* ItemDef = TableManager->GetItemDefinition(ItemRowId);
+	if (!ItemDef)
+	{
+		ensure(false);
+		return 0;
+	}
+
+	FPMInventoryItemList* ItemList = GetItemList(ItemDef->ItemType);
+	if (!ItemList)
+	{
+		ensure(false);
+		return 0;
+	}
+
+	int32 Result = 0;
+	for (const FPMInventoryEntry& Entry : ItemList->Entries)
+	{
+		if (Entry.GetItemRowId() == ItemRowId && Entry.Instance)
+		{
+			Result += Entry.Instance->GetStatTagStackCount(FPMGameplayTags::Get().Item_Quentity);
+		}
+	}
+
+	return Result;
+}
+
 int32 UPMInventoryManagerComponent::ChangeItemQuantity(const FMItemHandle& ItemHandle, int32 ChangeNum)
 {
 	FPMInventoryItemList* ItemList = GetItemList(ItemHandle.ItemType);
@@ -248,19 +295,50 @@ int32 UPMInventoryManagerComponent::ChangeItemQuantity(const FMItemHandle& ItemH
 			RemoveItem(ItemHandle);
 		}
 
-		if (HasAuthority())
-		{
-			FOnChangeInventory* InventoryDelegates = Delegate_OnChangeInventory.Find(ItemHandle.ItemUid);
-			if (InventoryDelegates)
-			{
-				InventoryDelegates->Broadcast(ItemHandle);
-			}
-		}
-
+		Broadcast_OnChangeInventory(ItemHandle);
 		return CurrentItemQuentity;
 	}
 
 	return 0;
+}
+
+int32 UPMInventoryManagerComponent::ChangeItemQuantity(int32 ItemRowId, int32 ChangeNum)
+{
+	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
+	UPMInventoryItemDefinition* ItemDef = TableManager->GetItemDefinition(ItemRowId);
+	if (!ItemDef)
+	{
+		ensure(false);
+		return 0;
+	}
+
+	FPMInventoryItemList* ItemList = GetItemList(ItemDef->ItemType);
+	if (!ItemList)
+	{
+		ensure(false);
+		return 0;
+	}
+
+	#pragma TODO("이거 아이템 카운트 리팩토링 필요함")
+	int32 Result = 0;
+	for (auto Iter = ItemList->Entries.CreateIterator(); Iter; ++Iter)
+	{
+		if (Iter->Instance)
+		{
+			int32 ItemCount = Iter->Instance->GetStatTagStackCount(FPMGameplayTags::Get().Item_Quentity);
+			int32 LeftCount = Iter->Instance->RemoveStatTagStack(FPMGameplayTags::Get().Item_Quentity, ChangeNum);
+
+			if (LeftCount == 0)
+			{
+				Iter.RemoveCurrent();
+			}
+
+			ChangeNum -= (ItemCount - LeftCount);
+			Result += LeftCount;
+		}
+	}
+
+	return Result;
 }
 
 FDelegateHandle UPMInventoryManagerComponent::AddDelegateOnChangeInventory(const int32 ItemUid, FOnChangeInventory::FDelegate&& Delegate)
@@ -321,7 +399,7 @@ void UPMInventoryManagerComponent::RemoveItem(const FMItemHandle& ItemHandle)
 			}
 
 			ItemList->RemoveEntry(ItemHandle);
-			Multicast_OnRemoveItem(ItemHandle, ItemList->OwnedItemType);
+			Broadcast_OnRemoveItem(ItemHandle, ItemList->OwnedItemType);
 		}
 	}
 	
@@ -347,6 +425,7 @@ FPMInventoryItemList* UPMInventoryManagerComponent::GetItemList(const EMItemType
 	}
 }
 
+#if WITH_EDITOR
 void UPMInventoryManagerComponent::Debug_AddItem(int32 RowId)
 {
 	if (GEngine)
@@ -364,7 +443,7 @@ void UPMInventoryManagerComponent::Debug_AddItem(int32 RowId)
 					FMTable_TableBase* Item = DataTable->FindRow<FMTable_TableBase>(Names[ElementId], Names[ElementId].ToString());
 					if (Item)
 					{
-						DebugServer_AddItem(Item->GetDefinition<UPMInventoryItemDefinition>());
+						DebugServer_AddItem(Item->RowId);
 					}
 					else
 					{
@@ -376,7 +455,8 @@ void UPMInventoryManagerComponent::Debug_AddItem(int32 RowId)
 	}
 }
 
-void UPMInventoryManagerComponent::DebugServer_AddItem_Implementation(TSubclassOf<UPMInventoryItemDefinition> ItemDef)
+void UPMInventoryManagerComponent::DebugServer_AddItem_Implementation(int32 Rowid)
 {
-	AddItemDefinition(ItemDef);
+	AddItemtoInventory(Rowid);
 }
+#endif

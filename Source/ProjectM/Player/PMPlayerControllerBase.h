@@ -8,6 +8,7 @@
 class APMPlayerState;
 class UPMAbilitySystemComponent;
 class UPMInventoryManagerComponent;
+class UMPlayerTradeComponent;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPossessed, AMPlayerCharacterBase* /*Character*/);
 
@@ -41,8 +42,11 @@ public:
 * Member Variables
 */
 protected:
-UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	UPMInventoryManagerComponent* InventoryManagerComponent;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UPMInventoryManagerComponent> InventoryManagerComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UMPlayerTradeComponent> PlayerTradeComponent;
 
 	FOnPossessed Delegate_OnPossessed;
 };

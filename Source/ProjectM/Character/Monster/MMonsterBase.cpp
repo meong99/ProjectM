@@ -12,10 +12,10 @@
 #include "Definitions/MMonsterDefinition.h"
 #include "PMGameplayTags.h"
 #include "Net/UnrealNetwork.h"
+#include "Components/MMonsterTradeComponent.h"
 
 AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = true;
 	bUseControllerRotationYaw = false;
 
@@ -34,6 +34,8 @@ AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Supe
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 	AbilitySystemComponent->bWantsInitializeComponent = true;
 	HealthSet = CreateDefaultSubobject<UPMHealthSet>(TEXT("HealthSet"));
+
+	MonsterTradeComponent = CreateDefaultSubobject<UMMonsterTradeComponent>(TEXT("MonsterTradeComponent"));
 }
 
 void AMMonsterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -121,29 +123,30 @@ void AMMonsterBase::Callback_OnDamaged(AActor* Attacker)
 	LastAttacker = Attacker;
 }
 
-void AMMonsterBase::OnDead()
+void AMMonsterBase::GiveRewardToPlayer()
 {
-	SetCharacterState(EMCharacterState::Dead);
-
 	APlayerState* AttackerPlayerState = Cast<APlayerState>(LastAttacker);
 	if (AttackerPlayerState && MonsterDefinition)
 	{
 		APlayerController* AttackerController = AttackerPlayerState->GetPlayerController();
-		UMWalletComponent* WalletComp = AttackerController ? AttackerController->FindComponentByClass<UMWalletComponent>() : nullptr;
-		UPMInventoryManagerComponent* InvenComp = AttackerController ? AttackerController->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
-		if (WalletComp)
+		FMTradeRequest Request;
+
+		Request.TradeId = Request.GetTradeId();
+		Request.GrantGold = MonsterDefinition->GetMonsterReward();
+		for (const FMDropInfo& DropInfo : MonsterDefinition->GetItemDropTable())
 		{
-			WalletComp->AddGold(MonsterDefinition->GetMonsterReward());
+#pragma TODO("확률적용해야함")
+			Request.GrantItems.Add(DropInfo.ItemId);
 		}
-		if (InvenComp)
-		{
-			for (const FMDropInfo& DropInfo : MonsterDefinition->GetItemDropTable())
-			{
-				#pragma TODO("확률적용해야함")
-				InvenComp->AddItemDefinition(DropInfo.ItemId);
-			}
-		}
+		Request.RequestType = FMTradeRequest::Give;
+		MonsterTradeComponent->Server_SendSimpleDataGrantRequest(Request, AttackerController);
 	}
+}
+
+void AMMonsterBase::OnDead()
+{
+	SetCharacterState(EMCharacterState::Dead);
+	GiveRewardToPlayer();
 
 	AAIController* AIController = Cast<AAIController>(GetController());
 	if (AIController)

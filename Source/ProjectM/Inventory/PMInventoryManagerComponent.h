@@ -43,12 +43,13 @@ public:
 
 	// 아이템을 추가하고 Instancing해서 저장한다.
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
-	FMItemHandle	AddItemDefinition(int32 ItemRowId);
-	FMItemHandle	AddItemDefinition(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
-	FMItemHandle	AddItem(UPMInventoryItemInstance* Instance);
+	FMItemHandle	AddItemtoInventory(int32 ItemRowId);
+	FMItemHandle	AddItemtoInventory(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
+	FMItemHandle	ReturnItem(UPMInventoryItemInstance* Instance);
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
 	int32			ChangeItemQuantity(const FMItemHandle& ItemHandle, int32 ChangeNum);
+	int32			ChangeItemQuantity(int32 ItemRowId, int32 ChangeNum);
 
 	FDelegateHandle AddDelegateOnChangeInventory(const int32 ItemUid, FOnChangeInventory::FDelegate&& Delegate);
 	void			RemoveDelegateOnChangeInventory(const int32 ItemUid, const FDelegateHandle& DelegateHandle);
@@ -60,6 +61,8 @@ public:
 	UPMInventoryItemInstance*	FindItemInstance(const FMItemHandle& ItemHandle);
 	FPMInventoryEntry*			FindEntry(const FMItemHandle& ItemHandle);
 	FPMInventoryEntry*			FindEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
+
+	int32 GetItemQuantity(const int32 ItemRowId);
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
 	int32						GetMaxInventoryCount() const { return MaxInventoryCount; }
@@ -76,8 +79,9 @@ protected:
 	void RemoveItem(const FMItemHandle& ItemHandle);
 
 	// 이걸 서버와 클라가 한 번의 함수 호출로 동시에 작동되도록 하는 방법은 멀티캐스트 말곤 없을까?...
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_OnRemoveItem(const FMItemHandle& ItemHandle, const EMItemType ItemType);
+	void Broadcast_OnRemoveItem(const FMItemHandle& ItemHandle, const EMItemType ItemType);
+	void Broadcast_OnNewItemAdded(const FPMInventoryEntry& ItemEntry, bool bOnlyNotify = false);
+	void Broadcast_OnChangeInventory(const FMItemHandle& ItemHandle);
 
 	FPMInventoryItemList* GetItemList(const EMItemType ItemType);
 /*
@@ -106,8 +110,10 @@ private:
 
 // DEBUG
 private:
+#if WITH_EDITOR
 	UFUNCTION(Exec)
 	void Debug_AddItem(int32 RowId);
 	UFUNCTION(Server, Reliable)
-	void DebugServer_AddItem(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
+	void DebugServer_AddItem(int32 Rowid);
+#endif
 };
