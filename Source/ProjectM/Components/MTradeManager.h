@@ -90,10 +90,9 @@ public:
 	const FMTradeResponse SimpleRequestDataGrant(AActor* Responder, const FMTradeRequest& Request);
 
 	// 검증 없이 단순히 대상자에게 데이터를 전달 후 대상자가 데이터 검증 후 응답 (상점, 퀘스트 등)
-	const FMTradeResponse SimpleRequestTrading(AActor* Requestor, AActor* Responder, const FMTradeRequest& Request);
-	
-protected:
+	const FMTradeResponse SimpleRequestTrading(AActor* Responder, const FMTradeRequest& Request);
 
+protected:
 /*
 * Member Variables
 */

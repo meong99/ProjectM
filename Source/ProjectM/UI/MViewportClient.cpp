@@ -134,6 +134,10 @@ void UMViewportClient::AddWidgetToLayer(const FGameplayTag& WidgetTag, const int
 	if (WidgetLayout && Widget)
 	{
 		Widget->SetWidgetInstigator(Instigator);
+		if (!Widget->IsInitialized())
+		{
+			Widget->PreAddToLayer();
+		}
 		WidgetLayout->AddWidgetToLayout(GetWidgetInstance(WidgetTag), (EMWidgetLayout)LayerId);
 	}
 	else

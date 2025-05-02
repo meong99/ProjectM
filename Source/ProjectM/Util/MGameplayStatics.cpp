@@ -44,6 +44,18 @@ UPMExperienceManagerComponent* UMGameplayStatics::GetExperienceManagerComponent(
 	return nullptr;
 }
 
+ECollisionChannel UMGameplayStatics::GetCollisionChannel(EMCollisionChannel Channel)
+{
+	switch (Channel)
+	{
+		case EMCollisionChannel::Monster	:	return ECollisionChannel::ECC_GameTraceChannel1;
+		case EMCollisionChannel::Interaction:	return ECollisionChannel::ECC_GameTraceChannel2;
+		case EMCollisionChannel::Player		:	return ECollisionChannel::ECC_GameTraceChannel3;
+		case EMCollisionChannel::NPC		:	return ECollisionChannel::ECC_GameTraceChannel4;
+		default								:	return ECC_Visibility;
+	}
+}
+
 void UMGameplayStatics::ShowErrorOrLog(const FString& Error)
 {
 #if WITH_EDITOR

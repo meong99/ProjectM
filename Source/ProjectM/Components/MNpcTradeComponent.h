@@ -25,8 +25,8 @@ public:
 	virtual void OnReceivedResponse(const FMTradeRequest& Request, const FMTradeResponse& Response) override;
 
 	/*
-* Member Functions
-*/
+	* Member Functions
+	*/
 public:
 
 protected:

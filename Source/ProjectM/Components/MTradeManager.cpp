@@ -31,7 +31,7 @@ const FMTradeResponse UMTradeManager::SimpleRequestDataGrant(AActor* Responder, 
 	return Response;
 }
 
-const FMTradeResponse UMTradeManager::SimpleRequestTrading(AActor* Requestor, AActor* Responder, const FMTradeRequest& Request)
+const FMTradeResponse UMTradeManager::SimpleRequestTrading(AActor* Responder, const FMTradeRequest& Request)
 {
 	FMTradeResponse Response;
 	if (!HasAuthority())
@@ -43,9 +43,8 @@ const FMTradeResponse UMTradeManager::SimpleRequestTrading(AActor* Requestor, AA
 		return Response;
 	}
 
-	UMTradeComponentBase* RequestorComp = IsValid(Requestor) ? Requestor->FindComponentByClass<UMTradeComponentBase>() : nullptr;
 	UMTradeComponentBase* ResponderComp = IsValid(Responder) ? Responder->FindComponentByClass<UMTradeComponentBase>() : nullptr;
-	if (!IsValid(RequestorComp) || !IsValid(ResponderComp))
+	if (!IsValid(ResponderComp))
 	{
 		ensure(false);
 		Response.TradeId = Request.TradeId;

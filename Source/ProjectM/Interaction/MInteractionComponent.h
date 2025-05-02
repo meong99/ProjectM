@@ -33,16 +33,16 @@ public:
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
+	
+	UFUNCTION(BlueprintCallable)
+	void ActivateAllOverlapAction();
+	UFUNCTION(BlueprintCallable)
+	void DeactivateAllOverlapAction();
 protected:
 	void OnInteract(const FGameplayTag& Tag);
 	void Callback_OnSetInputComponent(UInputComponent* InInputComponent);
 	void BindDelegate();
 	void UnbindDelegate();
-	UFUNCTION(BlueprintCallable)
-	void ActivateAllOverlapAction();
-	UFUNCTION(BlueprintCallable)
-	void DeactivateAllOverlapAction();
 
 	UPMInputComponent* GetInputComponent() const;
 /*

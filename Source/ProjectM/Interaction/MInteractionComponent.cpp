@@ -10,11 +10,12 @@
 #include "PMGameplayTags.h"
 #include "Util/MGameplayStatics.h"
 #include "UI/MViewportClient.h"
-#include "Character/NPC/MNpcBase.h"
+#include "Util/MGameplayStatics.h"
 
 UMInteractionComponent::UMInteractionComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	bWantsInitializeComponent = true;
+	SetCollisionProfileName(*UEnum::GetDisplayValueAsText(EMCollisionChannel::Interaction).ToString());
 }
 
 void UMInteractionComponent::InitializeComponent()
@@ -33,14 +34,14 @@ void UMInteractionComponent::BeginPlay()
 	{
 		if (Action)
 		{
-			Action->InitAction(this);
+			Action->InitAction(this, GetOwner());
 		}
 	}
 	for (UMInteractionActivity_Base* Action : Action_OnInteract)
 	{
 		if (Action)
 		{
-			Action->InitAction(this);
+			Action->InitAction(this, GetOwner());
 		}
 	}
 }

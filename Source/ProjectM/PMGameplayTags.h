@@ -40,7 +40,7 @@ struct FPMGameplayTags
 
 	FGameplayTag UI_Game_NameWidget;
 	FGameplayTag UI_Registry_Game_InteractionList;
-
+	FGameplayTag UI_Registry_Game_Shop;
 	/*
 	* Item
 	*/

@@ -13,16 +13,16 @@ UMInteractionActivity_ShowWidget::UMInteractionActivity_ShowWidget(const FObject
 {
 }
 
-void UMInteractionActivity_ShowWidget::InitAction(UMInteractionComponent* InOwner)
+void UMInteractionActivity_ShowWidget::InitAction(UMInteractionComponent* InInteractionComponent, AActor* InOwnerActor)
 {
-	Super::InitAction(InOwner);
+	Super::InitAction(InInteractionComponent, InOwnerActor);
 }
 
 void UMInteractionActivity_ShowWidget::ActivateAction()
 {
 	UMViewportClient* ViewportClient = Cast<UMViewportClient>(GetWorld()->GetGameInstance()->GetGameViewportClient());
 
-	if (ViewportClient && Owner.IsValid())
+	if (ViewportClient && InteractionComponent)
 	{
 		FGameplayTag NameWidgetTag = FPMGameplayTags::Get().UI_Game_NameWidget;
 		for (const FGameplayTag& Tag : WidgetTags)
@@ -33,7 +33,7 @@ void UMInteractionActivity_ShowWidget::ActivateAction()
 			}
 			else
 			{
-				ViewportClient->AddWidgetToLayer(Tag, 0, Owner->GetOwner());
+				ViewportClient->AddWidgetToLayer(Tag, 0, InteractionComponent->GetOwner());
 			}
 		}
 	}
@@ -79,9 +79,9 @@ void UMInteractionActivity_ShowWidget::DisableNameWidget() const
 
 UMNameWidgetComponent* UMInteractionActivity_ShowWidget::GetNameWidgetComponent() const
 {
-	if (Owner.IsValid() && Owner->GetOwner())
+	if (InteractionComponent && InteractionComponent->GetOwner())
 	{
-		return Owner->GetOwner()->FindComponentByClass<UMNameWidgetComponent>();
+		return InteractionComponent->GetOwner()->FindComponentByClass<UMNameWidgetComponent>();
 	}
 
 	return nullptr;

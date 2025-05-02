@@ -7,10 +7,11 @@ UMInteractionActivity_Base::UMInteractionActivity_Base(const FObjectInitializer&
 {
 }
 
-void UMInteractionActivity_Base::InitAction(UMInteractionComponent* InOwner)
+void UMInteractionActivity_Base::InitAction(UMInteractionComponent* InInteractionComponent, AActor* InOwnerActor)
 {
-	Owner = InOwner;
-	K2_InitAction(InOwner, Cast<APMPlayerControllerBase>(UGameplayStatics::GetPlayerController(InOwner, 0)));
+	InteractionComponent = InInteractionComponent;
+	OwnerActor = InOwnerActor;
+	K2_InitAction(InteractionComponent, OwnerActor, Cast<APMPlayerControllerBase>(UGameplayStatics::GetPlayerController(InteractionComponent, 0)));
 }
 
 void UMInteractionActivity_Base::ActivateAction()

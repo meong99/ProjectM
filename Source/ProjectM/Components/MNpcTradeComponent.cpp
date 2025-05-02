@@ -24,6 +24,6 @@ void UMNpcTradeComponent::Server_SendSimpleTradingRequest_Implementation(const F
 		MakeErrorResponse(Request, TEXT("Can't Found TradeManager"));
 	}
 
-	FMTradeResponse Response = TradeManager->SimpleRequestTrading(GetOwner(), Responder, Request);
+	FMTradeResponse Response = TradeManager->SimpleRequestTrading(Responder, Request);
 	OnReceivedResponse(Request, Response);
 }

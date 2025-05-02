@@ -13,6 +13,8 @@
 #include "PMGameplayTags.h"
 #include "Net/UnrealNetwork.h"
 #include "Components/MMonsterTradeComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Util/MGameplayStatics.h"
 
 AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -22,6 +24,8 @@ AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Supe
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	GetCharacterMovement()->bRequestedMoveUseAcceleration = true;
+
+	GetCapsuleComponent()->SetCollisionProfileName(*UEnum::GetDisplayValueAsText(EMCollisionChannel::Monster).ToString());
 
 	if (!IsRunningDedicatedServer())
 	{

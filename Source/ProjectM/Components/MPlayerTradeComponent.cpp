@@ -6,12 +6,12 @@ UMPlayerTradeComponent::UMPlayerTradeComponent(const FObjectInitializer& ObjectI
 {
 }
 
-const FMTradeResponse UMPlayerTradeComponent::OnRequestSimpleDataGrant(const FMTradeRequest& Request)
+void UMPlayerTradeComponent::Server_OnRequestSimpleDataGrant_Implementation(const FMTradeRequest& Request)
 {
 	if (GetOwnerRole() != ENetRole::ROLE_Authority)
 	{
 		ensure(false);
-		return MakeErrorResponse(Request, TEXT("Trading only working on authority! Don't call Client"));
+		return;// MakeErrorResponse(Request, TEXT("Trading only working on authority! Don't call Client"));
 	}
 
 	AActor* Owner = GetOwner();
@@ -21,7 +21,7 @@ const FMTradeResponse UMPlayerTradeComponent::OnRequestSimpleDataGrant(const FMT
 	if (!WalletComponent || !InventoryManager)
 	{
 		ensure(false);
-		return MakeErrorResponse(Request, TEXT("Inventory or WalletComponent is not valid!"));
+		return;// MakeErrorResponse(Request, TEXT("Inventory or WalletComponent is not valid!"));
 	}
 
 	WalletComponent->AddGold(Request.GrantGold);
@@ -31,15 +31,15 @@ const FMTradeResponse UMPlayerTradeComponent::OnRequestSimpleDataGrant(const FMT
 		InventoryManager->AddItemtoInventory(ItemRowId);
 	}
 
-	return MakeSuccessResponse(Request);
+// 	return MakeSuccessResponse(Request);
 }
 
-const FMTradeResponse UMPlayerTradeComponent::OnRequestSimpleTrading(const FMTradeRequest& Request)
+void UMPlayerTradeComponent::Server_OnRequestSimpleTrading_Implementation(const FMTradeRequest& Request)
 {
 	if (GetOwnerRole() != ENetRole::ROLE_Authority)
 	{
 		ensure(false);
-		return MakeErrorResponse(Request, TEXT("Trading only working on authority! Don't call Client"));
+		return;// MakeErrorResponse(Request, TEXT("Trading only working on authority! Don't call Client"));
 	}
 
 	AActor* Owner = GetOwner();
@@ -52,12 +52,12 @@ const FMTradeResponse UMPlayerTradeComponent::OnRequestSimpleTrading(const FMTra
 		if (!WalletComponent)
 		{
 			ensure(false);
-			return MakeErrorResponse(Request, TEXT("Can't find WalletComponent!! Need WalletComponent for successfuly player trade!"));
+			return;// MakeErrorResponse(Request, TEXT("Can't find WalletComponent!! Need WalletComponent for successfuly player trade!"));
 		}
 
 		if (Request.RequiredGold > WalletComponent->GetGold())
 		{
-			return MakeFailResponse(Request, TEXT("Not enough Gold"));
+			return;// MakeFailResponse(Request, TEXT("Not enough Gold"));
 		}
 	}
 
@@ -67,14 +67,14 @@ const FMTradeResponse UMPlayerTradeComponent::OnRequestSimpleTrading(const FMTra
 		if (!InventoryManager)
 		{
 			ensure(false);
-			return MakeErrorResponse(Request, TEXT("Can't find InventoryManager!! Need InventoryManager for successfuly player trade!"));
+			return;// MakeErrorResponse(Request, TEXT("Can't find InventoryManager!! Need InventoryManager for successfuly player trade!"));
 		}
 
 		for (const auto& Iter : Request.RequiredItems)
 		{
 			if (Iter.Value > InventoryManager->GetItemQuantity(Iter.Value))
 			{
-				return MakeFailResponse(Request, TEXT("Not enough item quantity"));
+				return;// MakeFailResponse(Request, TEXT("Not enough item quantity"));
 			}
 		}
 
@@ -87,5 +87,18 @@ const FMTradeResponse UMPlayerTradeComponent::OnRequestSimpleTrading(const FMTra
 	WalletComponent->SubtractGold(Request.RequiredGold);
 	WalletComponent->SubtractGold(Request.RequiredGold);
 
-	return MakeSuccessResponse(Request);
+// 	return MakeSuccessResponse(Request);
+}
+
+void UMPlayerTradeComponent::Server_SendSimpleTradingRequest_Implementation(const FMTradeRequest& Request, AActor* Responder)
+{
+	UMTradeManager* TradeManager = GetWorld()->GetGameState()->FindComponentByClass<UMTradeManager>();
+	if (!TradeManager)
+	{
+		ensure(false);
+		MakeErrorResponse(Request, TEXT("Can't Found TradeManager"));
+	}
+
+	FMTradeResponse Response = TradeManager->SimpleRequestTrading(Responder, Request);
+	OnReceivedResponse(Request, Response);
 }

@@ -19,7 +19,7 @@ class PROJECTM_API UMInteractionActivity_Shop : public UMInteractionActivity_Bas
 public:
 	UMInteractionActivity_Shop(const FObjectInitializer& ObjectInitializer);
 
-	virtual void InitAction(UMInteractionComponent* InOwner) override;
+	virtual void InitAction(UMInteractionComponent* InInteractionComponent, AActor* InOwnerActor) override;
 	virtual void ActivateAction() override;
 	virtual void DeactivateAction() override;
 

@@ -2,18 +2,19 @@
 
 UMTradeComponentBase::UMTradeComponentBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	SetIsReplicatedByDefault(true);
 }
 
-void UMTradeComponentBase::Server_SendSimpleTradingRequest_Implementation(const FMTradeRequest& Request, AActor* Responder)
+void UMTradeComponentBase::Server_OnRequestSimpleTrading_Implementation(const FMTradeRequest& Request)
 {
 	ensure(false);
-	MCHAE_ERROR("Server_SendSimpleTradingRequest function in UMTradeComponentBase does nothing by default! if you want to use it, have to override it");
+	MCHAE_ERROR("Server_OnRequestSimpleTrading function in UMTradeComponentBase does nothing by default! if you want to use it, have to override it");
 }
 
-void UMTradeComponentBase::Server_SendSimpleDataGrantRequest_Implementation(const FMTradeRequest& Request, AActor* Responder)
+void UMTradeComponentBase::Server_OnRequestSimpleDataGrant_Implementation(const FMTradeRequest& Request)
 {
 	ensure(false);
-	MCHAE_ERROR("Server_SendSimpleDataGrantRequest function in UMTradeComponentBase does nothing by default! if you want to use it, have to override it");
+	MCHAE_ERROR("OnRequestSimpleDataGrant function in UMTradeComponentBase does nothing by default! if you want to use it, have to override it");
 }
 
 const FMTradeResponse UMTradeComponentBase::MakeErrorResponse(const FMTradeRequest& Request, const FString& ContextString)

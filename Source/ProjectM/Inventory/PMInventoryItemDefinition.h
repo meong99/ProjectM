@@ -60,7 +60,6 @@ public:
 public:
 	const UPMInventoryItemFragment* FindFragmentByClass(TSubclassOf<UPMInventoryItemFragment> FragmentClass) const;
 
-	const FText&										GetDisplayName() const { return DisplayName; }
 	const TArray<TObjectPtr<UPMInventoryItemFragment>>&	GetFragments() const { return Fragments; }
 /*
 * Member Variables

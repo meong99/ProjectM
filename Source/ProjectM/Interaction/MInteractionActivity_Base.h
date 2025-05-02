@@ -8,6 +8,7 @@
 
 class UMInteractionComponent;
 class APMPlayerControllerBase;
+class AActor;
 
 UCLASS(Blueprintable, BlueprintType, DefaultToInstanced, EditInlineNew)
 class PROJECTM_API UMInteractionActivity_Base : public UObject
@@ -24,14 +25,14 @@ public:
 * Member Functions
 */
 public:
-	virtual void InitAction(UMInteractionComponent* InOwner);
+	virtual void InitAction(UMInteractionComponent* InInteractionComponent, AActor* InOwnerActor);
 	UFUNCTION(BlueprintCallable)
 	virtual void ActivateAction();
 	UFUNCTION(BlueprintCallable)
 	virtual void DeactivateAction();
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void K2_InitAction(UMInteractionComponent* InOwner, APMPlayerControllerBase* Controller);
+	void K2_InitAction(UMInteractionComponent* InInteractionComponent, AActor* InOwnerActor, APMPlayerControllerBase* Controller);
 	UFUNCTION(BlueprintImplementableEvent)
 	void K2_ActivateAction();
 	UFUNCTION(BlueprintImplementableEvent)
@@ -44,5 +45,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FText ActionName;
 
-	TWeakObjectPtr<UMInteractionComponent> Owner;
+	UPROPERTY(BlueprintReadOnly)
+	AActor* OwnerActor;
+
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<UMInteractionComponent> InteractionComponent;
 };

@@ -88,6 +88,7 @@ void UMWidgetLayout::RemoveWidgetFromLayout(UMWidgetBase* Widget, EMWidgetLayout
 	}
 }
 
+#pragma TODO("위젯 인풋모드를 최상의 위젯에 맞춰서 해야함. 위젯 레이어 관리 리팩토링 필요")
 void UMWidgetLayout::SetInputMode(uint8 NewInputMode) const
 {
 	EMWidgetInputMode MyInputMode = (EMWidgetInputMode)NewInputMode;
