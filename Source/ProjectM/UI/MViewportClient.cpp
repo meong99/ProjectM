@@ -7,7 +7,7 @@
 #include "Engine/World.h"
 #include "Engine/GameInstance.h"
 #include "MWidgetInstanceList.h"
-#include "MWidgetBase.h"
+#include "UI/MWidgetBase.h"
 #include "PMGameplayTags.h"
 #include "UI/MWidgetLayout.h"
 
@@ -128,12 +128,12 @@ void UMViewportClient::RemoveWidgetFromParent(const FGameplayTag& WidgetTag)
 	}
 }
 
-void UMViewportClient::AddWidgetToLayer(const FGameplayTag& WidgetTag, const int32 LayerId, UObject* Instigator)
+void UMViewportClient::AddWidgetToLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo, const int32 LayerId)
 {
 	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
 	if (WidgetLayout && Widget)
 	{
-		Widget->SetWidgetInstigator(Instigator);
+		Widget->SetWidgetInfo(InWidgetInfo);
 		if (!Widget->IsInitialized())
 		{
 			Widget->PreAddToLayer();
@@ -151,7 +151,7 @@ void UMViewportClient::RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, cons
 	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
 	if (WidgetLayout && Widget)
 	{
-		Widget->SetWidgetInstigator(nullptr);
+		Widget->SetWidgetInfo({});
 		WidgetLayout->RemoveWidgetFromLayout(GetWidgetInstance(WidgetTag), (EMWidgetLayout)LayerId);
 		Widget->SetActivate(false);
 	}

@@ -38,8 +38,12 @@ protected:
 	void OnRep_OnChangeGold(const int64 OldGold);
 
 #if WITH_EDITOR
+	UFUNCTION(Server, Reliable)
+	void ServerDebug_AddGold(int64 AdjustGold);
 	UFUNCTION(Exec)
 	void Debug_AddGold(int64 AdjustGold);
+	UFUNCTION(Server, Reliable)
+	void ServerDebug_SubtractGold(int64 AdjustGold);
 	UFUNCTION(Exec)
 	void Debug_SubtractGold(int64 AdjustGold);
 #endif

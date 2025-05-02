@@ -74,12 +74,12 @@ UPMAbilitySystemComponent* APMPlayerControllerBase::GetAbilitySystemComponent() 
 	return PMPlayerState ? PMPlayerState->GetPMAbilitySystemComponent() : nullptr;
 }
 
-void APMPlayerControllerBase::Debug_WidgetControl(const FGameplayTag& WidgetTag, bool bAddWidget, UObject* WidgetInstigator) const
+void APMPlayerControllerBase::Debug_WidgetControl(const FGameplayTag& WidgetTag, bool bAddWidget, UObject* WidgetInstigator)
 {
 	UMViewportClient* VC = Cast<UMViewportClient>(GetGameInstance()->GetGameViewportClient());
 	if (VC && bAddWidget)
 	{
-		VC->AddWidgetToLayer(WidgetTag, 0, WidgetInstigator);
+		VC->AddWidgetToLayer(WidgetTag, { WidgetInstigator, this});
 	}
 	else if (VC && !bAddWidget)
 	{

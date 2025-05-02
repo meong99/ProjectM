@@ -19,8 +19,6 @@ class PROJECTM_API UMMonsterTradeComponent : public UMTradeComponentBase
 */
 public:
 	UMMonsterTradeComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-	virtual const FMTradeResponse OnRequestSimpleTrading(const FMTradeRequest& Request) override;
-	virtual void Server_SendSimpleDataGrantRequest_Implementation(const FMTradeRequest& Request, AActor* Responder) override;
 	virtual void OnReceivedResponse(const FMTradeRequest& Request, const FMTradeResponse& Response) override;
 
 /*

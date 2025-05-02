@@ -6,44 +6,83 @@
 #include "Components/GameStateComponent.h"
 #include "MTradeManager.generated.h"
 
+UENUM(BlueprintType)
+enum class EMRequestType : uint8
+{
+	None,
+	Trade,
+	Give,
+	Take,
+};
+
+USTRUCT(BlueprintType)
+struct FMTradeItemInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TArray<int32> ItemRowIds;
+
+	UPROPERTY()
+	TArray<int32> ItemCount;
+};
+
 USTRUCT(BlueprintType)
 struct FMTradeRequest
 {
 	GENERATED_BODY()
 
-	enum EMRequestType
+	FMTradeRequest()
 	{
-		None,
-		Trade,
-		Give,
-		Take,
-	};
+		TradeId = GetTradeId();
+	}
 
 	int32 GetTradeId() const
 	{
 		static int32 Id = 0;
+		if (TradeId != INDEX_NONE)
+		{
+			return TradeId;
+		}
 
 		return Id++;
 	}
 
+	UPROPERTY()
 	int32 TradeId = INDEX_NONE;
 
-	EMRequestType RequestType = None;
+	UPROPERTY()
+	EMRequestType RequestType = EMRequestType::None;
 
 	// 상대에게 받을 골드 혹은 교환할 골드
+	UPROPERTY()
 	int64 RequiredGold = 0;
 
 	// 상대에게 받을 아이템 혹은 교환할 아이템
-	TMap<int32/*ItemRowId*/, int32/*Quentity*/> RequiredItems;
+	UPROPERTY()
+	FMTradeItemInfo RequiredItems;
 
 	// 상대에게 줄 골드 혹은 교환할 골드
+	UPROPERTY()
 	int64 GrantGold = 0;
 
 	// 상대에게 줄 아이템 혹은 교환할 아이템
-	TArray<int32> GrantItems;
+	UPROPERTY()
+	FMTradeItemInfo GrantItems;
 
 	// 기타 설명용 문자열
+	UPROPERTY()
 	FString ContextString;
+};
+
+UENUM(BlueprintType)
+enum class EMResponseType : uint8
+{
+	None,
+	Error,
+	Fail,
+	Progress,
+	Success,
 };
 
 USTRUCT(BlueprintType)
@@ -51,18 +90,9 @@ struct FMTradeResponse
 {
 	GENERATED_BODY()
 
-	enum EMResponseType
-	{
-		None,
-		Error,
-		Fail,
-		Progress,
-		Success,
-	};
-
 	int32 TradeId = INDEX_NONE;
 
-	EMResponseType ResponseType = None;
+	EMResponseType ResponseType = EMResponseType::None;
 
 	// 기타 설명용 문자열
 	FString ContextString;
@@ -86,11 +116,6 @@ public:
 * Member Functions
 */
 public:
-	// 검증 없이 단순히 대상자에게 데이터를 전달(몬스터 아이템 부여)
-	const FMTradeResponse SimpleRequestDataGrant(AActor* Responder, const FMTradeRequest& Request);
-
-	// 검증 없이 단순히 대상자에게 데이터를 전달 후 대상자가 데이터 검증 후 응답 (상점, 퀘스트 등)
-	const FMTradeResponse SimpleRequestTrading(AActor* Responder, const FMTradeRequest& Request);
 
 protected:
 /*

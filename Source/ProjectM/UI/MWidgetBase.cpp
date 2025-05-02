@@ -12,13 +12,13 @@ void UMWidgetBase::NativeOnInitialized()
 	SetIsFocusable(false);
 }
 
-void UMWidgetBase::AddWidgetToLayer(const int32 LayerId)
+void UMWidgetBase::AddWidgetToLayer(const FMWidgetInfo& InWidgetInfo, const int32 LayerId)
 {
 	UGameInstance* GameInstance = GetGameInstance<UGameInstance>();
 	UMViewportClient* ViewportClient = GameInstance ? Cast<UMViewportClient>(GameInstance->GetGameViewportClient()) : nullptr;
 	if (ViewportClient)
 	{
-		ViewportClient->AddWidgetToLayer(WidgetTag, LayerId);
+		ViewportClient->AddWidgetToLayer(WidgetTag, InWidgetInfo, LayerId);
 	}
 }
 
@@ -30,6 +30,11 @@ void UMWidgetBase::RemoveWidgetFromLayer(const int32 LayerId)
 	{
 		ViewportClient->RemoveWidgetFromLayer(WidgetTag, LayerId);
 	}
+}
+
+void UMWidgetBase::PreAddToLayer()
+{
+	bIsInitialized = true;
 }
 
 // bool UMWidgetBase::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)

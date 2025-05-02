@@ -8,6 +8,7 @@ UMDefaultShopDetailWidget::UMDefaultShopDetailWidget(const FObjectInitializer& O
 
 void UMDefaultShopDetailWidget::PreAddToLayer()
 {
+	Super::PreAddToLayer();
 	if (Type == EMShopDetailType::Shop)
 	{
 		InitShopDetail();
@@ -29,7 +30,7 @@ void UMDefaultShopDetailWidget::InitShopDetail()
 			ensure(false);
 			continue;
 		}
-		SlotWidget->SetWidgetInstigator(WidgetInstigator);
+		SlotWidget->SetWidgetInfo(WidgetInfo);
 		SlotWidget->InitSlot(RowId);
 		SlotVerticalBox->AddChildToVerticalBox(SlotWidget);
 	}

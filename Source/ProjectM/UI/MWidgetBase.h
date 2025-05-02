@@ -7,6 +7,8 @@
 #include "GameplayTagContainer.h"
 #include "MWidgetBase.generated.h"
 
+class AActor;
+
 UENUM(BlueprintType)
 enum class EMWidgetInputMode : uint8
 {
@@ -14,6 +16,22 @@ enum class EMWidgetInputMode : uint8
 	GameOnly,
 	UIOnly,
 	GameAndUIWithShowMouse,
+};
+
+USTRUCT(BlueprintType)
+struct FMWidgetInfo
+{
+	GENERATED_BODY()
+	FMWidgetInfo(UObject* InWidgetInstigator = nullptr, AActor* InWidgetOwnerActor = nullptr)
+	: WidgetInstigator(InWidgetInstigator)
+	, WidgetOwnerActor(InWidgetOwnerActor)
+	{}
+
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<UObject> WidgetInstigator;
+
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<AActor>	WidgetOwnerActor;
 };
 
 UCLASS()
@@ -35,21 +53,21 @@ public:
 */
 public:
 	UFUNCTION(BlueprintCallable)
-	void AddWidgetToLayer(const int32 LayerId = 0/*GameLayer*/);
+	void AddWidgetToLayer(const FMWidgetInfo& InWidgetInfo, const int32 LayerId = 0/*GameLayer*/);
 	UFUNCTION(BlueprintCallable)
 	void RemoveWidgetFromLayer(const int32 LayerId = 0/*GameLayer*/);
 
 	// 생성되고 레이어에 등록되기 직전 한 번만 호출됨. WidgetInstigator등 커스텀 변수 사용한다면 NativeOnInitialized함수 대신 사용
-	virtual void PreAddToLayer() {}
+	virtual void PreAddToLayer();
 
 	const FGameplayTag& GetWidgetTag() const { return WidgetTag; }
 	bool				IsActivate() const { return bIsActivate; }
 	EMWidgetInputMode	GetInputMode() const { return InputMode; }
-	UObject*			GetWidgetInstigator() const { return WidgetInstigator; }
+	const FMWidgetInfo&	GetWidgetInfo() const { return WidgetInfo; }
 
 	void SetWidgetTag(const FGameplayTag& InWidgetTag) { WidgetTag = InWidgetTag; }
 	void SetActivate(const bool bNewActivate) { bIsActivate = bNewActivate; }
-	void SetWidgetInstigator(UObject* InInstigator) { WidgetInstigator = InInstigator; }
+	void SetWidgetInfo(const FMWidgetInfo& InWidgetInfo) { WidgetInfo = InWidgetInfo; }
 	UFUNCTION(BlueprintCallable)
 	bool IsInLayer() const { return bIsActivate; }
 	bool IsInitialized() const { return bIsInitialized; }
@@ -71,5 +89,5 @@ protected:
 	bool bIsInitialized = false;
 
 	UPROPERTY(BlueprintReadWrite)
-	UObject* WidgetInstigator;
+	FMWidgetInfo WidgetInfo;
 };

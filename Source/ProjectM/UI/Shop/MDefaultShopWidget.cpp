@@ -9,17 +9,18 @@ UMDefaultShopWidget::UMDefaultShopWidget(const FObjectInitializer& ObjectInitial
 
 void UMDefaultShopWidget::PreAddToLayer()
 {
+	Super::PreAddToLayer();
 	ExitButton->OnClicked.AddDynamic(this, &UMDefaultShopWidget::OnClicked_ExitButton);
 
-	ShopDetail->SetWidgetInstigator(WidgetInstigator);
-	UserInventoryDetail->SetWidgetInstigator(WidgetInstigator);
+	ShopDetail->SetWidgetInfo(WidgetInfo);
+	UserInventoryDetail->SetWidgetInfo(WidgetInfo);
 	ShopDetail->PreAddToLayer();
 	UserInventoryDetail->PreAddToLayer();
 }
 
 void UMDefaultShopWidget::OnClicked_ExitButton()
 {
-	UMInteractionActivity_Base* ActionBase = Cast<UMInteractionActivity_Base>(WidgetInstigator);
+	UMInteractionActivity_Base* ActionBase = Cast<UMInteractionActivity_Base>(WidgetInfo.WidgetInstigator);
 	if (ActionBase)
 	{
 		ActionBase->DeactivateAction();

@@ -73,7 +73,7 @@ void UMInteractionComponent::OnInteract(const FGameplayTag& Tag)
 	UMViewportClient* ViewportClient = UMGameplayStatics::GetViewportClient(this);
 	if (ViewportClient)
 	{
-		ViewportClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_Game_InteractionList, 0, GetOwner());
+		ViewportClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_Game_InteractionList, { this, GetOwner() });
 	}
 }
 

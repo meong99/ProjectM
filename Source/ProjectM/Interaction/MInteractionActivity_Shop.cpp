@@ -22,7 +22,7 @@ void UMInteractionActivity_Shop::ActivateAction()
 		bIsActivated = true;
 		
 		ViewportClient->RemoveWidgetFromLayer(FPMGameplayTags::Get().UI_Registry_Game_InteractionList);
-		ViewportClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_Game_Shop, 0, OwnerActor);
+		ViewportClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_Game_Shop, {this, OwnerActor});
 	}
 
 	Super::ActivateAction();

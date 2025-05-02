@@ -69,7 +69,7 @@ void UMBindWidgetByInputComponent::ToggleWidget(const FGameplayTag& Tag) const
 		}
 		else
 		{
-			ViewportClient->AddWidgetToLayer(Tag);
+			ViewportClient->AddWidgetToLayer(Tag, {nullptr, GetOwner()});
 		}
 	}
 }

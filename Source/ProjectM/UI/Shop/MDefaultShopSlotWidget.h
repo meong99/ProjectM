@@ -9,6 +9,8 @@
 class UImage;
 class UTextBlock;
 class UPMInventoryItemDefinition;
+class UMWalletComponent;
+class UWidgetSwitcher;
 
 UCLASS(Abstract)
 class PROJECTM_API UMDefaultShopSlotWidget : public UMWidgetBase
@@ -23,6 +25,7 @@ public:
 
 protected:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	/*
 	* Member Functions
@@ -32,7 +35,7 @@ public:
 
 protected:
 	void OnClickItem();
-
+	void SetPrice(int32 BuyPrice);
 	/*
 	* Member Variables
 	*/
@@ -56,4 +59,12 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="ProjectM")
 	TObjectPtr<UTextBlock> Price;
+
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="ProjectM")
+	TObjectPtr<UTextBlock> NotEnoughPrice;
+
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="ProjectM")
+	UWidgetSwitcher* PriceWidgetSwitcher;
+
+	TWeakObjectPtr<UMWalletComponent> PlayerWalletComp;
 };

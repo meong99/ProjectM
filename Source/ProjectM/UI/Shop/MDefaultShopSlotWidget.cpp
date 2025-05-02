@@ -9,6 +9,8 @@
 #include "Components/MTradeManager.h"
 #include "GameFramework/Actor.h"
 #include "Components/MTradeComponentBase.h"
+#include "Character/Components/MWalletComponent.h"
+#include "Components/WidgetSwitcher.h"
 
 UMDefaultShopSlotWidget::UMDefaultShopSlotWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -21,6 +23,23 @@ FReply UMDefaultShopSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeome
 	OnClickItem();
 
 	return FReply::Handled();
+}
+
+void UMDefaultShopSlotWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (PlayerWalletComp.IsValid() && ItemCDO)
+	{
+		if (PlayerWalletComp->GetGold() < ItemCDO->BuyPrice)
+		{
+			PriceWidgetSwitcher->SetActiveWidget(NotEnoughPrice);
+		}
+		else
+		{
+			PriceWidgetSwitcher->SetActiveWidget(Price);
+		}
+	}
 }
 
 void UMDefaultShopSlotWidget::InitSlot(const int32 InRowId)
@@ -36,7 +55,7 @@ void UMDefaultShopSlotWidget::InitSlot(const int32 InRowId)
 			ItemIcon->SetBrushFromTexture(ItemCDO->ItemIcon);
 // 			ItemIcon->Brush.SetImageSize(100.f, 100.f);
 			ItemName->SetText(ItemCDO->DisplayName);
-			Price->SetText(FText::AsNumber(ItemCDO->BuyPrice));
+			SetPrice(ItemCDO->BuyPrice);
 		}
 		else
 		{
@@ -49,6 +68,12 @@ void UMDefaultShopSlotWidget::InitSlot(const int32 InRowId)
 		ensure(false);
 		SetVisibility(ESlateVisibility::Collapsed);
 	}
+
+	APlayerController* PlayerController = GetOwningPlayer();
+	if (PlayerController)
+	{
+		PlayerWalletComp = PlayerController->FindComponentByClass<UMWalletComponent>();
+	}
 }
 
 void UMDefaultShopSlotWidget::OnClickItem()
@@ -56,17 +81,29 @@ void UMDefaultShopSlotWidget::OnClickItem()
 	APlayerController* PlayerController = GetOwningPlayer();
 	UMTradeComponentBase* PlayerTradeComponent = PlayerController ? PlayerController->FindComponentByClass<UMTradeComponentBase>() : nullptr;
 	UMTradeManager* TradeManager = GetWorld()->GetGameState()->FindComponentByClass<UMTradeManager>();
-	AActor* ShopNpc = Cast<AActor>(WidgetInstigator);
+	AActor* ShopNpc = Cast<AActor>(WidgetInfo.WidgetOwnerActor);
 	if (!ShopNpc || !TradeManager || !PlayerTradeComponent)
 	{
 		ensure(false);
 		return ;
 	}
 
-	FMTradeRequest Request;
-	Request.RequestType = FMTradeRequest::Trade;
-	Request.RequiredGold = ItemCDO->BuyPrice;
-	Request.GrantItems.Add(RowId);
+	if (PlayerWalletComp.IsValid() && PlayerWalletComp->GetGold() < ItemCDO->BuyPrice)
+	{
+		MCHAE_LOG("Not enough money");
+		return;
+	}
 
-	PlayerTradeComponent->Server_SendSimpleTradingRequest(Request, PlayerController);
+	FMTradeRequest Request;
+	Request.RequestType = EMRequestType::Trade;
+	Request.RequiredGold = ItemCDO->BuyPrice;
+	Request.GrantItems.ItemRowIds.Add(RowId);
+
+	PlayerTradeComponent->Server_OnRequestSimpleTrading(ShopNpc, Request);
+}
+
+void UMDefaultShopSlotWidget::SetPrice(int32 BuyPrice)
+{
+	Price->SetText(FText::AsNumber(ItemCDO->BuyPrice));
+	NotEnoughPrice->SetText(FText::AsNumber(ItemCDO->BuyPrice));
 }

@@ -33,7 +33,7 @@ void UMInteractionActivity_ShowWidget::ActivateAction()
 			}
 			else
 			{
-				ViewportClient->AddWidgetToLayer(Tag, 0, InteractionComponent->GetOwner());
+				ViewportClient->AddWidgetToLayer(Tag, {this, InteractionComponent->GetOwner() });
 			}
 		}
 	}

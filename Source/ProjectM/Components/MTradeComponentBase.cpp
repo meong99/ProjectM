@@ -5,13 +5,13 @@ UMTradeComponentBase::UMTradeComponentBase(const FObjectInitializer& ObjectIniti
 	SetIsReplicatedByDefault(true);
 }
 
-void UMTradeComponentBase::Server_OnRequestSimpleTrading_Implementation(const FMTradeRequest& Request)
+void UMTradeComponentBase::Server_OnRequestSimpleTrading_Implementation(AActor* Requestor, const FMTradeRequest& Request)
 {
 	ensure(false);
 	MCHAE_ERROR("Server_OnRequestSimpleTrading function in UMTradeComponentBase does nothing by default! if you want to use it, have to override it");
 }
 
-void UMTradeComponentBase::Server_OnRequestSimpleDataGrant_Implementation(const FMTradeRequest& Request)
+void UMTradeComponentBase::Server_OnRequestSimpleDataGrant_Implementation(AActor* Requestor, const FMTradeRequest& Request)
 {
 	ensure(false);
 	MCHAE_ERROR("OnRequestSimpleDataGrant function in UMTradeComponentBase does nothing by default! if you want to use it, have to override it");
@@ -22,7 +22,7 @@ const FMTradeResponse UMTradeComponentBase::MakeErrorResponse(const FMTradeReque
 	FMTradeResponse Response;
 
 	Response.TradeId = Request.TradeId;
-	Response.ResponseType = FMTradeResponse::Error;
+	Response.ResponseType = EMResponseType::Error;
 	Response.ContextString = ContextString;
 
 	return Response;
@@ -33,7 +33,7 @@ const FMTradeResponse UMTradeComponentBase::MakeFailResponse(const FMTradeReques
 	FMTradeResponse Response;
 
 	Response.TradeId = Request.TradeId;
-	Response.ResponseType = FMTradeResponse::Fail;
+	Response.ResponseType = EMResponseType::Fail;
 	Response.ContextString = ContextString;
 
 	return Response;
@@ -44,7 +44,7 @@ const FMTradeResponse UMTradeComponentBase::MakeSuccessResponse(const FMTradeReq
 	FMTradeResponse Response;
 
 	Response.TradeId = Request.TradeId;
-	Response.ResponseType = FMTradeResponse::Success;
+	Response.ResponseType = EMResponseType::Success;
 	Response.ContextString = ContextString;
 
 	return Response;

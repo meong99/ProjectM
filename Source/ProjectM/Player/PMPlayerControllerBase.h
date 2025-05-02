@@ -37,7 +37,7 @@ public:
 	UPMAbilitySystemComponent* GetAbilitySystemComponent() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure=false)
-	void Debug_WidgetControl(const FGameplayTag& WidgetTag, bool bAddWidget, UObject* WidgetInstigator = nullptr) const;
+	void Debug_WidgetControl(const FGameplayTag& WidgetTag, bool bAddWidget, UObject* WidgetInstigator = nullptr);
 /*
 * Member Variables
 */

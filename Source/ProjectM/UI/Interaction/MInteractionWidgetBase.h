@@ -21,7 +21,6 @@ public:
 * Member Functions
 */
 public:
-	virtual void Init(AActor* InInstigator);
 /*
 * Member Variables
 */

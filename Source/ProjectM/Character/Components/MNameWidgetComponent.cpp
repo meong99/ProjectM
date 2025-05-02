@@ -57,7 +57,7 @@ void UMNameWidgetComponent::InitNameWidget()
 		FName Name = CharacterBase->GetCharacterName();
 
 		NameWidget->SetName(Name);
-		NameWidget->SetWidgetInstigator(this);
+		NameWidget->SetWidgetInfo({this, GetOwner()});
 	}
 }
 

@@ -12,9 +12,9 @@ UMWorldBaseWidget::UMWorldBaseWidget(const FObjectInitializer& ObjectInitializer
 
 void UMWorldBaseWidget::NativeConstruct()
 {
-	if (WidgetInstigator)
+	if (WidgetInfo.WidgetOwnerActor)
 	{
-		InstigatorActor = Cast<AActor>(WidgetInstigator);
+		InstigatorActor = Cast<AActor>(WidgetInfo.WidgetOwnerActor);
 	}
 
 	CachedController = UGameplayStatics::GetPlayerController(this, 0);

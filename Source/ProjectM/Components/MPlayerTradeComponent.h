@@ -20,9 +20,8 @@ class PROJECTM_API UMPlayerTradeComponent : public UMTradeComponentBase
 public:
 	UMPlayerTradeComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	virtual void Server_OnRequestSimpleDataGrant_Implementation(const FMTradeRequest& Request) override;
-	virtual void Server_OnRequestSimpleTrading_Implementation(const FMTradeRequest& Request) override;
-	virtual void Server_SendSimpleTradingRequest_Implementation(const FMTradeRequest& Request, AActor* Responder) override;
+	virtual void Server_OnRequestSimpleDataGrant_Implementation(AActor* Requestor, const FMTradeRequest& Request) override;
+	virtual void Server_OnRequestSimpleTrading_Implementation(AActor* Requestor, const FMTradeRequest& Request) override;
 
 /*
 * Member Functions
