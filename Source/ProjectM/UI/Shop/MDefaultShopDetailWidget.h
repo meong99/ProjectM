@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UI/MWidgetBase.h"
+#include "Types/MShopTypes.h"
 #include "MDefaultShopDetailWidget.generated.h"
 
 class UMDefaultShopSlotWidget;
@@ -43,11 +44,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category="ProjectM")
 	EMShopDetailType Type = EMShopDetailType::Shop;
 
-	UPROPERTY(EditAnywhere, Category="ProjectM")
-	TSubclassOf<UMDefaultShopSlotWidget> SlotClass;
-
-	UPROPERTY(EditAnywhere, Category="ProjectM")
-	TArray<int32> ItemRowIdArray;
+	UPROPERTY(BlueprintReadOnly)
+	FMShopDefinition ShopDefinition;
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="ProjectM")
 	TObjectPtr<UVerticalBox> SlotVerticalBox;

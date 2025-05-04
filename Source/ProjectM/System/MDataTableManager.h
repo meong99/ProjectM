@@ -34,8 +34,6 @@ public:
 	static int32 ChangeRowIdToElementId(int32 RowId);
 
 	const UDataTable* GetDataTable(int32 RowId) const;
-	//Deprecated
-	const UDataTable* GetDataTable(EMItemIdType TableType) const;
 
 	UFUNCTION(BlueprintCallable)
 	UPMInventoryItemDefinition*	GetItemDefinition(int32 RowId) const;
@@ -44,7 +42,7 @@ public:
 	template<class T>
 	const TSubclassOf<T>		GetDefinitionClass(int32 RowId) const;
 
-	int32 GetTableNum() const { return Deprecated_TableMap.Num(); }
+	int32 GetTableNum() const { return TableMap.Num(); }
 private:
 	void LoadDataTables();
 	void OnLoadedDataTables();
@@ -54,9 +52,6 @@ private:
 * Member Variables
 */
 public:
-	UPROPERTY(BlueprintReadOnly)
-	TMap<EMItemIdType, UDataTable*> Deprecated_TableMap;
-
 	UPROPERTY(BlueprintReadOnly)
 	TMap<int32/*table id*/, UDataTable*> TableMap;
 

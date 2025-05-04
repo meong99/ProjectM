@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Table/MTable_TableBase.h"
+#include "Types/MShopTypes.h"
 #include "MTable_Shop.generated.h"
 
 /**
@@ -16,6 +17,7 @@ struct FMTable_Shop : public FMTable_TableBase
 * Overrided Functions
 */
 public:
+	virtual void OnDataTableChanged(const UDataTable* InDataTable, const FName InRowName) override;
 
 /*
 * Member Functions
@@ -27,8 +29,5 @@ public:
 */
 public:
 	UPROPERTY(EditDefaultsOnly)
-	int32 ItemTableId = INDEX_NONE;
-
-	UPROPERTY(EditDefaultsOnly)
-	TArray<int32> ItemIds;
+	FMShopDefinition ShopDefinition;
 };

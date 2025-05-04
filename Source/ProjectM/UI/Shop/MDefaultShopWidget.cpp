@@ -1,7 +1,7 @@
 #include "MDefaultShopWidget.h"
 #include "Components/Button.h"
 #include "MDefaultShopDetailWidget.h"
-#include "Interaction/MInteractionActivity_Base.h"
+#include "Interaction/MInteractiveAction_Base.h"
 
 UMDefaultShopWidget::UMDefaultShopWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -20,7 +20,7 @@ void UMDefaultShopWidget::PreAddToLayer()
 
 void UMDefaultShopWidget::OnClicked_ExitButton()
 {
-	UMInteractionActivity_Base* ActionBase = Cast<UMInteractionActivity_Base>(WidgetInfo.WidgetInstigator);
+	UMInteractiveAction_Base* ActionBase = Cast<UMInteractiveAction_Base>(WidgetInfo.WidgetInstigator);
 	if (ActionBase)
 	{
 		ActionBase->DeactivateAction();

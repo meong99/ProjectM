@@ -81,10 +81,11 @@ FPMInventoryItemList::FPMInventoryItemList(UPMInventoryManagerComponent* InOwner
 
 void FPMInventoryItemList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
 {
-// 	for (int32 Index : RemovedIndices)
-// 	{
-// 		FPMInventoryEntry& Stack = Entries[Index];
-// 	}
+	for (int32 Index : RemovedIndices)
+	{
+		FPMInventoryEntry& Entry = Entries[Index];
+		OwnerComponent->Delegate_OnRemoveItem.Broadcast(Entry.GetItemHandle(), Entry.GetItemType());
+	}
 }
 
 void FPMInventoryItemList::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)

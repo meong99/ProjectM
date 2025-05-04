@@ -13,9 +13,6 @@ struct FMTableDefinition
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	EMItemIdType TableType = EMItemIdType::None;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UDataTable* Table;
 };
 

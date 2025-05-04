@@ -1,4 +1,4 @@
-#include "MInteractionActivity_ShowWidget.h"
+#include "MInteractiveAction_ShowWidget.h"
 #include "Engine/World.h"
 #include "Engine/GameInstance.h"
 #include "UI/MViewportClient.h"
@@ -9,16 +9,16 @@
 
 UE_DISABLE_OPTIMIZATION
 
-UMInteractionActivity_ShowWidget::UMInteractionActivity_ShowWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+UMInteractiveAction_ShowWidget::UMInteractiveAction_ShowWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 }
 
-void UMInteractionActivity_ShowWidget::InitAction(UMInteractionComponent* InInteractionComponent, AActor* InOwnerActor)
+void UMInteractiveAction_ShowWidget::InitAction(UMInteractionComponent* InInteractionComponent, AActor* InOwnerActor)
 {
 	Super::InitAction(InInteractionComponent, InOwnerActor);
 }
 
-void UMInteractionActivity_ShowWidget::ActivateAction()
+void UMInteractiveAction_ShowWidget::ActivateAction()
 {
 	UMViewportClient* ViewportClient = Cast<UMViewportClient>(GetWorld()->GetGameInstance()->GetGameViewportClient());
 
@@ -39,7 +39,7 @@ void UMInteractionActivity_ShowWidget::ActivateAction()
 	}
 }
 
-void UMInteractionActivity_ShowWidget::DeactivateAction()
+void UMInteractiveAction_ShowWidget::DeactivateAction()
 {
 	UMViewportClient* ViewportClient = Cast<UMViewportClient>(GetWorld()->GetGameInstance()->GetGameViewportClient());
 	if (ViewportClient)
@@ -59,7 +59,7 @@ void UMInteractionActivity_ShowWidget::DeactivateAction()
 	}
 }
 
-void UMInteractionActivity_ShowWidget::EnableNameWidget() const
+void UMInteractiveAction_ShowWidget::EnableNameWidget() const
 {
 	UMNameWidgetComponent* WidgetComp = GetNameWidgetComponent();
 	if (WidgetComp)
@@ -68,7 +68,7 @@ void UMInteractionActivity_ShowWidget::EnableNameWidget() const
 	}
 }
 
-void UMInteractionActivity_ShowWidget::DisableNameWidget() const
+void UMInteractiveAction_ShowWidget::DisableNameWidget() const
 {
 	UMNameWidgetComponent* WidgetComp = GetNameWidgetComponent();
 	if (WidgetComp)
@@ -77,7 +77,7 @@ void UMInteractionActivity_ShowWidget::DisableNameWidget() const
 	}
 }
 
-UMNameWidgetComponent* UMInteractionActivity_ShowWidget::GetNameWidgetComponent() const
+UMNameWidgetComponent* UMInteractiveAction_ShowWidget::GetNameWidgetComponent() const
 {
 	if (InteractionComponent && InteractionComponent->GetOwner())
 	{

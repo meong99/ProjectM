@@ -7,10 +7,11 @@
 #include "Components/SphereComponent.h"
 #include "MInteractionComponent.generated.h"
 
-class UMInteractionActivity_Base;
 class UInputComponent;
 class UPMInputComponent;
 class USphereComponent;
+class UMInteractiveAction_OnInteractionBase;
+class UMInteractiveAction_OverlapActionBase;
 
 UCLASS(meta = (BlueprintSpawnableComponent))
 class PROJECTM_API UMInteractionComponent : public USphereComponent
@@ -29,6 +30,8 @@ public:
 * Member Functions
 */
 public:
+	void SetNewInteractions(const TArray<UMInteractiveAction_OverlapActionBase*>& OnBeginOverlap, const TArray<UMInteractiveAction_OnInteractionBase*>& OnInteract);
+
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
@@ -49,9 +52,9 @@ protected:
 * Member Variables
 */
 protected:
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Instanced)
-	TArray<TObjectPtr<UMInteractionActivity_Base>> Action_OnBeginOverlap;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectM")
+	TArray<TObjectPtr<UMInteractiveAction_OverlapActionBase>> Action_OnBeginOverlap;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Instanced)
-	TArray<TObjectPtr<UMInteractionActivity_Base>> Action_OnInteract;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectM")
+	TArray<TObjectPtr<UMInteractiveAction_OnInteractionBase>> Action_OnInteract;
 };

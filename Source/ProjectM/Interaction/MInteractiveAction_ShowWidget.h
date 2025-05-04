@@ -3,15 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MInteractionActivity_Base.h"
 #include "GameplayTagContainer.h"
-#include "MInteractionActivity_ShowWidget.generated.h"
+#include "MInteractiveAction_OverlapActionBase.h"
+#include "MInteractiveAction_ShowWidget.generated.h"
 
 class UMInteractionComponent;
 class UMNameWidgetComponent;
 
 UCLASS()
-class PROJECTM_API UMInteractionActivity_ShowWidget : public UMInteractionActivity_Base
+class PROJECTM_API UMInteractiveAction_ShowWidget : public UMInteractiveAction_OverlapActionBase
 {
 	GENERATED_BODY()
 
@@ -19,7 +19,7 @@ class PROJECTM_API UMInteractionActivity_ShowWidget : public UMInteractionActivi
 * Overrided Functions
 */
 public:
-	UMInteractionActivity_ShowWidget(const FObjectInitializer& ObjectInitializer);
+	UMInteractiveAction_ShowWidget(const FObjectInitializer& ObjectInitializer);
 
 	virtual void InitAction(UMInteractionComponent* InInteractionComponent, AActor* InOwnerActor) override;
 	virtual void ActivateAction() override;

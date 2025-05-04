@@ -1,7 +1,6 @@
 #include "Character/Components/MNameWidgetComponent.h"
 #include "Character/NPC/MNpcBase.h"
 #include "UI/Name/MNameWidget.h"
-#include "Character/NPC/MNpcDefinition.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"

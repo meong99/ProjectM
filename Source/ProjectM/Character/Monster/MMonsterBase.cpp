@@ -15,6 +15,8 @@
 #include "Components/MMonsterTradeComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Util/MGameplayStatics.h"
+#include "System/MDataTableManager.h"
+#include "Table/MTable_MonsterTable.h"
 
 AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -47,6 +49,35 @@ void AMMonsterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMMonsterBase, MonsterDefinition);
+}
+
+void AMMonsterBase::PreInitializeComponents()
+{
+	Super::PreInitializeComponents();
+	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
+
+	if (TableManager)
+	{
+		const UDataTable* MonsterTable = TableManager->GetDataTable(MonsterRowId);
+		if (MonsterTable)
+		{
+			int32 ElementIndex = UMDataTableManager::ChangeRowIdToElementId(MonsterRowId) - 1;
+			const TArray<FName>& Names = MonsterTable->GetRowNames();
+			if (Names.IsValidIndex(ElementIndex))
+			{
+				FMTable_MonsterTable* RowData = MonsterTable->FindRow<FMTable_MonsterTable>(Names[ElementIndex], Names[ElementIndex].ToString());
+				if (RowData && RowData->Definition)
+				{
+					MonsterDefinition = DuplicateObject(RowData->Definition->GetDefaultObject<UMMonsterDefinition>(), this);
+				}
+			}
+		}
+	}
+
+	if (GetNetMode() != ENetMode::NM_DedicatedServer && IsValid(MonsterDefinition))
+	{
+		InteractionComponent->SetNewInteractions(MonsterDefinition->Action_OnBeginOverlap, MonsterDefinition->Action_OnInteract);
+	}
 }
 
 void AMMonsterBase::PostInitializeComponents()
@@ -110,11 +141,9 @@ UAbilitySystemComponent* AMMonsterBase::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-void AMMonsterBase::InitMonster(UMMonsterDefinition* InMonsterDefinition, AMMonsterSpawner* InSpawner)
+void AMMonsterBase::SetSpawner(AMMonsterSpawner* InSpawner)
 {
-	MonsterDefinition = InMonsterDefinition;
 	Spawner = InSpawner;
-	InitCharacterName();
 }
 
 UPMAbilitySystemComponent* AMMonsterBase::GetMAbilitySystemComponent() const

@@ -8,6 +8,9 @@
 #include "MDefinitionBase.h"
 #include "MMonsterDefinition.generated.h"
 
+class UMInteractiveAction_OverlapActionBase;
+class UMInteractiveAction_OnInteractionBase;
+
 /**
  *
  */
@@ -59,7 +62,7 @@ public:
 /*
 * Member Variables
 */
-protected:
+public:
 	UPROPERTY(EditDefaultsOnly)
 	FMMonsterInfo MonsterInfo;
 
@@ -68,4 +71,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1, ClampMax = 10))
 	int32 MaximumSpawnNum = 1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "ProjectM")
+	TArray<TObjectPtr<UMInteractiveAction_OverlapActionBase>> Action_OnBeginOverlap;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "ProjectM")
+	TArray<TObjectPtr<UMInteractiveAction_OnInteractionBase>> Action_OnInteract;
 };

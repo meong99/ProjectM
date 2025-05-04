@@ -24,6 +24,7 @@ class PROJECTM_API AMMonsterBase : public AMCharacterBase, public IAbilitySystem
 public:
 	AMMonsterBase(const FObjectInitializer& ObjectInitializer);
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void PreInitializeComponents() override;
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
@@ -36,7 +37,7 @@ public:
 public:
 	// Beginplay이전에 호출
 	UFUNCTION(BlueprintCallable)
-	void InitMonster(UMMonsterDefinition* InMonsterDefinition, AMMonsterSpawner* InSpawner);
+	void SetSpawner(AMMonsterSpawner* InSpawner);
 
 	UFUNCTION(BlueprintCallable)
 	virtual UPMAbilitySystemComponent* GetMAbilitySystemComponent() const override;
@@ -52,6 +53,9 @@ protected:
 * Member Variables
 */
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1400001, ClampMax = 1499999), Category = "ProjectM")
+	int32 MonsterRowId = INDEX_NONE;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Monster")
 	TObjectPtr<UPMAbilitySystemComponent> AbilitySystemComponent;
 

@@ -23,11 +23,6 @@ void UMDataTableManager::Initialize(FSubsystemCollectionBase& Collection)
 	);
 }
 
-const UDataTable* UMDataTableManager::GetDataTable(EMItemIdType TableType) const
-{
-	return Deprecated_TableMap.FindRef(TableType);
-}
-
 const UDataTable* UMDataTableManager::GetDataTable(int32 RowId) const
 {
 	int32 Key = ChangeElementIdToTableId(RowId);
@@ -116,25 +111,6 @@ void UMDataTableManager::OnLoadedDataTables()
 		if (IsValid(TableAsset))
 		{
 			ParseTableMap(TableAsset);
-
-
-			// ↓ Deprecated
-			for (const FMTableDefinition& TableDefinition : TableAsset->TableDefinitions)
-			{
-				if (TableDefinition.TableType != EMItemIdType::None)
-				{
-					Deprecated_TableMap.Add(TableDefinition.TableType, TableDefinition.Table);
-				}
-				else
-				{
-#if WITH_EDITOR
-					FMessageDialog::Open(EAppMsgType::Ok,
-						FText::FromString(TEXT("Table Data Error! - TableName : \"") + TableAsset->GetName() + TEXT("\"\n테이블 데이터가 비정상적입니다. 테이블이 비어있는지, 타입은 설정됐는지 확인하세요.")));
-#else
-					MCHAE_ERROR("Table Data Error! - TableName : \"%s\", Check the TableAsset is currently setted or tabletype is not setted", *TableAsset->GetName());
-#endif
-				}
-			}
 		}
 		else
 		{
@@ -157,38 +133,53 @@ void UMDataTableManager::ParseTableMap(UMTableAsset* TableAsset)
 		DataTable->GetAllRows<FMTable_TableBase>(TEXT("UMDataTableManager::ParseTableMap"), TableArray);
 
 		int32 Key = INDEX_NONE;
-		int32 Index = 1;
+		TSet<int32> ElementValidation;
 		for (const FMTable_TableBase* TableRow : TableArray)
 		{
 			if (!TableRow)
 			{
 				UMGameplayStatics::ShowErrorOrLog(
-					FString::Printf(TEXT("Table Data Error! - TableName : %s\"\"\n 테이블은 모두 FMTable_TableBase의 하위여야합니다"), *DataTable->GetName()));
+					FString::Printf(TEXT("Table Data Error! - TableName : \"%s\"\n 테이블은 모두 FMTable_TableBase의 하위여야합니다"), *DataTable->GetName()));
 				continue;
 			}
 			if (!TableRow->IsValidId())
 			{
 				UMGameplayStatics::ShowErrorOrLog(
-					FString::Printf(TEXT("Table Data Error! - TableName : %s\"\"\n테이블 속성의 ID가 잘못됐습니다!\n속성의 ID는 x..yyyyy의 형태여야합니다! Id = %d"), *DataTable->GetName(), TableRow->RowId));
+					FString::Printf(TEXT("Table Data Error! - TableName : \"%s\"\n테이블 속성의 ID가 잘못됐습니다!\n속성의 ID는 x..yyyyy의 형태여야합니다! \n Error RowId = %d"), *DataTable->GetName(), TableRow->RowId));
 				continue;
 			}
-			if (TableRow->GetElementId() != Index)
+			if (ElementValidation.Find(TableRow->GetElementId()))
 			{
 				UMGameplayStatics::ShowErrorOrLog(
-						FString::Printf(TEXT("Table Data Error! - TableName : %s\"\"\n테이블 속성의 순서가 맞지 않습니다! 테이블 속성은 1~n까지 순서대로 있어야합니다!\nNumber%d"),Index));
+						FString::Printf(TEXT("Table Data Error! - TableName : \"%s\"\n 테이블 RowId에 중복이 있습니다! 모든 테이블 RowId는 상이해야합니다! \n Error RowId = %d"), *DataTable->GetName(), TableRow->RowId));
 				continue;
 			}
 
-			Index++;
+			ElementValidation.Add(TableRow->GetElementId());
+
 			if (Key == INDEX_NONE)
 			{
 				Key = TableRow->GetKey();
+			}
+			else if (Key != TableRow->GetKey())
+			{
+				UMGameplayStatics::ShowErrorOrLog(
+					FString::Printf(TEXT("Table Data Error! - TableName : \"%s\"\n 테이블 내에 키가 다른 RowId가 있습니다! 테이블 내의 모든 Row의 Key는 동일해야합니다! \n ErrorRowId = %d"), *DataTable->GetName(), TableRow->RowId));
+				continue;
 			}
 		}
 
 		if (Key != INDEX_NONE)
 		{
-			TableMap.Emplace(Key, DataTable);
+			if (TableMap.FindRef(Key))
+			{
+				UMGameplayStatics::ShowErrorOrLog(
+							FString::Printf(TEXT("Table Data Error! - TableName : \"%s\"\n 테이블 키의 중복이 있습니다! 각 테이블간의 키는 상이해야합니다!"), *DataTable->GetName()));
+			}
+			else
+			{
+				TableMap.Emplace(Key, DataTable);
+			}
 		}
 	}
 }

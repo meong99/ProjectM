@@ -21,23 +21,27 @@ class PROJECTM_API AMNpcBase : public AMCharacterBase
 */
 public:
 	AMNpcBase(const FObjectInitializer& ObjectInitializer);
+	virtual void PreInitializeComponents() override;
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
 	virtual void InitCharacterName() override;
 
-/*
+	/*
 * Member Functions
 */
 public:
-	UMNpcDefinition* GetNpcDefinition() const { return NpcDefinition; }
+	const UMNpcDefinition* GetNpcDefinition() const { return NpcDefinition; }
 /*
 
 * Member Variables
 */
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "NPC")
-	UMNpcDefinition* NpcDefinition;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1500001, ClampMax = 1599999), Category = "ProjectM")
+	int32 NpcRowId = INDEX_NONE;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "NPC")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
+	TObjectPtr<UMNpcDefinition> NpcDefinition;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
 	UMInteractionComponent* InteractionComponent;
 };

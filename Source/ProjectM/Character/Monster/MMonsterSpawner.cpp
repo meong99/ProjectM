@@ -102,7 +102,7 @@ void AMMonsterSpawner::SpawnMonster()
 	AMMonsterBase* SpawnedMonster = GetWorld()->SpawnActorDeferred<AMMonsterBase>(MonsterDefinition->GetMonsterClass(), FTransform::Identity);
 	if (SpawnedMonster)
 	{
-		SpawnedMonster->InitMonster(MonsterDefinition, this);
+		SpawnedMonster->SetSpawner(this);
 
 		FTransform Transform;
 		int32 PointIndex = FMath::RandHelper(SplineComponent->GetNumberOfSplinePoints());

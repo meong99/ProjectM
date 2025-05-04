@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "MInteractionActivity_Base.generated.h"
+#include "MInteractiveAction_Base.generated.h"
 
 class UMInteractionComponent;
 class APMPlayerControllerBase;
 class AActor;
 
-UCLASS(Blueprintable, BlueprintType, DefaultToInstanced, EditInlineNew)
-class PROJECTM_API UMInteractionActivity_Base : public UObject
+UCLASS(Abstract, Blueprintable, BlueprintType, DefaultToInstanced, EditInlineNew)
+class PROJECTM_API UMInteractiveAction_Base : public UObject
 {
 	GENERATED_BODY()
 
@@ -19,7 +19,7 @@ class PROJECTM_API UMInteractionActivity_Base : public UObject
 * Overrided Functions
 */
 public:
-	UMInteractionActivity_Base(const FObjectInitializer& ObjectInitializer);
+	UMInteractiveAction_Base(const FObjectInitializer& ObjectInitializer);
 
 /*
 * Member Functions
@@ -42,12 +42,9 @@ public:
 * Member Variables
 */
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FText ActionName;
-
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "ProjectM")
 	AActor* OwnerActor;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "ProjectM")
 	TObjectPtr<UMInteractionComponent> InteractionComponent;
 };

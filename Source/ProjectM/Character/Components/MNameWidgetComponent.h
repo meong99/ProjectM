@@ -7,7 +7,6 @@
 #include "MNameWidgetComponent.generated.h"
 
 class AMNpcBase;
-class UMNpcDefinition;
 class APawn;
 class ACharacter;
 class UMNameWidget;

@@ -1,5 +1,4 @@
 #include "MInteractionComponent.h"
-#include "MInteractionActivity_Base.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/GameState.h"
@@ -11,6 +10,8 @@
 #include "Util/MGameplayStatics.h"
 #include "UI/MViewportClient.h"
 #include "Util/MGameplayStatics.h"
+#include "MInteractiveAction_OverlapActionBase.h"
+#include "MInteractiveAction_OnInteractionBase.h"
 
 UMInteractionComponent::UMInteractionComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -30,18 +31,39 @@ void UMInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (UMInteractionActivity_Base* Action : Action_OnBeginOverlap)
+	for (UMInteractiveAction_OverlapActionBase* Action : Action_OnBeginOverlap)
 	{
 		if (Action)
 		{
 			Action->InitAction(this, GetOwner());
 		}
 	}
-	for (UMInteractionActivity_Base* Action : Action_OnInteract)
+	for (UMInteractiveAction_OnInteractionBase* Action : Action_OnInteract)
 	{
 		if (Action)
 		{
 			Action->InitAction(this, GetOwner());
+		}
+	}
+}
+
+void UMInteractionComponent::SetNewInteractions(const TArray<UMInteractiveAction_OverlapActionBase*>& OnBeginOverlap, const TArray<UMInteractiveAction_OnInteractionBase*>& OnInteract)
+{
+	Action_OnBeginOverlap.Empty();
+	Action_OnInteract.Empty();
+	for (UMInteractiveAction_OverlapActionBase* NewAction : OnBeginOverlap)
+	{
+		if (IsValid(NewAction))
+		{
+			Action_OnBeginOverlap.Add(NewAction);
+		}
+	}
+
+	for (UMInteractiveAction_OnInteractionBase* NewAction : OnInteract)
+	{
+		if (IsValid(NewAction))
+		{
+			Action_OnInteract.Add(NewAction);
 		}
 	}
 }
@@ -71,7 +93,7 @@ void UMInteractionComponent::OnEndOverlap(UPrimitiveComponent* OverlappedCompone
 void UMInteractionComponent::OnInteract(const FGameplayTag& Tag)
 {
 	UMViewportClient* ViewportClient = UMGameplayStatics::GetViewportClient(this);
-	if (ViewportClient)
+	if (ViewportClient && Action_OnInteract.Num() > 0)
 	{
 		ViewportClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_Game_InteractionList, { this, GetOwner() });
 	}
@@ -112,7 +134,7 @@ void UMInteractionComponent::UnbindDelegate()
 
 void UMInteractionComponent::ActivateAllOverlapAction()
 {
-	for (UMInteractionActivity_Base* Action : Action_OnBeginOverlap)
+	for (UMInteractiveAction_Base* Action : Action_OnBeginOverlap)
 	{
 		if (Action)
 		{
@@ -123,7 +145,7 @@ void UMInteractionComponent::ActivateAllOverlapAction()
 
 void UMInteractionComponent::DeactivateAllOverlapAction()
 {
-	for (UMInteractionActivity_Base* Action : Action_OnBeginOverlap)
+	for (UMInteractiveAction_Base* Action : Action_OnBeginOverlap)
 	{
 		if (Action)
 		{

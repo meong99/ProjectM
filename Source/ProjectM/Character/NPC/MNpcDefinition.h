@@ -3,16 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
+#include "Definitions/MDefinitionBase.h"
 #include "MNpcDefinition.generated.h"
 
 class UMNameWidgetComponent;
+class UMInteractiveAction_OnInteractionBase;
+class UMInteractiveAction_OverlapActionBase;
 
 /**
  *
  */
-UCLASS(Abstract, Blueprintable, DefaultToInstanced, EditInlineNew)
-class PROJECTM_API UMNpcDefinition : public UObject
+UCLASS(Abstract, Blueprintable)
+class PROJECTM_API UMNpcDefinition : public UMDefinitionBase
 {
 	GENERATED_BODY()
 
@@ -31,9 +33,12 @@ public:
 * Member Variables
 */
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
 	FName NpcName;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 ShopTableId = INDEX_NONE;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "ProjectM")
+	TArray<TObjectPtr<UMInteractiveAction_OverlapActionBase>> Action_OnBeginOverlap;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "ProjectM")
+	TArray<TObjectPtr<UMInteractiveAction_OnInteractionBase>> Action_OnInteract;
 };
