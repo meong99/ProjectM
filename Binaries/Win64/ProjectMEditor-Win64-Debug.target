@@ -18,7 +18,7 @@
 		"IsLicenseeVersion": 0,
 		"IsPromotedBuild": 0,
 		"BranchName": "UE5",
-		"BuildId": "698f459f-0086-447e-8b34-3f49ac467395"
+		"BuildId": "869d1b5e-6da7-44e6-80a2-af1fd42f77ed"
 	},
 	"BuildProducts": [
 		{
@@ -6778,18 +6778,6 @@
 			"Type": "RequiredResource"
 		},
 		{
-			"Path": "$(ProjectDir)/Plugins/CaveGenerator/Binaries/Win64/UnrealEditor-CaveGenerator-Win64-Debug.dll",
-			"Type": "DynamicLibrary"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/CaveGenerator/Binaries/Win64/UnrealEditor-CaveGenerator-Win64-Debug.pdb",
-			"Type": "SymbolFile"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/CaveGenerator/Binaries/Win64/UnrealEditor-Win64-Debug.modules",
-			"Type": "RequiredResource"
-		},
-		{
 			"Path": "$(ProjectDir)/Plugins/CommonGame/Binaries/Win64/UnrealEditor-CommonGame-Win64-Debug.dll",
 			"Type": "DynamicLibrary"
 		},
@@ -6814,30 +6802,6 @@
 			"Type": "RequiredResource"
 		},
 		{
-			"Path": "$(ProjectDir)/Plugins/GameFeatures/ShooterCore/Binaries/Win64/UnrealEditor-ShooterCoreRuntime-Win64-Debug.dll",
-			"Type": "DynamicLibrary"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/GameFeatures/ShooterCore/Binaries/Win64/UnrealEditor-ShooterCoreRuntime-Win64-Debug.pdb",
-			"Type": "SymbolFile"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/GameFeatures/ShooterCore/Binaries/Win64/UnrealEditor-Win64-Debug.modules",
-			"Type": "RequiredResource"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/GameFeatures/VoxelMine/Binaries/Win64/UnrealEditor-VoxelMineRuntime-Win64-Debug.dll",
-			"Type": "DynamicLibrary"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/GameFeatures/VoxelMine/Binaries/Win64/UnrealEditor-VoxelMineRuntime-Win64-Debug.pdb",
-			"Type": "SymbolFile"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/GameFeatures/VoxelMine/Binaries/Win64/UnrealEditor-Win64-Debug.modules",
-			"Type": "RequiredResource"
-		},
-		{
 			"Path": "$(ProjectDir)/Plugins/ModularGameplayActors/Binaries/Win64/UnrealEditor-ModularGameplayActors-Win64-Debug.dll",
 			"Type": "DynamicLibrary"
 		},
@@ -6859,18 +6823,6 @@
 		},
 		{
 			"Path": "$(ProjectDir)/Plugins/UIExtension/Binaries/Win64/UnrealEditor-Win64-Debug.modules",
-			"Type": "RequiredResource"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/VoxelManager/Binaries/Win64/UnrealEditor-VoxelManager-Win64-Debug.dll",
-			"Type": "DynamicLibrary"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/VoxelManager/Binaries/Win64/UnrealEditor-VoxelManager-Win64-Debug.pdb",
-			"Type": "SymbolFile"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/VoxelManager/Binaries/Win64/UnrealEditor-Win64-Debug.modules",
 			"Type": "RequiredResource"
 		}
 	],
@@ -32004,10 +31956,6 @@
 			"Type": "UFS"
 		},
 		{
-			"Path": "$(ProjectDir)/Plugins/CaveGenerator/CaveGenerator.uplugin",
-			"Type": "UFS"
-		},
-		{
 			"Path": "$(ProjectDir)/Plugins/CommonGame/CommonGame.uplugin",
 			"Type": "UFS"
 		},
@@ -32016,23 +31964,11 @@
 			"Type": "UFS"
 		},
 		{
-			"Path": "$(ProjectDir)/Plugins/GameFeatures/ShooterCore/ShooterCore.uplugin",
-			"Type": "UFS"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/GameFeatures/VoxelMine/VoxelMine.uplugin",
-			"Type": "UFS"
-		},
-		{
 			"Path": "$(ProjectDir)/Plugins/ModularGameplayActors/ModularGameplayActors.uplugin",
 			"Type": "UFS"
 		},
 		{
 			"Path": "$(ProjectDir)/Plugins/UIExtension/UIExtension.uplugin",
-			"Type": "UFS"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/VoxelManager/VoxelManager.uplugin",
 			"Type": "UFS"
 		},
 		{
@@ -32075,7 +32011,6 @@
 		"CLionSourceCodeAccess",
 		"CableComponent",
 		"CameraShakePreviewer",
-		"CaveGenerator",
 		"ChangelistReview",
 		"ChaosCaching",
 		"ChaosCloth",
@@ -32195,7 +32130,6 @@
 		"RigVM",
 		"SequencerAnimTools",
 		"SequencerScripting",
-		"ShooterCore",
 		"SignificanceManager",
 		"SkeletalReduction",
 		"SoundFields",
@@ -32219,8 +32153,6 @@
 		"VariantManagerContent",
 		"VisualStudioCodeSourceCodeAccess",
 		"VisualStudioSourceCodeAccess",
-		"VoxelManager",
-		"VoxelMine",
 		"WaveTable",
 		"WebMMedia",
 		"WebMMoviePlayer",

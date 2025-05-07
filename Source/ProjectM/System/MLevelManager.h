@@ -29,7 +29,7 @@ public:
 */
 public:
 	UFUNCTION(BlueprintCallable)
-	void TravelLevel(UPMUserFacingExperienceDefinition* UFED, const FString& Ip = "127.0.0.1:7777");
+	void TravelLevel(UPMUserFacingExperienceDefinition* UFED, const FString& Ip);
 
 protected:
 	UFUNCTION()

@@ -13,6 +13,18 @@
 class UDataTable;
 class UMMonsterDefinition;
 
+UENUM(BlueprintType)
+enum class EMTableKey : uint8
+{
+	None,
+	ConsumableItem,
+	EquipmentItem,
+	Shop,
+	Monster,
+	NPC,
+	Level,
+};
+
 /**
  * 
  */
@@ -34,6 +46,7 @@ public:
 	static int32 ChangeRowIdToElementId(int32 RowId);
 
 	const UDataTable* GetDataTable(int32 RowId) const;
+	const UDataTable* GetDataTable(EMTableKey Key) const;
 
 	UFUNCTION(BlueprintCallable)
 	UPMInventoryItemDefinition*	GetItemDefinition(int32 RowId) const;

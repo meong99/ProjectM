@@ -24,7 +24,7 @@ public:
 	* @Warning 내부에서 NewObject를 이용해 생성하므로 생성한 Frame 내에 해당 오브젝트를 사용해야한다. 그렇지 않으면 Dangling이 날 수 있다.
 	*/
 	UFUNCTION(BlueprintCallable, BlueprintPure = false)
-	UCommonSession_HostSessionRequest* CreateHostingRequst(const FString& Ip = "127.0.0.1:7777") const;
+	UCommonSession_HostSessionRequest* CreateHostingRequst(const FString& Ip) const;
 	
 	FString GetMapName() const;
 /*
