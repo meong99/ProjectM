@@ -62,7 +62,7 @@ AssetType* UPMAssetManager::GetAsset(const TSoftObjectPtr<AssetType>& AssetPoint
 }
 
 template<typename AssetType>
-static TSubclassOf<AssetType> UPMAssetManager::GetSubclass(const TSoftObjectPtr<AssetType>& AssetPointer, bool bKeepInMemory /*= true*/)
+TSubclassOf<AssetType> UPMAssetManager::GetSubclass(const TSoftObjectPtr<AssetType>& AssetPointer, bool bKeepInMemory /*= true*/)
 {
 	TSubclassOf<AssetType> LoadedSubclass;
 	const FSoftObjectPath& ASsetPath = AssetPointer.ToSoftObjectPath();

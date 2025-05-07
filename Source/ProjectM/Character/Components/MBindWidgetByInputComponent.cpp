@@ -46,7 +46,7 @@ void UMBindWidgetByInputComponent::BindWidgetByInput(UInputComponent* InInputCom
 	}
 
 	const auto& WidgetInstanceMap = WidgetInstanceMapWrapper->WidgetInstanceMap;
-	for (const auto Iter : WidgetInstanceMap)
+	for (const auto& Iter : WidgetInstanceMap)
 	{
 		if (Iter.Key.IsValid() && IsValid(Iter.Value))
 		{

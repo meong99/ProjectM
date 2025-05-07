@@ -15,10 +15,11 @@ AMMonsterSpawner::AMMonsterSpawner(const FObjectInitializer& ObjectInitializer)
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+#if WITH_EDITOR
 void AMMonsterSpawner::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
-#if WITH_EDITOR
+
 	FName PropertyName = PropertyChangedEvent.Property->GetFName();
 	if (GEngine && !HasAnyFlags(RF_ClassDefaultObject | RF_Transient) && \
 		PropertyName == GET_MEMBER_NAME_CHECKED(AMMonsterSpawner, MonsterRowId) &&
@@ -26,8 +27,8 @@ void AMMonsterSpawner::PostEditChangeProperty(FPropertyChangedEvent& PropertyCha
 	{
 		ChangeMonsterDefinition();
 	}
-#endif
 }
+#endif
 
 void AMMonsterSpawner::PostInitializeComponents()
 {

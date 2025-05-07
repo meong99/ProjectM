@@ -40,7 +40,6 @@ public class ProjectM : ModuleRules
 // 			"Serialization",     // FFastArraySerializer 관련
 // 			"GuidUtilities"      // FGuidReferences 관련
 
-			"VoxelManager",
 			"AIModule",
 		});
 

@@ -17,7 +17,9 @@ class PROJECTM_API AMMonsterSpawner : public AActor
 */
 public:
 	AMMonsterSpawner(const FObjectInitializer& ObjectInitializer);
+#if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds);

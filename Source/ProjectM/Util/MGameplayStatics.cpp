@@ -61,7 +61,7 @@ void UMGameplayStatics::ShowErrorOrLog(const FString& Error)
 #if WITH_EDITOR
 	FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(Error));
 #else
-	MCHAE_ERROR(Error);
+	MCHAE_ERROR("%s", *Error);
 #endif
 }
 

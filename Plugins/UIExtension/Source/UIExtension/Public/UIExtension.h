@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
-
 class FUIExtensionModule : public IModuleInterface
 {
 public:

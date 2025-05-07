@@ -11,7 +11,6 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/PMGameplayAbilityTargetData_SingleTarget.h"
 #include "DrawDebugHelpers.h"
-#include "GomVoxelChunk.h"
 #include "Util/MGameplayStatics.h"
 
 UPMGameplayAbility_RangedWeapon::UPMGameplayAbility_RangedWeapon()
@@ -81,12 +80,6 @@ void UPMGameplayAbility_RangedWeapon::StartRangedWeaponTargeting()
 			NewTargetData->HitResult = FoundHit;
 			NewTargetData->CartridgeID = CartridgeID;
 			TargetData.Add(NewTargetData);
-
-			AGomVoxelChunk* HitActor = Cast<AGomVoxelChunk>(FoundHit.GetActor());
-			if (HitActor)
-			{
-				HitActor->HitVoxel(FoundHit);
-			}
 		}
 	}
 

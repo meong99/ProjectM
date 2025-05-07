@@ -17,7 +17,7 @@ TArray<FFullLoadedWidgetData> UMWidgetRegister::LoadAllWidgetAndGetData()
 {
 	TArray<FFullLoadedWidgetData> LoadedWidgetData;
 
-	for (const auto Iter : MappedWidgetData.WidgetData)
+	for (const auto& Iter : MappedWidgetData.WidgetData)
 	{
 		TSubclassOf<UMWidgetBase> WidgetClass = GetWidgetClass_Impl(Iter.Value);
 		if (WidgetClass.Get())
