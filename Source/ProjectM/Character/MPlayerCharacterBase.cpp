@@ -10,6 +10,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Util/MGameplayStatics.h"
+#include "Components/MNavigationComponent.h"
 
 AMPlayerCharacterBase::AMPlayerCharacterBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UMCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -33,6 +34,11 @@ AMPlayerCharacterBase::AMPlayerCharacterBase(const FObjectInitializer& ObjectIni
 	
 	NetCullDistanceSquared = 900000000.0f;
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickMontagesAndRefreshBonesWhenPlayingMontages;
+
+	if (!IsRunningDedicatedServer())
+	{
+		NavigationComponent = CreateDefaultSubobject<UMNavigationComponent>(TEXT("NavigationComponent"));
+	}
 }
 
 void AMPlayerCharacterBase::Test_ActivateWidget(const FGameplayTag& RegisterTag, const FGameplayTag& WidgetTag)

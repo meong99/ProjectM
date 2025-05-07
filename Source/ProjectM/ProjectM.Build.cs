@@ -41,6 +41,8 @@ public class ProjectM : ModuleRules
 // 			"GuidUtilities"      // FGuidReferences 관련
 
 			"AIModule",
+
+			"NavigationSystem",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

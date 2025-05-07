@@ -9,6 +9,7 @@ class UPMCameraComponent;
 class UPMHealthComponent;
 class UInputComponent;
 class UPMAbilitySystemComponent;
+class UMNavigationComponent;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnSetInputComponent, UInputComponent* PlayerInputComponent);
 
@@ -54,6 +55,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Character")
 	TObjectPtr<UPMHealthComponent> HealthComponent;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UMNavigationComponent> NavigationComponent;
 
 private:
 	FOnSetInputComponent OnSetInputComponentDelegate;

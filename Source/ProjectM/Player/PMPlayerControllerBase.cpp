@@ -12,7 +12,6 @@ APMPlayerControllerBase::APMPlayerControllerBase()
 	PlayerCameraManagerClass = APMPlayerCameraManager::StaticClass();
 	InventoryManagerComponent = CreateDefaultSubobject<UPMInventoryManagerComponent>(TEXT("InventoryManagerComponent"));
 	PlayerTradeComponent = CreateDefaultSubobject<UMPlayerTradeComponent>(TEXT("PlayerTradeComponent"));
-
 	bReplicates = true;
 }
 
