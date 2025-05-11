@@ -29,7 +29,7 @@ void UMEquipmentItemInstance::OnInstanceCreated()
 	}
 }
 
-int32 UMEquipmentItemInstance::UseItem()
+int32 UMEquipmentItemInstance::ActivateItem()
 {
 	if (CanUseItem() == false)
 	{
@@ -53,7 +53,7 @@ int32 UMEquipmentItemInstance::UseItem()
 		}
 	}
 
-	return Super::UseItem();
+	return Super::ActivateItem();
 }
 
 bool UMEquipmentItemInstance::CanUseItem() const

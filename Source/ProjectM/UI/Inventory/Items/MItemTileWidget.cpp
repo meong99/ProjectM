@@ -40,7 +40,7 @@ void UMItemDetailData::SwapEntry(UMItemDetailData* Other)
 	SetNewEntry(Tmp);
 }
 
-void UMItemDetailData::OnChangeItemQuantity(const FMItemHandle& ItemHandle)
+void UMItemDetailData::OnChangeItemQuantity(const FMItemHandle& ItemHandle, const FMItemResponse& ItemRespons)
 {
 	UMTileView* MtileView = Cast<UMTileView>(GetOuter());
 	if (MtileView)
@@ -57,12 +57,12 @@ void UMItemDetailData::InitDelegate(const FPMInventoryEntry& NewItemEntry)
 	{
 		if (ItemEntry.IsValid())
 		{
-			InventoryManager->Delegate_OnChangeInventory.Remove(ItemEntry.GetItemHandle().ItemUid);
+			InventoryManager->RemoveDelegateOnChangeItemQuentity(ItemEntry.GetItemHandle().ItemUid, DelegateHandle);
 		}
 
 		if (NewItemEntry.IsValid())
 		{
-			InventoryManager->AddDelegateOnChangeInventory(NewItemEntry.GetItemHandle().ItemUid, FOnChangeInventory::FDelegate::CreateUObject(this, &ThisClass::OnChangeItemQuantity));
+			DelegateHandle = InventoryManager->AddDelegateOnChangeItemQuentity(NewItemEntry.GetItemHandle().ItemUid, FOnChangeItemQuentity::FDelegate::CreateUObject(this, &ThisClass::OnChangeItemQuantity));
 		}
 	}
 }

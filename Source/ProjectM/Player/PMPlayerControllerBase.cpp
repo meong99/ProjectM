@@ -6,12 +6,15 @@
 #include "UI/MViewportClient.h"
 #include "Inventory/PMInventoryManagerComponent.h"
 #include "Components/MPlayerTradeComponent.h"
+#include "Components/MPlayerQuestComponent.h"
 
 APMPlayerControllerBase::APMPlayerControllerBase()
 {
 	PlayerCameraManagerClass = APMPlayerCameraManager::StaticClass();
 	InventoryManagerComponent = CreateDefaultSubobject<UPMInventoryManagerComponent>(TEXT("InventoryManagerComponent"));
 	PlayerTradeComponent = CreateDefaultSubobject<UMPlayerTradeComponent>(TEXT("PlayerTradeComponent"));
+	PlayerQuestComponent = CreateDefaultSubobject<UMPlayerQuestComponent>(TEXT("PlayerQuestComponent"));
+	
 	bReplicates = true;
 }
 

@@ -110,43 +110,72 @@ void UPMInventoryManagerComponent::ReadyForReplication()
 	}
 }
 
-FMItemHandle UPMInventoryManagerComponent::AddItemtoInventory(int32 ItemRowId)
-{
-	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
-	if (TableManager)
-	{
-		return AddItemtoInventory(TableManager->GetDefinitionClass<UPMInventoryItemDefinition>(ItemRowId));
-	}
-
-	return {};
-}
-
-FMItemHandle UPMInventoryManagerComponent::AddItemtoInventory(TSubclassOf<UPMInventoryItemDefinition> ItemDef)
+FMItemHandle UPMInventoryManagerComponent::RequestItemToInventory(const FMItemRequest& ItemRequest)
 {
 	FMItemHandle Handle = FMItemHandle{};
-	UPMInventoryItemDefinition* CDO = ItemDef->GetDefaultObject<UPMInventoryItemDefinition>();
-	if (!CDO)
+
+	if (!HasAuthority())
+	{
+		ensure(false);
+		return Handle;
+	}
+
+	UPMInventoryItemDefinition* ItemCDO = GetItemDefCDO(ItemRequest);
+	if (!ItemCDO)
 	{
 		ensure(false);
 		MCHAE_WARNING("ItemCDO is not valid");
 		return Handle;
 	}
 
-	FPMInventoryItemList* ItemList = GetItemList(CDO->ItemType);
+	FPMInventoryItemList* ItemList = GetItemList(ItemCDO->ItemType);
 	if (ItemList)
 	{
-		FPMInventoryEntry* Entry = ItemList->FindEntry(ItemDef);
-		if (Entry && ItemList->OwnedItemType != EMItemType::Equipment)
+		FPMInventoryEntry* Entry = ItemList->FindEntry(ItemCDO->GetClass());
+		if (Entry && ItemList->OwnedItemType != EMItemType::Equipment &&
+			(ItemRequest.RequestType == EMItemRequestType::AddItem || ItemRequest.RequestType == EMItemRequestType::RemoveItem))
 		{
-			ItemList->ChangeItemQuantity(Entry->GetItemHandle(), 1);
-			Broadcast_OnNewItemAdded(*Entry, true);
-			return Entry->GetItemHandle();
+			Handle = Entry->GetItemHandle();
+			ChangeItemQuantity(Handle, ItemRequest);
 		}
-		else
+		else if (ItemRequest.RequestType == EMItemRequestType::AddItem || ItemRequest.RequestType == EMItemRequestType::InitItem)
 		{
-			return AddItemDefinition_Impl(ItemDef, *ItemList);
+			Handle = AddItemDefinition_Impl(ItemCDO->GetClass(), *ItemList, ItemRequest);
+		}
+		else if (ItemRequest.RequestType == EMItemRequestType::ReturnItemToInventory)
+		{
+			Handle = ReturnItem(ItemRequest.ItemInstance);
 		}
 	}
+
+	return Handle;
+}
+
+FMItemHandle UPMInventoryManagerComponent::AddItemDefinition_Impl(TSubclassOf<UPMInventoryItemDefinition> ItemDef, FPMInventoryItemList& ItemList, const FMItemRequest& ItemRequest)
+{
+	FMItemHandle Handle = FMItemHandle{};
+
+	Handle = ItemList.AddEntry(ItemDef, ItemRequest.ItemQuentity);
+
+	FPMInventoryEntry* Entry = ItemList.FindEntry(Handle);
+	if (Entry == nullptr)
+	{
+		return FMItemHandle{};
+	}
+
+	UPMInventoryItemInstance* ItemInstance = Entry->Instance;
+
+	if (IsUsingRegisteredSubObjectList() && IsReadyForReplication() && ItemInstance)
+	{
+		AddReplicatedSubObject(ItemInstance);
+	}
+
+	FMItemResponse Response;
+	Response.ResponsType = EMItemResponseType::TotallyNewItem;
+	Response.ItemRequest = ItemRequest;
+	Response.ItemQuentity = ItemInstance->GetItemQuentity();
+
+	Multicast_OnNewItemAdded(*Entry, Response);
 
 	return Handle;
 }
@@ -166,51 +195,67 @@ FMItemHandle UPMInventoryManagerComponent::ReturnItem(UPMInventoryItemInstance* 
 	return {};
 }
 
-FMItemHandle UPMInventoryManagerComponent::AddItemDefinition_Impl(TSubclassOf<UPMInventoryItemDefinition> ItemDef, FPMInventoryItemList& ItemList)
+UPMInventoryItemDefinition* UPMInventoryManagerComponent::GetItemDefCDO(const int32 ItemRowId)
 {
-	FMItemHandle Handle = FMItemHandle{};
+	UPMInventoryItemDefinition* ItemCDO = nullptr;
 
-	Handle = ItemList.AddEntry(ItemDef);
-
-	FPMInventoryEntry* Entry = ItemList.FindEntry(Handle);
-	if (Entry == nullptr)
+	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
+	if (TableManager)
 	{
-		return FMItemHandle{};
+		TSubclassOf<UPMInventoryItemDefinition> Class = TableManager->GetDefinitionClass<UPMInventoryItemDefinition>(ItemRowId);
+
+		if (Class)
+		{
+			ItemCDO = Class->GetDefaultObject<UPMInventoryItemDefinition>();
+		}
 	}
 
-	UPMInventoryItemInstance* ItemInstance = Entry->Instance;
+	return ItemCDO;
+}
 
-	if (IsUsingRegisteredSubObjectList() && IsReadyForReplication() && ItemInstance)
+UPMInventoryItemDefinition* UPMInventoryManagerComponent::GetItemDefCDO(const TSubclassOf<UPMInventoryItemDefinition>& ItemDef)
+{
+	if (ItemDef)
 	{
-		AddReplicatedSubObject(ItemInstance);
+		return ItemDef->GetDefaultObject<UPMInventoryItemDefinition>();
 	}
 
-	Broadcast_OnNewItemAdded(*Entry);
-
-	return Handle;
+	return nullptr;
 }
 
-void UPMInventoryManagerComponent::Broadcast_OnRemoveItem(const FMItemHandle& ItemHandle, const EMItemType ItemType)
+UPMInventoryItemDefinition* UPMInventoryManagerComponent::GetItemDefCDO(const FMItemRequest& ItemRequest)
 {
-	Delegate_OnRemoveItem.Broadcast(ItemHandle, ItemType);
-}
-
-void UPMInventoryManagerComponent::Broadcast_OnNewItemAdded(const FPMInventoryEntry& ItemEntry, bool bOnlyNotify)
-{
-	Delegate_NotifyItemAdded.Broadcast(ItemEntry);
-	if (!bOnlyNotify)
+	UPMInventoryItemDefinition* ItemCDO = nullptr;
+	if (ItemRequest.ItemDef)
 	{
-		Delegate_OnNewItemAdded.Broadcast(ItemEntry);
+		ItemCDO = GetItemDefCDO(ItemRequest.ItemDef);
 	}
+
+	if (!ItemCDO)
+	{
+		ItemCDO = GetItemDefCDO(ItemRequest.ItemRowId);
+	}
+
+	return ItemCDO;
 }
 
-void UPMInventoryManagerComponent::Broadcast_OnChangeInventory(const FMItemHandle& ItemHandle)
+void UPMInventoryManagerComponent::Multicast_OnNewItemAdded_Implementation(const FPMInventoryEntry& ItemEntry, const FMItemResponse& ItemRespons)
 {
-	FOnChangeInventory* InventoryDelegates = Delegate_OnChangeInventory.Find(ItemHandle.ItemUid);
+	Delegate_OnNewItemAdded.Broadcast(ItemEntry, ItemRespons);
+}
+
+void UPMInventoryManagerComponent::Multicast_OnChangeInventory_Implementation(const FMItemHandle& ItemHandle, const FMItemResponse& ItemRespons)
+{
+	FOnChangeItemQuentity* InventoryDelegates = Delegate_OnChangeItemQuentity.Find(ItemHandle.ItemUid);
 	if (InventoryDelegates)
 	{
-		InventoryDelegates->Broadcast(ItemHandle);
+		InventoryDelegates->Broadcast(ItemHandle, ItemRespons);
 	}
+}
+
+void UPMInventoryManagerComponent::Multicast_OnRemoveItem_Implementation(const FMItemHandle& ItemHandle, const EMItemType ItemType)
+{
+	Delegate_OnRemoveItem.Broadcast(ItemHandle, ItemType);
 }
 
 UPMInventoryItemInstance* UPMInventoryManagerComponent::FindItemInstance(const FMItemHandle& ItemHandle)
@@ -283,76 +328,54 @@ int32 UPMInventoryManagerComponent::GetItemQuantity(const int32 ItemRowId)
 	return Result;
 }
 
-int32 UPMInventoryManagerComponent::ChangeItemQuantity(const FMItemHandle& ItemHandle, int32 ChangeNum)
+int32 UPMInventoryManagerComponent::ChangeItemQuantity(const FMItemHandle& ItemHandle, const FMItemRequest& ItemRequest)
 {
 	FPMInventoryItemList* ItemList = GetItemList(ItemHandle.ItemType);
 	if (ItemList)
 	{
-		int32 CurrentItemQuentity = ItemList->ChangeItemQuantity(ItemHandle, ChangeNum);
+		int32 ItemQuentity = 0;
+		if (ItemRequest.RequestType == EMItemRequestType::AddItem)
+		{
+			ItemQuentity = ItemRequest.ItemQuentity > 0 ? ItemRequest.ItemQuentity : -ItemRequest.ItemQuentity;
+		}
+		else if (ItemRequest.RequestType == EMItemRequestType::RemoveItem)
+		{
+			ItemQuentity = ItemRequest.ItemQuentity < 0 ? ItemRequest.ItemQuentity : -ItemRequest.ItemQuentity;
+		}
+
+		int32 CurrentItemQuentity = ItemList->ChangeItemQuantity(ItemHandle, ItemQuentity);
 
 		if (CurrentItemQuentity == 0)
 		{
 			RemoveItem(ItemHandle);
 		}
+		else
+		{
+			FMItemResponse Response;
 
-		Broadcast_OnChangeInventory(ItemHandle);
+			Response.ItemRequest = ItemRequest;
+			Response.ResponsType = EMItemResponseType::ChangeItemQuentity;
+			Response.ItemQuentity = CurrentItemQuentity;
+			Multicast_OnChangeInventory(ItemHandle, Response);
+		}
 		return CurrentItemQuentity;
 	}
 
 	return 0;
 }
 
-int32 UPMInventoryManagerComponent::ChangeItemQuantity(int32 ItemRowId, int32 ChangeNum)
+FDelegateHandle UPMInventoryManagerComponent::AddDelegateOnChangeItemQuentity(const int32 ItemUid, FOnChangeItemQuentity::FDelegate&& Delegate)
 {
-	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
-	UPMInventoryItemDefinition* ItemDef = TableManager->GetItemDefinition(ItemRowId);
-	if (!ItemDef)
-	{
-		ensure(false);
-		return 0;
-	}
-
-	FPMInventoryItemList* ItemList = GetItemList(ItemDef->ItemType);
-	if (!ItemList)
-	{
-		ensure(false);
-		return 0;
-	}
-
-	#pragma TODO("이거 아이템 카운트 리팩토링 필요함")
-	int32 Result = 0;
-	for (auto Iter = ItemList->Entries.CreateIterator(); Iter; ++Iter)
-	{
-		if (Iter->Instance)
-		{
-			int32 ItemCount = Iter->Instance->GetStatTagStackCount(FPMGameplayTags::Get().Item_Quentity);
-			int32 LeftCount = Iter->Instance->RemoveStatTagStack(FPMGameplayTags::Get().Item_Quentity, ChangeNum);
-
-			if (LeftCount == 0)
-			{
-				Iter.RemoveCurrent();
-			}
-
-			ChangeNum -= (ItemCount - LeftCount);
-			Result += LeftCount;
-		}
-	}
-
-	return Result;
-}
-
-FDelegateHandle UPMInventoryManagerComponent::AddDelegateOnChangeInventory(const int32 ItemUid, FOnChangeInventory::FDelegate&& Delegate)
-{
-	FOnChangeInventory& InventoryDelegates = Delegate_OnChangeInventory.FindOrAdd(ItemUid);
+	FOnChangeItemQuentity& InventoryDelegates = Delegate_OnChangeItemQuentity.FindOrAdd(ItemUid);
 
 	FDelegateHandle DelegateHandle = InventoryDelegates.Add(Delegate);
 
 	return DelegateHandle;
 }
 
-void UPMInventoryManagerComponent::RemoveDelegateOnChangeInventory(const int32 ItemUid, const FDelegateHandle& DelegateHandle)
+void UPMInventoryManagerComponent::RemoveDelegateOnChangeItemQuentity(const int32 ItemUid, const FDelegateHandle& DelegateHandle)
 {
-	FOnChangeInventory* InventoryDelegates = Delegate_OnChangeInventory.Find(ItemUid);
+	FOnChangeItemQuentity* InventoryDelegates = Delegate_OnChangeItemQuentity.Find(ItemUid);
 
 	if (InventoryDelegates)
 	{
@@ -360,7 +383,7 @@ void UPMInventoryManagerComponent::RemoveDelegateOnChangeInventory(const int32 I
 		
 		if (InventoryDelegates->IsBound() == false)
 		{
-			Delegate_OnChangeInventory.Remove(ItemUid);
+			Delegate_OnChangeItemQuentity.Remove(ItemUid);
 		}
 	}
 }
@@ -370,9 +393,15 @@ void UPMInventoryManagerComponent::Server_UseItem_Implementation(const FMItemHan
 	UPMInventoryItemInstance* ItemInstance = FindItemInstance(ItemHandle);
 	if (ItemInstance)
 	{
-		if (ItemInstance->UseItem() == 0)
+		if (ItemInstance->CanUseItem())
 		{
-			RemoveItem(ItemHandle);
+			ItemInstance->ActivateItem();
+			FMItemRequest Request;
+			Request.RequestType = EMItemRequestType::RemoveItem;
+			Request.ItemQuentity = -1;
+			Request.ItemHandle = ItemHandle;
+
+			ChangeItemQuantity(ItemHandle, Request);
 		}
 	}
 }
@@ -399,10 +428,10 @@ void UPMInventoryManagerComponent::RemoveItem(const FMItemHandle& ItemHandle)
 			}
 
 			ItemList->RemoveEntry(ItemHandle);
-			Broadcast_OnRemoveItem(ItemHandle, ItemList->OwnedItemType);
+			Delegate_OnChangeItemQuentity.Remove(ItemHandle.ItemUid);
+			Multicast_OnRemoveItem(ItemHandle, ItemList->OwnedItemType);
 		}
 	}
-	
 }
 
 FPMInventoryItemList* UPMInventoryManagerComponent::GetItemList(const EMItemType ItemType)
@@ -426,7 +455,7 @@ FPMInventoryItemList* UPMInventoryManagerComponent::GetItemList(const EMItemType
 }
 
 #if WITH_EDITOR
-void UPMInventoryManagerComponent::Debug_AddItem(int32 RowId)
+void UPMInventoryManagerComponent::Debug_AddItem(int32 RowId, int32 ItemQuentity)
 {
 	if (GEngine)
 	{
@@ -443,7 +472,7 @@ void UPMInventoryManagerComponent::Debug_AddItem(int32 RowId)
 					FMTable_TableBase* Item = DataTable->FindRow<FMTable_TableBase>(Names[ElementId], Names[ElementId].ToString());
 					if (Item)
 					{
-						DebugServer_AddItem(Item->RowId);
+						DebugServer_AddItem(Item->RowId, ItemQuentity);
 					}
 					else
 					{
@@ -455,8 +484,13 @@ void UPMInventoryManagerComponent::Debug_AddItem(int32 RowId)
 	}
 }
 
-void UPMInventoryManagerComponent::DebugServer_AddItem_Implementation(int32 Rowid)
+void UPMInventoryManagerComponent::DebugServer_AddItem_Implementation(int32 Rowid, int32 ItemQuentity)
 {
-	AddItemtoInventory(Rowid);
+	FMItemRequest Request;
+	Request.ItemRowId = Rowid;
+	Request.ItemQuentity = ItemQuentity;
+	Request.RequestType = EMItemRequestType::AddItem;
+
+	RequestItemToInventory(Request);
 }
 #endif

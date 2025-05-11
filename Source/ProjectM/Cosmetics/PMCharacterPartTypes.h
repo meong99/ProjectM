@@ -1,6 +1,9 @@
 #pragma once
 
+#include "Templates/SubclassOf.h"
 #include "PMCharacterPartTypes.generated.h"
+
+class AActor;
 
 // Possess하고있는 Pawn에 대해 Instancing된 Character Part의 핸들.
 USTRUCT(BlueprintType)

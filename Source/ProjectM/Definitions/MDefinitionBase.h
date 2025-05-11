@@ -7,7 +7,6 @@
 #include "MDefinitionBase.generated.h"
 
 /**
- *	Deprecated
  */
 UCLASS(Abstract, Blueprintable, BlueprintType)
 class PROJECTM_API UMDefinitionBase : public UObject

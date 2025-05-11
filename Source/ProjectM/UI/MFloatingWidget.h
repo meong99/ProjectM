@@ -6,6 +6,10 @@
 #include "UI/MWidgetBase.h"
 #include "MFloatingWidget.generated.h"
 
+class UTextBlock;
+class UImage;
+class UTexture2D;
+
 UCLASS()
 class PROJECTM_API UMFloatingWidget : public UMWidgetBase
 {
@@ -33,6 +37,19 @@ protected:
 * Member Variables
 */
 protected:
+	// Floating Target의 이름
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ProjectM")
+	FText DisplayText;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ProjectM")
+	TObjectPtr<UTexture2D> BackgroundImageTextrue;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UTextBlock> FloatingWidgetName;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UImage> BackgroundImage;
+
 	bool bIsFloating = false;
 
 	FVector2d DragOffset;

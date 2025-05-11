@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameFramework/WorldSettings.h"
+#include "GameplayTagContainer.h"
 #include "MWorldSettings.generated.h"
 
 class UPMExperienceDefinition;
@@ -26,6 +27,9 @@ public:
 * Member Variables
 */
 private:
-	UPROPERTY(EditDefaultsOnly, Category=GameMode)
+	UPROPERTY(EditDefaultsOnly, Category = "ProjectM")
 	TSoftClassPtr<UPMExperienceDefinition> DefaultGameplayExperience;
+
+	UPROPERTY(EditDefaultsOnly, Category = "ProjectM")
+	FGameplayTag WorldTag;
 };

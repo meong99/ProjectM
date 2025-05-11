@@ -23,7 +23,7 @@ class PROJECTM_API UPMWeaponInstance : public UMEquipmentItemInstance
 public:
 	UPMWeaponInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	virtual int32 UseItem() override;
+	virtual int32 ActivateItem() override;
 	virtual void OnEquipped() override;
 	virtual void OnUnequipped() override;
 

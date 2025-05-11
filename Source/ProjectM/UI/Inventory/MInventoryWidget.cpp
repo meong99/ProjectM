@@ -40,7 +40,7 @@ void UMInventoryWidget::Callback_OnInitInventory(const FPMInventoryItemList& Inv
 	InitInventorySlots(InventoryList);
 }
 
-void UMInventoryWidget::Callback_AddNewItem(const FPMInventoryEntry& NewItemEntry)
+void UMInventoryWidget::Callback_AddNewItem(const FPMInventoryEntry& NewItemEntry, const FMItemResponse& ItemRespons)
 {
 	if (NewItemEntry.IsValid() == false)
 	{
@@ -48,10 +48,13 @@ void UMInventoryWidget::Callback_AddNewItem(const FPMInventoryEntry& NewItemEntr
 		return;
 	}
 
-	UMTileView* View = GetItemSlotView(NewItemEntry.GetItemType());
-	if (View)
+	if (ItemRespons.ResponsType == EMItemResponseType::TotallyNewItem)
 	{
-		View->AddNewItem(NewItemEntry);
+		UMTileView* View = GetItemSlotView(NewItemEntry.GetItemType());
+		if (View)
+		{
+			View->AddNewItem(NewItemEntry);
+		}
 	}
 }
 
@@ -99,12 +102,12 @@ void UMInventoryWidget::InitInventorySlots(const FPMInventoryItemList& Inventory
 	InitInventorySlots_Impl(InventoryList, GetItemSlotView(InventoryList.OwnedItemType));
 }
 
-void UMInventoryWidget::InitInventorySlots_Impl(const FPMInventoryItemList& InventoryList, UMTileView* ItemSlots)
+void UMInventoryWidget::InitInventorySlots_Impl(const FPMInventoryItemList& InventoryList, UMTileView* ItemSlotView)
 {
-	if (InventoryComponent && ItemSlots)
+	if (InventoryComponent && ItemSlotView)
 	{
 		const int32 MaxInventoryCount = InventoryComponent->GetMaxInventoryCount();
-		ItemSlots->InitView(InventoryList, MaxInventoryCount);
+		ItemSlotView->InitView(InventoryList, MaxInventoryCount);
 	}
 }
 

@@ -78,46 +78,18 @@ FPMInventoryItemList::FPMInventoryItemList(UPMInventoryManagerComponent* InOwner
 		MCHAE_FETAL("OwnerComponent must be set!!");
 	}
 }
-
-void FPMInventoryItemList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
-{
-	for (int32 Index : RemovedIndices)
-	{
-		FPMInventoryEntry& Entry = Entries[Index];
-		OwnerComponent->Delegate_OnRemoveItem.Broadcast(Entry.GetItemHandle(), Entry.GetItemType());
-	}
-}
-
-void FPMInventoryItemList::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
-{
-	for (int32 Index : AddedIndices)
-	{
-		if (Entries.IsValidIndex(Index))
-		{
-	 		OwnerComponent->Delegate_OnNewItemAdded.Broadcast(Entries[Index]);
-			OwnerComponent->Delegate_NotifyItemAdded.Broadcast(Entries[Index]);
-		}
-	}
-}
-
-void FPMInventoryItemList::PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize)
-{
-	for (int32 Index : ChangedIndices)
-	{
-		if (Entries.IsValidIndex(Index))
-		{
-			FPMInventoryEntry& Entry = Entries[Index];
-
-			OwnerComponent->Delegate_NotifyItemAdded.Broadcast(Entry);
-			FOnChangeInventory Delegate = OwnerComponent->Delegate_OnChangeInventory.FindRef(Entry.ItemUid);
-
-			FMItemHandle Handle;
-
-			Handle.ItemUid = Entry.ItemUid;
-			Delegate.Broadcast(Handle);
-		}
-	}
-}
+// 
+// void FPMInventoryItemList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
+// {
+// }
+// 
+// void FPMInventoryItemList::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
+// {
+// }
+// 
+// void FPMInventoryItemList::PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize)
+// {
+// }
 
 int32 FPMInventoryItemList::ChangeItemQuantity(const FMItemHandle& ItemHandle, int32 ChangeNum)
 {
@@ -150,7 +122,7 @@ int32 FPMInventoryItemList::ChangeItemQuantity(const FMItemHandle& ItemHandle, i
 	return -1;
 }
 
-FMItemHandle FPMInventoryItemList::AddEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef)
+FMItemHandle FPMInventoryItemList::AddEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef, int32 ItemQuentity)
 {
 	if (!ItemDef || !OwnerComponent)
 	{
@@ -166,7 +138,7 @@ FMItemHandle FPMInventoryItemList::AddEntry(TSubclassOf<UPMInventoryItemDefiniti
 	}
 
 
-	FPMInventoryEntry* NewEntry = MakeEntry(ItemDef);
+	FPMInventoryEntry* NewEntry = MakeEntry(ItemDef, ItemQuentity);
 	AddEntry_Impl(*NewEntry);
 
 	return NewEntry->GetItemHandle();
@@ -226,7 +198,7 @@ void FPMInventoryItemList::RemoveEntry(const FMItemHandle& ItemHandle)
 	}
 }
 
-FPMInventoryEntry* FPMInventoryItemList::MakeEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef)
+FPMInventoryEntry* FPMInventoryItemList::MakeEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef, int32 ItemQuentity)
 {
 	AActor* OwningActor = OwnerComponent->GetOwner();
 	const UPMInventoryItemDefinition* ItemDefCDO = GetDefault<UPMInventoryItemDefinition>(ItemDef);
@@ -250,6 +222,11 @@ FPMInventoryEntry* FPMInventoryItemList::MakeEntry(TSubclassOf<UPMInventoryItemD
 	}
 
 	NewEntry.Instance->OnInstanceCreated();
+
+	if (ItemQuentity > 1)
+	{
+		NewEntry.Instance->AddStatTagStack(FPMGameplayTags::Get().Item_Quentity, ItemQuentity - 1);
+	}
 
 	return &NewEntry;
 }

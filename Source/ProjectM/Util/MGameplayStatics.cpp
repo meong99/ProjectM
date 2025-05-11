@@ -5,6 +5,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "GameModes/PMExperienceManagerComponent.h"
 #include "Misc/MessageDialog.h"
+#include "System/MDataTableManager.h"
 
 bool UMGameplayStatics::bShowDebug_Console = false;
 static FAutoConsoleVariableRef CVarMyBoolVar(
@@ -54,6 +55,18 @@ ECollisionChannel UMGameplayStatics::GetCollisionChannel(EMCollisionChannel Chan
 		case EMCollisionChannel::NPC		:	return ECollisionChannel::ECC_GameTraceChannel4;
 		default								:	return ECC_Visibility;
 	}
+}
+
+UMDataTableManager* UMGameplayStatics::GetDataTableManager()
+{
+	if (!GEngine)
+	{
+		ensure(false);
+		MCHAE_WARNING("Can't Access GEngine!!");
+		return nullptr;
+	}
+
+	return GEngine->GetEngineSubsystem<UMDataTableManager>();
 }
 
 void UMGameplayStatics::ShowErrorOrLog(const FString& Error)

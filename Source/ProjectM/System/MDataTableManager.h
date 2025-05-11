@@ -23,6 +23,8 @@ enum class EMTableKey : uint8
 	Monster,
 	NPC,
 	Level,
+	Quest,
+	Dialogue,
 };
 
 /**

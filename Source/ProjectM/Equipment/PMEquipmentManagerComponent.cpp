@@ -99,7 +99,11 @@ void UPMEquipmentManagerComponent::UnequipItem(int32 EquipmentItemType)
 		UPMInventoryManagerComponent* InvenManager = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
 		if (InvenManager)
 		{
-			InvenManager->ReturnItem(UnEquippedItem);
+			FMItemRequest Request;
+			Request.RequestType = EMItemRequestType::ReturnItemToInventory;
+			Request.ItemInstance = UnEquippedItem;
+
+			InvenManager->RequestItemToInventory(Request);
 		}
 
 		UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();

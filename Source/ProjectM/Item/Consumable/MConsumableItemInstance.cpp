@@ -8,7 +8,7 @@ UMConsumableItemInstance::UMConsumableItemInstance(const FObjectInitializer& Obj
 {
 }
 
-int32 UMConsumableItemInstance::UseItem()
+int32 UMConsumableItemInstance::ActivateItem()
 {
 	if (CanUseItem() == false)
 	{
@@ -35,7 +35,7 @@ int32 UMConsumableItemInstance::UseItem()
 		
 	}
 
-	return Super::UseItem();
+	return Super::ActivateItem();
 }
 
 bool UMConsumableItemInstance::CanUseItem() const

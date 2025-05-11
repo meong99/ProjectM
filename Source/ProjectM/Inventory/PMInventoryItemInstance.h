@@ -38,7 +38,7 @@ public:
 
 	virtual void OnInstanceCreated() {};
 
-	virtual int32 UseItem();
+	virtual int32 ActivateItem();
 	virtual bool CanUseItem() const { return true; }
 
 	/** add/remove stack count to stat tag(=gameplay-tag stack) */
@@ -52,6 +52,9 @@ public:
 	/** get the current count of gameplay-tag stack */
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 	int32 GetStatTagStackCount(FGameplayTag Tag) const;
+
+	UFUNCTION(BlueprintCallable, Category = Inventory)
+	int32 GetItemQuentity() const;
 
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 	EMItemType GetItemType() const;

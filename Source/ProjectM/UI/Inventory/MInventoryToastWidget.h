@@ -37,7 +37,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void K2_NotifyNewItem(const FPMInventoryEntry& ItemEntry);
-	void OnNotifyNewItem(const FPMInventoryEntry& ItemEntry);
+	void OnNotifyNewItem(const FPMInventoryEntry& ItemEntry, const FMItemResponse& ItemRespons);
 
 protected:
 	void OnExperienceLoaded(const UPMExperienceDefinition* LoadedExperienceDefinition);

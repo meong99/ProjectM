@@ -27,7 +27,6 @@ void UMNavigationComponent::TickComponent(float DeltaTime, enum ELevelTick TickT
 			FVector CurrentPointLocation = Path->PathPoints[CurrentPathIndex];
 			float CurrentDist = FVector::Dist(OwnerLocation, CurrentPointLocation);
 
-
 			if (CurrentDist > ResearchIndexThreshold)
 			{
 				GeneratePathData();

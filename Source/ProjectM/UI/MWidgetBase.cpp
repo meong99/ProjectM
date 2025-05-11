@@ -2,6 +2,7 @@
 #include "Blueprint/DragDropOperation.h"
 #include "MViewportClient.h"
 #include "Engine/GameInstance.h"
+#include "Player/PMPlayerControllerBase.h"
 
 UMWidgetBase::UMWidgetBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {}
@@ -35,6 +36,11 @@ void UMWidgetBase::RemoveWidgetFromLayer(const int32 LayerId)
 void UMWidgetBase::PreAddToLayer()
 {
 	bIsInitialized = true;
+}
+
+APMPlayerControllerBase* UMWidgetBase::GetPlayerController() const
+{
+	return GetOwningPlayer<APMPlayerControllerBase>();
 }
 
 // bool UMWidgetBase::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)

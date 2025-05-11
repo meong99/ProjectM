@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Definitions/MDefinitionBase.h"
+#include "GameplayTagContainer.h"
 #include "MNpcDefinition.generated.h"
 
 class UMNameWidgetComponent;
@@ -35,6 +36,10 @@ public:
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
 	FName NpcName;
+
+	// NPC가 있는 WorldTag
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
+	FGameplayTag WorldTag;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "ProjectM")
 	TArray<TObjectPtr<UMInteractiveAction_OverlapActionBase>> Action_OnBeginOverlap;

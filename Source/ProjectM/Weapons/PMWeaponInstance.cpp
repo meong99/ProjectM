@@ -11,9 +11,9 @@ UPMWeaponInstance::UPMWeaponInstance(const FObjectInitializer& ObjectInitializer
 {
 }
 
-int32 UPMWeaponInstance::UseItem()
+int32 UPMWeaponInstance::ActivateItem()
 {
-	int32 ItemNum = Super::UseItem();
+	int32 ItemNum = Super::ActivateItem();
 
 	AActor* Controller = Cast<AActor>(GetOuter());
 	UPMEquipmentManagerComponent* EquipmentManager = Controller ? Controller->FindComponentByClass<UPMEquipmentManagerComponent>() : nullptr;

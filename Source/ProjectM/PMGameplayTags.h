@@ -52,6 +52,11 @@ struct FPMGameplayTags
 	FGameplayTag Ability_Effect_SetByCaller_Health;
 	FGameplayTag Ability_Effect_SetByCaller_MaxHealth;
 
+	/*
+	* Gameplay
+	*/
+	FGameplayTag UI_Registry_Game_Dialogue;
+
 private:
 	static FPMGameplayTags GameplayTags;
 };

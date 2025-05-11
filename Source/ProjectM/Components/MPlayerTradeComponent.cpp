@@ -25,11 +25,16 @@ void UMPlayerTradeComponent::Server_OnRequestSimpleDataGrant_Implementation(AAct
 	}
 
 	WalletComponent->AddGold(Request.GrantGold);
-#pragma TODO("인벤 리팩토링 후 인벤 꽉찼을때 확인")
-	for (const int32 ItemRowId : Request.GrantItems.ItemRowIds)
+	for (int32 i = 0; i < Request.GrantItems.ItemRowIds.Num(); i++)
 	{
-#pragma TODO("아이템 갯수 한번에 추가 가능하도록 리팩토링")
-		InventoryManager->AddItemtoInventory(ItemRowId);
+		int32 GrantItemNum = Request.GrantItems.ItemCount.IsValidIndex(i) ? Request.GrantItems.ItemCount[i] : 1;
+
+		FMItemRequest ItemRequest;
+		ItemRequest.RequestType = EMItemRequestType::AddItem;
+		ItemRequest.ItemRowId = Request.GrantItems.ItemRowIds[i];
+		ItemRequest.ItemQuentity = GrantItemNum;
+
+		InventoryManager->RequestItemToInventory(ItemRequest);
 	}
 }
 
@@ -74,14 +79,24 @@ void UMPlayerTradeComponent::Server_OnRequestSimpleTrading_Implementation(AActor
 		for (int32 i = 0; i < Request.RequiredItems.ItemRowIds.Num(); i++)
 		{
 			int32 RequirementNum = Request.RequiredItems.ItemCount.IsValidIndex(i) ? Request.RequiredItems.ItemCount[i] : 1;
-			InventoryManager->ChangeItemQuantity(Request.RequiredItems.ItemRowIds[i], -RequirementNum);
+			FMItemRequest ItemRequest;
+			ItemRequest.RequestType = EMItemRequestType::RemoveItem;
+			ItemRequest.ItemRowId = Request.RequiredItems.ItemRowIds[i];
+			ItemRequest.ItemQuentity = -RequirementNum;
+			InventoryManager->RequestItemToInventory(ItemRequest);
 		}
 	}
 
 	WalletComponent->AddGold(Request.GrantGold);
 	for (int32 i = 0; i < Request.GrantItems.ItemRowIds.Num(); i++)
 	{
-		int32 RequirementNum = Request.GrantItems.ItemCount.IsValidIndex(i) ? Request.GrantItems.ItemCount[i] : 1;
-		InventoryManager->AddItemtoInventory(Request.GrantItems.ItemRowIds[i]);
+		int32 GrantItemNum = Request.GrantItems.ItemCount.IsValidIndex(i) ? Request.GrantItems.ItemCount[i] : 1;
+
+		FMItemRequest ItemRequest;
+		ItemRequest.RequestType = EMItemRequestType::AddItem;
+		ItemRequest.ItemRowId = Request.GrantItems.ItemRowIds[i];
+		ItemRequest.ItemQuentity = GrantItemNum;
+
+		InventoryManager->RequestItemToInventory(ItemRequest);
 	}
 }

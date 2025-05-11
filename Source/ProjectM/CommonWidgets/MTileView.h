@@ -42,7 +42,7 @@ protected:
 	void RemoveEmptySlot(const int32 SlotIndex);
 	void RequestHeapify();
 
-	/*
+/*
 * Member Variables
 */
 protected:

@@ -40,13 +40,13 @@ public:
 	void	Callback_OnInitInventory(const FPMInventoryItemList& InventoryList);
 
 	//인벤토리에 존재하지 않던 새로운 아이템이 추가됨
-	void	Callback_AddNewItem(const FPMInventoryEntry& NewItemEntry);
+	void	Callback_AddNewItem(const FPMInventoryEntry& NewItemEntry, const FMItemResponse& ItemRespons);
 	void	Callback_RemoveItem(const FMItemHandle& ItemHandle, const EMItemType ItemType);
 
 protected:
 	void	BindDelegates();
 	void	InitInventorySlots(const FPMInventoryItemList& InventoryList);
-	void	InitInventorySlots_Impl(const FPMInventoryItemList& InventoryList, UMTileView* ItemSlots);
+	void	InitInventorySlots_Impl(const FPMInventoryItemList& InventoryList, UMTileView* ItemSlotView);
 
 	UMTileView* GetItemSlotView(const EMItemType ItemType);
 

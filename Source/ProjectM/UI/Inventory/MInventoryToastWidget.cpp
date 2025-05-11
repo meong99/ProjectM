@@ -3,6 +3,7 @@
 #include "Inventory/PMInventoryManagerComponent.h"
 #include "Character/Components/MWalletComponent.h"
 #include "GameModes/PMExperienceDefinition.h"
+#include "Inventory/MInventoryTypes.h"
 
 UMInventoryToastWidget::UMInventoryToastWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -24,7 +25,7 @@ void UMInventoryToastWidget::InitThisWidget()
 	InvenManager = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
 	if (InvenManager)
 	{
-		InvenManager->Delegate_NotifyItemAdded.AddUObject(this, &ThisClass::OnNotifyNewItem);
+		InvenManager->Delegate_OnNewItemAdded.AddUObject(this, &ThisClass::OnNotifyNewItem);
 	}
 	WalletComponent = Controller ? Controller->FindComponentByClass<UMWalletComponent>() : nullptr;
 	if (WalletComponent)
@@ -38,9 +39,12 @@ void UMInventoryToastWidget::OnChangeGold(int64 AdjustPrice, int64 NewGold)
 	K2_OnChangeGold(AdjustPrice, NewGold);
 }
 
-void UMInventoryToastWidget::OnNotifyNewItem(const FPMInventoryEntry& ItemEntry)
+void UMInventoryToastWidget::OnNotifyNewItem(const FPMInventoryEntry& ItemEntry, const FMItemResponse& ItemRespons)
 {
-	K2_NotifyNewItem(ItemEntry);
+	if (ItemRespons.ItemRequest.RequestType == EMItemRequestType::AddItem)
+	{
+		K2_NotifyNewItem(ItemEntry);
+	}
 }
 
 void UMInventoryToastWidget::OnExperienceLoaded(const UPMExperienceDefinition* LoadedExperienceDefinition)

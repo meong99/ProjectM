@@ -137,7 +137,11 @@ void APMPlayerState::Server_LoadPlayerData_Implementation()
 			const TSubclassOf<UPMInventoryItemDefinition>& ItemDef = PawnData->DefaultEquipment;
 			if (ItemDef && InventoryManager)
 			{
-				const FMItemHandle& ItemHandle = InventoryManager->AddItemtoInventory(ItemDef);
+				FMItemRequest Request;
+				Request.RequestType = EMItemRequestType::InitItem;
+				Request.ItemDef = ItemDef;
+				Request.ItemQuentity = 1;
+				const FMItemHandle& ItemHandle = InventoryManager->RequestItemToInventory(Request);
 				InventoryManager->Server_UseItem(ItemHandle);
 			}
 		}
@@ -214,14 +218,22 @@ void APMPlayerState::ApplyLoadedData()
 		{
 			if (ItemDef)
 			{
-				InventoryManager->AddItemtoInventory(ItemDef);
+				FMItemRequest Request;
+				Request.RequestType = EMItemRequestType::InitItem;
+				Request.ItemDef = ItemDef;
+				Request.ItemQuentity = 1;
+				InventoryManager->RequestItemToInventory(Request);
 			}
 		}
 
 		const TSubclassOf<UPMInventoryItemDefinition>& ItemDef = PawnData->DefaultEquipment;
 		if (ItemDef)
 		{
-			const FMItemHandle& ItemHandle = InventoryManager->AddItemtoInventory(ItemDef);
+			FMItemRequest Request;
+			Request.RequestType = EMItemRequestType::InitItem;
+			Request.ItemDef = ItemDef;
+			Request.ItemQuentity = 1;
+			const FMItemHandle& ItemHandle = InventoryManager->RequestItemToInventory(Request);
 			InventoryManager->Server_UseItem(ItemHandle);
 		}
 	}

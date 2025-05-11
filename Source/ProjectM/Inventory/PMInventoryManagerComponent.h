@@ -8,10 +8,9 @@
 
 class ULocalPlayerSaveGame;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnChangeInventory, const FMItemHandle& ItemHandle);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnNewItemAdded, const FPMInventoryEntry& ItemEntry, const FMItemResponse& ItemRespons);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnChangeItemQuentity, const FMItemHandle& ItemHandle, const FMItemResponse& ItemRespons);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnRemoveItem, const FMItemHandle& ItemHandle, const EMItemType ItemType);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnNewItemAdded, const FPMInventoryEntry& ItemEntry);
-DECLARE_MULTICAST_DELEGATE_OneParam(FNotifyItemAdded, const FPMInventoryEntry& ItemEntry);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnInitInventory, const FPMInventoryItemList& InventoryList);
 
 /**
@@ -43,16 +42,10 @@ public:
 
 	// 아이템을 추가하고 Instancing해서 저장한다.
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
-	FMItemHandle	AddItemtoInventory(int32 ItemRowId);
-	FMItemHandle	AddItemtoInventory(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
-	FMItemHandle	ReturnItem(UPMInventoryItemInstance* Instance);
+	FMItemHandle	RequestItemToInventory(const FMItemRequest& ItemRequest);
 
-	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
-	int32			ChangeItemQuantity(const FMItemHandle& ItemHandle, int32 ChangeNum);
-	int32			ChangeItemQuantity(int32 ItemRowId, int32 ChangeNum);
-
-	FDelegateHandle AddDelegateOnChangeInventory(const int32 ItemUid, FOnChangeInventory::FDelegate&& Delegate);
-	void			RemoveDelegateOnChangeInventory(const int32 ItemUid, const FDelegateHandle& DelegateHandle);
+	FDelegateHandle AddDelegateOnChangeItemQuentity(const int32 ItemUid, FOnChangeItemQuentity::FDelegate&& Delegate);
+	void			RemoveDelegateOnChangeItemQuentity(const int32 ItemUid, const FDelegateHandle& DelegateHandle);
 
 	UFUNCTION(Server, Reliable)
 	void Server_UseItem(const FMItemHandle& ItemHandle);
@@ -70,28 +63,38 @@ public:
 	const FPMInventoryItemList& GetConsumableItemList() const { return ConsumableItemList; }
 
 protected:
-	FMItemHandle AddItemDefinition_Impl(TSubclassOf<UPMInventoryItemDefinition> ItemDef, FPMInventoryItemList& ItemList);
-
 	UFUNCTION()
-	void InitInventory();
+	void	InitInventory();
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
-	void RemoveItem(const FMItemHandle& ItemHandle);
+	int32	ChangeItemQuantity(const FMItemHandle& ItemHandle, const FMItemRequest& ItemRequest);
+	
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
+	void	RemoveItem(const FMItemHandle& ItemHandle);
+	
+	FMItemHandle	AddItemDefinition_Impl(TSubclassOf<UPMInventoryItemDefinition> ItemDef, FPMInventoryItemList& ItemList, const FMItemRequest& ItemRequest);
+	FMItemHandle	ReturnItem(UPMInventoryItemInstance* Instance);
 
-	// 이걸 서버와 클라가 한 번의 함수 호출로 동시에 작동되도록 하는 방법은 멀티캐스트 말곤 없을까?...
-	void Broadcast_OnRemoveItem(const FMItemHandle& ItemHandle, const EMItemType ItemType);
-	void Broadcast_OnNewItemAdded(const FPMInventoryEntry& ItemEntry, bool bOnlyNotify = false);
-	void Broadcast_OnChangeInventory(const FMItemHandle& ItemHandle);
+	UPMInventoryItemDefinition* GetItemDefCDO(const int32 ItemRowId);
+	UPMInventoryItemDefinition* GetItemDefCDO(const TSubclassOf<UPMInventoryItemDefinition>& ItemDef);
+	UPMInventoryItemDefinition* GetItemDefCDO(const FMItemRequest& ItemRequest);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_OnNewItemAdded(const FPMInventoryEntry& ItemEntry, const FMItemResponse& ItemRespons);
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_OnChangeInventory(const FMItemHandle& ItemHandle, const FMItemResponse& ItemRespons);
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_OnRemoveItem(const FMItemHandle& ItemHandle, const EMItemType ItemType);
 
 	FPMInventoryItemList* GetItemList(const EMItemType ItemType);
 /*
 * Member Variables
 */
 public:
-	FOnRemoveItem					Delegate_OnRemoveItem;
-	FOnNewItemAdded					Delegate_OnNewItemAdded;
-	FNotifyItemAdded				Delegate_NotifyItemAdded;
-	TMap<int32, FOnChangeInventory> Delegate_OnChangeInventory;
+	FOnRemoveItem						Delegate_OnRemoveItem;
+	FOnNewItemAdded						Delegate_OnNewItemAdded;
+protected:
+	TMap<int32, FOnChangeItemQuentity>	Delegate_OnChangeItemQuentity;
 	
 private:
 	UPROPERTY(Replicated)
@@ -112,8 +115,8 @@ private:
 private:
 #if WITH_EDITOR
 	UFUNCTION(Exec)
-	void Debug_AddItem(int32 RowId);
+	void Debug_AddItem(int32 RowId, int32 ItemQuentity = 1);
 	UFUNCTION(Server, Reliable)
-	void DebugServer_AddItem(int32 Rowid);
+	void DebugServer_AddItem(int32 Rowid, int32 ItemQuentity);
 #endif
 };

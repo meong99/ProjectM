@@ -57,4 +57,9 @@ void FPMGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	*/
 	AddTag(Ability_Effect_SetByCaller_Health, "Ability.Effect.SetByCaller.Health", "");
 	AddTag(Ability_Effect_SetByCaller_MaxHealth, "Ability.Effect.SetByCaller.MaxHealth", "");
+
+	/*
+	* Gameplay
+	*/
+	AddTag(UI_Registry_Game_Dialogue, "UI.Registry.Game.Dialogue", "");
 }

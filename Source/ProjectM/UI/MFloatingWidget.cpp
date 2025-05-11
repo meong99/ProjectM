@@ -6,6 +6,8 @@
 #include "Blueprint/WidgetTree.h"
 #include "Engine/GameInstance.h"
 #include "Engine/GameViewportClient.h"
+#include "Components/TextBlock.h"
+#include "Components/Image.h"
 
 UMFloatingWidget::UMFloatingWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -18,6 +20,16 @@ void UMFloatingWidget::NativeOnInitialized()
 	GetWorld()->GetGameViewport()->GetViewportSize(ViewportSize);
 	ViewportSize /= ViewportScale;
 	WidgetSize = FVector2d::ZeroVector;
+
+	if (!DisplayText.IsEmpty())
+	{
+		FloatingWidgetName->SetText(DisplayText);
+	}
+
+	if (BackgroundImageTextrue)
+	{
+		BackgroundImage->SetBrushFromTexture(BackgroundImageTextrue);
+	}
 }
 
 void UMFloatingWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

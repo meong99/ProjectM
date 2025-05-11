@@ -42,9 +42,9 @@ struct FPMInventoryItemList : public FFastArraySerializer
 /*
 * Network
 */
-	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
-	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
-	void PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize);
+// 	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
+// 	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
+// 	void PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize);
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms)
 	{
 		return FFastArraySerializer::FastArrayDeltaSerialize<FPMInventoryEntry, FPMInventoryItemList>(Entries, DeltaParms, *this);
@@ -56,7 +56,7 @@ struct FPMInventoryItemList : public FFastArraySerializer
 public:
 	int32 ChangeItemQuantity(const FMItemHandle& ItemHandle, int32 ChangeNum);
 
-	FMItemHandle AddEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
+	FMItemHandle AddEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef, int32 ItemQuentity);
 	FMItemHandle AddEntry(UPMInventoryItemInstance* Instance);
 	void RemoveEntry(const FMItemHandle& ItemHandle);
 
@@ -64,7 +64,7 @@ public:
 	FPMInventoryEntry* FindEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
 
 protected:
-	FPMInventoryEntry*	MakeEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef);
+	FPMInventoryEntry*	MakeEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef, int32 ItemQuentity);
 	FPMInventoryEntry*	MakeEntry(UPMInventoryItemInstance* Instance);
 	FMItemHandle		AddEntry_Impl(FPMInventoryEntry& Entry);
 

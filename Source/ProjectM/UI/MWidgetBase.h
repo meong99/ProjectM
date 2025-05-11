@@ -8,6 +8,7 @@
 #include "MWidgetBase.generated.h"
 
 class AActor;
+class APMPlayerControllerBase;
 
 UENUM(BlueprintType)
 enum class EMWidgetInputMode : uint8
@@ -68,9 +69,13 @@ public:
 	void SetWidgetTag(const FGameplayTag& InWidgetTag) { WidgetTag = InWidgetTag; }
 	void SetActivate(const bool bNewActivate) { bIsActivate = bNewActivate; }
 	void SetWidgetInfo(const FMWidgetInfo& InWidgetInfo) { WidgetInfo = InWidgetInfo; }
+	void SetInitialized(bool bInIsInitialized) { bIsInitialized = bInIsInitialized; }
+	
 	UFUNCTION(BlueprintCallable)
 	bool IsInLayer() const { return bIsActivate; }
 	bool IsInitialized() const { return bIsInitialized; }
+
+	APMPlayerControllerBase* GetPlayerController() const;
 /*
 * Member Variables
 */

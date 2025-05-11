@@ -12,7 +12,7 @@ class UMInteractionComponent;
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class PROJECTM_API AMNpcBase : public AMCharacterBase
 {
 	GENERATED_BODY()

@@ -9,6 +9,7 @@ class APMPlayerState;
 class UPMAbilitySystemComponent;
 class UPMInventoryManagerComponent;
 class UMPlayerTradeComponent;
+class UMPlayerQuestComponent;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPossessed, AMPlayerCharacterBase* /*Character*/);
 
@@ -47,6 +48,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UMPlayerTradeComponent> PlayerTradeComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UMPlayerQuestComponent> PlayerQuestComponent;
 
 	FOnPossessed Delegate_OnPossessed;
 };
