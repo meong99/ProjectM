@@ -8,6 +8,7 @@
 
 class UInputComponent;
 class UMQuestDefinition;
+class UMViewportClient;
 
 UCLASS()
 class PROJECTM_API UMInteractiveAction_AcceptQuest : public UMInteractiveAction_OnInteractionBase
@@ -28,6 +29,8 @@ public:
 * Member Functions
 */
 public:
+	void OnClick_Accept();
+	void OnClick_Refuse();
 
 protected:
 #if WITH_EDITOR

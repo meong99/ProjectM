@@ -35,12 +35,15 @@ struct FPMGameplayTags
 	*/
 	FGameplayTag UI_Registry_InputTag;
 	FGameplayTag UI_Registry_InputTag_Inventory;
+	FGameplayTag UI_Registry_InputTag_PlayerQuest;
+
 	FGameplayTag UI_Registry_Layout_DefaultLayout;
 	FGameplayTag UI_Registry_HUD_MainHUD;
 
-	FGameplayTag UI_Game_NameWidget;
 	FGameplayTag UI_Registry_Game_InteractionList;
 	FGameplayTag UI_Registry_Game_Shop;
+
+	FGameplayTag UI_Game_NameWidget;
 	/*
 	* Item
 	*/

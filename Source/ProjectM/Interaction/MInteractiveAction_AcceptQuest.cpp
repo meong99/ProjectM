@@ -3,6 +3,13 @@
 #include "Table/MTable_QuestTable.h"
 #include "Engine/Engine.h"
 #include "Definitions/MQuestDefinition.h"
+#include "Util/MGameplayStatics.h"
+#include "UI/MViewportClient.h"
+#include "PMGameplayTags.h"
+#include "UI/Interaction/MDialogueBoxWidget.h"
+#include "MInteractionComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/MPlayerQuestComponent.h"
 
 UMInteractiveAction_AcceptQuest::UMInteractiveAction_AcceptQuest(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -16,11 +23,52 @@ void UMInteractiveAction_AcceptQuest::InitAction(UMInteractionComponent* InInter
 void UMInteractiveAction_AcceptQuest::ActivateAction()
 {
 	Super::ActivateAction();
+
+	UMViewportClient* ViewportClient = UMGameplayStatics::GetViewportClient(this);
+	if (ViewportClient)
+	{
+		UMDialogueBoxWidget* DialogWidget = Cast<UMDialogueBoxWidget>(ViewportClient->GetWidgetInstance(FPMGameplayTags::Get().UI_Registry_Game_Dialogue));
+		if (DialogWidget && QuestDefinition)
+		{
+			FMWidgetInfo WidgetInfo;
+			WidgetInfo.WidgetInstigator = this;
+			WidgetInfo.WidgetOwnerActor = OwnerActor;
+			DialogWidget->SetWidgetInfo(WidgetInfo);
+
+			DialogWidget->InitDialogueWidget(QuestDefinition->DialogueRowId);
+			DialogWidget->SetCallback1([this](){OnClick_Accept();});
+			DialogWidget->SetCallback2([this](){OnClick_Refuse();});
+			DialogWidget->AddWidgetToLayer(WidgetInfo);
+		}
+	}
 }
 
 void UMInteractiveAction_AcceptQuest::DeactivateAction()
 {
 	Super::DeactivateAction();
+
+	UMViewportClient* ViewportClient = UMGameplayStatics::GetViewportClient(this);
+	if (ViewportClient)
+	{
+		ViewportClient->RemoveWidgetFromLayer(FPMGameplayTags::Get().UI_Registry_Game_Dialogue);
+		InteractionComponent->ActivateAllOverlapAction();
+	}
+}
+
+void UMInteractiveAction_AcceptQuest::OnClick_Accept()
+{
+	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
+	UMPlayerQuestComponent* QuestComponent = Controller ? Controller->FindComponentByClass<UMPlayerQuestComponent>() : nullptr;
+	if (QuestComponent)
+	{
+		QuestComponent->AcceptQuest(QuestDefinition->RowId);
+	}
+	DeactivateAction();
+}
+
+void UMInteractiveAction_AcceptQuest::OnClick_Refuse()
+{
+	DeactivateAction();
 }
 
 #if WITH_EDITOR

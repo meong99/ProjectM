@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UI/MWidgetBase.h"
+#include "Types/MQuestTypes.h"
 #include "MPlayerQuestInfoWidget.generated.h"
 
 class UMQuestProgressWidget;
@@ -28,10 +29,10 @@ public:
 * Member Functions
 */
 public:
-	void DisplayQuestInfo(const UMQuestDefinition* QuestDefinition) const;
+	void DisplayQuestInfo(const UMQuestDefinition* QuestDefinition, const FMQuestHandle& QuestHandle) const;
+	void InitQuest();
 
 protected:
-	void InitQuest();
 
 /*
 * Member Variables

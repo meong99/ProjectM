@@ -9,6 +9,8 @@
 class ULocalPlayerSaveGame;
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnNewItemAdded, const FPMInventoryEntry& ItemEntry, const FMItemResponse& ItemRespons);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemIncreased, const FMItemResponse& ItemRespons);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemDecreased, const FMItemResponse& ItemRespons);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnChangeItemQuentity, const FMItemHandle& ItemHandle, const FMItemResponse& ItemRespons);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnRemoveItem, const FMItemHandle& ItemHandle, const EMItemType ItemType);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnInitInventory, const FPMInventoryItemList& InventoryList);
@@ -81,6 +83,12 @@ protected:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_OnNewItemAdded(const FPMInventoryEntry& ItemEntry, const FMItemResponse& ItemRespons);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_OnItemIncreased(const FMItemResponse& ItemRespons);
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_OnItemDecreased(const FMItemResponse& ItemRespons);
+
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_OnChangeInventory(const FMItemHandle& ItemHandle, const FMItemResponse& ItemRespons);
 	UFUNCTION(NetMulticast, Reliable)
@@ -91,10 +99,13 @@ protected:
 * Member Variables
 */
 public:
-	FOnRemoveItem						Delegate_OnRemoveItem;
-	FOnNewItemAdded						Delegate_OnNewItemAdded;
+	FOnRemoveItem		Delegate_OnRemoveItem;
+	FOnNewItemAdded		Delegate_OnNewItemAdded;
+	FOnItemIncreased	Delegate_OnItemIncreased;
+	FOnItemDecreased	Delegate_OnItemDecreased;
 protected:
-	TMap<int32, FOnChangeItemQuentity>	Delegate_OnChangeItemQuentity;
+	// 인벤토리같이 다수의 객체에서 아이템 변경을 추적하지만, 특정 ItemUID에 대한 알림만 받고싶을 경우에 사용
+	TMap<int32, FOnChangeItemQuentity>	DelegateMap_OnChangeItemQuentity;
 	
 private:
 	UPROPERTY(Replicated)

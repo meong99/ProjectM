@@ -10,7 +10,7 @@ class UMQuestSlotWidget;
 class UVerticalBox;
 class UMQuestDefinition;
 class UMPlayerQuestComponent;
-class UMPlayerQuestInfoWidget;
+class UMQuestInfoWidget;
 
 UCLASS()
 class PROJECTM_API UMQuestProgressWidget : public UMWidgetBase
@@ -28,11 +28,13 @@ public:
 	* Member Functions
 	*/
 public:
-	void InitQuest(UMPlayerQuestInfoWidget* InPlayerQuestInfo);
-	void SetInProgressQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMPlayerQuestInfoWidget* InPlayerQuestInfo);
-	void SetStartableQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMPlayerQuestInfoWidget* InPlayerQuestInfo);
+	void InitQuest(UMQuestInfoWidget* InQuestInfo);
+	void SetInProgressQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMQuestInfoWidget* InQuestInfo);
+	void SetStartableQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMQuestInfoWidget* InQuestInfo);
 
 protected:
+	void ClearQuestProgress();
+
 	/*
 	* Member Variables
 	*/

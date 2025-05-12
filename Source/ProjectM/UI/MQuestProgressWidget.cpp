@@ -4,7 +4,7 @@
 #include "Components/VerticalBox.h"
 #include "Components/MPlayerQuestComponent.h"
 #include "GameFramework/PlayerController.h"
-#include "MPlayerQuestInfoWidget.h"
+#include "MQuestInfoWidget.h"
 
 UMQuestProgressWidget::UMQuestProgressWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -15,9 +15,9 @@ void UMQuestProgressWidget::PreAddToLayer()
 	Super::PreAddToLayer();
 }
 
-void UMQuestProgressWidget::InitQuest(UMPlayerQuestInfoWidget* InPlayerQuestInfo)
+void UMQuestProgressWidget::InitQuest(UMQuestInfoWidget* InQuestInfo)
 {
-	if (!InPlayerQuestInfo)
+	if (!InQuestInfo)
 	{
 		ensure(false);
 		MCHAE_ERROR("PlayerQuestInfo is not valid");
@@ -36,9 +36,11 @@ void UMQuestProgressWidget::InitQuest(UMPlayerQuestInfoWidget* InPlayerQuestInfo
 		}
 	}
 
+	ClearQuestProgress();
+
 	const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas = PlayerQuestComponent->GetQuestDatas();
-	SetInProgressQuests(QuestDatas, InPlayerQuestInfo);
-	SetStartableQuests(QuestDatas, InPlayerQuestInfo);
+	SetInProgressQuests(QuestDatas, InQuestInfo);
+	SetStartableQuests(QuestDatas, InQuestInfo);
 
 	// 	const TSet<int32>& FinishedQuests = PlayerQuestComponent->GetFinishedQuests();
 	// 	for (const int32 QuestRowId : FinishedQuests)
@@ -47,7 +49,7 @@ void UMQuestProgressWidget::InitQuest(UMPlayerQuestInfoWidget* InPlayerQuestInfo
 	// 	}
 }
 
-void UMQuestProgressWidget::SetInProgressQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMPlayerQuestInfoWidget* InPlayerQuestInfo)
+void UMQuestProgressWidget::SetInProgressQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMQuestInfoWidget* InQuestInfo)
 {
 	const TSet<int32>& InProgressingQuests = PlayerQuestComponent->GetInProgressingQuests();
 
@@ -59,14 +61,14 @@ void UMQuestProgressWidget::SetInProgressQuests(const TMap<int32, TObjectPtr<UMQ
 			UMQuestSlotWidget* QuestSlot = CreateWidget<UMQuestSlotWidget>(GetOwningPlayer(), QuestSlotClass);
 			if (QuestSlot)
 			{
-				QuestSlot->InitQuestSlot(InPlayerQuestInfo, QuestDef);
+				QuestSlot->InitQuestSlot(InQuestInfo, QuestDef, EMQuestState::InProgress);
 				ProgressVertical->AddChildToVerticalBox(QuestSlot);
 			}
 		}
 	}
 }
 
-void UMQuestProgressWidget::SetStartableQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMPlayerQuestInfoWidget* InPlayerQuestInfo)
+void UMQuestProgressWidget::SetStartableQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMQuestInfoWidget* InQuestInfo)
 {
 	const TSet<int32>& StartableQuests = PlayerQuestComponent->GetStartableQuests();
 
@@ -78,9 +80,15 @@ void UMQuestProgressWidget::SetStartableQuests(const TMap<int32, TObjectPtr<UMQu
 			UMQuestSlotWidget* QuestSlot = CreateWidget<UMQuestSlotWidget>(GetOwningPlayer(), QuestSlotClass);
 			if (QuestSlot)
 			{
-				QuestSlot->InitQuestSlot(InPlayerQuestInfo, QuestDef);
-				ProgressVertical->AddChildToVerticalBox(QuestSlot);
+				QuestSlot->InitQuestSlot(InQuestInfo, QuestDef, EMQuestState::Startable);
+				StartableVertical->AddChildToVerticalBox(QuestSlot);
 			}
 		}
 	}
+}
+
+void UMQuestProgressWidget::ClearQuestProgress()
+{
+	ProgressVertical->ClearChildren();
+	StartableVertical->ClearChildren();
 }

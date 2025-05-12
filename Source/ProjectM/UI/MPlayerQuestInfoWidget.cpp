@@ -17,12 +17,13 @@ void UMPlayerQuestInfoWidget::PreAddToLayer()
 	InitQuest();
 }
 
-void UMPlayerQuestInfoWidget::DisplayQuestInfo(const UMQuestDefinition* QuestDefinition) const
+void UMPlayerQuestInfoWidget::DisplayQuestInfo(const UMQuestDefinition* QuestDefinition, const FMQuestHandle& QuestHandle) const
 {
-	QuestInfo->DisplayQuestInfo(QuestDefinition);
+	QuestInfo->DisplayQuestInfo(QuestDefinition, QuestHandle);
 }
 
 void UMPlayerQuestInfoWidget::InitQuest()
 {
-	QuestProgress->InitQuest(this);
+	QuestProgress->InitQuest(QuestInfo);
+	QuestInfo->SetVisibility(ESlateVisibility::Collapsed);
 }

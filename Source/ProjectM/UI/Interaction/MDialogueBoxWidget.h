@@ -18,22 +18,32 @@ class PROJECTM_API UMDialogueBoxWidget : public UMWidgetBase
 */
 public:
 	UMDialogueBoxWidget(const FObjectInitializer& ObjectInitializer);
+	virtual void NativeConstruct() override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 /*
 * Member Functions
 */
 public:
+	void InitDialogueWidget(const int32 DialogueRowId);
 	void SetCallback1(TFunction<void ()> Callback);
 	void SetCallback2(TFunction<void ()> Callback);
 
 protected:
+	void StartDialogue();
+	void SetDialogue();
+	void TurnOverPage();
+	void ClearDialogue();
+	
 	UFUNCTION()
 	void OnClick_Button1();
 	UFUNCTION()
 	void OnClick_Button2();
 
+	void SetOwnerName(const FText InOwnerName);
 	void SetButton1_Text(const FText& InText);
 	void SetButton2_Text(const FText& InText);
+
 /*
 * Member Variables
 */
@@ -43,12 +53,20 @@ protected:
 
 	FText Button1_Text;
 	FText Button2_Text;
+
+	int32 CurrentPage = 0;
 	
 	UPROPERTY()
 	TArray<FText> DialogTextArray;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
 	TObjectPtr<UHorizontalBox> ButtonBox;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UTextBlock> OwnerName;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UTextBlock> MainDialog;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
 	TObjectPtr<UTextBlock> Button1Text;

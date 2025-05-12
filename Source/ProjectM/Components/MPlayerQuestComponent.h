@@ -21,13 +21,18 @@ public:
 	UMPlayerQuestComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	virtual void InitializeComponent() override;
 
-	/*
+	void AcceptQuest(const int32 QuestRowId);
+
+/*
 * Member Functions
 */
 public:
 	const TSet<int32>& GetInProgressingQuests() const { return InProgressingQuests; }
 	const TSet<int32>& GetStartableQuests() const { return StartableQuests; }
 	const TSet<int32>& GetFinishedQuests() const { return FinishedQuests; }
+protected:
+	void UpdateQuestWidget() const;
+
 /*
 * Member Variables
 */

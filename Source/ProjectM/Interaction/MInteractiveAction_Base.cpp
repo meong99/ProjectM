@@ -2,6 +2,9 @@
 #include "MInteractionComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/PMPlayerControllerBase.h"
+#include "PMGameplayTags.h"
+#include "UI/MViewportClient.h"
+#include "Util/MGameplayStatics.h"
 
 UMInteractiveAction_Base::UMInteractiveAction_Base(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -16,6 +19,11 @@ void UMInteractiveAction_Base::InitAction(UMInteractionComponent* InInteractionC
 
 void UMInteractiveAction_Base::ActivateAction()
 {
+	UMViewportClient* ViewportClient = UMGameplayStatics::GetViewportClient(this);
+	if (ViewportClient)
+	{
+		ViewportClient->RemoveWidgetFromLayer(FPMGameplayTags::Get().UI_Registry_Game_InteractionList);
+	}
 	K2_ActivateAction();
 }
 

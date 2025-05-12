@@ -28,4 +28,10 @@ public:
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "ProjectM")
 	TArray<FText> DialogueArray;
+
+	UPROPERTY(EditDefaultsOnly, Category = "ProjectM")
+	FText Callback1_TextName;
+
+	UPROPERTY(EditDefaultsOnly, Category = "ProjectM")
+	FText Callback2_TextName;
 };

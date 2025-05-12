@@ -13,6 +13,13 @@ void UMWidgetBase::NativeOnInitialized()
 	SetIsFocusable(false);
 }
 
+FReply UMWidgetBase::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+
+	return FReply::Handled();
+}
+
 void UMWidgetBase::AddWidgetToLayer(const FMWidgetInfo& InWidgetInfo, const int32 LayerId)
 {
 	UGameInstance* GameInstance = GetGameInstance<UGameInstance>();

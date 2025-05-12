@@ -2,21 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "MDefinitionBase.h"
+#include "Types/MQuestTypes.h"
 #include "MQuestDefinition.generated.h"
 
 class AMNpcBase;
-
-USTRUCT(BlueprintType)
-struct FMQuestItem
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=())
-	int32 ItemRowId = INDEX_NONE;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin = 1))
-	int32 ItemQuentity = 1;
-};
 
 UCLASS(Blueprintable, BlueprintType)
 class PROJECTM_API UMQuestDefinition : public UMDefinitionBase
@@ -60,4 +49,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin = 0, ClampMax=2147483647), Category="ProjectM")
 	int32 RewardGold = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin = 1800001, ClampMax= 1899999), Category="ProjectM")
+	int32 DialogueRowId = INDEX_NONE;
 };

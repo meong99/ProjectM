@@ -38,16 +38,15 @@ void UMInteractiveAction_OpenShop::InitAction(UMInteractionComponent* InInteract
 
 void UMInteractiveAction_OpenShop::ActivateAction()
 {
+	Super::ActivateAction();
+
 	UMViewportClient* ViewportClient = Cast<UMViewportClient>(GetWorld()->GetGameInstance()->GetGameViewportClient());
 	if (ViewportClient)
 	{
 		bIsActivated = true;
 		
-		ViewportClient->RemoveWidgetFromLayer(FPMGameplayTags::Get().UI_Registry_Game_InteractionList);
 		ViewportClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_Game_Shop, {this, OwnerActor});
 	}
-
-	Super::ActivateAction();
 }
 
 void UMInteractiveAction_OpenShop::DeactivateAction()
