@@ -9,12 +9,12 @@ UMPlayerQuestInfoWidget::UMPlayerQuestInfoWidget(const FObjectInitializer& Objec
 void UMPlayerQuestInfoWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
+	InitQuest();
 }
 
 void UMPlayerQuestInfoWidget::PreAddToLayer()
 {
 	Super::PreAddToLayer();
-	InitQuest();
 }
 
 void UMPlayerQuestInfoWidget::DisplayQuestInfo(const UMQuestDefinition* QuestDefinition, const FMQuestHandle& QuestHandle) const
@@ -26,4 +26,9 @@ void UMPlayerQuestInfoWidget::InitQuest()
 {
 	QuestProgress->InitQuest(QuestInfo);
 	QuestInfo->SetVisibility(ESlateVisibility::Collapsed);
+}
+
+void UMPlayerQuestInfoWidget::UpdateQuest(const int32 QuestRowId, EMQuestState FromState, EMQuestState ToState)
+{
+	QuestProgress->UpdateQuest(QuestRowId, FromState, ToState);
 }

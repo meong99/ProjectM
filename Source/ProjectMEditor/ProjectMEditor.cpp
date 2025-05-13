@@ -1,7 +1,7 @@
 #include "ProjectMEditor.h"
 
 #include "ToolMenus.h"
-#include "ProjectM/Development/MDeveloperSettings.h"
+#include "Development/MDeveloperSettings.h"
 
 #define LOCTEXT_NAMESPACE "ProjectMEditor"
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UI/MWidgetBase.h"
+#include "Types/MQuestTypes.h"
 #include "MQuestProgressWidget.generated.h"
 
 class UMQuestSlotWidget;
@@ -28,12 +29,16 @@ public:
 	* Member Functions
 	*/
 public:
-	void InitQuest(UMQuestInfoWidget* InQuestInfo);
-	void SetInProgressQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMQuestInfoWidget* InQuestInfo);
-	void SetStartableQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMQuestInfoWidget* InQuestInfo);
+	void	InitQuest(UMQuestInfoWidget* InQuestInfo);
+	void	UpdateQuest(const int32 QuestRowId, EMQuestState FromState, EMQuestState ToState);
+	void	SetInProgressQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMQuestInfoWidget* InQuestInfo);
+	void	SetStartableQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMQuestInfoWidget* InQuestInfo);
 
 protected:
-	void ClearQuestProgress();
+	void	ClearQuestProgress();
+
+	UMQuestSlotWidget*	GetQuestSlot(const int32 QuestRowId, EMQuestState State, bool bRemove = false) const;
+	UVerticalBox*		GetVerticalBox(EMQuestState State) const;
 
 	/*
 	* Member Variables

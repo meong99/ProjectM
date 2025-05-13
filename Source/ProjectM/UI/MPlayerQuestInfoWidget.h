@@ -29,8 +29,9 @@ public:
 * Member Functions
 */
 public:
-	void DisplayQuestInfo(const UMQuestDefinition* QuestDefinition, const FMQuestHandle& QuestHandle) const;
-	void InitQuest();
+	void	InitQuest();
+	void	UpdateQuest(const int32 QuestRowId, EMQuestState FromState, EMQuestState ToState);
+	void	DisplayQuestInfo(const UMQuestDefinition* QuestDefinition, const FMQuestHandle& QuestHandle) const;
 
 protected:
 

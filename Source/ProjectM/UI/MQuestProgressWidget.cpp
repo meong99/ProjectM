@@ -5,6 +5,7 @@
 #include "Components/MPlayerQuestComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "MQuestInfoWidget.h"
+#include "Components/Widget.h"
 
 UMQuestProgressWidget::UMQuestProgressWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -49,6 +50,20 @@ void UMQuestProgressWidget::InitQuest(UMQuestInfoWidget* InQuestInfo)
 	// 	}
 }
 
+void UMQuestProgressWidget::UpdateQuest(const int32 QuestRowId, EMQuestState FromState, EMQuestState ToState)
+{
+	UMQuestSlotWidget* QuestSlot = GetQuestSlot(QuestRowId, FromState, true);
+	if (QuestSlot)
+	{
+		UVerticalBox* VerticalBox = GetVerticalBox(ToState);
+		if (VerticalBox)
+		{
+			VerticalBox->AddChild(QuestSlot);
+			QuestSlot->UpdateSlot(ToState);
+		}
+	}
+}
+
 void UMQuestProgressWidget::SetInProgressQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMQuestInfoWidget* InQuestInfo)
 {
 	const TSet<int32>& InProgressingQuests = PlayerQuestComponent->GetInProgressingQuests();
@@ -91,4 +106,60 @@ void UMQuestProgressWidget::ClearQuestProgress()
 {
 	ProgressVertical->ClearChildren();
 	StartableVertical->ClearChildren();
+}
+
+UMQuestSlotWidget* UMQuestProgressWidget::GetQuestSlot(const int32 QuestRowId, EMQuestState State, bool bRemove) const
+{
+	UVerticalBox* Vertical = GetVerticalBox(State);
+	if (!Vertical)
+	{
+		ensure(false);
+		return nullptr;
+	}
+
+	TArray<UWidget*> Children = Vertical->GetAllChildren();
+
+	for (int32 i = 0; i < Children.Num(); i++)
+	{
+		UMQuestSlotWidget* QuestSlot = Cast<UMQuestSlotWidget>(Children[i]);
+		if (QuestSlot)
+		{
+			const UMQuestDefinition* Def = QuestSlot->GetQuestDefinition();
+			if (Def && Def->RowId == QuestRowId)
+			{
+				if (bRemove)
+				{
+					Vertical->RemoveChildAt(i);
+				}
+				return QuestSlot;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+UVerticalBox* UMQuestProgressWidget::GetVerticalBox(EMQuestState State) const
+{
+	switch (State)
+	{
+	case EMQuestState::None:
+		return nullptr;
+		break;
+	case EMQuestState::Startable:
+		return StartableVertical;
+		break;
+	case EMQuestState::InProgress:
+		return ProgressVertical;
+		break;
+	case EMQuestState::CanFinish:
+		return ProgressVertical;
+		break;
+	case EMQuestState::Finished:
+		return nullptr;
+		break;
+	default:
+		return nullptr;
+		break;
+	}
 }

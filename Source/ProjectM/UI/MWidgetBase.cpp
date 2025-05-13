@@ -20,6 +20,13 @@ FReply UMWidgetBase::NativeOnMouseButtonDown(const FGeometry& InGeometry, const 
 	return FReply::Handled();
 }
 
+FReply UMWidgetBase::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
+
+	return FReply::Handled();
+}
+
 void UMWidgetBase::AddWidgetToLayer(const FMWidgetInfo& InWidgetInfo, const int32 LayerId)
 {
 	UGameInstance* GameInstance = GetGameInstance<UGameInstance>();

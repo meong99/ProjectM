@@ -39,7 +39,7 @@ public:
 
 protected:
 	UFUNCTION()
-	void OnClick_FinishButton() const;
+	void	OnClick_FinishButton();
 
 	void	SetRequiredItem(const TMap<int32, FMQuestItem>& RequiredItems);
 	void	SetRewardItem(const TArray<FMQuestItem>& RewardItems);

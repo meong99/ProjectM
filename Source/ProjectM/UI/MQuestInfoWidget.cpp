@@ -17,6 +17,8 @@ UMQuestInfoWidget::UMQuestInfoWidget(const FObjectInitializer& ObjectInitializer
 void UMQuestInfoWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
+
+	FinishButton->OnClicked.AddDynamic(this, &UMQuestInfoWidget::OnClick_FinishButton);
 }
 
 void UMQuestInfoWidget::DisplayQuestInfo(const UMQuestDefinition* QuestDefinition, const FMQuestHandle& InQuestHandle)
@@ -37,19 +39,19 @@ void UMQuestInfoWidget::DisplayQuestInfo(const UMQuestDefinition* QuestDefinitio
 	QuestName->SetText(QuestDefinition->QuestName);
 	QuestGoalContext->SetText(QuestDefinition->QuestGoalContext);
 	QuestContent->SetText(QuestDefinition->QuestContext);
+	SetRewardItem(QuestDefinition->RewardItems);
 
 	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	SetRequiredItem(QuestHandle.TrackedRequiredItem);
-	SetRewardItem(QuestDefinition->RewardItems);
 }
 
 void UMQuestInfoWidget::UpdateHandle(const FMQuestHandle& InQuestHandle)
 {
 	QuestHandle = InQuestHandle;
+	SetRequiredItem(QuestHandle.TrackedRequiredItem);
 	UpdateFinishButton();
 }
 
-void UMQuestInfoWidget::OnClick_FinishButton() const
+void UMQuestInfoWidget::OnClick_FinishButton()
 {
 	if (QuestHandle && QuestHandle.Slot)
 	{
@@ -74,7 +76,7 @@ void UMQuestInfoWidget::SetRequiredItem(const TMap<int32, FMQuestItem>& Required
 				FText Template = FText::FromString("{CurrentItemNum} / {GoaldItemNum}");
 				FFormatNamedArguments Args;
 
-				if (QuestHandle.QuestState == EMQuestState::InProgress)
+				if (QuestHandle.QuestState == EMQuestState::InProgress || QuestHandle.QuestState == EMQuestState::CanFinish)
 				{
 					Args.Add("CurrentItemNum", FText::AsNumber(Item.TrackedItemNum));
 				}

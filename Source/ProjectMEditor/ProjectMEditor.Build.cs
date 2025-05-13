@@ -11,6 +11,7 @@ public class ProjectMEditor : ModuleRules
 				"Engine",
 				"UnrealEd",
 				"ProjectM",
+				"DeveloperSettings",
 			}
 		);
 		PrivateDependencyModuleNames.AddRange(
@@ -18,7 +19,6 @@ public class ProjectMEditor : ModuleRules
 				"Slate",
 				"SlateCore",
 				"ToolMenus",
-				"DeveloperToolSettings",
 			}
 		);
 	}

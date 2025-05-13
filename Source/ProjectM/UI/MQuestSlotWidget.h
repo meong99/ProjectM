@@ -29,8 +29,11 @@ protected:
 */
 public:
 	void	InitQuestSlot(UMQuestInfoWidget* InQuestInfo, const UMQuestDefinition* InQuestDefinition, EMQuestState InQuestState);
+	void	UpdateSlot(EMQuestState InQuestState);
 	void	OnClick_FinishButton();
 
+	const FMQuestHandle&		GetHandle() const { return QuestHandle; }
+	const UMQuestDefinition*	GetQuestDefinition() const { return QuestDefinition; }
 protected:
 	void	SetQuestName(const FText& InQuestName);
 	void	StartQuestTracking();

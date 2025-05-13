@@ -4,7 +4,37 @@
 
 #include "CoreMinimal.h"
 #include "MQuestComponentBase.h"
+#include "Types/MQuestTypes.h"
 #include "MPlayerQuestComponent.generated.h"
+
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnChangeQuestState, const int32 QuestRowId, EMQuestState FromState, EMQuestState ToState);
+
+UENUM(BlueprintType)
+enum class EMQuestResponseType : uint8
+{
+	None,
+	Success,
+	NotEnoughItems,
+	Error,
+};
+
+USTRUCT(BlueprintType)
+struct FMQuestResponse 
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="ProjectM")
+	int32 QuestRowId = INDEX_NONE;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="ProjectM")
+	EMQuestResponseType ResponseType = EMQuestResponseType::None;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="ProjectM")
+	EMQuestState FromState;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="ProjectM")
+	EMQuestState ToState;
+};
 
 /**
  *
@@ -30,12 +60,23 @@ public:
 	const TSet<int32>& GetInProgressingQuests() const { return InProgressingQuests; }
 	const TSet<int32>& GetStartableQuests() const { return StartableQuests; }
 	const TSet<int32>& GetFinishedQuests() const { return FinishedQuests; }
-protected:
-	void UpdateQuestWidget() const;
 
+	void RequestFinishQuest(const int32 QuestRowId);
+
+protected:
+	void UpdateQuestWidget(const int32 QuestRowId, EMQuestState FromState, EMQuestState ToState) const;
+
+	UFUNCTION(Server, Reliable)
+	void Server_RequestFinishQuest(const int32 QuestRowId);
+
+	UFUNCTION(Client, Reliable)
+	void Client_ResponseFinisheQuest(const FMQuestResponse& Response);
 /*
 * Member Variables
 */
+public:
+	FOnChangeQuestState Delegate_OnChangeQuestState;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, Category="ProjectM")
 	TSet<int32> InProgressingQuests;

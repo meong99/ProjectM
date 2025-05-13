@@ -10,7 +10,7 @@
  * 
  */
 UCLASS(config = EditorPerProjectUserSettings)
-class PROJECTM_API UMDeveloperSettings : public UDeveloperSettingsBackedByCVars
+class PROJECTMEDITOR_API UMDeveloperSettings : public UDeveloperSettingsBackedByCVars
 {
 	GENERATED_BODY()
 /*

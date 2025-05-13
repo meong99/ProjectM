@@ -486,7 +486,7 @@ void UPMInventoryManagerComponent::Debug_AddItem(int32 RowId, int32 ItemQuentity
 			const UDataTable* DataTable = TableManager->GetDataTable(RowId);
 			if (DataTable)
 			{
-				int32 ElementId = UMDataTableManager::ChangeRowIdToElementId(RowId);
+				int32 ElementId = UMDataTableManager::ChangeRowIdToElementId(RowId) - 1;
 				const TArray<FName>& Names = DataTable->GetRowNames();
 				if (Names.IsValidIndex(ElementId))
 				{
