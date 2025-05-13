@@ -87,7 +87,7 @@ void UPMInputComponent::BindToggleActions(const UPMInputConfig* InputConfig, Use
 		{
 			if (ToggleFunc)
 			{
-				BindHandles.Add(BindAction(Action.InputAction, ETriggerEvent::Started, Object, ToggleFunc, Action.InputTag).GetHandle());
+				BindHandles.Add(BindAction(Action.InputAction, ETriggerEvent::Completed, Object, ToggleFunc, Action.InputTag).GetHandle());
 			}
 		}
 	}

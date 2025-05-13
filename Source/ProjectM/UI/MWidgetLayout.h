@@ -8,22 +8,16 @@
 
 class UOverlay;
 class UWidgetSwitcher;
+class UMWidgetLayer;
 
 UENUM(BlueprintType)
 enum class EMWidgetLayout : uint8
 {
 	// 게임 플레이 중 나오는 Layout. (HUD, Inventory ...)
-	GameLayout UMETA(DisplayName = "GameLayout"),
+	GameLayer UMETA(DisplayName = "GameLayer"),
 
-	// 옵션 및 메뉴 등 게임 플레이에 영향을 주지 않는 layout.
-	MenuLayout UMETA(DisplayName = "MenuLayout"),
-
-	// 상점 및 기타 위젯끼리 상호작용할 때 사용할 layout
-	ShopLayout UMETA(DisplayName = "ShopLayout"),
-
-	// 미정. 기타 등등
-	OtherLayout UMETA(DisplayName = "OtherLayout"),
-
+	// 다른 위젯 없이 단독으로 보여지는 위젯 레이아웃. 단 하나씩만 설정 가능하다.
+	IndependentLayer UMETA(DisplayName = "IndependentLayer"),
 
 	None UMETA(DisplayName = "None"),
 };
@@ -43,18 +37,15 @@ public:
 * Member Functions
 */
 public:
-	void ChangeWidgetLayout(EMWidgetLayout WidgetLayout) const;
+	void ChangeWidgetLayer(EMWidgetLayout WidgetLayout) const;
 
-	void AddWidgetToCurrentLayout(UMWidgetBase* Widget) const;
-	void RemoveWidgetToCurrentLayout(UMWidgetBase* Widget) const;
-	void AddWidgetToLayout(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const;
-	void RemoveWidgetFromLayout(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const;
-
-protected:
-	void SetInputMode(uint8 NewInputMode) const;
+	void AddWidgetToCurrentLayer(UMWidgetBase* Widget) const;
+	void RemoveWidgetToCurrentLayer(UMWidgetBase* Widget) const;
+	void AddWidgetToLayer(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const;
+	void RemoveWidgetFromLayer(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const;
 
 private:
-	UOverlay* GetLayout(EMWidgetLayout WidgetLayout) const;
+	UMWidgetLayer* GetLayer(EMWidgetLayout WidgetLayout) const;
 /*
 * Member Variables
 */
@@ -63,14 +54,8 @@ protected:
 	UWidgetSwitcher* LayoutSwitcher;
 
 	UPROPERTY(meta = (BindWidget))
-	UOverlay* GameLayout;
+	UMWidgetLayer* GameLayer;
 
 	UPROPERTY(meta = (BindWidget))
-	UOverlay* MenuLayout;
-
-	UPROPERTY(meta = (BindWidget))
-	UOverlay* ShopLayout;
-
-	UPROPERTY(meta = (BindWidget))
-	UOverlay* OtherLayout;
+	UMWidgetLayer* IndependentLayer;
 };

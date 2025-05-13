@@ -30,7 +30,7 @@ public:
 	{
 		if (!DataCheck.Find(Value))
 		{
-			Data.HeapPush(Value, Comp);
+			Data.HeapPush(MoveTemp(Value), Comp);
 			DataCheck.Add(Value);
 		}
 	}

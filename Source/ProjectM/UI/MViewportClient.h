@@ -7,6 +7,7 @@
 #include "WidgetRegister/MWidgetRegister.h"
 #include "Engine/GameViewportClient.h"
 #include "MWidgetBase.h"
+#include "Util/Stack.h"
 
 #include "MViewportClient.generated.h"
 

@@ -4,57 +4,37 @@
 #include "Components/OverlaySlot.h"
 #include "GameFramework/PlayerController.h"
 #include "MWidgetBase.h"
+#include "MWidgetLayer.h"
 
 UMWidgetLayout::UMWidgetLayout(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {}
 
-void UMWidgetLayout::ChangeWidgetLayout(EMWidgetLayout WidgetLayout) const
+void UMWidgetLayout::ChangeWidgetLayer(EMWidgetLayout WidgetLayout) const
 {
 	LayoutSwitcher->SetActiveWidgetIndex((int32)WidgetLayout);
-}
-
-void UMWidgetLayout::AddWidgetToCurrentLayout(UMWidgetBase* Widget) const
-{
-	UOverlay* CurrentLayout = GetLayout((EMWidgetLayout)LayoutSwitcher->ActiveWidgetIndex);
-	if (CurrentLayout)
+	UMWidgetLayer* CurrentLayer = GetLayer(WidgetLayout);
+	if (CurrentLayer)
 	{
-		CurrentLayout->AddChild(Widget);
+		CurrentLayer->ActivateLayer();
 	}
 }
 
-void UMWidgetLayout::RemoveWidgetToCurrentLayout(UMWidgetBase* Widget) const
+void UMWidgetLayout::AddWidgetToCurrentLayer(UMWidgetBase* Widget) const
 {
-	UOverlay* CurrentLayout = GetLayout((EMWidgetLayout)LayoutSwitcher->ActiveWidgetIndex);
-	if (CurrentLayout)
-	{
-		CurrentLayout->RemoveChild(Widget);
-	}
+	AddWidgetToLayer(Widget, (EMWidgetLayout)LayoutSwitcher->ActiveWidgetIndex);
 }
 
-void UMWidgetLayout::AddWidgetToLayout(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const
+void UMWidgetLayout::RemoveWidgetToCurrentLayer(UMWidgetBase* Widget) const
 {
-	if (Widget == nullptr || Widget->IsInLayer())
-	{
-		MCHAE_WARNING("Widget Instance is null or already in layer");
-		return;
-	}
+	RemoveWidgetFromLayer(Widget, (EMWidgetLayout)LayoutSwitcher->ActiveWidgetIndex);
+}
 
-	UOverlay* CurrentLayout = GetLayout(WidgetLayout);
+void UMWidgetLayout::AddWidgetToLayer(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const
+{
+	UMWidgetLayer* CurrentLayout = GetLayer(WidgetLayout);
 	if (CurrentLayout)
 	{
-		UOverlaySlot* OverlaySlot = CurrentLayout->AddChildToOverlay(Widget);
-		if (OverlaySlot)
-		{
-			OverlaySlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Fill);
-			OverlaySlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Fill);
-
-			SetInputMode((uint8)Widget->GetInputMode());
-			Widget->SetActivate(true);
-		}
-		else
-		{
-			MCHAE_WARNING("OverlaySlot is null");
-		}
+		CurrentLayout->AddWidgetToLayer(Widget);
 	}
 	else
 	{
@@ -62,102 +42,27 @@ void UMWidgetLayout::AddWidgetToLayout(UMWidgetBase* Widget, EMWidgetLayout Widg
 	}
 }
 
-void UMWidgetLayout::RemoveWidgetFromLayout(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const
+void UMWidgetLayout::RemoveWidgetFromLayer(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const
 {
-	if (Widget == nullptr)
-	{
-		MCHAE_WARNING("Widget Instance is null!");
-		return;
-	}
-
-	UOverlay* CurrentLayout = GetLayout(WidgetLayout);
+	UMWidgetLayer* CurrentLayout = GetLayer(WidgetLayout);
 	if (CurrentLayout)
 	{
-		CurrentLayout->RemoveChild(Widget);
-	}
-
-	Widget->SetActivate(false);
-
-	APlayerController* PlayerController = GetOwningPlayer();
-	if (PlayerController)
-	{
-#pragma TODO("모든 마우스가 보이는 위젯이 꺼져야 동작해야함 이거 메멘토 패턴으로 되돌리기 하면 좋을 듯")
-		FInputModeGameOnly NewMode;
-		PlayerController->SetInputMode(NewMode);
-		PlayerController->bShowMouseCursor = false;
+		CurrentLayout->RemoveWidgetFromLayer(Widget);
 	}
 }
 
-#pragma TODO("위젯 인풋모드를 최상의 위젯에 맞춰서 해야함. 위젯 레이어 관리 리팩토링 필요")
-void UMWidgetLayout::SetInputMode(uint8 NewInputMode) const
-{
-	EMWidgetInputMode MyInputMode = (EMWidgetInputMode)NewInputMode;
-
-	APlayerController* PlayerController = GetOwningPlayer();
-	if (PlayerController == nullptr)
-	{
-		return ;
-	}
-
-	switch (MyInputMode)
-	{
-		case EMWidgetInputMode::GameAndUI :
-		{
-			FInputModeGameAndUI NewMode;
-			PlayerController->SetInputMode(NewMode);
-			break;
-		}
-		case EMWidgetInputMode::GameOnly :
-		{
-			FInputModeGameOnly NewMode;
-			PlayerController->SetInputMode(NewMode);
-			break;
-		}
-		case EMWidgetInputMode::UIOnly :
-		{
-			FInputModeUIOnly NewMode;
-			PlayerController->SetInputMode(NewMode);
-			PlayerController->bShowMouseCursor = true;
-			PlayerController->FlushPressedKeys();
-			break;
-		}
-		case EMWidgetInputMode::GameAndUIWithShowMouse:
-		{
-			FInputModeGameAndUI NewMode;
-			PlayerController->SetInputMode(NewMode);
-			PlayerController->bShowMouseCursor = true;
-			PlayerController->FlushPressedKeys();
-			break;
-		}
-		default:
-		{
-			break;
-		}
-	}
-}
-
-UOverlay* UMWidgetLayout::GetLayout(EMWidgetLayout WidgetLayout) const
+UMWidgetLayer* UMWidgetLayout::GetLayer(EMWidgetLayout WidgetLayout) const
 {
 	switch (WidgetLayout)
 	{
-		case EMWidgetLayout::GameLayout:
+		case EMWidgetLayout::GameLayer:
 		{
-			return GameLayout;
+			return GameLayer;
 			break;
 		}
-		case EMWidgetLayout::MenuLayout :
+		case EMWidgetLayout::IndependentLayer:
 		{
-			return MenuLayout;
-			break;
-		}
-		case EMWidgetLayout::ShopLayout :
-		{
-			return ShopLayout;
-			break;
-		}
-		case EMWidgetLayout::OtherLayout :
-		{
-			return OtherLayout;
+			return IndependentLayer;
 			break;
 		}
 		default:
@@ -166,6 +71,7 @@ UOverlay* UMWidgetLayout::GetLayout(EMWidgetLayout WidgetLayout) const
 		}
 	}
 
+	ensure(false);
 	MCHAE_WARNING("Can't found Widget Layout!");
 	return nullptr;
 }

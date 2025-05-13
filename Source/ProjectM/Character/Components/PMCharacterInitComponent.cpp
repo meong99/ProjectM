@@ -343,6 +343,7 @@ void UPMCharacterInitComponent::Input_AbilityInputTagReleased(FGameplayTag Input
 
 void UPMCharacterInitComponent::Input_ToggleInputTag(FGameplayTag InputTag)
 {
+	UE_LOG(LogTemp, Log, TEXT("mchae : 인터렉션됨"));
 	if (InputComponent)
 	{
 		FInputActionDelegate::FDelegate* Delegate = InputComponent->InputActionDelegateMap.Find(InputTag);

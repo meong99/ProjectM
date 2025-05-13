@@ -139,7 +139,7 @@ void UMViewportClient::AddWidgetToLayer(const FGameplayTag& WidgetTag, const FMW
 			Widget->SetInitialized(true);
 			Widget->PreAddToLayer();
 		}
-		WidgetLayout->AddWidgetToLayout(GetWidgetInstance(WidgetTag), (EMWidgetLayout)LayerId);
+		WidgetLayout->AddWidgetToLayer(GetWidgetInstance(WidgetTag), (EMWidgetLayout)LayerId);
 	}
 	else
 	{
@@ -153,7 +153,7 @@ void UMViewportClient::RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, cons
 	if (WidgetLayout && Widget)
 	{
 		Widget->SetWidgetInfo({});
-		WidgetLayout->RemoveWidgetFromLayout(GetWidgetInstance(WidgetTag), (EMWidgetLayout)LayerId);
+		WidgetLayout->RemoveWidgetFromLayer(GetWidgetInstance(WidgetTag), (EMWidgetLayout)LayerId);
 		Widget->SetActivate(false);
 	}
 	else

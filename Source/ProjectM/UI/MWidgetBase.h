@@ -13,10 +13,10 @@ class APMPlayerControllerBase;
 UENUM(BlueprintType)
 enum class EMWidgetInputMode : uint8
 {
-	GameAndUI,
 	GameOnly,
-	UIOnly,
 	GameAndUIWithShowMouse,
+	UIOnly,
+	None,
 };
 
 USTRUCT(BlueprintType)
