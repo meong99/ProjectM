@@ -6,6 +6,7 @@
 #include "UObject/Object.h"
 #include "Character/Monster/MMonsterTypes.h"
 #include "MDefinitionBase.h"
+#include "Types/MTradeType.h"
 #include "MMonsterDefinition.generated.h"
 
 class UMInteractiveAction_OverlapActionBase;
@@ -24,6 +25,8 @@ class PROJECTM_API UMMonsterDefinition : public UMDefinitionBase
 */
 public:
 	UMMonsterDefinition();
+
+	FMTradeRequest CreateTradeRequest() const;
 
 /*
 * Member Functions

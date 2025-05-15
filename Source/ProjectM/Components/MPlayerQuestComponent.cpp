@@ -27,8 +27,18 @@ void UMPlayerQuestComponent::AcceptQuest(const int32 QuestRowId)
 	if (RemovedNum && InProgressingQuests.Contains(QuestRowId) == false)
 	{
 		InProgressingQuests.Add(QuestRowId);
-		UpdateQuestWidget(QuestRowId, EMQuestState::Startable, EMQuestState::InProgress);
+		NotifyOnChangeQuestState(QuestRowId, EMQuestState::Startable, EMQuestState::InProgress);
 	}
+}
+
+void UMPlayerQuestComponent::AddDelegateOnChangeQuestStateByQuest(const int32 QuestRowId, FOnChangeQuestStateByQuest&& Delegate)
+{
+	Delegate_OnChangeQuestStateByQuest.Add(QuestRowId, MoveTemp(Delegate));
+}
+
+void UMPlayerQuestComponent::RemoveDelegateOnChangeQuestStateByQuest(const int32 QuestRowId)
+{
+	Delegate_OnChangeQuestStateByQuest.Remove(QuestRowId);
 }
 
 void UMPlayerQuestComponent::RequestFinishQuest(const int32 QuestRowId)
@@ -36,16 +46,16 @@ void UMPlayerQuestComponent::RequestFinishQuest(const int32 QuestRowId)
 	Server_RequestFinishQuest(QuestRowId);
 }
 
-void UMPlayerQuestComponent::UpdateQuestWidget(const int32 QuestRowId, EMQuestState FromState, EMQuestState ToState) const
+void UMPlayerQuestComponent::NotifyOnChangeQuestState(const int32 QuestRowId, EMQuestState FromState, EMQuestState ToState)
 {
-	UMViewportClient* ViewportClient = UMGameplayStatics::GetViewportClient(this);
-	if (ViewportClient)
+	FOnChangeQuestStateByQuest* Delegate = Delegate_OnChangeQuestStateByQuest.Find(QuestRowId);
+	if (Delegate)
 	{
-		UMPlayerQuestInfoWidget* PlayerQuestInfo = Cast<UMPlayerQuestInfoWidget>(ViewportClient->GetWidgetInstance(FPMGameplayTags::Get().UI_Registry_InputTag_PlayerQuest));
-		if (PlayerQuestInfo)
-		{
-			PlayerQuestInfo->UpdateQuest(QuestRowId, FromState, ToState);
-		}
+		Delegate->ExecuteIfBound(QuestRowId, FromState, ToState);
+	}
+	if (Delegate_OnChangeQuestState.IsBound())
+	{
+		Delegate_OnChangeQuestState.Broadcast(QuestRowId, FromState, ToState);
 	}
 }
 
@@ -88,17 +98,13 @@ void UMPlayerQuestComponent::Server_RequestFinishQuest_Implementation(const int3
 		}
 	}
 
-	Client_ResponseFinisheQuest(Response);
+	Client_ResponseFinishQuest(Response);
 }
 
-void UMPlayerQuestComponent::Client_ResponseFinisheQuest_Implementation(const FMQuestResponse& Response)
+void UMPlayerQuestComponent::Client_ResponseFinishQuest_Implementation(const FMQuestResponse& Response)
 {
 	if (Response.ResponseType == EMQuestResponseType::Success)
 	{
-		if (Delegate_OnChangeQuestState.IsBound())
-		{
-			Delegate_OnChangeQuestState.Broadcast(Response.QuestRowId, Response.FromState, Response.ToState);
-		}
-		UpdateQuestWidget(Response.QuestRowId, Response.FromState, Response.ToState);
+		NotifyOnChangeQuestState(Response.QuestRowId, Response.FromState, Response.ToState);
 	}
 }

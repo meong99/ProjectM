@@ -97,7 +97,7 @@ void UMDefaultShopSlotWidget::OnClickItem()
 	FMTradeRequest Request;
 	Request.RequestType = EMRequestType::Trade;
 	Request.RequiredGold = ItemCDO->BuyPrice;
-	Request.GrantItems.ItemRowIds.Add(RowId);
+	Request.GrantItems.Add({RowId, 1});
 
 	PlayerTradeComponent->Server_OnRequestSimpleTrading(ShopNpc, Request);
 }

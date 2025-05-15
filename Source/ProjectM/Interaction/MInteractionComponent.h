@@ -41,6 +41,10 @@ public:
 	void ActivateAllOverlapAction();
 	UFUNCTION(BlueprintCallable)
 	void DeactivateAllOverlapAction();
+
+	const TArray<UMInteractiveAction_OverlapActionBase*>& GetOnBeginOverlapActions() const {return Action_OnBeginOverlap; }
+	const TArray<UMInteractiveAction_OnInteractionBase*>& GetOnOnInteractActions() const {return Action_OnInteract; }
+
 protected:
 	void OnInteract(const FGameplayTag& Tag);
 	void Callback_OnSetInputComponent(UInputComponent* InInputComponent);

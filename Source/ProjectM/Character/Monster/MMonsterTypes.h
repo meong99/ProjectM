@@ -15,6 +15,9 @@ struct FMDropInfo
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1100001, ClampMax = 1199999))
 	int32 ItemId = INDEX_NONE;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1))
+	int32 ItemCount = 1;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=0.0f, ClampMax=1.0f))
 	float DropChance = 0.0f;
 };

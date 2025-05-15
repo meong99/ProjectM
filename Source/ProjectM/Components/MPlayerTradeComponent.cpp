@@ -25,12 +25,12 @@ void UMPlayerTradeComponent::Server_OnRequestSimpleDataGrant_Implementation(AAct
 	}
 
 	WalletComponent->AddGold(Request.GrantGold);
-	for (int32 i = 0; i < Request.GrantItems.ItemRowIds.Num(); i++)
+	for (int32 i = 0; i < Request.GrantItems.Num(); i++)
 	{
-		int32 GrantItemNum = Request.GrantItems.ItemCount.IsValidIndex(i) ? Request.GrantItems.ItemCount[i] : 1;
+		int32 GrantItemNum = Request.GrantItems[i].ItemCount;
 
 		FMItemRequest ItemRequest;
-		ItemRequest.SetItemRequest(EMItemRequestType::AddItem, Request.GrantItems.ItemRowIds[i], GrantItemNum);
+		ItemRequest.SetItemRequest(EMItemRequestType::AddItem, Request.GrantItems[i].ItemRowId, GrantItemNum);
 
 		InventoryManager->RequestItemToInventory(ItemRequest);
 	}
@@ -63,33 +63,33 @@ void UMPlayerTradeComponent::Server_OnRequestSimpleTrading_Implementation(AActor
 		WalletComponent->SubtractGold(Request.RequiredGold);
 	}
 
-	if (Request.RequiredItems.ItemRowIds.Num() > 0)
+	if (Request.RequiredItems.Num() > 0)
 	{
-		for (int32 i = 0; i < Request.RequiredItems.ItemRowIds.Num(); i++)
+		for (int32 i = 0; i < Request.RequiredItems.Num(); i++)
 		{
-			int32 RequirementNum = Request.RequiredItems.ItemCount.IsValidIndex(i) ? Request.RequiredItems.ItemCount[i] : 1;
-			if (RequirementNum > InventoryManager->GetItemQuantity(Request.RequiredItems.ItemRowIds[i]))
+			int32 RequirementNum = Request.RequiredItems[i].ItemCount;
+			if (RequirementNum > InventoryManager->GetItemQuantity(Request.RequiredItems[i].ItemRowId))
 			{
 				return;
 			}
 		}
 
-		for (int32 i = 0; i < Request.RequiredItems.ItemRowIds.Num(); i++)
+		for (int32 i = 0; i < Request.RequiredItems.Num(); i++)
 		{
-			int32 RequirementNum = Request.RequiredItems.ItemCount.IsValidIndex(i) ? Request.RequiredItems.ItemCount[i] : 1;
+			int32 RequirementNum = Request.RequiredItems[i].ItemCount;
 			FMItemRequest ItemRequest;
-			ItemRequest.SetItemRequest(EMItemRequestType::RemoveItem, Request.RequiredItems.ItemRowIds[i], -RequirementNum);
+			ItemRequest.SetItemRequest(EMItemRequestType::RemoveItem, Request.RequiredItems[i].ItemRowId, -RequirementNum);
 			InventoryManager->RequestItemToInventory(ItemRequest);
 		}
 	}
 
 	WalletComponent->AddGold(Request.GrantGold);
-	for (int32 i = 0; i < Request.GrantItems.ItemRowIds.Num(); i++)
+	for (int32 i = 0; i < Request.GrantItems.Num(); i++)
 	{
-		int32 GrantItemNum = Request.GrantItems.ItemCount.IsValidIndex(i) ? Request.GrantItems.ItemCount[i] : 1;
+		int32 GrantItemNum = Request.GrantItems[i].ItemCount;
 
 		FMItemRequest ItemRequest;
-		ItemRequest.SetItemRequest(EMItemRequestType::AddItem, Request.GrantItems.ItemRowIds[i], GrantItemNum);
+		ItemRequest.SetItemRequest(EMItemRequestType::AddItem, Request.GrantItems[i].ItemRowId, GrantItemNum);
 		InventoryManager->RequestItemToInventory(ItemRequest);
 	}
 }

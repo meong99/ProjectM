@@ -8,6 +8,7 @@
 #include "MPlayerQuestComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnChangeQuestState, const int32 QuestRowId, EMQuestState FromState, EMQuestState ToState);
+DECLARE_DELEGATE_ThreeParams(FOnChangeQuestStateByQuest, const int32 QuestRowId, EMQuestState FromState, EMQuestState ToState);
 
 UENUM(BlueprintType)
 enum class EMQuestResponseType : uint8
@@ -61,21 +62,30 @@ public:
 	const TSet<int32>& GetStartableQuests() const { return StartableQuests; }
 	const TSet<int32>& GetFinishedQuests() const { return FinishedQuests; }
 
+	void	AddDelegateOnChangeQuestStateByQuest(const int32 QuestRowId, FOnChangeQuestStateByQuest&& Delegate);
+	void	RemoveDelegateOnChangeQuestStateByQuest(const int32 QuestRowId);
+
 	void RequestFinishQuest(const int32 QuestRowId);
 
 protected:
 	void UpdateQuestWidget(const int32 QuestRowId, EMQuestState FromState, EMQuestState ToState) const;
 
+	void NotifyOnChangeQuestState(const int32 QuestRowId, EMQuestState FromState, EMQuestState ToState);
+
 	UFUNCTION(Server, Reliable)
 	void Server_RequestFinishQuest(const int32 QuestRowId);
 
 	UFUNCTION(Client, Reliable)
-	void Client_ResponseFinisheQuest(const FMQuestResponse& Response);
+	void Client_ResponseFinishQuest(const FMQuestResponse& Response);
 /*
 * Member Variables
 */
+
 public:
 	FOnChangeQuestState Delegate_OnChangeQuestState;
+
+protected:
+	TMap<int32, FOnChangeQuestStateByQuest> Delegate_OnChangeQuestStateByQuest;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Category="ProjectM")

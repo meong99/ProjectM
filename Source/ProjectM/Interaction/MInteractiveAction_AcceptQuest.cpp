@@ -10,6 +10,7 @@
 #include "MInteractionComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/MPlayerQuestComponent.h"
+#include "Components/MNpcQuestComponent.h"
 
 UMInteractiveAction_AcceptQuest::UMInteractiveAction_AcceptQuest(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -51,6 +52,7 @@ void UMInteractiveAction_AcceptQuest::DeactivateAction()
 	if (ViewportClient)
 	{
 		ViewportClient->RemoveWidgetFromLayer(FPMGameplayTags::Get().UI_Registry_Game_Dialogue);
+		bShouldActivate = false;
 		InteractionComponent->ActivateAllOverlapAction();
 	}
 }
@@ -58,11 +60,17 @@ void UMInteractiveAction_AcceptQuest::DeactivateAction()
 void UMInteractiveAction_AcceptQuest::OnClick_Accept()
 {
 	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
-	UMPlayerQuestComponent* QuestComponent = Controller ? Controller->FindComponentByClass<UMPlayerQuestComponent>() : nullptr;
-	if (QuestComponent)
+	UMPlayerQuestComponent* PlayerQuestComponent = Controller ? Controller->FindComponentByClass<UMPlayerQuestComponent>() : nullptr;
+	UMNpcQuestComponent* NpcQuestComponent = OwnerActor ? OwnerActor->FindComponentByClass<UMNpcQuestComponent>() : nullptr;
+	if (NpcQuestComponent)
 	{
-		QuestComponent->AcceptQuest(QuestDefinition->RowId);
+		NpcQuestComponent->AcceptQuest(PlayerQuestComponent, QuestRowId);
 	}
+	if (PlayerQuestComponent)
+	{
+		PlayerQuestComponent->AcceptQuest(QuestRowId);
+	}
+
 	DeactivateAction();
 }
 

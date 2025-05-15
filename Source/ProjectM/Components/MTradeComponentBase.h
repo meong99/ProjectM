@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "MTradeManager.h"
+#include "Types/MTradeType.h"
 #include "MTradeComponentBase.generated.h"
 
 /**

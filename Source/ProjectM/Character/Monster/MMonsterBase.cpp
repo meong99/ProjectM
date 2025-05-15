@@ -165,16 +165,7 @@ void AMMonsterBase::GiveRewardToPlayer()
 		UMTradeComponentBase* PlayerTradeComponent = AttackerController ? AttackerController->FindComponentByClass<UMTradeComponentBase>() : nullptr;
 		if (PlayerTradeComponent)
 		{
-			FMTradeRequest Request;
-
-			Request.TradeId = Request.GetTradeId();
-			Request.GrantGold = MonsterDefinition->GetMonsterReward();
-			for (const FMDropInfo& DropInfo : MonsterDefinition->GetItemDropTable())
-			{
-	#pragma TODO("확률적용해야함")
-				Request.GrantItems.ItemRowIds.Add(DropInfo.ItemId);
-			}
-			Request.RequestType = EMRequestType::Give;
+			FMTradeRequest Request = MonsterDefinition->CreateTradeRequest();
 			PlayerTradeComponent->Server_OnRequestSimpleDataGrant(this, Request);
 		}
 	}

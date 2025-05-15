@@ -1,6 +1,7 @@
 #include "MPlayerQuestInfoWidget.h"
 #include "MQuestProgressWidget.h"
 #include "MQuestInfoWidget.h"
+#include "Components/MPlayerQuestComponent.h"
 
 UMPlayerQuestInfoWidget::UMPlayerQuestInfoWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -26,6 +27,12 @@ void UMPlayerQuestInfoWidget::InitQuest()
 {
 	QuestProgress->InitQuest(QuestInfo);
 	QuestInfo->SetVisibility(ESlateVisibility::Collapsed);
+	APlayerController* Controller = GetOwningPlayer();
+	UMPlayerQuestComponent* QuestComp = Controller ? Controller->FindComponentByClass<UMPlayerQuestComponent>() : nullptr;
+	if (QuestComp)
+	{
+		QuestComp->Delegate_OnChangeQuestState.AddUObject(this, &UMPlayerQuestInfoWidget::UpdateQuest);
+	}
 }
 
 void UMPlayerQuestInfoWidget::UpdateQuest(const int32 QuestRowId, EMQuestState FromState, EMQuestState ToState)

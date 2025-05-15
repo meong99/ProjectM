@@ -21,10 +21,15 @@ public:
 * Member Functions
 */
 public:
+	const FText&	GetActionName() const { return ActionName; }
+	bool			ShouldActivate() const { return bShouldActivate; }
 /*
 * Member Variables
 */
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Action")
 	FText ActionName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Action")
+	bool bShouldActivate = true;
 };

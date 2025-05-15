@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "MDefinitionBase.h"
 #include "Types/MQuestTypes.h"
+#include "Types/MTradeType.h"
 #include "MQuestDefinition.generated.h"
 
 class AMNpcBase;
@@ -22,6 +23,7 @@ public:
 * Member Functions
 */
 public:
+	FMTradeRequest CreateTradeRequest() const;
 
 /*
 * Member Variables
