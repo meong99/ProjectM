@@ -75,4 +75,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	FMItemHandle ItemHandle;
+
+	UPROPERTY(BlueprintReadOnly, Replicated)
+	FMItemResponse ItemResponse;
 };

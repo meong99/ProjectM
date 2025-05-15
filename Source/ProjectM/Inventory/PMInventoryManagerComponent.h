@@ -8,11 +8,10 @@
 
 class ULocalPlayerSaveGame;
 
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnNewItemAdded, const FPMInventoryEntry& ItemEntry, const FMItemResponse& ItemRespons);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemIncreased, const FMItemResponse& ItemRespons);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemDecreased, const FMItemResponse& ItemRespons);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnChangeItemQuentity, const FMItemHandle& ItemHandle, const FMItemResponse& ItemRespons);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnRemoveItem, const FMItemHandle& ItemHandle, const EMItemType ItemType);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnChangeItemQuentity, const FMItemResponse& ItemRespons);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnRemoveItem, const FMItemResponse& ItemRespons);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnInitInventory, const FPMInventoryItemList& InventoryList);
 
 /**
@@ -64,16 +63,21 @@ public:
 	const FPMInventoryItemList& GetEquipmentItemList() const { return InventoryList; }
 	const FPMInventoryItemList& GetConsumableItemList() const { return ConsumableItemList; }
 
+	void Broadcast_OnItemIncreased(const FMItemResponse& ItemRespons);
+	void Broadcast_OnItemDecreased(const FMItemResponse& ItemRespons);
+	void Broadcast_OnOnRemoveItem(const FMItemResponse& ItemRespons);
+	void Broadcast_OnChangeItemQuentity(const FMItemResponse& ItemRespons);
+
 protected:
 	UFUNCTION()
 	void	InitInventory();
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
-	int32	ChangeItemQuantity(const FMItemHandle& ItemHandle, const FMItemRequest& ItemRequest);
+	int32	ChangeItemQuantity(UPMInventoryItemInstance* ItemInstance, const FMItemRequest& ItemRequest);
 	
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
-	void	RemoveItem(const FMItemHandle& ItemHandle);
-	
+	void	RemoveItem(UPMInventoryItemInstance* ItemInstance, const FMItemRequest& ItemRequest);
+
 	FMItemHandle	AddItemDefinition_Impl(TSubclassOf<UPMInventoryItemDefinition> ItemDef, FPMInventoryItemList& ItemList, const FMItemRequest& ItemRequest);
 	FMItemHandle	ReturnItem(UPMInventoryItemInstance* Instance);
 
@@ -81,28 +85,15 @@ protected:
 	UPMInventoryItemDefinition* GetItemDefCDO(const TSubclassOf<UPMInventoryItemDefinition>& ItemDef);
 	UPMInventoryItemDefinition* GetItemDefCDO(const FMItemRequest& ItemRequest);
 
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_OnNewItemAdded(const FPMInventoryEntry& ItemEntry, const FMItemResponse& ItemRespons);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_OnItemIncreased(const FMItemResponse& ItemRespons);
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_OnItemDecreased(const FMItemResponse& ItemRespons);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_OnChangeInventory(const FMItemHandle& ItemHandle, const FMItemResponse& ItemRespons);
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_OnRemoveItem(const FMItemHandle& ItemHandle, const EMItemType ItemType);
-
 	FPMInventoryItemList* GetItemList(const EMItemType ItemType);
 /*
 * Member Variables
 */
 public:
-	FOnRemoveItem		Delegate_OnRemoveItem;
-	FOnNewItemAdded		Delegate_OnNewItemAdded;
 	FOnItemIncreased	Delegate_OnItemIncreased;
 	FOnItemDecreased	Delegate_OnItemDecreased;
+	FOnRemoveItem		Delegate_OnRemoveItem;
+
 protected:
 	// 인벤토리같이 다수의 객체에서 아이템 변경을 추적하지만, 특정 ItemUID에 대한 알림만 받고싶을 경우에 사용
 	TMap<int32, FOnChangeItemQuentity>	DelegateMap_OnChangeItemQuentity;

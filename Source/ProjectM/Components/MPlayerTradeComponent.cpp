@@ -30,9 +30,7 @@ void UMPlayerTradeComponent::Server_OnRequestSimpleDataGrant_Implementation(AAct
 		int32 GrantItemNum = Request.GrantItems.ItemCount.IsValidIndex(i) ? Request.GrantItems.ItemCount[i] : 1;
 
 		FMItemRequest ItemRequest;
-		ItemRequest.RequestType = EMItemRequestType::AddItem;
-		ItemRequest.ItemRowId = Request.GrantItems.ItemRowIds[i];
-		ItemRequest.ItemQuentity = GrantItemNum;
+		ItemRequest.SetItemRequest(EMItemRequestType::AddItem, Request.GrantItems.ItemRowIds[i], GrantItemNum);
 
 		InventoryManager->RequestItemToInventory(ItemRequest);
 	}
@@ -80,9 +78,7 @@ void UMPlayerTradeComponent::Server_OnRequestSimpleTrading_Implementation(AActor
 		{
 			int32 RequirementNum = Request.RequiredItems.ItemCount.IsValidIndex(i) ? Request.RequiredItems.ItemCount[i] : 1;
 			FMItemRequest ItemRequest;
-			ItemRequest.RequestType = EMItemRequestType::RemoveItem;
-			ItemRequest.ItemRowId = Request.RequiredItems.ItemRowIds[i];
-			ItemRequest.ItemQuentity = -RequirementNum;
+			ItemRequest.SetItemRequest(EMItemRequestType::RemoveItem, Request.RequiredItems.ItemRowIds[i], -RequirementNum);
 			InventoryManager->RequestItemToInventory(ItemRequest);
 		}
 	}
@@ -93,10 +89,7 @@ void UMPlayerTradeComponent::Server_OnRequestSimpleTrading_Implementation(AActor
 		int32 GrantItemNum = Request.GrantItems.ItemCount.IsValidIndex(i) ? Request.GrantItems.ItemCount[i] : 1;
 
 		FMItemRequest ItemRequest;
-		ItemRequest.RequestType = EMItemRequestType::AddItem;
-		ItemRequest.ItemRowId = Request.GrantItems.ItemRowIds[i];
-		ItemRequest.ItemQuentity = GrantItemNum;
-
+		ItemRequest.SetItemRequest(EMItemRequestType::AddItem, Request.GrantItems.ItemRowIds[i], GrantItemNum);
 		InventoryManager->RequestItemToInventory(ItemRequest);
 	}
 }

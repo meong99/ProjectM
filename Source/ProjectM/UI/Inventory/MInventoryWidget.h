@@ -30,8 +30,6 @@ public:
 	UMInventoryWidget(const FObjectInitializer& ObjectInitializer);
 
 	virtual void	NativeOnInitialized() override;
-	virtual FReply	NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-	virtual FReply	NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 /*
 * Member Functions
@@ -40,8 +38,8 @@ public:
 	void	Callback_OnInitInventory(const FPMInventoryItemList& InventoryList);
 
 	//인벤토리에 존재하지 않던 새로운 아이템이 추가됨
-	void	Callback_AddNewItem(const FPMInventoryEntry& NewItemEntry, const FMItemResponse& ItemRespons);
-	void	Callback_RemoveItem(const FMItemHandle& ItemHandle, const EMItemType ItemType);
+	void	Callback_AddNewItem(const FMItemResponse& ItemRespons);
+	void	Callback_RemoveItem(const FMItemResponse& ItemRespons);
 
 protected:
 	void	BindDelegates();

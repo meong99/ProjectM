@@ -25,7 +25,7 @@ void UMInventoryToastWidget::InitThisWidget()
 	InvenManager = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
 	if (InvenManager)
 	{
-		InvenManager->Delegate_OnNewItemAdded.AddUObject(this, &ThisClass::OnNotifyNewItem);
+		InvenManager->Delegate_OnItemIncreased.AddUObject(this, &ThisClass::OnNotifyNewItem);
 	}
 	WalletComponent = Controller ? Controller->FindComponentByClass<UMWalletComponent>() : nullptr;
 	if (WalletComponent)
@@ -39,11 +39,11 @@ void UMInventoryToastWidget::OnChangeGold(int64 AdjustPrice, int64 NewGold)
 	K2_OnChangeGold(AdjustPrice, NewGold);
 }
 
-void UMInventoryToastWidget::OnNotifyNewItem(const FPMInventoryEntry& ItemEntry, const FMItemResponse& ItemRespons)
+void UMInventoryToastWidget::OnNotifyNewItem(const FMItemResponse& ItemRespons)
 {
 	if (ItemRespons.ItemRequest.RequestType == EMItemRequestType::AddItem)
 	{
-		K2_NotifyNewItem(ItemEntry);
+		K2_NotifyNewItem(ItemRespons);
 	}
 }
 

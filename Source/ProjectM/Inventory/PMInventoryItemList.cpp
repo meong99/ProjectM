@@ -78,18 +78,65 @@ FPMInventoryItemList::FPMInventoryItemList(UPMInventoryManagerComponent* InOwner
 		MCHAE_FETAL("OwnerComponent must be set!!");
 	}
 }
-// 
-// void FPMInventoryItemList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
-// {
-// }
-// 
-// void FPMInventoryItemList::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
-// {
-// }
-// 
-// void FPMInventoryItemList::PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize)
-// {
-// }
+
+void FPMInventoryItemList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
+{
+	for (int32 Index : RemovedIndices)
+	{
+		if (Entries.IsValidIndex(Index) && Entries[Index].Instance)
+		{
+			UPMInventoryItemInstance* Instance = Entries[Index].Instance;
+
+			// 배열에서 지울 땐 바뀐 아이템의 정보가 같이 리플리케이션되지 않음. 그래서 리플리케이션 되고나서 설정
+			// Item을 배열에서 지우고, 넣고 하지 말고 데이터만 변경하는 형태로 하면 해결 가능
+#pragma TODO("아이템 배열을 삭제 말고 초기화하는 방식으로 리팩토링 해야함")
+			Instance->ItemResponse.SetItemResponse(Instance->ItemResponse.ItemRequest, EMItemResponseType::Removed, 0, Instance->ItemHandle, Instance);
+			OwnerComponent->Broadcast_OnOnRemoveItem(Instance->ItemResponse);
+		}
+		else
+		{
+			ensure(false);
+			MCHAE_WARNING("ItemInstance is null!");
+		}
+	}
+}
+
+void FPMInventoryItemList::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
+{
+	for (int32 Index : AddedIndices)
+	{
+		if (Entries.IsValidIndex(Index) && Entries[Index].Instance)
+		{
+			UPMInventoryItemInstance* Instance = Entries[Index].Instance;
+			OwnerComponent->Broadcast_OnItemIncreased(Instance->ItemResponse);
+		}
+		else
+		{
+			ensure(false);
+			MCHAE_WARNING("ItemInstance is null!");
+		}
+	}
+}
+
+void FPMInventoryItemList::PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize)
+{
+	for (int32 Index : ChangedIndices)
+	{
+		if (Entries.IsValidIndex(Index) && Entries[Index].Instance)
+		{
+			FMItemResponse Response = Entries[Index].Instance->ItemResponse;
+			OwnerComponent->Broadcast_OnChangeItemQuentity(Response);
+			if (Response.ItemRequest.RequestType == EMItemRequestType::AddItem)
+			{
+				OwnerComponent->Broadcast_OnItemIncreased(Response);
+			}
+			else if (Response.ItemRequest.RequestType == EMItemRequestType::RemoveItem)
+			{
+				OwnerComponent->Broadcast_OnItemDecreased(Response);
+			}
+		}
+	}
+}
 
 int32 FPMInventoryItemList::ChangeItemQuantity(const FMItemHandle& ItemHandle, int32 ChangeNum)
 {
@@ -193,9 +240,10 @@ void FPMInventoryItemList::RemoveEntry(const FMItemHandle& ItemHandle)
 		if (Entry.ItemUid == ItemHandle.ItemUid)
 		{
 			EntryIt.RemoveCurrent();
-			MarkArrayDirty();
+			break;
 		}
 	}
+	MarkArrayDirty();
 }
 
 FPMInventoryEntry* FPMInventoryItemList::MakeEntry(TSubclassOf<UPMInventoryItemDefinition> ItemDef, int32 ItemQuentity)

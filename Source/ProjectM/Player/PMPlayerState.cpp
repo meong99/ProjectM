@@ -138,9 +138,8 @@ void APMPlayerState::Server_LoadPlayerData_Implementation()
 			if (ItemDef && InventoryManager)
 			{
 				FMItemRequest Request;
-				Request.RequestType = EMItemRequestType::InitItem;
-				Request.ItemDef = ItemDef;
-				Request.ItemQuentity = 1;
+
+				Request.SetItemRequest(EMItemRequestType::InitItem, ItemDef->GetDefaultObject<UPMInventoryItemDefinition>()->RowId, 1);
 				const FMItemHandle& ItemHandle = InventoryManager->RequestItemToInventory(Request);
 				InventoryManager->Server_UseItem(ItemHandle);
 			}
@@ -219,9 +218,7 @@ void APMPlayerState::ApplyLoadedData()
 			if (ItemDef)
 			{
 				FMItemRequest Request;
-				Request.RequestType = EMItemRequestType::InitItem;
-				Request.ItemDef = ItemDef;
-				Request.ItemQuentity = 1;
+				Request.SetItemRequest(EMItemRequestType::InitItem, ItemDef->GetDefaultObject<UPMInventoryItemDefinition>()->RowId, 1);
 				InventoryManager->RequestItemToInventory(Request);
 			}
 		}
@@ -230,9 +227,7 @@ void APMPlayerState::ApplyLoadedData()
 		if (ItemDef)
 		{
 			FMItemRequest Request;
-			Request.RequestType = EMItemRequestType::InitItem;
-			Request.ItemDef = ItemDef;
-			Request.ItemQuentity = 1;
+			Request.SetItemRequest(EMItemRequestType::InitItem, ItemDef->GetDefaultObject<UPMInventoryItemDefinition>()->RowId, 1);
 			const FMItemHandle& ItemHandle = InventoryManager->RequestItemToInventory(Request);
 			InventoryManager->Server_UseItem(ItemHandle);
 		}

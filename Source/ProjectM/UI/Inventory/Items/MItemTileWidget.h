@@ -27,7 +27,7 @@ public:
 	void SetNewEntry(const FPMInventoryEntry& NewItemEntry);
 	void SwapEntry(UMItemDetailData& Other);
 	void SwapEntry(UMItemDetailData* Other);
-	void OnChangeItemQuantity(const FMItemHandle& ItemHandle, const FMItemResponse& ItemRespons);
+	void OnChangeItemQuantity(const FMItemResponse& ItemRespons);
 	void InitDelegate(const FPMInventoryEntry& NewItemEntry);
 
 	UPROPERTY(BlueprintReadWrite)

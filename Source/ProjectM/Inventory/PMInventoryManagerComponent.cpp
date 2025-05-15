@@ -10,6 +10,7 @@
 #include "Table/MTableAsset.h"
 #include "Table/Item/MTable_EquipmentItem.h"
 #include "PMGameplayTags.h"
+#include "TimerManager.h"
 
 /*
 * UPMInventoryManagerComponent -------------------------------
@@ -136,7 +137,7 @@ FMItemHandle UPMInventoryManagerComponent::RequestItemToInventory(const FMItemRe
 			(ItemRequest.RequestType == EMItemRequestType::AddItem || ItemRequest.RequestType == EMItemRequestType::RemoveItem))
 		{
 			Handle = Entry->GetItemHandle();
-			ChangeItemQuantity(Handle, ItemRequest);
+			ChangeItemQuantity(Entry->Instance, ItemRequest);
 		}
 		else if (ItemRequest.RequestType == EMItemRequestType::AddItem || ItemRequest.RequestType == EMItemRequestType::InitItem)
 		{
@@ -170,13 +171,12 @@ FMItemHandle UPMInventoryManagerComponent::AddItemDefinition_Impl(TSubclassOf<UP
 		AddReplicatedSubObject(ItemInstance);
 	}
 
-	FMItemResponse Response;
-	Response.ResponsType = EMItemResponseType::TotallyNewItem;
-	Response.ItemRequest = ItemRequest;
-	Response.ItemQuentity = ItemInstance->GetItemQuentity();
+	ItemInstance->ItemResponse.SetItemResponse(ItemRequest, EMItemResponseType::TotallyNewItem, ItemInstance->GetItemQuentity(), ItemInstance->ItemHandle, ItemInstance);
 
-	Multicast_OnNewItemAdded(*Entry, Response);
-	Multicast_OnItemIncreased(Response);
+	if (GetNetMode() == ENetMode::NM_Standalone)
+	{
+		Broadcast_OnItemIncreased(ItemInstance->ItemResponse);
+	}
 
 	return Handle;
 }
@@ -226,47 +226,7 @@ UPMInventoryItemDefinition* UPMInventoryManagerComponent::GetItemDefCDO(const TS
 
 UPMInventoryItemDefinition* UPMInventoryManagerComponent::GetItemDefCDO(const FMItemRequest& ItemRequest)
 {
-	UPMInventoryItemDefinition* ItemCDO = nullptr;
-	if (ItemRequest.ItemDef)
-	{
-		ItemCDO = GetItemDefCDO(ItemRequest.ItemDef);
-	}
-
-	if (!ItemCDO)
-	{
-		ItemCDO = GetItemDefCDO(ItemRequest.ItemRowId);
-	}
-
-	return ItemCDO;
-}
-
-void UPMInventoryManagerComponent::Multicast_OnNewItemAdded_Implementation(const FPMInventoryEntry& ItemEntry, const FMItemResponse& ItemRespons)
-{
-	Delegate_OnNewItemAdded.Broadcast(ItemEntry, ItemRespons);
-}
-
-void UPMInventoryManagerComponent::Multicast_OnItemIncreased_Implementation(const FMItemResponse& ItemRespons)
-{
-	Delegate_OnItemIncreased.Broadcast(ItemRespons);
-}
-
-void UPMInventoryManagerComponent::Multicast_OnItemDecreased_Implementation(const FMItemResponse& ItemRespons)
-{
-	Delegate_OnItemDecreased.Broadcast(ItemRespons);
-}
-
-void UPMInventoryManagerComponent::Multicast_OnChangeInventory_Implementation(const FMItemHandle& ItemHandle, const FMItemResponse& ItemRespons)
-{
-	FOnChangeItemQuentity* InventoryDelegates = DelegateMap_OnChangeItemQuentity.Find(ItemHandle.ItemUid);
-	if (InventoryDelegates)
-	{
-		InventoryDelegates->Broadcast(ItemHandle, ItemRespons);
-	}
-}
-
-void UPMInventoryManagerComponent::Multicast_OnRemoveItem_Implementation(const FMItemHandle& ItemHandle, const EMItemType ItemType)
-{
-	Delegate_OnRemoveItem.Broadcast(ItemHandle, ItemType);
+	return GetItemDefCDO(ItemRequest.ItemRowId);
 }
 
 UPMInventoryItemInstance* UPMInventoryManagerComponent::FindItemInstance(const FMItemHandle& ItemHandle)
@@ -339,9 +299,16 @@ int32 UPMInventoryManagerComponent::GetItemQuantity(const int32 ItemRowId)
 	return Result;
 }
 
-int32 UPMInventoryManagerComponent::ChangeItemQuantity(const FMItemHandle& ItemHandle, const FMItemRequest& ItemRequest)
+int32 UPMInventoryManagerComponent::ChangeItemQuantity(UPMInventoryItemInstance* ItemInstance, const FMItemRequest& ItemRequest)
 {
-	FPMInventoryItemList* ItemList = GetItemList(ItemHandle.ItemType);
+	if (!ItemInstance)
+	{
+		ensure(false);
+		MCHAE_WARNING("Item Instance is null!");
+		return 0;
+	}
+
+	FPMInventoryItemList* ItemList = GetItemList(ItemInstance->ItemHandle.ItemType);
 	if (ItemList)
 	{
 		int32 ItemQuentity = 0;
@@ -354,29 +321,28 @@ int32 UPMInventoryManagerComponent::ChangeItemQuantity(const FMItemHandle& ItemH
 			ItemQuentity = ItemRequest.ItemQuentity < 0 ? ItemRequest.ItemQuentity : -ItemRequest.ItemQuentity;
 		}
 
-		int32 CurrentItemQuentity = ItemList->ChangeItemQuantity(ItemHandle, ItemQuentity);
-
-		FMItemResponse Response;
-		Response.ItemRequest = ItemRequest;
-		Response.ResponsType = EMItemResponseType::ChangeItemQuentity;
-		Response.ItemQuentity = CurrentItemQuentity;
+		int32 CurrentItemQuentity = ItemList->ChangeItemQuantity(ItemInstance->ItemHandle, ItemQuentity);
 
 		if (CurrentItemQuentity == 0)
 		{
-			RemoveItem(ItemHandle);
+			RemoveItem(ItemInstance, ItemRequest);
 		}
 		else
 		{
-			Multicast_OnChangeInventory(ItemHandle, Response);
-		}
+			ItemInstance->ItemResponse.SetItemResponse(ItemRequest, EMItemResponseType::ChangeItemQuentity, CurrentItemQuentity, ItemInstance->ItemHandle, ItemInstance);
 
-		if (ItemRequest.RequestType == EMItemRequestType::AddItem)
-		{
-			Multicast_OnItemIncreased(Response);
-		}
-		else if (ItemRequest.RequestType == EMItemRequestType::RemoveItem)
-		{
-			Multicast_OnItemDecreased(Response);
+			if (GetNetMode() == ENetMode::NM_Standalone)
+			{
+				Broadcast_OnChangeItemQuentity(ItemInstance->ItemResponse);
+				if (ItemRequest.RequestType == EMItemRequestType::AddItem)
+				{
+					Broadcast_OnItemIncreased(ItemInstance->ItemResponse);
+				}
+				else if (ItemRequest.RequestType == EMItemRequestType::RemoveItem)
+				{
+					Broadcast_OnItemDecreased(ItemInstance->ItemResponse);
+				}
+			}
 		}
 
 		return CurrentItemQuentity;
@@ -418,11 +384,9 @@ void UPMInventoryManagerComponent::Server_UseItem_Implementation(const FMItemHan
 		{
 			ItemInstance->ActivateItem();
 			FMItemRequest Request;
-			Request.RequestType = EMItemRequestType::RemoveItem;
-			Request.ItemQuentity = -1;
-			Request.ItemHandle = ItemHandle;
+			Request.SetItemRequest(EMItemRequestType::RemoveItem, ItemInstance->ItemRowId, -1, ItemHandle, ItemInstance);
 
-			ChangeItemQuantity(ItemHandle, Request);
+			ChangeItemQuantity(ItemInstance, Request);
 		}
 	}
 }
@@ -435,23 +399,63 @@ void UPMInventoryManagerComponent::InitInventory()
 	Delegate_OnInitInventory.Clear();
 }
 
-void UPMInventoryManagerComponent::RemoveItem(const FMItemHandle& ItemHandle)
+void UPMInventoryManagerComponent::RemoveItem(UPMInventoryItemInstance* ItemInstance, const FMItemRequest& ItemRequest)
 {
-	FPMInventoryItemList* ItemList = GetItemList(ItemHandle.ItemType);
+	if (!ItemInstance)
+	{
+		ensure(false);
+		return;
+	}
+
+	FPMInventoryItemList* ItemList = GetItemList(ItemInstance->ItemHandle.ItemType);
 	if (ItemList)
 	{
-		FPMInventoryEntry* Entry = ItemList->FindEntry(ItemHandle);
-		if (Entry)
+		if (GetNetMode() == ENetMode::NM_Standalone)
 		{
-			if (Entry->Instance && IsUsingRegisteredSubObjectList())
-			{
-				RemoveReplicatedSubObject(Entry->Instance);
-			}
-
-			ItemList->RemoveEntry(ItemHandle);
-			DelegateMap_OnChangeItemQuentity.Remove(ItemHandle.ItemUid);
-			Multicast_OnRemoveItem(ItemHandle, ItemList->OwnedItemType);
+			ItemInstance->ItemResponse.SetItemResponse(ItemRequest, EMItemResponseType::Removed, 0, ItemInstance->ItemHandle, ItemInstance);
+			Broadcast_OnOnRemoveItem(ItemInstance->ItemResponse);
 		}
+
+		if (IsUsingRegisteredSubObjectList())
+		{
+			RemoveReplicatedSubObject(ItemInstance);
+		}
+
+		ItemList->RemoveEntry(ItemInstance->ItemHandle);
+		DelegateMap_OnChangeItemQuentity.Remove(ItemInstance->ItemHandle.ItemUid);
+	}
+}
+
+void UPMInventoryManagerComponent::Broadcast_OnItemIncreased(const FMItemResponse& ItemRespons)
+{
+	if (Delegate_OnRemoveItem.IsBound())
+	{
+		Delegate_OnItemIncreased.Broadcast(ItemRespons);
+	}
+}
+
+void UPMInventoryManagerComponent::Broadcast_OnItemDecreased(const FMItemResponse& ItemRespons)
+{
+	if (Delegate_OnRemoveItem.IsBound())
+	{
+		Delegate_OnItemDecreased.Broadcast(ItemRespons);
+	}
+}
+
+void UPMInventoryManagerComponent::Broadcast_OnOnRemoveItem(const FMItemResponse& ItemRespons)
+{
+	if (Delegate_OnRemoveItem.IsBound())
+	{
+		Delegate_OnRemoveItem.Broadcast(ItemRespons);
+	}
+}
+
+void UPMInventoryManagerComponent::Broadcast_OnChangeItemQuentity(const FMItemResponse& ItemRespons)
+{
+	FOnChangeItemQuentity* InventoryDelegates = DelegateMap_OnChangeItemQuentity.Find(ItemRespons.ItemRequest.ItemHandle.ItemUid);
+	if (InventoryDelegates && InventoryDelegates->IsBound())
+	{
+		InventoryDelegates->Broadcast(ItemRespons);
 	}
 }
 
@@ -508,10 +512,8 @@ void UPMInventoryManagerComponent::Debug_AddItem(int32 RowId, int32 ItemQuentity
 void UPMInventoryManagerComponent::DebugServer_AddItem_Implementation(int32 Rowid, int32 ItemQuentity)
 {
 	FMItemRequest Request;
-	Request.ItemRowId = Rowid;
-	Request.ItemQuentity = ItemQuentity;
-	Request.RequestType = EMItemRequestType::AddItem;
 
+	Request.SetItemRequest(EMItemRequestType::AddItem, Rowid, ItemQuentity);
 	RequestItemToInventory(Request);
 }
 #endif

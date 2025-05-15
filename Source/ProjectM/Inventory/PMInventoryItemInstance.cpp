@@ -16,6 +16,7 @@ void UPMInventoryItemInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	DOREPLIFETIME(ThisClass, ItemDef);
 	DOREPLIFETIME(ThisClass, ItemRowId);
 	DOREPLIFETIME(ThisClass, ItemHandle);
+	DOREPLIFETIME(ThisClass, ItemResponse);
 }
 
 const UPMInventoryItemFragment* UPMInventoryItemInstance::FindFragmentByClass(TSubclassOf<UPMInventoryItemFragment> FragmentClass) const

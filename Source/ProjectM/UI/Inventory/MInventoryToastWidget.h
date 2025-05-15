@@ -36,8 +36,8 @@ public:
 	void OnChangeGold(int64 AdjustPrice, int64 NewGold);
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void K2_NotifyNewItem(const FPMInventoryEntry& ItemEntry);
-	void OnNotifyNewItem(const FPMInventoryEntry& ItemEntry, const FMItemResponse& ItemRespons);
+	void K2_NotifyNewItem(const FMItemResponse& ItemRespons);
+	void OnNotifyNewItem(const FMItemResponse& ItemRespons);
 
 protected:
 	void OnExperienceLoaded(const UPMExperienceDefinition* LoadedExperienceDefinition);

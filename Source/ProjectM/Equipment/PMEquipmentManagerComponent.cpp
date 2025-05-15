@@ -100,9 +100,7 @@ void UPMEquipmentManagerComponent::UnequipItem(int32 EquipmentItemType)
 		if (InvenManager)
 		{
 			FMItemRequest Request;
-			Request.RequestType = EMItemRequestType::ReturnItemToInventory;
-			Request.ItemInstance = UnEquippedItem;
-
+			Request.SetItemRequest(EMItemRequestType::ReturnItemToInventory, UnEquippedItem->ItemRowId, 1, UnEquippedItem->ItemHandle, UnEquippedItem);
 			InvenManager->RequestItemToInventory(Request);
 		}
 

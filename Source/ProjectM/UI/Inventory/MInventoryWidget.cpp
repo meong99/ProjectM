@@ -8,6 +8,7 @@
 #include "Components/WidgetSwitcher.h"
 #include "CommonWidgets/MTileView.h"
 #include "MInventoryTemplete.h"
+#include "Inventory/PMInventoryItemInstance.h"
 
 UMInventoryWidget::UMInventoryWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {}
@@ -17,16 +18,6 @@ void UMInventoryWidget::NativeOnInitialized()
 	Super::NativeOnInitialized();
 
 	BindDelegates();
-}
-
-FReply UMInventoryWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-{
-	return FReply::Handled();
-}
-
-FReply UMInventoryWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-{
-	return FReply::Handled();
 }
 
 void UMInventoryWidget::Callback_OnInitInventory(const FPMInventoryItemList& InventoryList)
@@ -40,30 +31,36 @@ void UMInventoryWidget::Callback_OnInitInventory(const FPMInventoryItemList& Inv
 	InitInventorySlots(InventoryList);
 }
 
-void UMInventoryWidget::Callback_AddNewItem(const FPMInventoryEntry& NewItemEntry, const FMItemResponse& ItemRespons)
+void UMInventoryWidget::Callback_AddNewItem(const FMItemResponse& ItemRespons)
 {
-	if (NewItemEntry.IsValid() == false)
-	{
-		MCHAE_WARNING("NewItemEntry is not valid");
-		return;
-	}
-
 	if (ItemRespons.ResponsType == EMItemResponseType::TotallyNewItem)
 	{
-		UMTileView* View = GetItemSlotView(NewItemEntry.GetItemType());
-		if (View)
+		APlayerController* PlayerController = GetOwningPlayer();
+		InventoryComponent = PlayerController ? PlayerController->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
+		if (IsValid(InventoryComponent))
 		{
-			View->AddNewItem(NewItemEntry);
+			FPMInventoryEntry* Entry = InventoryComponent->FindEntry(ItemRespons.ItemRequest.ItemHandle);
+			if (Entry)
+			{
+				UMTileView* View = GetItemSlotView(Entry->GetItemType());
+				if (View)
+				{
+					View->AddNewItem(*Entry);
+				}
+			}
 		}
 	}
 }
 
-void UMInventoryWidget::Callback_RemoveItem(const FMItemHandle& ItemHandle, const EMItemType ItemType)
+void UMInventoryWidget::Callback_RemoveItem(const FMItemResponse& ItemRespons)
 {
-	UMTileView* View = GetItemSlotView(ItemType);
-	if (View)
+	if (ItemRespons.ResponsType == EMItemResponseType::Removed && ItemRespons.ItemRequest.ItemInstance)
 	{
-		View->RemoveItem(ItemHandle);
+		UMTileView* View = GetItemSlotView(ItemRespons.ItemRequest.ItemInstance->GetItemType());
+		if (View)
+		{
+			View->RemoveItem(ItemRespons.ItemRequest.ItemHandle);
+		}
 	}
 }
 
@@ -74,7 +71,7 @@ void UMInventoryWidget::BindDelegates()
 	if (IsValid(InventoryComponent))
 	{
 		InventoryComponent->CallOrRegister_OnInitInventory(FOnInitInventory::FDelegate::CreateUObject(this, &ThisClass::Callback_OnInitInventory));
-		InventoryComponent->Delegate_OnNewItemAdded.AddUObject(this, &ThisClass::Callback_AddNewItem);
+		InventoryComponent->Delegate_OnItemIncreased.AddUObject(this, &ThisClass::Callback_AddNewItem);
 		InventoryComponent->Delegate_OnRemoveItem.AddUObject(this, &ThisClass::Callback_RemoveItem);
 	}
 	else

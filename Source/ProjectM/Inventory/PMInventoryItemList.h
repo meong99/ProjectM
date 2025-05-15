@@ -42,9 +42,9 @@ struct FPMInventoryItemList : public FFastArraySerializer
 /*
 * Network
 */
-// 	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
-// 	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
-// 	void PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize);
+ 	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
+ 	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
+ 	void PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize);
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms)
 	{
 		return FFastArraySerializer::FastArrayDeltaSerialize<FPMInventoryEntry, FPMInventoryItemList>(Entries, DeltaParms, *this);

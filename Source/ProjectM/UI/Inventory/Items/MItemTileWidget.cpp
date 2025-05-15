@@ -40,7 +40,7 @@ void UMItemDetailData::SwapEntry(UMItemDetailData* Other)
 	SetNewEntry(Tmp);
 }
 
-void UMItemDetailData::OnChangeItemQuantity(const FMItemHandle& ItemHandle, const FMItemResponse& ItemRespons)
+void UMItemDetailData::OnChangeItemQuantity(const FMItemResponse& ItemRespons)
 {
 	UMTileView* MtileView = Cast<UMTileView>(GetOuter());
 	if (MtileView)

@@ -58,12 +58,19 @@ struct FMItemRequest
 {
 	GENERATED_BODY()
 
+	// 빼먹는 변수 없이 설정하기위한 헬퍼
+	void SetItemRequest(const EMItemRequestType InRequestType, const int32 InItemRowId, const int32 InItemQuentity, 
+						 const FMItemHandle& InItemHandle = {}, UPMInventoryItemInstance* InItemInstance = nullptr)
+	{
+		RequestType = InRequestType;
+		ItemRowId = InItemRowId;
+		ItemQuentity = InItemQuentity;
+		ItemHandle = InItemHandle;
+		ItemInstance = InItemInstance;
+	}
+
 	UPROPERTY(BlueprintReadWrite)
 	EMItemRequestType RequestType = EMItemRequestType::None;
-
-	// ItemDef가 있으면 ItemRowId를 사용하지 않음.
-	UPROPERTY(BlueprintReadWrite)
-	TSubclassOf<UPMInventoryItemDefinition> ItemDef;
 
 	// ItemDef == nullptr이라면 RowId를 통해 아이템 탐색
 	UPROPERTY(BlueprintReadWrite)
@@ -75,7 +82,8 @@ struct FMItemRequest
 	UPROPERTY(BlueprintReadWrite)
 	FMItemHandle ItemHandle;
 
-	// 장비 장착 해제 등 이미 인스턴스가 존재하는 아이템을 인벤토리로 되돌리는 형태의 요청일때만 사용. 서버-서버, 클라-클라만 사용
+	// RPC에서는 사용 못 함.
+	// Replication된 Response에는 설정되어 담겨올 수 있음
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UPMInventoryItemInstance> ItemInstance;
 };
@@ -93,6 +101,16 @@ USTRUCT(BlueprintType)
 struct FMItemResponse
 {
 	GENERATED_BODY()
+
+	// 빼먹는 변수 없이 설정하기위한 헬퍼
+	void SetItemResponse(const FMItemRequest& InItemRequest, const EMItemResponseType InResponsType, const int32 InItemQuentity, const FMItemHandle& ItemHandle, UPMInventoryItemInstance* ItemInstance)
+	{
+		ItemRequest = InItemRequest;
+		ResponsType = InResponsType;
+		ItemQuentity = InItemQuentity;
+		ItemRequest.ItemInstance = ItemInstance;
+		ItemRequest.ItemHandle = ItemHandle;
+	}
 
 	UPROPERTY(BlueprintReadWrite)
 	FMItemRequest ItemRequest;

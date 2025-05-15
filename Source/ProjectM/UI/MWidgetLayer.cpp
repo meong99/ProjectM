@@ -67,7 +67,7 @@ void UMWidgetLayer::SetInputMode(UMWidgetBase* Widget) const
 
 	if (OldTopInputMode == CurrentTopInputMode)
 	{
-		//return;
+		return;
 	}
 
 	switch (CurrentTopInputMode)
