@@ -14,8 +14,9 @@ class PROJECTM_API UMInteractionKeyWidget : public UMInteractionWidgetBase
 */
 public:
 	UMInteractionKeyWidget(const FObjectInitializer& ObjectInitializer);
+	virtual void NativeConstruct() override;
 
-/*
+	/*
 * Member Functions
 */
 public:

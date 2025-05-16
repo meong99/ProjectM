@@ -33,6 +33,7 @@ public:
 	void	UpdateQuest(const int32 QuestRowId, EMQuestState FromState, EMQuestState ToState);
 	void	SetInProgressQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMQuestInfoWidget* InQuestInfo);
 	void	SetStartableQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMQuestInfoWidget* InQuestInfo);
+	void	SetFinishedQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMQuestInfoWidget* InQuestInfo);
 
 protected:
 	void	ClearQuestProgress();
@@ -55,4 +56,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
 	TObjectPtr<UVerticalBox> StartableVertical;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UVerticalBox> FinishedVertical;
 };

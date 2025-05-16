@@ -42,12 +42,7 @@ void UMQuestProgressWidget::InitQuest(UMQuestInfoWidget* InQuestInfo)
 	const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas = PlayerQuestComponent->GetQuestDatas();
 	SetInProgressQuests(QuestDatas, InQuestInfo);
 	SetStartableQuests(QuestDatas, InQuestInfo);
-
-	// 	const TSet<int32>& FinishedQuests = PlayerQuestComponent->GetFinishedQuests();
-	// 	for (const int32 QuestRowId : FinishedQuests)
-	// 	{
-	// 		UMQuestDefinition* QuestDef = QuestDatas.FindRef(QuestRowId);
-	// 	}
+	SetFinishedQuests(QuestDatas, InQuestInfo);
 }
 
 void UMQuestProgressWidget::UpdateQuest(const int32 QuestRowId, EMQuestState FromState, EMQuestState ToState)
@@ -97,6 +92,25 @@ void UMQuestProgressWidget::SetStartableQuests(const TMap<int32, TObjectPtr<UMQu
 			{
 				QuestSlot->InitQuestSlot(InQuestInfo, QuestDef, EMQuestState::Startable);
 				StartableVertical->AddChildToVerticalBox(QuestSlot);
+			}
+		}
+	}
+}
+
+void UMQuestProgressWidget::SetFinishedQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMQuestInfoWidget* InQuestInfo)
+{
+	const TSet<int32>& FinishedQuests = PlayerQuestComponent->GetFinishedQuests();
+
+	for (const int32 QuestRowId : FinishedQuests)
+	{
+		UMQuestDefinition* QuestDef = QuestDatas.FindRef(QuestRowId);
+		if (QuestDef)
+		{
+			UMQuestSlotWidget* QuestSlot = CreateWidget<UMQuestSlotWidget>(GetOwningPlayer(), QuestSlotClass);
+			if (QuestSlot)
+			{
+				QuestSlot->InitQuestSlot(InQuestInfo, QuestDef, EMQuestState::Finished);
+				FinishedVertical->AddChildToVerticalBox(QuestSlot);
 			}
 		}
 	}
@@ -156,7 +170,7 @@ UVerticalBox* UMQuestProgressWidget::GetVerticalBox(EMQuestState State) const
 		return ProgressVertical;
 		break;
 	case EMQuestState::Finished:
-		return nullptr;
+		return FinishedVertical;
 		break;
 	default:
 		return nullptr;

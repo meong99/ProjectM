@@ -42,6 +42,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DeactivateAllOverlapAction();
 
+	bool ExistActivatableAction() const;
+
 	const TArray<UMInteractiveAction_OverlapActionBase*>& GetOnBeginOverlapActions() const {return Action_OnBeginOverlap; }
 	const TArray<UMInteractiveAction_OnInteractionBase*>& GetOnOnInteractActions() const {return Action_OnInteract; }
 

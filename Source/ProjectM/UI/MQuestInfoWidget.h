@@ -43,6 +43,7 @@ protected:
 
 	void	SetRequiredItem(const TMap<int32, FMQuestItem>& RequiredItems);
 	void	SetRewardItem(const TArray<FMQuestItem>& RewardItems);
+	void	SetRewardGold(int32 Gold);
 	void	UpdateFinishButton();
 
 	UPMInventoryItemDefinition*	GetItemDef(const int32 RowId);
@@ -52,6 +53,10 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
 	TSubclassOf<UMItemWithTextWidget> ItemContextClass;
+
+	// 골드 이미지 등 가져오기위함
+	UPROPERTY(BlueprintReadOnly, Category = "ProjectM")
+	TObjectPtr<UPMInventoryItemDefinition> GoldDefinition;
 
 	UPROPERTY(BlueprintReadOnly, Category = "ProjectM")
 	FMQuestHandle QuestHandle;

@@ -25,6 +25,7 @@ enum class EMTableKey : uint8
 	Level,
 	Quest,
 	Dialogue,
+	OthersItem,
 };
 
 /**

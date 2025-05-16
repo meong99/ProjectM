@@ -93,7 +93,7 @@ void UMInteractionComponent::OnEndOverlap(UPrimitiveComponent* OverlappedCompone
 void UMInteractionComponent::OnInteract(const FGameplayTag& Tag)
 {
 	UMViewportClient* ViewportClient = UMGameplayStatics::GetViewportClient(this);
-	if (ViewportClient && Action_OnInteract.Num() > 0)
+	if (ViewportClient && ExistActivatableAction())
 	{
 		ViewportClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_Game_InteractionList, { this, GetOwner() });
 	}
@@ -152,6 +152,27 @@ void UMInteractionComponent::DeactivateAllOverlapAction()
 			Action->DeactivateAction();
 		}
 	}
+}
+
+bool UMInteractionComponent::ExistActivatableAction() const
+{
+	bool bExistActivatableAction = true;
+	if (Action_OnInteract.Num() == 0)
+	{
+		bExistActivatableAction = false;
+		return bExistActivatableAction;
+	}
+
+	for (UMInteractiveAction_OnInteractionBase* Action : Action_OnInteract)
+	{
+		if (Action && !Action->ShouldActivate())
+		{
+			bExistActivatableAction = false;
+			break;
+		}
+	}
+
+	return bExistActivatableAction;
 }
 
 UPMInputComponent* UMInteractionComponent::GetInputComponent() const

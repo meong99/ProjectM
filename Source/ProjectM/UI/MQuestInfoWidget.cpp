@@ -9,6 +9,8 @@
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
 #include "MQuestSlotWidget.h"
+#include "Engine/Engine.h"
+#include "Components/HorizontalBoxSlot.h"
 
 UMQuestInfoWidget::UMQuestInfoWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -19,6 +21,21 @@ void UMQuestInfoWidget::NativeOnInitialized()
 	Super::NativeOnInitialized();
 
 	FinishButton->OnClicked.AddDynamic(this, &UMQuestInfoWidget::OnClick_FinishButton);
+
+	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
+	if (TableManager)
+	{
+		const UDataTable* ItemTable = TableManager->GetDataTable(EMTableKey::OthersItem);
+		if (ItemTable)
+		{
+			TArray<FMTable_ItemBase*> ItemRows;
+			ItemTable->GetAllRows<FMTable_ItemBase>(TEXT(""), ItemRows);
+			if (ItemRows.Num() > 0 && ItemRows[0] && ItemRows[0]->Definition)
+			{
+				GoldDefinition = DuplicateObject(ItemRows[0]->Definition->GetDefaultObject<UPMInventoryItemDefinition>(), this);
+			}
+		}
+	}
 }
 
 void UMQuestInfoWidget::DisplayQuestInfo(const UMQuestDefinition* QuestDefinition, const FMQuestHandle& InQuestHandle)
@@ -32,6 +49,7 @@ void UMQuestInfoWidget::DisplayQuestInfo(const UMQuestDefinition* QuestDefinitio
 	if (QuestHandle == InQuestHandle || !InQuestHandle)
 	{
 		SetVisibility(ESlateVisibility::Collapsed);
+		QuestHandle = FMQuestHandle{};
 		return;
 	}
 
@@ -40,6 +58,7 @@ void UMQuestInfoWidget::DisplayQuestInfo(const UMQuestDefinition* QuestDefinitio
 	QuestGoalContext->SetText(QuestDefinition->QuestGoalContext);
 	QuestContent->SetText(QuestDefinition->QuestContext);
 	SetRewardItem(QuestDefinition->RewardItems);
+	SetRewardGold(QuestDefinition->RewardGold);
 
 	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
@@ -88,7 +107,11 @@ void UMQuestInfoWidget::SetRequiredItem(const TMap<int32, FMQuestItem>& Required
 				FText Result = FText::Format(Template, Args);
 
 				ItemContextWidget->SetItemContextText(Result);
-				RequiredItemBox->AddChildToHorizontalBox(ItemContextWidget);
+				UHorizontalBoxSlot* NewSlot = RequiredItemBox->AddChildToHorizontalBox(ItemContextWidget);
+				if (NewSlot)
+				{
+					NewSlot->SetPadding(FMargin(5.f));
+				}
 			}
 		}
 	}
@@ -107,7 +130,30 @@ void UMQuestInfoWidget::SetRewardItem(const TArray<FMQuestItem>& RewardItems)
 			{
 				ItemContextWidget->SetItemTexture(ItemDef->ItemIcon);
 				ItemContextWidget->SetItemContextText(FText::AsNumber(Item.ItemQuentity));
-				RewardItemBox->AddChildToHorizontalBox(ItemContextWidget);
+				UHorizontalBoxSlot* NewSlot = RewardItemBox->AddChildToHorizontalBox(ItemContextWidget);
+				if (NewSlot)
+				{
+					NewSlot->SetPadding(FMargin(5.f));
+				}
+			}
+		}
+	}
+}
+
+void UMQuestInfoWidget::SetRewardGold(int32 Gold)
+{
+	if (Gold > 0 && GoldDefinition)
+	{
+		UMItemWithTextWidget* ItemContextWidget = CreateWidget<UMItemWithTextWidget>(GetOwningPlayer(), ItemContextClass);
+
+		if (ItemContextWidget)
+		{
+			ItemContextWidget->SetItemTexture(GoldDefinition->ItemIcon);
+			ItemContextWidget->SetItemContextText(FText::AsNumber(Gold));
+			UHorizontalBoxSlot* NewSlot = RewardItemBox->AddChildToHorizontalBox(ItemContextWidget);
+			if (NewSlot)
+			{
+				NewSlot->SetPadding(FMargin(5.f));
 			}
 		}
 	}
