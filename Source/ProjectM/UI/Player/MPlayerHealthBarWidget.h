@@ -34,9 +34,10 @@ protected:
 
 	UFUNCTION()
 	void Callback_OnHealthChanged(UPMHealthComponent* HealthComp, const float OldValue, const float NewValue, AActor* Instigator);
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void BP_OnHealthChanged(UPMHealthComponent* HealthComp, const float OldValue, const float NewValue, AActor* Instigator);
-	/*
+/*
 * Member Variables
 */
 protected:
