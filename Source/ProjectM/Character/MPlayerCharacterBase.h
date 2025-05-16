@@ -28,6 +28,7 @@ protected:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
+public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UFUNCTION(BlueprintCallable)
 	virtual UPMAbilitySystemComponent* GetMAbilitySystemComponent() const override;

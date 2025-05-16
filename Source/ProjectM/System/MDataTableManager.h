@@ -8,6 +8,7 @@
 #include "Templates/SubclassOf.h"
 #include "Inventory/PMInventoryItemDefinition.h"
 #include "Definitions/MDefinitionBase.h"
+#include "Engine/Engine.h"
 #include "MDataTableManager.generated.h"
 
 class UDataTable;
@@ -26,6 +27,7 @@ enum class EMTableKey : uint8
 	Quest,
 	Dialogue,
 	OthersItem,
+	GameplayEffectTable,
 };
 
 /**
@@ -45,7 +47,13 @@ public:
 * Member Functions
 */
 public:
-	static int32 ChangeElementIdToTableId(int32 RowId);
+	template<class T>
+	static T* GetDefinition(UObject* WorldContext, const int32 RowId);
+
+	template<class T>
+	static T* GetTableRowData(UObject* WorldContext, const int32 RowId);
+
+	static int32 ChangeRowIdToKey(int32 RowId);
 	static int32 ChangeRowIdToElementId(int32 RowId);
 
 	const UDataTable* GetDataTable(int32 RowId) const;
@@ -73,6 +81,54 @@ public:
 
 	TArray<FPrimaryAssetId>	PrimaryAssetIdList;
 };
+
+template<class T>
+T* UMDataTableManager::GetDefinition(UObject* WorldContext, const int32 RowId)
+{
+	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
+
+	if (TableManager)
+	{
+		const UDataTable* Table = TableManager->GetDataTable(RowId);
+		if (Table)
+		{
+			int32 ElementIndex = UMDataTableManager::ChangeRowIdToElementId(RowId) - 1;
+			const TArray<FName>& Names = Table->GetRowNames();
+			if (Names.IsValidIndex(ElementIndex))
+			{
+				FMTable_TableBase* RowData = Table->FindRow<FMTable_TableBase>(Names[ElementIndex], Names[ElementIndex].ToString());
+				if (RowData && RowData->Definition)
+				{
+					return DuplicateObject<UMDefinitionBase>(RowData->Definition->GetDefaultObject<UMDefinitionBase>(), WorldContext);
+				}
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+template<class T>
+T* UMDataTableManager::GetTableRowData(UObject* WorldContext, const int32 RowId)
+{
+	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
+
+	if (TableManager)
+	{
+		const UDataTable* Table = TableManager->GetDataTable(RowId);
+		if (Table)
+		{
+			int32 ElementIndex = UMDataTableManager::ChangeRowIdToElementId(RowId) - 1;
+			const TArray<FName>& Names = Table->GetRowNames();
+			if (Names.IsValidIndex(ElementIndex))
+			{
+				return Table->FindRow<T>(Names[ElementIndex], Names[ElementIndex].ToString());
+			}
+		}
+	}
+
+	return nullptr;
+}
 
 template<class T>
 const TSubclassOf<T> UMDataTableManager::GetDefinitionClass(int32 RowId) const

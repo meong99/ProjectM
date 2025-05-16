@@ -17,6 +17,7 @@
 #include "Util/MGameplayStatics.h"
 #include "System/MDataTableManager.h"
 #include "Table/MTable_MonsterTable.h"
+#include "AbilitySystem/PMAbilitySet.h"
 
 AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -96,6 +97,14 @@ void AMMonsterBase::PostInitializeComponents()
 			SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_Health, MonsterDefinition->GetMonsterHp());
 			SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_MaxHealth, MonsterDefinition->GetMonsterHp());
 			AbilitySystemComponent->ApplyEffectToSelfWithSetByCaller(MonsterDefinition->GetMonsterInfo().DefaultApplyEffect, nullptr, SetMap);
+
+			FPMAbilitySet_GrantedHandles TempGrantedHandles;
+			for (const UPMAbilitySet* AbilitySet : MonsterDefinition->AbilitySets)
+			{
+				AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, &TempGrantedHandles, this, MonsterDefinition->RowId);
+			}
+
+			GrantedHandles.Add(MonsterDefinition->RowId, TempGrantedHandles);
 		}
 	}
 }

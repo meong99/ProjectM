@@ -25,7 +25,7 @@ void UMDataTableManager::Initialize(FSubsystemCollectionBase& Collection)
 
 const UDataTable* UMDataTableManager::GetDataTable(int32 RowId) const
 {
-	int32 Key = ChangeElementIdToTableId(RowId);
+	int32 Key = ChangeRowIdToKey(RowId);
 	return TableMap.FindRef(Key);
 }
 
@@ -56,21 +56,15 @@ UMMonsterDefinition* UMDataTableManager::GetMonsterDefinition(int32 RowId) const
 	return nullptr;
 }
 
-int32 UMDataTableManager::ChangeElementIdToTableId(int32 RowId)
+int32 UMDataTableManager::ChangeRowIdToKey(int32 RowId)
 {
-	int32 Temp = RowId / 100000;
-	int32 TableId = INDEX_NONE;
-	if (!Temp)
+	int32 TableId = RowId / 100000;
+	int32 DigitCount = 1;
+	while (TableId / DigitCount > 10)
 	{
-		MCHAE_ERROR("RowId is not valid!!!!!id = % d", RowId);
-		return TableId;
+		DigitCount *= 10;
 	}
-
-	while (Temp)
-	{
-		TableId += Temp % 10;
-		Temp /= 10;
-	}
+	TableId %= DigitCount;
 
 	return TableId;
 }

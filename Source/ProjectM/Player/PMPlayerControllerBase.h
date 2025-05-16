@@ -35,6 +35,8 @@ public:
 	void CallOrRegister_OnPossessed(FOnPossessed::FDelegate&& Delegate);
 
 	APMPlayerState* GetPlayerState() const;
+
+	UFUNCTION(BlueprintCallable)
 	UPMAbilitySystemComponent* GetAbilitySystemComponent() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure=false)

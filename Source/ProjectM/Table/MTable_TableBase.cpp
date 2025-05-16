@@ -1,5 +1,6 @@
 #include "MTable_TableBase.h"
 #include "Definitions/MDefinitionBase.h"
+#include "System/MDataTableManager.h"
 
 void FMTable_TableBase::OnDataTableChanged(const UDataTable* InDataTable, const FName InRowName)
 {
@@ -27,24 +28,10 @@ bool FMTable_TableBase::IsValidId() const
 
 int32 FMTable_TableBase::GetKey() const
 {
-	int32 Temp = RowId / 100000;
-	int32 TableId = INDEX_NONE;
-	while (Temp)
-	{
-		TableId += Temp % 10;
-		Temp /= 10;
-	}
-
-	return TableId;
+	return UMDataTableManager::ChangeRowIdToKey(RowId);
 }
 
 int32 FMTable_TableBase::GetElementId() const
 {
-	int32 ElementId = INDEX_NONE;
-	if (RowId / 100000)
-	{
-		ElementId = RowId % 100000;
-	}
-
-	return ElementId;
+	return UMDataTableManager::ChangeRowIdToElementId(RowId);
 }

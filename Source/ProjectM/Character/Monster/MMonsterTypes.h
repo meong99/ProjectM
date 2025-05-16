@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Templates/SubclassOf.h"
+#include "Types/MAnimTypes.h"
 #include "MMonsterTypes.generated.h"
 
 class UBehaviorTree;
@@ -49,3 +50,19 @@ struct FMMonsterInfo
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UGameplayEffect> DefaultApplyEffect;
 };
+
+USTRUCT(BlueprintType, Blueprintable)
+struct FMMonsterCombatInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FMMontageInfo MontageInfo;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float MonsterDefaultAttackRange = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float MonsterDefaultAttackRadius = 1.f;
+};
+

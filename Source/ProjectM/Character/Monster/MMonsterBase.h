@@ -3,6 +3,7 @@
 #include "Character/MCharacterBase.h"
 #include "GameplayAbilities/Public/AbilitySystemInterface.h"
 #include "Character/Monster/MMonsterTypes.h"
+#include "AbilitySystem/PMAbilitySet.h"
 #include "MMonsterBase.generated.h"
 
 class UMInteractionComponent;
@@ -73,6 +74,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Monster")
 	AActor* LastAttacker;
+
+	UPROPERTY()
+	TMap<int32, FPMAbilitySet_GrantedHandles> GrantedHandles;
 
 	TWeakObjectPtr<AMMonsterSpawner> Spawner;
 };

@@ -11,6 +11,9 @@
 
 class UMInteractiveAction_OverlapActionBase;
 class UMInteractiveAction_OnInteractionBase;
+class UAnimMontage;
+class UPMAbilitySet;
+class AMRangeIndicatorActor;
 
 /**
  *
@@ -69,10 +72,16 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	FMMonsterInfo MonsterInfo;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1, ClampMax = 5000))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
+	FMMonsterCombatInfo MonsterCombatInfo;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Abilities")
+	TArray<TObjectPtr<UPMAbilitySet>> AbilitySets;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1, ClampMax = 5000), Category = "ProjectM")
 	int32 MonsterSpawningCooldown = 5;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1, ClampMax = 10))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1, ClampMax = 10), Category = "ProjectM")
 	int32 MaximumSpawnNum = 1;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "ProjectM")

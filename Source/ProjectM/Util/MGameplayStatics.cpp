@@ -5,7 +5,9 @@
 #include "GameFramework/GameStateBase.h"
 #include "GameModes/PMExperienceManagerComponent.h"
 #include "Misc/MessageDialog.h"
+#include "Engine/DataTable.h"
 #include "System/MDataTableManager.h"
+#include "Table/MTable_TableBase.h"
 
 bool UMGameplayStatics::bShowDebug_Console = false;
 static FAutoConsoleVariableRef CVarMyBoolVar(
