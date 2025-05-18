@@ -128,7 +128,7 @@ void UMAbility_DefaultAttackBase::Callback_OnHit(const TArray<AActor*>& HitActor
 			{
 				TMap<FGameplayTag, float> SetbyCallerMap;
 	#pragma TODO("공격력 적용해야함")
-				SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_Health, -10/*이거 공격력으로*/);
+				//SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_Health, -10/*이거 공격력으로*/);
 				OwnerAbilitySystem->ApplyEffectToTargetWithSetByCaller(WeaponDefCDO->DefaultAttackEffectClass, Monster, OwnerAbilitySystem->GetOwner(), SetbyCallerMap);
 			}
 

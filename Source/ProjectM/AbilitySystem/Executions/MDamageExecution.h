@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameplayEffectExecutionCalculation.h"
-#include "PMHealExecution.generated.h"
+#include "MDamageExecution.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTM_API UPMHealExecution : public UGameplayEffectExecutionCalculation
+class PROJECTM_API UMDamageExecution : public UGameplayEffectExecutionCalculation
 {
 	GENERATED_BODY()
 public:
-	UPMHealExecution();
+	UMDamageExecution();
 
 	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
 };

@@ -11,6 +11,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Util/MGameplayStatics.h"
 #include "Components/MNavigationComponent.h"
+#include "Components/PMCharacterInitComponent.h"
 
 AMPlayerCharacterBase::AMPlayerCharacterBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UMCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -68,6 +69,12 @@ void AMPlayerCharacterBase::SetupPlayerInputComponent(class UInputComponent* Pla
 
 	// GameFeature를 통한 초기화를 하고싶은 컴포넌트를 위한 초기화 시작 단계
 	PawnExtComp->SetupPlayerInputComponent();
+
+	UPMCharacterInitComponent* CharacterInitComp = FindComponentByClass<UPMCharacterInitComponent>();
+	if (InputComponent != nullptr && CharacterInitComp)
+	{
+		CharacterInitComp->InitializePlayerInput(InputComponent);
+	}
 
 	if (OnSetInputComponentDelegate.IsBound())
 	{

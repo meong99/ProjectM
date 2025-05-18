@@ -7,6 +7,7 @@ class UPMCameraMode;
 class UPMInputConfig;
 class UPMAbilitySet;
 class UPMInventoryItemDefinition;
+class UGameplayEffect;
 
 UCLASS()
 class PROJECTM_API UPMPawnData : public UPrimaryDataAsset
@@ -31,19 +32,22 @@ public:
 * Member Variables
 */
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "ProjectM | Pawn")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Pawn")
 	TSubclassOf<APawn> PawnClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "ProjectM | Camera")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Camera")
 	TSubclassOf<UPMCameraMode> DefaultCameraMode;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "ProjectM | Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Stat")
+	TSubclassOf<UGameplayEffect> DefaultCharacterStatEffect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Input")
 	TObjectPtr<UPMInputConfig> InputConfig;
 
 	// Character가 기본적으로 사용하게 될 Ability
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "ProjectM | Abilities")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Abilities")
 	TArray<TObjectPtr<UPMAbilitySet>> AbilitySets;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "ProjectM | Equipment")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Equipment")
 	TSubclassOf<UPMInventoryItemDefinition> DefaultEquipment;
 };

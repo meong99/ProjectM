@@ -2,7 +2,7 @@
 #include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
 
-UPMHealthSet::UPMHealthSet() : Super(), Health(100), MaxHealth(100)
+UPMHealthSet::UPMHealthSet() : Super(), Health(1.f), MaxHealth(1.f)
 {
 }
 

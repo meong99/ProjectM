@@ -18,6 +18,7 @@
 #include "System/MDataTableManager.h"
 #include "Table/MTable_MonsterTable.h"
 #include "AbilitySystem/PMAbilitySet.h"
+#include "AbilitySystem/Attributes/PMCombatSet.h"
 
 AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -41,6 +42,7 @@ AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Supe
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 	AbilitySystemComponent->bWantsInitializeComponent = true;
 	HealthSet = CreateDefaultSubobject<UPMHealthSet>(TEXT("HealthSet"));
+	CreateDefaultSubobject<UPMCombatSet>(TEXT("CombatSet"));
 
 	MonsterTradeComponent = CreateDefaultSubobject<UMMonsterTradeComponent>(TEXT("MonsterTradeComponent"));
 }
@@ -96,6 +98,8 @@ void AMMonsterBase::PostInitializeComponents()
 			TMap<FGameplayTag, float> SetMap;
 			SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_Health, MonsterDefinition->GetMonsterHp());
 			SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_MaxHealth, MonsterDefinition->GetMonsterHp());
+			SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_AttackPower, MonsterDefinition->MonsterCombatInfo.MonsterAttackPower);
+			SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_DefensePower, MonsterDefinition->MonsterCombatInfo.MonsterDefensePower);
 			AbilitySystemComponent->ApplyEffectToSelfWithSetByCaller(MonsterDefinition->GetMonsterInfo().DefaultApplyEffect, nullptr, SetMap);
 
 			FPMAbilitySet_GrantedHandles TempGrantedHandles;

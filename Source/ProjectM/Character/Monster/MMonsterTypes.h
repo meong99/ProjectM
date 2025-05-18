@@ -60,9 +60,18 @@ struct FMMonsterCombatInfo
 	FMMontageInfo MontageInfo;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> DamageApplyEffect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float MonsterDefaultAttackRange = 1.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float MonsterDefaultAttackRadius = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float MonsterAttackPower = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float MonsterDefensePower = 0.f;
 };
 

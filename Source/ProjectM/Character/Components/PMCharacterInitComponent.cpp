@@ -153,15 +153,6 @@ void UPMCharacterInitComponent::HandleChangeInitState(UGameFrameworkComponentMan
 				CameraComponent->DetermineCameraModeDelegate.BindUObject(this, &UPMCharacterInitComponent::DetermineCameraMode);
 			}
 		}
- 
-		//InputSetting
- 		if (APMPlayerControllerBase* PlayerController = GetController<APMPlayerControllerBase>())
- 		{
- 			if (Pawn->InputComponent != nullptr)
- 			{
- 				InitializePlayerInput(Pawn->InputComponent);
- 			}
- 		}
 	}
 }
 
@@ -215,7 +206,7 @@ void UPMCharacterInitComponent::InitializePlayerInput(UInputComponent* PlayerInp
 	check(Subsystem);
 
 	// 우선 초기화
-	Subsystem->ClearAllMappings();
+	//Subsystem->ClearAllMappings();
 
 	// PawnData에 입력한 Input값을 가져와서 설정한다.
 	if (const UPMPawnExtensionComponent* PawnExtComp = UPMPawnExtensionComponent::FindPawnExtensionComponent(Pawn))

@@ -42,9 +42,9 @@ public:
 */
 public:
 	TSubclassOf<UPMCameraMode> DetermineCameraMode() const;
+	void InitializePlayerInput(UInputComponent* PlayerInputComponent);
 
 protected:
-	void InitializePlayerInput(UInputComponent* PlayerInputComponent);
 	void Input_Move(const FInputActionValue& InputActionValue);
 	void Input_Jump(const FInputActionValue& InputActionValue);
 	void Input_LookMouse(const FInputActionValue& InputActionValue);

@@ -14,8 +14,14 @@ class PROJECTM_API UPMCombatSet : public UPMAttributeSet
 public:
 	UPMCombatSet();
 
-	ATTRIBUTE_ACCESSORS(UPMCombatSet, BaseHeal);
+	ATTRIBUTE_ACCESSORS(UPMCombatSet, DefensePower);
+	ATTRIBUTE_ACCESSORS(UPMCombatSet, AttackPower);
 
-	UPROPERTY(BlueprintReadOnly, Category = "ProjectM | Combat")
-	FGameplayAttributeData BaseHeal;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "ProjectM | Combat")
+	FGameplayAttributeData DefensePower;
+
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "ProjectM | Combat")
+	FGameplayAttributeData AttackPower;
 };

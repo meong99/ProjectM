@@ -75,14 +75,10 @@ void UMAbility_MonsterAttackBase::TraceAttack()
 			UPMAbilitySystemComponent* MonsterASC = OwnerActor ? OwnerActor->GetMAbilitySystemComponent() : nullptr;
 			if (MonsterASC)
 			{
-				FMTable_GameplayEffectTable* EffectRow = UMDataTableManager::GetTableRowData<FMTable_GameplayEffectTable>(this, 21000001);
-				if (EffectRow)
-				{
-					TMap<FGameplayTag, float> SetbyCallerMap;
-					#pragma TODO("공격력 적용해야함")
-					SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_Health, -10/*이거 공격력으로*/);
-					MonsterASC->ApplyEffectToTargetWithSetByCaller(EffectRow->GameplayEffect, Player, OwnerActor, SetbyCallerMap);
-				}
+				TMap<FGameplayTag, float> SetbyCallerMap;
+				#pragma TODO("공격력 적용해야함")
+				//SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_Health, -10/*이거 공격력으로*/);
+				MonsterASC->ApplyEffectToTargetWithSetByCaller(MonsterDef->MonsterCombatInfo.DamageApplyEffect, Player, OwnerActor, SetbyCallerMap);
 			}
 		}
 	}
