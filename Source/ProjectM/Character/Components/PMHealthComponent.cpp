@@ -42,9 +42,6 @@ void UPMHealthComponent::InitializeWithAbilitySystem(UPMAbilitySystemComponent* 
 	}
 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UPMHealthSet::GetHealthAttribute()).AddUObject(this, &ThisClass::HandleHealthChanged);
-
-#pragma TODO("Pawn이 재생성되기때문에 Ability, AttributeSet초기화와 위젯 초기화 타이밍 등이 맞지 않는다. 새로운 함수로 초기화 해야한다.")
-	// 초기화
 	Multicast_HandleHealthChanged(this, 0, HealthSet->GetHealth(), nullptr);
 }
 

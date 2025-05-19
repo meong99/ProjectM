@@ -11,6 +11,7 @@
 #include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "PMGameplayTags.h"
 #include "Character/Monster/MMonsterBase.h"
+#include "AbilitySystem/Attributes/PMCombatSet.h"
 
 UMAbility_MonsterAttackBase::UMAbility_MonsterAttackBase()
 {
@@ -72,13 +73,19 @@ void UMAbility_MonsterAttackBase::TraceAttack()
 		for (const FHitResult& Hit : OutHits)
 		{
 			AMPlayerCharacterBase* Player = Cast<AMPlayerCharacterBase>(Hit.GetActor());
-			UPMAbilitySystemComponent* MonsterASC = OwnerActor ? OwnerActor->GetMAbilitySystemComponent() : nullptr;
-			if (MonsterASC)
+			if (Player)
 			{
-				TMap<FGameplayTag, float> SetbyCallerMap;
-				#pragma TODO("공격력 적용해야함")
-				//SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_Health, -10/*이거 공격력으로*/);
-				MonsterASC->ApplyEffectToTargetWithSetByCaller(MonsterDef->MonsterCombatInfo.DamageApplyEffect, Player, OwnerActor, SetbyCallerMap);
+				UPMAbilitySystemComponent* MonsterASC = OwnerActor ? OwnerActor->GetMAbilitySystemComponent() : nullptr;
+				UPMAbilitySystemComponent* PlayerASC = Player->GetMAbilitySystemComponent();
+				const UPMCombatSet* CombatSet = MonsterASC->GetSet<UPMCombatSet>();
+				const UPMCombatSet* PlayerCombatSet = PlayerASC ? PlayerASC->GetSet<UPMCombatSet>() : nullptr;
+				if (MonsterASC && CombatSet && PlayerCombatSet)
+				{
+					TMap<FGameplayTag, float> SetbyCallerMap;
+					SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_AttackPower, CombatSet->GetAttackPower());
+					SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_DefensePower, PlayerCombatSet->GetDefensePower());
+					MonsterASC->ApplyEffectToTargetWithSetByCaller(MonsterDef->MonsterCombatInfo.DamageApplyEffect, Player, OwnerActor, SetbyCallerMap);
+				}
 			}
 		}
 	}

@@ -13,6 +13,7 @@
 #include "PMGameplayTags.h"
 #include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "Equipment/PMEquipmentManagerComponent.h"
+#include "AbilitySystem/Attributes/PMCombatSet.h"
 
 UMAbility_DefaultAttackBase::UMAbility_DefaultAttackBase()
 {
@@ -122,13 +123,16 @@ void UMAbility_DefaultAttackBase::Callback_OnHit(const TArray<AActor*>& HitActor
 		if (Monster && !OverlappedActors.Contains(HitActor) && ItemDef)
 		{
 			UPMAbilitySystemComponent* OwnerAbilitySystem = Cast<UPMAbilitySystemComponent>(GetCurrentActorInfo()->AbilitySystemComponent);
+			UPMAbilitySystemComponent* MonsterAbilitySystem = Monster->GetMAbilitySystemComponent();
 			UMWeaponItemDefinition* WeaponDefCDO = Cast<UMWeaponItemDefinition>(ItemDef);
+			const UPMCombatSet* CombatSet = OwnerAbilitySystem->GetSet<UPMCombatSet>();
+			const UPMCombatSet* MonsterCombatSet = MonsterAbilitySystem ? MonsterAbilitySystem->GetSet<UPMCombatSet>() : nullptr;
 
-			if (OwnerAbilitySystem && WeaponDefCDO)
+			if (OwnerAbilitySystem && WeaponDefCDO && CombatSet && MonsterCombatSet)
 			{
 				TMap<FGameplayTag, float> SetbyCallerMap;
-	#pragma TODO("공격력 적용해야함")
-				//SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_Health, -10/*이거 공격력으로*/);
+				SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_AttackPower, CombatSet->GetAttackPower());
+				SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_DefensePower, MonsterCombatSet->GetDefensePower());
 				OwnerAbilitySystem->ApplyEffectToTargetWithSetByCaller(WeaponDefCDO->DefaultAttackEffectClass, Monster, OwnerAbilitySystem->GetOwner(), SetbyCallerMap);
 			}
 
