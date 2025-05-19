@@ -50,8 +50,6 @@ AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Supe
 void AMMonsterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AMMonsterBase, MonsterDefinition);
 }
 
 void AMMonsterBase::PreInitializeComponents()
@@ -139,12 +137,9 @@ void AMMonsterBase::Tick(float DeltaSeconds)
 
 void AMMonsterBase::InitCharacterName()
 {
-	if (HasAuthority())
+	if (MonsterDefinition)
 	{
-		if (MonsterDefinition)
-		{
-			CharacterName = MonsterDefinition->GetMonsterName();
-		}
+		CharacterName = MonsterDefinition->GetMonsterName();
 	}
 	Super::InitCharacterName();
 }

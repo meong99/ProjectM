@@ -14,7 +14,7 @@ class UMNavigationComponent;
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnSetInputComponent, UInputComponent* PlayerInputComponent);
 
 UCLASS()
-class PROJECTM_API AMPlayerCharacterBase : public AMCharacterBase, public IAbilitySystemInterface
+class PROJECTM_API AMPlayerCharacterBase : public AMCharacterBase
 {
 	GENERATED_BODY()
 
@@ -29,9 +29,9 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 public:
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual UAbilitySystemComponent*	GetAbilitySystemComponent() const override;
 	UFUNCTION(BlueprintCallable)
-	virtual UPMAbilitySystemComponent* GetMAbilitySystemComponent() const override;
+	virtual UPMAbilitySystemComponent*	GetMAbilitySystemComponent() const override;
 
 /*
 * Member Functions

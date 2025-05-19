@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Character/MCharacterBase.h"
-#include "GameplayAbilities/Public/AbilitySystemInterface.h"
 #include "Character/Monster/MMonsterTypes.h"
 #include "AbilitySystem/PMAbilitySet.h"
 #include "MMonsterBase.generated.h"
@@ -15,7 +14,7 @@ class AMMonsterSpawner;
 class UMMonsterTradeComponent;
 
 UCLASS(Blueprintable, BlueprintType)
-class PROJECTM_API AMMonsterBase : public AMCharacterBase, public IAbilitySystemInterface
+class PROJECTM_API AMMonsterBase : public AMCharacterBase
 {
 	GENERATED_BODY()
 
@@ -66,7 +65,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Monster")
 	TObjectPtr<UMMonsterTradeComponent> MonsterTradeComponent;
 
-	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Monster")
+	UPROPERTY(BlueprintReadOnly, Category = "Monster")
 	UMMonsterDefinition* MonsterDefinition;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Monster")

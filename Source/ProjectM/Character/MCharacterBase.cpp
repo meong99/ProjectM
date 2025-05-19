@@ -15,7 +15,6 @@ void AMCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMCharacterBase, CharacterState);
-	DOREPLIFETIME(AMCharacterBase, CharacterName);
 }
 
 void AMCharacterBase::PreInitializeComponents()
@@ -36,8 +35,8 @@ void AMCharacterBase::BeginPlay()
 
 void AMCharacterBase::InitCharacterName()
 {
-	K2_InitCharacterName();
 	NameComponent->InitNameWidget();
+	K2_InitCharacterName();
 }
 
 const FName& AMCharacterBase::GetCharacterName() const

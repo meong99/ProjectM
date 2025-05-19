@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ModularCharacter.h"
+#include "AbilitySystemInterface.h"
 #include "MCharacterBase.generated.h"
 
 class UMNameWidgetComponent;
@@ -19,7 +20,7 @@ enum EMCharacterState
 };
 
 UCLASS()
-class PROJECTM_API AMCharacterBase : public AModularCharacter
+class PROJECTM_API AMCharacterBase : public AModularCharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -36,7 +37,8 @@ public:
 * Member Functions
 */
 public:
-	virtual UPMAbilitySystemComponent* GetMAbilitySystemComponent() const { return nullptr; }
+	virtual UAbilitySystemComponent*	GetAbilitySystemComponent() const override { return nullptr; }
+	virtual UPMAbilitySystemComponent*	GetMAbilitySystemComponent() const { return nullptr; }
 	virtual void InitCharacterName();
 	UFUNCTION(BlueprintImplementableEvent)
 	void K2_InitCharacterName();
@@ -50,7 +52,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Name")
 	UMNameWidgetComponent* NameComponent;
 
-	UPROPERTY(Replicated, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FName CharacterName = TEXT("None");
 
 	UPROPERTY(Replicated, BlueprintReadWrite)
