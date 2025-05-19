@@ -52,7 +52,6 @@ void UMInteractiveAction_AcceptQuest::DeactivateAction()
 	if (ViewportClient)
 	{
 		ViewportClient->RemoveWidgetFromLayer(FPMGameplayTags::Get().UI_Registry_Game_Dialogue);
-		bShouldActivate = false;
 		InteractionComponent->ActivateAllOverlapAction();
 	}
 }
@@ -71,6 +70,7 @@ void UMInteractiveAction_AcceptQuest::OnClick_Accept()
 		PlayerQuestComponent->AcceptQuest(QuestRowId);
 	}
 
+	bShouldActivate = false;
 	DeactivateAction();
 }
 
