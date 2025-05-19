@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Character.h"
 #include "DediTest.generated.h"
 
 UCLASS()
-class PROJECTM_API ADediTest : public AActor
+class PROJECTM_API ADediTest : public ACharacter
 {
 	GENERATED_BODY()
 	
@@ -26,13 +26,23 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetDorm(ENetDormancy Dorm);
 
+	UFUNCTION(BlueprintCallable)
+	void DoReplication();
+
+	UFUNCTION(Client, Reliable)
+	void Client_TestRPC(const int32& n);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bTestBool = true;
 
-	UFUNCTION()
-	void OnRep_Test();
-	UPROPERTY(ReplicatedUsing=OnRep_Test)
-	int32 Test = 0;
+	//UFUNCTION()
+	//void OnRep_Test();
+
+	//UPROPERTY(Replicated/*Using=OnRep_Test*/)
+	//int32 ReplicationTestVar = 0;
 public:
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	void PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker) override;
+
+
+	void BeginReplication() override;
 };
