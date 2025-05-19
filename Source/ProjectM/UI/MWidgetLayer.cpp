@@ -56,6 +56,11 @@ void UMWidgetLayer::ActivateLayer() const
 	SetInputMode();
 }
 
+void UMWidgetLayer::ClearAllWidget()
+{
+	ClearChildren();
+}
+
 void UMWidgetLayer::SetInputMode(UMWidgetBase* Widget) const
 {
 	APlayerController* PlayerController = GetOwningPlayer();

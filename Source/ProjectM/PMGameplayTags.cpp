@@ -66,4 +66,12 @@ void FPMGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	* Gameplay
 	*/
 	AddTag(UI_Registry_Game_Dialogue, "UI.Registry.Game.Dialogue", "");
+
+	/*
+	* WorldTag
+	*/
+	AddTag(Level_Persistent, "Level.Persistent", "");
+	AddTag(Level_Persistent_MainLevel, "Level.Persistent.MainLevel", "");
+	AddTag(Level_Square, "Level.Square", "");
+	AddTag(Level_Field, "Level.Field", "");
 }

@@ -5,6 +5,7 @@
 #include "CommonSessionSubSystem.h"
 #include "Engine/LocalPlayer.h"
 #include "UI/MViewportClient.h"
+#include "Kismet/GameplayStatics.h"
 
 UMLevelManager::UMLevelManager()
 {
@@ -26,6 +27,16 @@ void UMLevelManager::TravelLevel(UPMUserFacingExperienceDefinition* UFED, const 
  			Session->HostSession(GetPlayerController(), UFED->CreateHostingRequst(Ip));
 		}
 	}
+}
+
+void UMLevelManager::OpenLevel(const UObject* WorldContextObject, const TSoftObjectPtr<UWorld> Level, bool bAbsolute, FString Options)
+{
+	UMViewportClient* ViewportClient = Cast<UMViewportClient>(GetWorld()->GetGameInstance()->GetGameViewportClient());
+	if (ViewportClient)
+	{
+		ViewportClient->ClearLayer();
+	}
+	UGameplayStatics::OpenLevelBySoftObjectPtr(WorldContextObject, Level, bAbsolute, Options);
 }
 
 void UMLevelManager::OnLevelLoaded(UWorld* NewWorld)

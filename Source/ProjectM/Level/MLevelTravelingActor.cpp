@@ -9,6 +9,8 @@
 #include "Engine/GameInstance.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include "MPlayerStart.h"
 
 AMLevelTravelingActor::AMLevelTravelingActor()
 {
@@ -23,7 +25,7 @@ AMLevelTravelingActor::AMLevelTravelingActor()
 void AMLevelTravelingActor::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	if (GetNetMode() != ENetMode::NM_DedicatedServer)
+	if (HasAuthority())
 	{
 		BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AMLevelTravelingActor::OnBeginOverlap_LevelTravel);
 	}
@@ -53,15 +55,32 @@ void AMLevelTravelingActor::OnBeginOverlap_LevelTravel(UPrimitiveComponent* Over
 {
 	ACharacter*			OverlapedPlayer				= Cast<ACharacter>(OtherActor);
 	APlayerController*	OverlapedPlayerController	= OverlapedPlayer			? Cast<APlayerController>(OverlapedPlayer->GetController()) : nullptr;
-	ULocalPlayer*		OverlapedLocalPlayer		= OverlapedPlayerController ? Cast<ULocalPlayer>(OverlapedPlayerController->GetLocalPlayer()) : nullptr;
-	UMLevelManager*		LavelManager				= OverlapedLocalPlayer		? OverlapedLocalPlayer->GetSubsystem<UMLevelManager>() : nullptr;
-	if (OtherActor && LevelInfo && LavelManager)
+	//ULocalPlayer*		OverlapedLocalPlayer		= OverlapedPlayerController ? Cast<ULocalPlayer>(OverlapedPlayerController->GetLocalPlayer()) : nullptr;
+	//UMLevelManager*		LavelManager				= OverlapedLocalPlayer		? OverlapedLocalPlayer->GetSubsystem<UMLevelManager>() : nullptr;
+	//if (OtherActor && LevelInfo && LavelManager)
+	//{
+	//	LavelManager->TravelLevel(LevelInfo->UFED, LevelInfo->Ip);
+	//}
+	//else
+	//{
+	//	ensure(false);
+	//	MCHAE_ERROR("Level info is not valid. check this actor's level tag and level table");
+	//}
+
+	if (OverlapedPlayer)
 	{
-		LavelManager->TravelLevel(LevelInfo->UFED, LevelInfo->Ip);
-	}
-	else
-	{
-		ensure(false);
-		MCHAE_ERROR("Level info is not valid. check this actor's level tag and level table");
+		TArray<AActor*> FoundActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMPlayerStart::StaticClass(), FoundActors);
+		for (AActor* Actor : FoundActors)
+		{
+			AMPlayerStart* PlayerStart = Cast<AMPlayerStart>(Actor);
+			if (PlayerStart)
+			{
+				if (PlayerStart->LevelTag == LevelTag)
+				{
+					OverlapedPlayer->TeleportTo(PlayerStart->GetActorLocation(), PlayerStart->GetActorRotation());
+				}
+			}
+		}
 	}
 }

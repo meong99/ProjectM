@@ -38,6 +38,7 @@ public:
 */
 public:
 	void ChangeWidgetLayer(EMWidgetLayout WidgetLayout) const;
+	void ClearAllWidget();
 
 	void AddWidgetToCurrentLayer(UMWidgetBase* Widget) const;
 	void RemoveWidgetToCurrentLayer(UMWidgetBase* Widget) const;

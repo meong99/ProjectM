@@ -19,6 +19,18 @@ void UMWidgetLayout::ChangeWidgetLayer(EMWidgetLayout WidgetLayout) const
 	}
 }
 
+void UMWidgetLayout::ClearAllWidget()
+{
+	for (int32 i = 0; i < (int32)EMWidgetLayout::None; i++)
+	{
+		UMWidgetLayer* Layer = GetLayer((EMWidgetLayout)i);
+		if (Layer)
+		{
+			Layer->ClearAllWidget();
+		}
+	}
+}
+
 void UMWidgetLayout::AddWidgetToCurrentLayer(UMWidgetBase* Widget) const
 {
 	AddWidgetToLayer(Widget, (EMWidgetLayout)LayoutSwitcher->ActiveWidgetIndex);

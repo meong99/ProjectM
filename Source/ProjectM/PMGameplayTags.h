@@ -62,6 +62,14 @@ struct FPMGameplayTags
 	*/
 	FGameplayTag UI_Registry_Game_Dialogue;
 
+	/*
+	* WorldTag
+	*/
+	FGameplayTag Level_Persistent;
+	FGameplayTag Level_Persistent_MainLevel;
+	FGameplayTag Level_Square;
+	FGameplayTag Level_Field;
+
 private:
 	static FPMGameplayTags GameplayTags;
 };

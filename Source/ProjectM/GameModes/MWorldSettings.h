@@ -26,7 +26,7 @@ public:
 /*
 * Member Variables
 */
-private:
+public:
 	UPROPERTY(EditDefaultsOnly, Category = "ProjectM")
 	TSoftClassPtr<UPMExperienceDefinition> DefaultGameplayExperience;
 

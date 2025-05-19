@@ -93,6 +93,14 @@ void UMViewportClient::RemoveWidgetRegister(const FGameplayTag& RegisterTag)
 	WidgetInstanceListMap.Remove(RegisterTag);
 }
 
+void UMViewportClient::ClearLayer()
+{
+	if (WidgetLayout)
+	{
+		WidgetLayout->ClearAllWidget();
+	}
+}
+
 UMWidgetInstanceList* UMViewportClient::CreateWidgetInRegister(const FGameplayTag& RegisterTag)
 {
 	UMWidgetInstanceList* WidgetInstanceList = WidgetInstanceListMap.FindRef(RegisterTag);

@@ -8,6 +8,7 @@
 
 class UPMUserFacingExperienceDefinition;
 class UCommonSessionSubSystem;
+class UWorld;
 
 /**
  *
@@ -30,6 +31,9 @@ public:
 public:
 	UFUNCTION(BlueprintCallable)
 	void TravelLevel(UPMUserFacingExperienceDefinition* UFED, const FString& Ip);
+
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"), Category = "ProjectM")
+	void OpenLevel(const UObject* WorldContextObject, const TSoftObjectPtr<UWorld> Level, bool bAbsolute, FString Options);
 
 protected:
 	UFUNCTION()

@@ -25,8 +25,9 @@ public:
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 	virtual void	HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) final;
 	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) final;
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 
-/*
+	/*
 * Member Functions
 */
 public:

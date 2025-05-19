@@ -39,6 +39,7 @@ public:
 	// 월드 단위로 사용되는 WidgetRegister를 등록, 해제한다. 이 부분은 GameFeatureAction으로 정의된다.
 	void AddWidgetRegister(const FGameplayTag& RegisterTag, UMWidgetRegister* InWidgetRegister);
 	void RemoveWidgetRegister(const FGameplayTag& RegisterTag);
+	void ClearLayer();
 
 	// Register내부에 있는 모든 위젯 생성
 	UMWidgetInstanceList* CreateWidgetInRegister(const FGameplayTag& RegisterTag);

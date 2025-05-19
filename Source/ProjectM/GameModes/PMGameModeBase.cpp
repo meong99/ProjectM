@@ -13,6 +13,9 @@
 #include "UI/PMHUD.h"
 #include "Misc/CommandLine.h"
 #include "MWorldSettings.h"
+#include "GameFramework/PlayerStart.h"
+#include "EngineUtils.h"
+#include "PMGameplayTags.h"
 
 APMGameModeBase::APMGameModeBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -96,6 +99,33 @@ APawn* APMGameModeBase::SpawnDefaultPawnAtTransform_Implementation(AController* 
 	SpawnedPawn->FinishSpawning(SpawnTransform);
 
 	return SpawnedPawn;
+}
+
+AActor* APMGameModeBase::ChoosePlayerStart_Implementation(AController* Player)
+{
+	UWorld* World = GetWorld();
+	AMWorldSettings* WorldSetting = Cast<AMWorldSettings>(World->GetWorldSettings(true));
+	if (WorldSetting && WorldSetting->WorldTag.MatchesAny(FGameplayTagContainer( FPMGameplayTags::Get().Level_Persistent) ))
+	{
+		APlayerStart* FoundPlayerStart = nullptr;
+		UClass* PawnClass = GetDefaultPawnClassForController(Player);
+		APawn* PawnToFit = PawnClass ? PawnClass->GetDefaultObject<APawn>() : nullptr;
+		TArray<APlayerStart*> UnOccupiedStartPoints;
+		TArray<APlayerStart*> OccupiedStartPoints;
+
+		for (TActorIterator<APlayerStart> It(World); It; ++It)
+		{
+			APlayerStart* PlayerStart = *It;
+
+			if (FoundPlayerStart == nullptr || PlayerStart->PlayerStartTag == TEXT("Square"))
+			{
+				FoundPlayerStart = PlayerStart;
+			}
+		}
+		return FoundPlayerStart;
+	}
+
+	return Super::ChoosePlayerStart_Implementation(Player);
 }
 
 bool APMGameModeBase::IsExperienceLoaded() const

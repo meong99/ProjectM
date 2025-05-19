@@ -27,6 +27,7 @@ public:
 	void AddWidgetToLayer(UMWidgetBase* Widget);
 	void RemoveWidgetFromLayer(UMWidgetBase* Widget);
 	void ActivateLayer() const;
+	void ClearAllWidget();
 
 protected:
 	void SetInputMode(UMWidgetBase* Widget = nullptr) const;
