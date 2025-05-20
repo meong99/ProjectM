@@ -17,6 +17,19 @@ enum class EMQuestState : uint8
 	Finished,
 };
 
+enum EMQuestListButton
+{
+	InProgress,
+	Startable,
+	Finished,
+};
+
+enum EMQuestButtonActivation
+{
+	Active,
+	Deactive,
+};
+
 USTRUCT(BlueprintType)
 struct FMQuestItem
 {

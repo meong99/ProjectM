@@ -23,7 +23,6 @@ public:
 	UMPlayerQuestInfoWidget(const FObjectInitializer& ObjectInitializer);
 
 	virtual void NativeOnInitialized() override;
-	virtual void PreAddToLayer() override;
 
 /*
 * Member Functions

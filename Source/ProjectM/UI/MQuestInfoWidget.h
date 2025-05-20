@@ -41,6 +41,9 @@ protected:
 	UFUNCTION()
 	void	OnClick_FinishButton();
 
+	UFUNCTION()
+	void	OnClick_SearchNpcButton();
+
 	void	SetRequiredItem(const TMap<int32, FMQuestItem>& RequiredItems);
 	void	SetRewardItem(const TArray<FMQuestItem>& RewardItems);
 	void	SetRewardGold(int32 Gold);
@@ -80,5 +83,9 @@ protected:
 	TObjectPtr<UButton> FinishButton;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UButton> SearchNpc;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
 	TObjectPtr<UWidgetSwitcher> ButtonTextSwitcher;
+
 };

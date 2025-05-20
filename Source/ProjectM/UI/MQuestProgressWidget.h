@@ -13,6 +13,7 @@ class UMQuestDefinition;
 class UMPlayerQuestComponent;
 class UMQuestInfoWidget;
 class UButton;
+class UWidgetSwitcher;
 
 UCLASS()
 class PROJECTM_API UMQuestProgressWidget : public UMWidgetBase
@@ -24,9 +25,10 @@ class PROJECTM_API UMQuestProgressWidget : public UMWidgetBase
 	*/
 public:
 	UMQuestProgressWidget(const FObjectInitializer& ObjectInitializer);
-	virtual void PreAddToLayer() override;
+	virtual void NativeOnInitialized() override;
+	virtual void PreAddToLayer(bool bIsRoot = true) override;
 
-	/*
+		/*
 	* Member Functions
 	*/
 public:
@@ -69,13 +71,13 @@ protected:
 	TObjectPtr<UVerticalBox> FinishedVertical;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
-	TObjectPtr<UButton> InProgressButton_Activated;
+	TObjectPtr<UButton> InProgressButton_Deactivated;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
-	TObjectPtr<UButton> StartableButton_Activated;
+	TObjectPtr<UButton> StartableButton_Deactivated;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
-	TObjectPtr<UButton> FinishedButton_Activated;
+	TObjectPtr<UButton> FinishedButton_Deactivated;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
 	TObjectPtr<UWidgetSwitcher> InProgressSwitcher;

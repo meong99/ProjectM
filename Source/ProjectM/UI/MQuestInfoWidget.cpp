@@ -21,6 +21,7 @@ void UMQuestInfoWidget::NativeOnInitialized()
 	Super::NativeOnInitialized();
 
 	FinishButton->OnClicked.AddDynamic(this, &UMQuestInfoWidget::OnClick_FinishButton);
+	SearchNpc->OnClicked.AddDynamic(this, &UMQuestInfoWidget::OnClick_SearchNpcButton);
 
 	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
 	if (TableManager)
@@ -76,6 +77,11 @@ void UMQuestInfoWidget::OnClick_FinishButton()
 	{
 		QuestHandle.Slot->OnClick_FinishButton();
 	}
+}
+
+void UMQuestInfoWidget::OnClick_SearchNpcButton()
+{
+
 }
 
 void UMQuestInfoWidget::SetRequiredItem(const TMap<int32, FMQuestItem>& RequiredItems)

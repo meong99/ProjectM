@@ -2,6 +2,7 @@
 #include "MQuestProgressWidget.h"
 #include "MQuestInfoWidget.h"
 #include "Components/MPlayerQuestComponent.h"
+#include "Blueprint/WidgetTree.h"
 
 UMPlayerQuestInfoWidget::UMPlayerQuestInfoWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -11,11 +12,6 @@ void UMPlayerQuestInfoWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 	InitQuest();
-}
-
-void UMPlayerQuestInfoWidget::PreAddToLayer()
-{
-	Super::PreAddToLayer();
 }
 
 void UMPlayerQuestInfoWidget::DisplayQuestInfo(const UMQuestDefinition* QuestDefinition, const FMQuestHandle& QuestHandle) const

@@ -13,13 +13,16 @@ UMQuestProgressWidget::UMQuestProgressWidget(const FObjectInitializer& ObjectIni
 {
 }
 
-void UMQuestProgressWidget::PreAddToLayer()
+void UMQuestProgressWidget::NativeOnInitialized()
 {
-	Super::PreAddToLayer();
-	
-	InProgressButton_Activated->OnClicked.AddDynamic(this, &UMQuestProgressWidget::OnClick_InProgress);
-	StartableButton_Activated->OnClicked.AddDynamic(this, &UMQuestProgressWidget::OnClick_Starable);
-	FinishedButton_Activated->OnClicked.AddDynamic(this, &UMQuestProgressWidget::OnClick_Finished);
+	Super::NativeOnInitialized();
+}
+
+void UMQuestProgressWidget::PreAddToLayer(bool bIsRoot)
+{
+	InProgressButton_Deactivated->OnClicked.AddDynamic(this, &UMQuestProgressWidget::OnClick_InProgress);
+	StartableButton_Deactivated->OnClicked.AddDynamic(this, &UMQuestProgressWidget::OnClick_Starable);
+	FinishedButton_Deactivated->OnClicked.AddDynamic(this, &UMQuestProgressWidget::OnClick_Finished);
 }
 
 void UMQuestProgressWidget::InitQuest(UMQuestInfoWidget* InQuestInfo)

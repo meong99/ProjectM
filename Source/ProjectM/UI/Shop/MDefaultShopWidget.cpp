@@ -7,13 +7,9 @@ UMDefaultShopWidget::UMDefaultShopWidget(const FObjectInitializer& ObjectInitial
 {
 }
 
-void UMDefaultShopWidget::PreAddToLayer()
+void UMDefaultShopWidget::PreAddToLayer(bool bIsRoot)
 {
-	Super::PreAddToLayer();
 	ExitButton->OnClicked.AddDynamic(this, &UMDefaultShopWidget::OnClicked_ExitButton);
-
-	ShopDetail->PreAddToLayer();
-	UserInventoryDetail->PreAddToLayer();
 }
 
 void UMDefaultShopWidget::NativeConstruct()
