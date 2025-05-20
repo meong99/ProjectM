@@ -11,6 +11,9 @@
 #include "MQuestSlotWidget.h"
 #include "Engine/Engine.h"
 #include "Components/HorizontalBoxSlot.h"
+#include "Components/MNavigationComponent.h"
+#include "Character/NPC/MNpcDefinition.h"
+#include "GameModes/PMGameStateBase.h"
 
 UMQuestInfoWidget::UMQuestInfoWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -54,6 +57,10 @@ void UMQuestInfoWidget::DisplayQuestInfo(const UMQuestDefinition* QuestDefinitio
 		return;
 	}
 
+	if (bOnActivatedNavigation)
+	{
+		StopSearchNpc();
+	}
 	UpdateHandle(InQuestHandle);
 	QuestName->SetText(QuestDefinition->QuestName);
 	QuestGoalContext->SetText(QuestDefinition->QuestGoalContext);
@@ -73,15 +80,48 @@ void UMQuestInfoWidget::UpdateHandle(const FMQuestHandle& InQuestHandle)
 
 void UMQuestInfoWidget::OnClick_FinishButton()
 {
-	if (QuestHandle && QuestHandle.Slot)
+	if (QuestHandle && QuestHandle.Slot && bOnActivatedNavigation)
 	{
 		QuestHandle.Slot->OnClick_FinishButton();
+		StopSearchNpc();
 	}
 }
 
 void UMQuestInfoWidget::OnClick_SearchNpcButton()
 {
+	if (bOnActivatedNavigation)
+	{
+		StopSearchNpc();
+	}
 
+	APawn* OwningPlayerPawn = GetOwningPlayerPawn();
+	UMNavigationComponent* NavigationComp = OwningPlayerPawn ? OwningPlayerPawn->FindComponentByClass<UMNavigationComponent>() : nullptr;
+	const UMQuestDefinition* QuestDefinition = QuestHandle.Slot ? QuestHandle.Slot->GetQuestDefinition() : nullptr;
+	UMNpcDefinition* OwnerNpcDefinition = QuestDefinition ? UMDataTableManager::GetDefinitionObject<UMNpcDefinition>(this, QuestDefinition->OwnerNpcRowId) : nullptr;
+
+	AActor* OwnerNpc = nullptr;
+	APMGameStateBase* GameState = Cast<APMGameStateBase>(GetWorld()->GetGameState());
+	if (GameState && OwnerNpcDefinition)
+	{
+		OwnerNpc = GameState->TagMappedActor.FindRef(OwnerNpcDefinition->SearchTag);
+	}
+	if (NavigationComp && OwnerNpc)
+	{
+		NavigationComp->ActivateNavigation(OwnerNpc); 
+		bOnActivatedNavigation = true;
+	}
+}
+
+void UMQuestInfoWidget::StopSearchNpc()
+{
+	APlayerController* Controller = GetOwningPlayer();
+	UMNavigationComponent* NavigationComp = Controller ? Controller->FindComponentByClass<UMNavigationComponent>() : nullptr;
+
+	if (NavigationComp)
+	{
+		NavigationComp->DeactivateNavigation();
+		bOnActivatedNavigation = false;
+	}
 }
 
 void UMQuestInfoWidget::SetRequiredItem(const TMap<int32, FMQuestItem>& RequiredItems)

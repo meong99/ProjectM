@@ -41,6 +41,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
 	FGameplayTag WorldTag;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
+	FGameplayTag SearchTag;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "ProjectM")
 	TArray<TObjectPtr<UMInteractiveAction_OverlapActionBase>> Action_OnBeginOverlap;
 

@@ -29,8 +29,8 @@ public:
 * Member Variables
 */
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(), Category="ProjectM")
-	TSubclassOf<AMNpcBase> QuestOwner;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1500004, ClampMax = 1599999), Category = "ProjectM")
+	int32 OwnerNpcRowId;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(), Category="ProjectM")
 	FText QuestName;

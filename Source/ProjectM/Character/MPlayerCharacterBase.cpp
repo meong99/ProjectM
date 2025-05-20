@@ -36,6 +36,9 @@ AMPlayerCharacterBase::AMPlayerCharacterBase(const FObjectInitializer& ObjectIni
 	NetCullDistanceSquared = 900000000.0f;
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickMontagesAndRefreshBonesWhenPlayingMontages;
 
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	bUseControllerRotationYaw = false;
+
 	if (!IsRunningDedicatedServer())
 	{
 		NavigationComponent = CreateDefaultSubobject<UMNavigationComponent>(TEXT("NavigationComponent"));

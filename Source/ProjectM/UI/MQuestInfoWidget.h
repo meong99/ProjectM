@@ -43,6 +43,7 @@ protected:
 
 	UFUNCTION()
 	void	OnClick_SearchNpcButton();
+	void	StopSearchNpc();
 
 	void	SetRequiredItem(const TMap<int32, FMQuestItem>& RequiredItems);
 	void	SetRewardItem(const TArray<FMQuestItem>& RewardItems);
@@ -54,6 +55,9 @@ protected:
 	* Member Variables
 	*/
 protected:
+	UPROPERTY(BlueprintReadOnly, Category = "ProjectM")
+	bool bOnActivatedNavigation = false;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
 	TSubclassOf<UMItemWithTextWidget> ItemContextClass;
 

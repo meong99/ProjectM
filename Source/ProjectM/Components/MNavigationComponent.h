@@ -47,10 +47,19 @@ private:
 	*/
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
-	TSubclassOf<AActor> ArrowActorClass;
+	TSubclassOf<AActor> NavigationGuideActorClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
-	float DistanceThreshold = 300.f;
+	float GuideSpeed = 1.f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
+	float NavThreshold = 10.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
+	float DistanceThreshold = 10.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
+	float GoalThreshold = 300.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
 	float ResearchIndexThreshold = 1000.f;
@@ -59,7 +68,7 @@ protected:
 	float RotationSpeed = 5.0f;
 
 	UPROPERTY()
-	TObjectPtr<AActor> ArrowActor;
+	TObjectPtr<AActor> NavigationActor;
 
 	UPROPERTY()
 	TObjectPtr<UNavigationPath> Path;

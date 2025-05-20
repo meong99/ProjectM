@@ -15,6 +15,7 @@
 #include "UI/MViewportClient.h"
 #include "Engine/GameInstance.h"
 #include "GameFramework/Character.h"
+#include "Components/MNavigationComponent.h"
 
 const FName UPMCharacterInitComponent::NAME_ActorFeatureName{"CharacterInit"};
 const FName UPMCharacterInitComponent::NAME_BindInputsNow{"BindInputsNow"};
@@ -257,6 +258,11 @@ void UPMCharacterInitComponent::Input_Move(const FInputActionValue& InputActionV
 
 	if (Controller)
 	{
+		UMNavigationComponent* NavComp = Pawn->FindComponentByClass<UMNavigationComponent>();
+		if (NavComp)
+		{
+			NavComp->DeactivateNavigation();
+		}
 		const FVector2D Value = InputActionValue.Get<FVector2D>();
 		const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
 

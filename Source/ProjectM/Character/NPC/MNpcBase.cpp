@@ -6,6 +6,7 @@
 #include "Engine/Engine.h"
 #include "System/MDataTableManager.h"
 #include "Table/Item/MTable_NPC.h"
+#include "GameModes/PMGameStateBase.h"
 
 AMNpcBase::AMNpcBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -58,6 +59,12 @@ void AMNpcBase::PostInitializeComponents()
 void AMNpcBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	APMGameStateBase* GameState = Cast<APMGameStateBase>(GetWorld()->GetGameState());
+	if (GameState && NpcDefinition && NpcDefinition->SearchTag.IsValid())
+	{
+		GameState->TagMappedActor.Add(NpcDefinition->SearchTag, this);
+	}
 }
 
 void AMNpcBase::InitCharacterName()

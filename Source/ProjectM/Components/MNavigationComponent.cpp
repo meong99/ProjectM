@@ -6,6 +6,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/World.h"
 #include "Util/MGameplayStatics.h"
+#include "GameFramework/Character.h"
 
 UMNavigationComponent::UMNavigationComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -16,12 +17,13 @@ void UMNavigationComponent::TickComponent(float DeltaTime, enum ELevelTick TickT
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (ArrowActor && Path && GetOwner())
+	if (NavigationActor && Path && GetOwner())
 	{
 		if (0 <= CurrentPathIndex && CurrentPathIndex < Path->PathPoints.Num() - 1)
 		{
+			int32 NextPathIndex = CurrentPathIndex + 1;
 			FVector OwnerLocation = GetOwner()->GetActorLocation();
-			FVector NextPointLocation = Path->PathPoints[CurrentPathIndex + 1];
+			FVector NextPointLocation = Path->PathPoints[NextPathIndex];
 			float NextDist = FVector::Dist(OwnerLocation, NextPointLocation);
 
 			FVector CurrentPointLocation = Path->PathPoints[CurrentPathIndex];
@@ -31,15 +33,17 @@ void UMNavigationComponent::TickComponent(float DeltaTime, enum ELevelTick TickT
 			{
 				GeneratePathData();
 			}
+			else if (NextPathIndex == Path->PathPoints.Num() - 1 && NextDist <= GoalThreshold)
+			{
+				CurrentPathIndex++;
+			}
 			else if (NextDist > DistanceThreshold)
 			{
-				FVector OriginLocation2D = { OwnerLocation.X, OwnerLocation.Y, 0.0f };
-				FVector NextPointLocation2D = { NextPointLocation.X, NextPointLocation.Y, 0.0f };
-
-				FRotator CurrentRot = ArrowActor->GetActorRotation();
-				FRotator LookAt = UKismetMathLibrary::FindLookAtRotation(OriginLocation2D, NextPointLocation2D);
-				FRotator NewRot = FMath::RInterpTo(CurrentRot, LookAt, DeltaTime, RotationSpeed);
-				ArrowActor->SetActorRotation(NewRot);
+				ACharacter* Owner = Cast<ACharacter>(GetOwner());
+				if (Owner)
+				{
+					Owner->AddMovementInput((NextPointLocation - OwnerLocation).GetSafeNormal2D());
+				}
 			}
 			else
 			{
@@ -67,12 +71,12 @@ void UMNavigationComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	SetComponentTickEnabled(false);
-	if (ArrowActorClass)
+	if (NavigationGuideActorClass)
 	{
-		ArrowActor = GetWorld()->SpawnActor<AActor>(ArrowActorClass, GetOwner()->GetActorTransform());
-		ArrowActor->SetActorEnableCollision(false);
-		ArrowActor->SetActorHiddenInGame(true);
-		ArrowActor->AttachToActor(GetOwner(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		NavigationActor = GetWorld()->SpawnActor<AActor>(NavigationGuideActorClass, GetOwner()->GetActorTransform());
+		NavigationActor->SetActorEnableCollision(false);
+		NavigationActor->SetActorHiddenInGame(true);
+		NavigationActor->AttachToActor(GetOwner(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	}
 	else
 	{
@@ -86,9 +90,9 @@ void UMNavigationComponent::ActivateNavigation(AActor* InTargetActor, FVector In
 	TargetWeak = InTargetActor;
 	TargetLocation = InTargetLocation;
 
-	if (ArrowActor)
+	if (NavigationActor)
 	{
-		ArrowActor->SetActorHiddenInGame(false);
+		NavigationActor->SetActorHiddenInGame(false);
 	}
 
 	GeneratePathData();
@@ -98,9 +102,9 @@ void UMNavigationComponent::ActivateNavigation(AActor* InTargetActor, FVector In
 
 void UMNavigationComponent::DeactivateNavigation()
 {
-	if (ArrowActor)
+	if (NavigationActor)
 	{
-		ArrowActor->SetActorHiddenInGame(true);
+		NavigationActor->SetActorHiddenInGame(true);
 	}
 
 	SetComponentTickEnabled(false);

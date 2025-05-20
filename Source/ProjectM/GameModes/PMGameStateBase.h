@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameFramework/GameStateBase.h"
+#include "GameplayTagContainer.h"
 #include "PMGameStateBase.generated.h"
 
 class UPMExperienceManagerComponent;
@@ -30,6 +31,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_LoadGame();
 
+public:
+	UPROPERTY()
+	TMap<FGameplayTag, AActor*> TagMappedActor;
 /*
 * Member Variables
 */
