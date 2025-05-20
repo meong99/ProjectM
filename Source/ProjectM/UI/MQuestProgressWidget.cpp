@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "MQuestInfoWidget.h"
 #include "Components/Widget.h"
+#include "Components/Button.h"
+#include "Components/WidgetSwitcher.h"
 
 UMQuestProgressWidget::UMQuestProgressWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -14,6 +16,10 @@ UMQuestProgressWidget::UMQuestProgressWidget(const FObjectInitializer& ObjectIni
 void UMQuestProgressWidget::PreAddToLayer()
 {
 	Super::PreAddToLayer();
+	
+	InProgressButton_Activated->OnClicked.AddDynamic(this, &UMQuestProgressWidget::OnClick_InProgress);
+	StartableButton_Activated->OnClicked.AddDynamic(this, &UMQuestProgressWidget::OnClick_Starable);
+	FinishedButton_Activated->OnClicked.AddDynamic(this, &UMQuestProgressWidget::OnClick_Finished);
 }
 
 void UMQuestProgressWidget::InitQuest(UMQuestInfoWidget* InQuestInfo)
@@ -120,6 +126,30 @@ void UMQuestProgressWidget::ClearQuestProgress()
 {
 	ProgressVertical->ClearChildren();
 	StartableVertical->ClearChildren();
+}
+
+void UMQuestProgressWidget::OnClick_InProgress()
+{
+	InProgressSwitcher->SetActiveWidgetIndex((int32)EMQuestButtonActivation::Active);
+	StartableSwitcher->SetActiveWidgetIndex((int32)EMQuestButtonActivation::Deactive);
+	FinishedSwitcher->SetActiveWidgetIndex((int32)EMQuestButtonActivation::Deactive);
+	QuestSlotSwitcher->SetActiveWidgetIndex((int32)EMQuestListButton::InProgress);
+}
+
+void UMQuestProgressWidget::OnClick_Starable()
+{
+	InProgressSwitcher->SetActiveWidgetIndex((int32)EMQuestButtonActivation::Deactive);
+	StartableSwitcher->SetActiveWidgetIndex((int32)EMQuestButtonActivation::Active);
+	FinishedSwitcher->SetActiveWidgetIndex((int32)EMQuestButtonActivation::Deactive);
+	QuestSlotSwitcher->SetActiveWidgetIndex((int32)EMQuestListButton::Startable);
+}
+
+void UMQuestProgressWidget::OnClick_Finished()
+{
+	InProgressSwitcher->SetActiveWidgetIndex((int32)EMQuestButtonActivation::Deactive);
+	StartableSwitcher->SetActiveWidgetIndex((int32)EMQuestButtonActivation::Deactive);
+	FinishedSwitcher->SetActiveWidgetIndex((int32)EMQuestButtonActivation::Active);
+	QuestSlotSwitcher->SetActiveWidgetIndex((int32)EMQuestListButton::Finished);
 }
 
 UMQuestSlotWidget* UMQuestProgressWidget::GetQuestSlot(const int32 QuestRowId, EMQuestState State, bool bRemove) const

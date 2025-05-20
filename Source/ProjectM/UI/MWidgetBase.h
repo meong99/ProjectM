@@ -70,7 +70,7 @@ public:
 
 	void SetWidgetTag(const FGameplayTag& InWidgetTag) { WidgetTag = InWidgetTag; }
 	void SetActivate(const bool bNewActivate) { bIsActivate = bNewActivate; }
-	void SetWidgetInfo(const FMWidgetInfo& InWidgetInfo) { WidgetInfo = InWidgetInfo; }
+	virtual void SetWidgetInfo(const FMWidgetInfo& InWidgetInfo) { WidgetInfo = InWidgetInfo; }
 	void SetInitialized(bool bInIsInitialized) { bIsInitialized = bInIsInitialized; }
 	
 	UFUNCTION(BlueprintCallable)

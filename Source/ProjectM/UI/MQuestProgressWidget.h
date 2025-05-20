@@ -12,6 +12,7 @@ class UVerticalBox;
 class UMQuestDefinition;
 class UMPlayerQuestComponent;
 class UMQuestInfoWidget;
+class UButton;
 
 UCLASS()
 class PROJECTM_API UMQuestProgressWidget : public UMWidgetBase
@@ -38,6 +39,13 @@ public:
 protected:
 	void	ClearQuestProgress();
 
+	UFUNCTION()
+	void	OnClick_InProgress();
+	UFUNCTION()
+	void	OnClick_Starable();
+	UFUNCTION()
+	void	OnClick_Finished();
+
 	UMQuestSlotWidget*	GetQuestSlot(const int32 QuestRowId, EMQuestState State, bool bRemove = false) const;
 	UVerticalBox*		GetVerticalBox(EMQuestState State) const;
 
@@ -59,4 +67,25 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
 	TObjectPtr<UVerticalBox> FinishedVertical;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UButton> InProgressButton_Activated;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UButton> StartableButton_Activated;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UButton> FinishedButton_Activated;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UWidgetSwitcher> InProgressSwitcher;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UWidgetSwitcher> StartableSwitcher;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UWidgetSwitcher> FinishedSwitcher;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UWidgetSwitcher> QuestSlotSwitcher;
 };

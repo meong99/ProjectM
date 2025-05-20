@@ -7,20 +7,19 @@ UMDefaultShopDetailWidget::UMDefaultShopDetailWidget(const FObjectInitializer& O
 {
 }
 
-void UMDefaultShopDetailWidget::PreAddToLayer()
+void UMDefaultShopDetailWidget::SetWidgetInfo(const FMWidgetInfo& InWidgetInfo)
 {
-	Super::PreAddToLayer();
-
+	Super::SetWidgetInfo(InWidgetInfo);
 	UMInteractiveAction_OpenShop* ShopAction = Cast<UMInteractiveAction_OpenShop>(WidgetInfo.WidgetInstigator);
 	if (!ShopAction)
 	{
-		ensure(false);
 		return;
 	}
+
 	ShopDefinition = ShopAction->GetShopDefinition();
 	if ((ShopDefinition.ShopItemRowids.Num() == 0 && Type == EMShopDetailType::Shop) || !ShopDefinition.SlotClass)
 	{
-		ensure(false);
+		return;
 	}
 
 	if (Type == EMShopDetailType::Shop)
@@ -31,6 +30,7 @@ void UMDefaultShopDetailWidget::PreAddToLayer()
 
 void UMDefaultShopDetailWidget::InitShopDetail()
 {
+	SlotVerticalBox->ClearChildren();
 	for (const int32 RowId : ShopDefinition.ShopItemRowids)
 	{
 		UMDefaultShopSlotWidget* SlotWidget = CreateWidget<UMDefaultShopSlotWidget>(GetOwningPlayer(), ShopDefinition.SlotClass);

@@ -20,6 +20,7 @@ class PROJECTM_API UMDefaultShopWidget : public UMWidgetBase
 public:
 	UMDefaultShopWidget(const FObjectInitializer& ObjectInitializer);
 	virtual void PreAddToLayer() override;
+	virtual void NativeConstruct() override;
 
 /*
 * Member Functions

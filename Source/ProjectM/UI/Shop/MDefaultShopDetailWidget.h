@@ -27,16 +27,17 @@ class PROJECTM_API UMDefaultShopDetailWidget : public UMWidgetBase
 	*/
 public:
 	UMDefaultShopDetailWidget(const FObjectInitializer& ObjectInitializer);
-	virtual void PreAddToLayer() override;
+	virtual void SetWidgetInfo(const FMWidgetInfo& InWidgetInfo) override;
 
 	/*
 	* Member Functions
 	*/
 public:
+
 protected:
 	void InitShopDetail();
 
-	/*
+		/*
 	* Member Variables
 	*/
 

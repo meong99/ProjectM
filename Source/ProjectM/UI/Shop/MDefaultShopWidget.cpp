@@ -12,10 +12,14 @@ void UMDefaultShopWidget::PreAddToLayer()
 	Super::PreAddToLayer();
 	ExitButton->OnClicked.AddDynamic(this, &UMDefaultShopWidget::OnClicked_ExitButton);
 
-	ShopDetail->SetWidgetInfo(WidgetInfo);
-	UserInventoryDetail->SetWidgetInfo(WidgetInfo);
 	ShopDetail->PreAddToLayer();
 	UserInventoryDetail->PreAddToLayer();
+}
+
+void UMDefaultShopWidget::NativeConstruct()
+{
+	ShopDetail->SetWidgetInfo(WidgetInfo);
+	UserInventoryDetail->SetWidgetInfo(WidgetInfo);
 }
 
 void UMDefaultShopWidget::OnClicked_ExitButton()
