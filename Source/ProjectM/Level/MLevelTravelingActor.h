@@ -40,7 +40,10 @@ protected:
 */
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="ProjectM")
-	FGameplayTag LevelTag;
+	FGameplayTag DestLevelTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="ProjectM")
+	FGameplayTag OriginLevelTag;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="ProjectM")
 	TObjectPtr<UBoxComponent> BoxComponent;

@@ -14,6 +14,8 @@
 #include "Components/MNavigationComponent.h"
 #include "Character/NPC/MNpcDefinition.h"
 #include "GameModes/PMGameStateBase.h"
+#include "GameModes/MWorldSettings.h"
+#include "Engine/Level.h"
 
 UMQuestInfoWidget::UMQuestInfoWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -99,15 +101,11 @@ void UMQuestInfoWidget::OnClick_SearchNpcButton()
 	const UMQuestDefinition* QuestDefinition = QuestHandle.Slot ? QuestHandle.Slot->GetQuestDefinition() : nullptr;
 	UMNpcDefinition* OwnerNpcDefinition = QuestDefinition ? UMDataTableManager::GetDefinitionObject<UMNpcDefinition>(this, QuestDefinition->OwnerNpcRowId) : nullptr;
 
-	AActor* OwnerNpc = nullptr;
-	APMGameStateBase* GameState = Cast<APMGameStateBase>(GetWorld()->GetGameState());
-	if (GameState && OwnerNpcDefinition)
+	ULevel* Level = OwningPlayerPawn ? OwningPlayerPawn->GetLevel() : nullptr;
+	AMWorldSettings* WorldSetting = Level ? Cast<AMWorldSettings>(Level->GetWorldSettings()) : nullptr;
+	if (NavigationComp && OwnerNpcDefinition && WorldSetting)
 	{
-		OwnerNpc = GameState->TagMappedActor.FindRef(OwnerNpcDefinition->SearchTag);
-	}
-	if (NavigationComp && OwnerNpc)
-	{
-		NavigationComp->ActivateNavigation(OwnerNpc); 
+		NavigationComp->ActivateNavigation(OwnerNpcDefinition->SearchTag, WorldSetting->WorldTag);
 		bOnActivatedNavigation = true;
 	}
 }

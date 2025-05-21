@@ -2,22 +2,11 @@
 
 #include "ModularCharacter.h"
 #include "AbilitySystemInterface.h"
+#include "Types/MCharacterTypes.h"
 #include "MCharacterBase.generated.h"
 
 class UMNameWidgetComponent;
 class UPMAbilitySystemComponent;
-
-enum EMCharacterState
-{
-	NoFlags			= 0x00000000,
-	WaitToSpawn		= 0x00000001,
-	Spawned			= 0x00000002,
-	Alive			= 0x00000004,
-	ReadyToDead		= 0x00000008,
-	Dead			= 0x00000010,
-	ReadyToDestroy	= 0x00000020,
-	Destroied		= 0x00000040,
-};
 
 UCLASS()
 class PROJECTM_API AMCharacterBase : public AModularCharacter, public IAbilitySystemInterface
@@ -44,7 +33,12 @@ public:
 	void K2_InitCharacterName();
 
 	const FName&	GetCharacterName() const;
-	void			SetCharacterState(int32 InState);
+	
+	void	SetCharacterLifeState(const EMCharacterLiftState InState);
+	bool	IsOnCharacterStateFlags(const int64& InState)	{ return CharacterStateFlag & InState; }
+	int64	GetCharacterStateFlag() const					{ return CharacterStateFlag; }
+	void	AddCharacterStateFlag(const int64& InState)		{ CharacterStateFlag |= InState; }
+	void	RemoveCharacterStateFlag(const int64& InState)	{ CharacterStateFlag &= ~InState; }
 /*
 * Member Variables
 */
@@ -56,5 +50,8 @@ protected:
 	FName CharacterName = TEXT("None");
 
 	UPROPERTY(Replicated, BlueprintReadWrite)
-	int32 CharacterState = EMCharacterState::WaitToSpawn;
+	EMCharacterLiftState CharacterLifeState = EMCharacterLiftState::WaitToSpawn;
+
+	UPROPERTY(Replicated, BlueprintReadWrite)
+	int64 CharacterStateFlag = EMCharacterStateFlag::None;
 };

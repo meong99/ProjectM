@@ -14,7 +14,8 @@ void AMCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AMCharacterBase, CharacterState);
+	DOREPLIFETIME(AMCharacterBase, CharacterLifeState);
+	DOREPLIFETIME(AMCharacterBase, CharacterStateFlag);
 }
 
 void AMCharacterBase::PreInitializeComponents()
@@ -44,10 +45,10 @@ const FName& AMCharacterBase::GetCharacterName() const
 	return CharacterName;
 }
 
-void AMCharacterBase::SetCharacterState(int32 InState)
+void AMCharacterBase::SetCharacterLifeState(const EMCharacterLiftState InState)
 {
-	if (InState > CharacterState)
+	if (InState > CharacterLifeState)
 	{
-		CharacterState = InState;
+		CharacterLifeState = InState;
 	}
 }

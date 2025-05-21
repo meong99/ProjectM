@@ -253,15 +253,18 @@ void UPMCharacterInitComponent::InitializePlayerInput(UInputComponent* PlayerInp
 
 void UPMCharacterInitComponent::Input_Move(const FInputActionValue& InputActionValue)
 {
-	APawn* Pawn = GetPawn<APawn>();
-	AController* Controller = Pawn ? Pawn->GetController() : nullptr;
+	AMCharacterBase* CharacterBase = GetPawn<AMCharacterBase>();
+	AController* Controller = CharacterBase ? CharacterBase->GetController() : nullptr;
 
 	if (Controller)
 	{
-		UMNavigationComponent* NavComp = Pawn->FindComponentByClass<UMNavigationComponent>();
-		if (NavComp)
+		if (CharacterBase->IsOnCharacterStateFlags(EMCharacterStateFlag::ControlledFromNavigation))
 		{
-			NavComp->DeactivateNavigation();
+			UMNavigationComponent* NavComp = CharacterBase->FindComponentByClass<UMNavigationComponent>();
+			if (NavComp)
+			{
+				NavComp->DeactivateNavigation();
+			}
 		}
 		const FVector2D Value = InputActionValue.Get<FVector2D>();
 		const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
@@ -269,13 +272,13 @@ void UPMCharacterInitComponent::Input_Move(const FInputActionValue& InputActionV
 		if (Value.X != 0.0f)
 		{
 			const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
-			Pawn->AddMovementInput(MovementDirection, Value.X);
+			CharacterBase->AddMovementInput(MovementDirection, Value.X);
 		}
 
 		if (Value.Y != 0.0f)
 		{
 			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
-			Pawn->AddMovementInput(MovementDirection, Value.Y);
+			CharacterBase->AddMovementInput(MovementDirection, Value.Y);
 		}
 	}
 }

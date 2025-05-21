@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Components/PawnComponent.h"
+#include "GameplayTagContainer.h"
+#include "Containers/Queue.h"
 #include "MNavigationComponent.generated.h"
 
 class UArrowComponent;
 class UNavigationPath;
+class AMPlayerCharacterBase;
 
 /**
  *
@@ -32,29 +35,26 @@ public:
 	*/
 public:
 	UFUNCTION(BlueprintCallable)
-	void ActivateNavigation(AActor* InTargetActor, FVector InTargetLocation = FVector::ZeroVector);
+	void ActivateNavigation(const FGameplayTag& SearchTag, const FGameplayTag& OriginLevelTag, FVector InTargetLocation = FVector::ZeroVector);
 	UFUNCTION(BlueprintCallable)
 	void DeactivateNavigation();
 
-protected:
-	void GeneratePathData();
+	void RequestOngoingNavigation();
 
 private:
-	void ShowPathPointDebugLine();
-	void ShowResearchThresholdDebugLine();
+	void	GeneratePathData();
+	void	StopAndCheckDest();
+
+	void	ShowPathPointDebugLine();
+	void	ShowResearchThresholdDebugLine();
+	FVector	GetFloorLocation(AActor* TargetActor, bool& bHit) const;
 	/*
 	* Member Variables
 	*/
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
-	TSubclassOf<AActor> NavigationGuideActorClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
 	float GuideSpeed = 1.f;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
-	float NavThreshold = 10.f;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
 	float DistanceThreshold = 10.f;
 
@@ -64,17 +64,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
 	float ResearchIndexThreshold = 1000.f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
-	float RotationSpeed = 5.0f;
-
-	UPROPERTY()
-	TObjectPtr<AActor> NavigationActor;
-
 	UPROPERTY()
 	TObjectPtr<UNavigationPath> Path;
 
+	UPROPERTY()
+	AMPlayerCharacterBase* OwnerCharacter;
+
 	int32 CurrentPathIndex = 0;
 
-	TWeakObjectPtr<AActor> TargetWeak;
-	FVector TargetLocation;
+	TQueue<FVector> DestQueue;
 };

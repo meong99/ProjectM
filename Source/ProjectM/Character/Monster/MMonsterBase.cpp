@@ -88,7 +88,7 @@ void AMMonsterBase::PostInitializeComponents()
 	if (HasAuthority())
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
-		SetCharacterState(EMCharacterState::Spawned);
+		SetCharacterLifeState(EMCharacterLiftState::Spawned);
 		HealthSet->Delegate_OnDamaged.AddDynamic(this, &AMMonsterBase::Callback_OnDamaged);
 
 		if (MonsterDefinition)
@@ -118,7 +118,7 @@ void AMMonsterBase::BeginPlay()
 	if (HasAuthority())
 	{
 		SpawnDefaultController();
-		SetCharacterState(EMCharacterState::Alive);
+		SetCharacterLifeState(EMCharacterLiftState::Alive);
 	}
 }
 
@@ -127,9 +127,9 @@ void AMMonsterBase::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	if (HasAuthority())
 	{
-		if (HealthSet->GetHealth() <= 0.0f && CharacterState & EMCharacterState::Alive)
+		if (HealthSet->GetHealth() <= 0.0f && CharacterLifeState == EMCharacterLiftState::Alive)
 		{
-			SetCharacterState(EMCharacterState::ReadyToDead);
+			SetCharacterLifeState(EMCharacterLiftState::ReadyToDead);
 			OnDead();
 		}
 	}
@@ -181,7 +181,7 @@ void AMMonsterBase::GiveRewardToPlayer()
 
 void AMMonsterBase::OnDead()
 {
-	SetCharacterState(EMCharacterState::Dead);
+	SetCharacterLifeState(EMCharacterLiftState::Dead);
 	GiveRewardToPlayer();
 
 	AAIController* AIController = Cast<AAIController>(GetController());
@@ -190,7 +190,7 @@ void AMMonsterBase::OnDead()
 		AIController->UnPossess();
 	}
 
-	SetCharacterState(EMCharacterState::ReadyToDestroy);
+	SetCharacterLifeState(EMCharacterLiftState::ReadyToDestroy);
 
 	if (Spawner.IsValid())
 	{

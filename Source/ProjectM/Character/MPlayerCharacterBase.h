@@ -2,6 +2,7 @@
 
 #include "MCharacterBase.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayTagContainer.h"
 #include "MPlayerCharacterBase.generated.h"
 
 class UPMPawnExtensionComponent;
@@ -44,6 +45,10 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void Test_ActivateWidget(const FGameplayTag& RegisterTag, const FGameplayTag& WidgetTag);
+
+	void SetCurrentLevelTag(const FGameplayTag& InCurrentLevelTag) { CurrentLevelTag = InCurrentLevelTag; }
+	const FGameplayTag& GetCurrentLevelTag() const { return CurrentLevelTag; }
+
 /*
 * Member Variables
 */
@@ -59,6 +64,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UMNavigationComponent> NavigationComponent;
+
+	UPROPERTY(BlueprintReadOnly)
+	FGameplayTag CurrentLevelTag;
 
 private:
 	FOnSetInputComponent OnSetInputComponentDelegate;
