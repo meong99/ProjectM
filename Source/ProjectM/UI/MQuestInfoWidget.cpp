@@ -16,6 +16,7 @@
 #include "GameModes/PMGameStateBase.h"
 #include "GameModes/MWorldSettings.h"
 #include "Engine/Level.h"
+#include "Character/MPlayerCharacterBase.h"
 
 UMQuestInfoWidget::UMQuestInfoWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -27,6 +28,7 @@ void UMQuestInfoWidget::NativeOnInitialized()
 
 	FinishButton->OnClicked.AddDynamic(this, &UMQuestInfoWidget::OnClick_FinishButton);
 	SearchNpc->OnClicked.AddDynamic(this, &UMQuestInfoWidget::OnClick_SearchNpcButton);
+	NavigationButton->OnClicked.AddDynamic(this, &UMQuestInfoWidget::OnClick_NavigationButton);
 
 	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
 	if (TableManager)
@@ -61,7 +63,7 @@ void UMQuestInfoWidget::DisplayQuestInfo(const UMQuestDefinition* QuestDefinitio
 
 	if (bOnActivatedNavigation)
 	{
-		StopSearchNpc();
+		StopNavigation();
 	}
 	UpdateHandle(InQuestHandle);
 	QuestName->SetText(QuestDefinition->QuestName);
@@ -85,7 +87,7 @@ void UMQuestInfoWidget::OnClick_FinishButton()
 	if (QuestHandle && QuestHandle.Slot && bOnActivatedNavigation)
 	{
 		QuestHandle.Slot->OnClick_FinishButton();
-		StopSearchNpc();
+		StopNavigation();
 	}
 }
 
@@ -93,24 +95,39 @@ void UMQuestInfoWidget::OnClick_SearchNpcButton()
 {
 	if (bOnActivatedNavigation)
 	{
-		StopSearchNpc();
+		StopNavigation();
 	}
 
-	APawn* OwningPlayerPawn = GetOwningPlayerPawn();
+	AMPlayerCharacterBase* OwningPlayerPawn = Cast<AMPlayerCharacterBase>(GetOwningPlayerPawn());
 	UMNavigationComponent* NavigationComp = OwningPlayerPawn ? OwningPlayerPawn->FindComponentByClass<UMNavigationComponent>() : nullptr;
 	const UMQuestDefinition* QuestDefinition = QuestHandle.Slot ? QuestHandle.Slot->GetQuestDefinition() : nullptr;
 	UMNpcDefinition* OwnerNpcDefinition = QuestDefinition ? UMDataTableManager::GetDefinitionObject<UMNpcDefinition>(this, QuestDefinition->OwnerNpcRowId) : nullptr;
 
-	ULevel* Level = OwningPlayerPawn ? OwningPlayerPawn->GetLevel() : nullptr;
-	AMWorldSettings* WorldSetting = Level ? Cast<AMWorldSettings>(Level->GetWorldSettings()) : nullptr;
-	if (NavigationComp && OwnerNpcDefinition && WorldSetting)
+	if (NavigationComp && OwnerNpcDefinition)
 	{
-		NavigationComp->ActivateNavigation(OwnerNpcDefinition->SearchTag, WorldSetting->WorldTag);
+		NavigationComp->ActivateNavigation(OwnerNpcDefinition->SearchTag, OwningPlayerPawn->GetCurrentLevelTag());
 		bOnActivatedNavigation = true;
 	}
 }
 
-void UMQuestInfoWidget::StopSearchNpc()
+void UMQuestInfoWidget::OnClick_NavigationButton()
+{
+	if (bOnActivatedNavigation)
+	{
+		StopNavigation();
+	}
+
+	AMPlayerCharacterBase* OwningPlayerPawn = Cast<AMPlayerCharacterBase>(GetOwningPlayerPawn());
+	UMNavigationComponent* NavigationComp = OwningPlayerPawn ? OwningPlayerPawn->FindComponentByClass<UMNavigationComponent>() : nullptr;
+	const UMQuestDefinition* QuestDefinition = QuestHandle.Slot ? QuestHandle.Slot->GetQuestDefinition() : nullptr;
+	if (NavigationComp && QuestDefinition)
+	{
+		NavigationComp->ActivateNavigation(QuestDefinition->SubSearchTag, OwningPlayerPawn->GetCurrentLevelTag());
+		bOnActivatedNavigation = true;
+	}
+}
+
+void UMQuestInfoWidget::StopNavigation()
 {
 	APlayerController* Controller = GetOwningPlayer();
 	UMNavigationComponent* NavigationComp = Controller ? Controller->FindComponentByClass<UMNavigationComponent>() : nullptr;
@@ -217,6 +234,16 @@ void UMQuestInfoWidget::UpdateFinishButton()
 			FinishButton->SetIsEnabled(false);
 		}
 		ButtonTextSwitcher->SetActiveWidgetIndex((int32)CurrentState - 1);
+
+		const UMQuestDefinition* QuestDefinition = QuestHandle.Slot ? QuestHandle.Slot->GetQuestDefinition() : nullptr;
+		if (CurrentState == EMQuestState::InProgress && QuestDefinition && QuestDefinition->SubSearchTag.IsValid())
+		{
+			ButtonSwitcher->SetActiveWidgetIndex(EMButtonSwitcher::NavigationButton);
+		}
+		else
+		{
+			ButtonSwitcher->SetActiveWidgetIndex(EMButtonSwitcher::FinishButton);
+		}
 	}
 }
 

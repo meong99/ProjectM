@@ -17,7 +17,11 @@ void UMPlayerQuestComponent::InitializeComponent()
 #pragma TODO("세이브데이터 추가후 퀘스트 진행상황 로드")
 	for (const auto& Iter : QuestDatas)
 	{
-		StartableQuests.Add(Iter.Key);
+		UMQuestDefinition* QuestDef = Iter.Value;
+		if (QuestDef && QuestDef->bAddToDefault)
+		{
+			StartableQuests.Add(Iter.Key);
+		}
 	}
 }
 

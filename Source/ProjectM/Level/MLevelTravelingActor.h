@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 #include "GameplayTagContainer.h"
+#include "Engine/TriggerBox.h"
 #include "MLevelTravelingActor.generated.h"
 
 class UBoxComponent;
@@ -16,7 +16,7 @@ struct FMTable_Level;
  *
  */
 UCLASS()
-class PROJECTM_API AMLevelTravelingActor : public AActor
+class PROJECTM_API AMLevelTravelingActor : public ATriggerBox
 {
 	GENERATED_BODY()
 /*
@@ -44,9 +44,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="ProjectM")
 	FGameplayTag OriginLevelTag;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="ProjectM")
-	TObjectPtr<UBoxComponent> BoxComponent;
 
 	const FMTable_Level* LevelInfo;
 };

@@ -24,7 +24,7 @@ enum EMQuestListButton
 	Finished,
 };
 
-enum EMQuestButtonActivation
+enum EMButtonState
 {
 	Active,
 	Deactive,

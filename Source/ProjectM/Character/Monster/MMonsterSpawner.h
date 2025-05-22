@@ -1,11 +1,13 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include "GameplayTagContainer.h"
 #include "MMonsterSpawner.generated.h"
 
 class UMMonsterDefinition;
 class AMMonsterBase;
 class USplineComponent;
+class UBillboardComponent;
 
 UCLASS()
 class PROJECTM_API AMMonsterSpawner : public AActor
@@ -38,6 +40,12 @@ protected:
 * Member Variables
 */
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Monster")
+	FGameplayTag SearchTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Monster")
+	TObjectPtr<UBillboardComponent> BillboardComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Monster")
 	USplineComponent* SplineComponent;
 

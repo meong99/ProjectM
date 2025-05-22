@@ -1,9 +1,14 @@
 #include "MLevelTagTriggerBox.h"
 #include "Components/ShapeComponent.h"
 #include "Character/MPlayerCharacterBase.h"
+#include "Util/MGameplayStatics.h"
 
 AMLevelTagTriggerBox::AMLevelTagTriggerBox()
 {
+	if (GetCollisionComponent())
+	{
+		GetCollisionComponent()->SetCollisionProfileName(*UEnum::GetDisplayValueAsText(EMCollisionChannel::Interaction).ToString());
+	}
 }
 
 void AMLevelTagTriggerBox::PostInitializeComponents()

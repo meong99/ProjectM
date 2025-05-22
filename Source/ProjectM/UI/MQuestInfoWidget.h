@@ -16,6 +16,12 @@ class UPMInventoryItemDefinition;
 class UButton;
 class UWidgetSwitcher;
 
+enum EMButtonSwitcher
+{
+	FinishButton,
+	NavigationButton,
+};
+
 UCLASS()
 class PROJECTM_API UMQuestInfoWidget : public UMWidgetBase
 {
@@ -40,10 +46,12 @@ public:
 protected:
 	UFUNCTION()
 	void	OnClick_FinishButton();
-
 	UFUNCTION()
 	void	OnClick_SearchNpcButton();
-	void	StopSearchNpc();
+	UFUNCTION()
+	void	OnClick_NavigationButton();
+
+	void	StopNavigation();
 
 	void	SetRequiredItem(const TMap<int32, FMQuestItem>& RequiredItems);
 	void	SetRewardItem(const TArray<FMQuestItem>& RewardItems);
@@ -90,6 +98,11 @@ protected:
 	TObjectPtr<UButton> SearchNpc;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UButton> NavigationButton;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
 	TObjectPtr<UWidgetSwitcher> ButtonTextSwitcher;
 
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UWidgetSwitcher> ButtonSwitcher;
 };

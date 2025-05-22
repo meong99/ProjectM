@@ -46,7 +46,6 @@ private:
 	void	StopAndCheckDest();
 
 	void	ShowPathPointDebugLine();
-	void	ShowResearchThresholdDebugLine();
 	FVector	GetFloorLocation(AActor* TargetActor, bool& bHit) const;
 	/*
 	* Member Variables
@@ -60,9 +59,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
 	float GoalThreshold = 300.f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
-	float ResearchIndexThreshold = 1000.f;
 
 	UPROPERTY()
 	TObjectPtr<UNavigationPath> Path;

@@ -35,11 +35,7 @@ void UMNavigationComponent::TickComponent(float DeltaTime, enum ELevelTick TickT
 				FVector CurrentPointLocation = Path->PathPoints[CurrentPathIndex];
 				float CurrentDist = FVector::Dist(OwnerLocation, CurrentPointLocation);
 
-				if (CurrentDist > ResearchIndexThreshold)
-				{
-					GeneratePathData();
-				}
-				else if (NextPathIndex == Path->PathPoints.Num() - 1 && NextDist <= GoalThreshold)
+				if (NextPathIndex == Path->PathPoints.Num() - 1 && NextDist <= GoalThreshold)
 				{
 					CurrentPathIndex++;
 				}
@@ -54,10 +50,6 @@ void UMNavigationComponent::TickComponent(float DeltaTime, enum ELevelTick TickT
 				{
 					CurrentPathIndex++;
 				}
-
-	#if WITH_EDITOR
-				ShowResearchThresholdDebugLine();
-	#endif
 			}
 			else
 			{
@@ -182,12 +174,6 @@ void UMNavigationComponent::GeneratePathData()
 		FVector NextPointLocation = Path->PathPoints[CurrentPathIndex + 1];
 		NextPointLocation = { NextPointLocation.X, NextPointLocation.Y, 0.0f };
 		float Dist = FVector::Dist(PathStart, NextPointLocation);
-
-		ResearchIndexThreshold = Dist;
-	}
-	else
-	{
-		ResearchIndexThreshold = 1000.f;
 	}
 
 #if WITH_EDITOR
@@ -214,20 +200,6 @@ void UMNavigationComponent::ShowPathPointDebugLine()
 			UKismetSystemLibrary::LineTraceMulti(this, Path->PathPoints[i], Path->PathPoints[i] + (FVector::UpVector * 100),
 				ETraceTypeQuery::TraceTypeQuery1, false, {}, EDrawDebugTrace::ForDuration, Result, true, FLinearColor::Red, FLinearColor::Green, 10);
 		}
-	}
-}
-
-void UMNavigationComponent::ShowResearchThresholdDebugLine()
-{
-	if (UMGameplayStatics::bShowDebug_Console && Path && Path->PathPoints.IsValidIndex(CurrentPathIndex))
-	{
-		TArray<FHitResult> Result;
-		FVector Origin = Path->PathPoints[CurrentPathIndex] + FVector::UpVector * 100;
-		FVector OwnerLoc = GetOwner()->GetActorLocation();
-		FVector ThresholdLoc = Origin + (OwnerLoc - Origin).GetSafeNormal() * ResearchIndexThreshold;
-
-		UKismetSystemLibrary::LineTraceMulti(this, Origin, ThresholdLoc,
-			ETraceTypeQuery::TraceTypeQuery1, false, {}, EDrawDebugTrace::ForOneFrame, Result, true, FLinearColor::Red, FLinearColor::Green);
 	}
 }
 

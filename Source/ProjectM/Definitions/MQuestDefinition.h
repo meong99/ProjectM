@@ -4,6 +4,7 @@
 #include "MDefinitionBase.h"
 #include "Types/MQuestTypes.h"
 #include "Types/MTradeType.h"
+#include "GameplayTagContainer.h"
 #include "MQuestDefinition.generated.h"
 
 class AMNpcBase;
@@ -31,6 +32,12 @@ public:
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1500004, ClampMax = 1599999), Category = "ProjectM")
 	int32 OwnerNpcRowId;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(), Category="ProjectM")
+	FGameplayTag SubSearchTag;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(), Category="ProjectM")
+	bool bAddToDefault = false;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(), Category="ProjectM")
 	FText QuestName;

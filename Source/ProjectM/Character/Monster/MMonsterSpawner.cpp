@@ -7,11 +7,16 @@
 #include "Engine/World.h"
 #include "MMonsterBase.h"
 #include "Components/SplineComponent.h"
+#include "GameModes/PMGameStateBase.h"
+#include "Components/BillboardComponent.h"
 
 AMMonsterSpawner::AMMonsterSpawner(const FObjectInitializer& ObjectInitializer)
 {
 	SplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
-	bNetLoadOnClient = false;
+	RootComponent = SplineComponent;
+	BillboardComponent = CreateDefaultSubobject<UBillboardComponent>(TEXT("BillboardComponent"));
+	BillboardComponent->SetupAttachment(RootComponent);
+	BillboardComponent->SetRelativeLocation({ 0.0f, 0.0f , 100.0f });
 	PrimaryActorTick.bCanEverTick = true;
 }
 
@@ -38,18 +43,28 @@ void AMMonsterSpawner::PostInitializeComponents()
 	{
 		ChangeMonsterDefinition();
 	}
+
+	APMGameStateBase* GameState = Cast<APMGameStateBase>(GetWorld()->GetGameState());
+	if (GameState && SearchTag.IsValid())
+	{
+		GameState->TagMappedActor.Add(SearchTag, this);
+	}
 }
 
 void AMMonsterSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (MonsterDefinition)
+	if (HasAuthority() && MonsterDefinition)
 	{
 		for (int32 i = 0; i < MonsterDefinition->GetMaximumSpawnNum() - SpawnedMonsters.Num(); i++)
 		{
 			SpawnMonster();
 		}
+	}
+	else
+	{
+		SetActorTickEnabled(false);
 	}
 }
 
@@ -57,17 +72,20 @@ void AMMonsterSpawner::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if (MonsterDefinition && SpawnedMonsters.Num() < MonsterDefinition->GetMaximumSpawnNum())
+	if (HasAuthority())
 	{
-		SpawnTimer += DeltaSeconds;
-		if (SpawnTimer >= MonsterDefinition->GetMonsterSpawningCooldown())
+		if (MonsterDefinition && SpawnedMonsters.Num() < MonsterDefinition->GetMaximumSpawnNum())
 		{
-			SpawnMonster();
+			SpawnTimer += DeltaSeconds;
+			if (SpawnTimer >= MonsterDefinition->GetMonsterSpawningCooldown())
+			{
+				SpawnMonster();
+			}
 		}
-	}
-	else
-	{
-		SpawnTimer = 0.0f;
+		else
+		{
+			SpawnTimer = 0.0f;
+		}
 	}
 }
 
@@ -96,10 +114,11 @@ void AMMonsterSpawner::ChangeMonsterDefinition()
 
 void AMMonsterSpawner::SpawnMonster()
 {
-	if (MonsterDefinition->GetMaximumSpawnNum() <= SpawnedMonsters.Num())
+	if (MonsterDefinition->GetMaximumSpawnNum() <= SpawnedMonsters.Num() || !HasAuthority())
 	{
 		return;
 	}
+
 	AMMonsterBase* SpawnedMonster = GetWorld()->SpawnActorDeferred<AMMonsterBase>(MonsterDefinition->GetMonsterClass(), FTransform::Identity);
 	if (SpawnedMonster)
 	{

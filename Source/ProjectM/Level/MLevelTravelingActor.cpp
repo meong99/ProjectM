@@ -1,5 +1,4 @@
 #include "MLevelTravelingActor.h"
-#include "Components/BoxComponent.h"
 #include "Util/MGameplayStatics.h"
 #include "System/MDataTableManager.h"
 #include "Engine/Engine.h"
@@ -13,14 +12,16 @@
 #include "GameModes/PMGameStateBase.h"
 #include "Character/MCharacterBase.h"
 #include "Components/MNavigationComponent.h"
+#include "Components/ShapeComponent.h"
 
 AMLevelTravelingActor::AMLevelTravelingActor()
 {
 	if (!IsRunningDedicatedServer())
 	{
-		BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
-		RootComponent = BoxComponent;
-		BoxComponent->SetCollisionProfileName(*UEnum::GetDisplayValueAsText(EMCollisionChannel::Interaction).ToString());
+		if (GetCollisionComponent())
+		{
+			GetCollisionComponent()->SetCollisionProfileName(*UEnum::GetDisplayValueAsText(EMCollisionChannel::Interaction).ToString());
+		}
 	}
 }
 
@@ -29,7 +30,7 @@ void AMLevelTravelingActor::PostInitializeComponents()
 	Super::PostInitializeComponents();
 	if (HasAuthority())
 	{
-		BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AMLevelTravelingActor::OnBeginOverlap_LevelTravel);
+		GetCollisionComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMLevelTravelingActor::OnBeginOverlap_LevelTravel);
 	}
 
 	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();

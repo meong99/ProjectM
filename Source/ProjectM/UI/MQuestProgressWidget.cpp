@@ -133,25 +133,25 @@ void UMQuestProgressWidget::ClearQuestProgress()
 
 void UMQuestProgressWidget::OnClick_InProgress()
 {
-	InProgressSwitcher->SetActiveWidgetIndex((int32)EMQuestButtonActivation::Active);
-	StartableSwitcher->SetActiveWidgetIndex((int32)EMQuestButtonActivation::Deactive);
-	FinishedSwitcher->SetActiveWidgetIndex((int32)EMQuestButtonActivation::Deactive);
+	InProgressSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Active);
+	StartableSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Deactive);
+	FinishedSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Deactive);
 	QuestSlotSwitcher->SetActiveWidgetIndex((int32)EMQuestListButton::InProgress);
 }
 
 void UMQuestProgressWidget::OnClick_Starable()
 {
-	InProgressSwitcher->SetActiveWidgetIndex((int32)EMQuestButtonActivation::Deactive);
-	StartableSwitcher->SetActiveWidgetIndex((int32)EMQuestButtonActivation::Active);
-	FinishedSwitcher->SetActiveWidgetIndex((int32)EMQuestButtonActivation::Deactive);
+	InProgressSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Deactive);
+	StartableSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Active);
+	FinishedSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Deactive);
 	QuestSlotSwitcher->SetActiveWidgetIndex((int32)EMQuestListButton::Startable);
 }
 
 void UMQuestProgressWidget::OnClick_Finished()
 {
-	InProgressSwitcher->SetActiveWidgetIndex((int32)EMQuestButtonActivation::Deactive);
-	StartableSwitcher->SetActiveWidgetIndex((int32)EMQuestButtonActivation::Deactive);
-	FinishedSwitcher->SetActiveWidgetIndex((int32)EMQuestButtonActivation::Active);
+	InProgressSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Deactive);
+	StartableSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Deactive);
+	FinishedSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Active);
 	QuestSlotSwitcher->SetActiveWidgetIndex((int32)EMQuestListButton::Finished);
 }
 
