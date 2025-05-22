@@ -43,6 +43,8 @@ FReply UMInteractionListWidget::NativeOnMouseButtonDown(const FGeometry& InGeome
 {
 	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 
+	DeactivateList();
+
 	return FReply::Handled();
 }
 
