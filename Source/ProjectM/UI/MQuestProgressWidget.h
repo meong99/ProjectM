@@ -25,8 +25,9 @@ class PROJECTM_API UMQuestProgressWidget : public UMWidgetBase
 	*/
 public:
 	UMQuestProgressWidget(const FObjectInitializer& ObjectInitializer);
+protected:
 	virtual void NativeOnInitialized() override;
-	virtual void PreAddToLayer(bool bIsRoot = true) override;
+	virtual void PreAddToLayer() override;
 
 		/*
 	* Member Functions

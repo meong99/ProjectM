@@ -48,31 +48,29 @@ void UMWidgetBase::RemoveWidgetFromLayer(const int32 LayerId)
 	}
 }
 
-void UMWidgetBase::PreAddToLayer(bool bIsRoot)
+void UMWidgetBase::CallPreAddToLayer()
 {
-	if (bIsInitialized)
-	{
-		ensure(false);
-		MCHAE_ERROR("Do not call Super::PreAddToLayer.");
-		return;
-	}
-	bIsInitialized = true;
+	PreAddToLayer();
+	SetInitialized(true);
 
-	if (bIsRoot)
-	{
-		TArray<UWidget*> AllWidgets;
-		WidgetTree->GetAllWidgets(AllWidgets);
+	TArray<UWidget*> AllWidgets;
+	WidgetTree->GetAllWidgets(AllWidgets);
 
-		for (UWidget* Widget : AllWidgets)
+	for (UWidget* Widget : AllWidgets)
+	{
+		UMWidgetBase* MWidget = Cast<UMWidgetBase>(Widget);
+
+		if (MWidget)
 		{
-			UMWidgetBase* MWidget = Cast<UMWidgetBase>(Widget);
-
-			if (MWidget)
-			{
-				MWidget->PreAddToLayer(false);
-			}
+			MWidget->PreAddToLayer();
+			MWidget->SetInitialized(true);
 		}
 	}
+}
+
+void UMWidgetBase::PreAddToLayer()
+{
+	bIsInitialized = true;
 }
 
 APMPlayerControllerBase* UMWidgetBase::GetPlayerController() const

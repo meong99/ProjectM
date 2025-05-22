@@ -60,8 +60,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveWidgetFromLayer(const int32 LayerId = 0/*GameLayer*/);
 
-	// 생성되고 레이어에 등록되기 직전 한 번만 호출됨. WidgetInstigator등 커스텀 변수 사용한다면 NativeOnInitialized함수 대신 사용
-	virtual void PreAddToLayer(bool bIsRoot = true);
+	void CallPreAddToLayer();
 
 	const FGameplayTag& GetWidgetTag() const { return WidgetTag; }
 	bool				IsActivate() const { return bIsActivate; }
@@ -78,6 +77,10 @@ public:
 	bool IsInitialized() const { return bIsInitialized; }
 
 	APMPlayerControllerBase* GetPlayerController() const;
+
+protected:
+	// 생성되고 레이어에 등록되기 직전 한 번만 호출됨. WidgetInstigator등 커스텀 변수 사용한다면 NativeOnInitialized함수 대신 사용
+	virtual void PreAddToLayer();
 /*
 * Member Variables
 */

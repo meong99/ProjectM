@@ -18,7 +18,7 @@ void UMQuestProgressWidget::NativeOnInitialized()
 	Super::NativeOnInitialized();
 }
 
-void UMQuestProgressWidget::PreAddToLayer(bool bIsRoot)
+void UMQuestProgressWidget::PreAddToLayer()
 {
 	InProgressButton_Deactivated->OnClicked.AddDynamic(this, &UMQuestProgressWidget::OnClick_InProgress);
 	StartableButton_Deactivated->OnClicked.AddDynamic(this, &UMQuestProgressWidget::OnClick_Starable);

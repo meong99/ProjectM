@@ -8,6 +8,7 @@
 
 class UButton;
 class UMDefaultShopDetailWidget;
+class UTextBlock;
 
 UCLASS(Abstract)
 class PROJECTM_API UMDefaultShopWidget : public UMWidgetBase
@@ -19,7 +20,8 @@ class PROJECTM_API UMDefaultShopWidget : public UMWidgetBase
 */
 public:
 	UMDefaultShopWidget(const FObjectInitializer& ObjectInitializer);
-	virtual void PreAddToLayer(bool bIsRoot = true) override;
+protected:
+	virtual void PreAddToLayer() override;
 	virtual void NativeConstruct() override;
 
 /*
@@ -35,6 +37,9 @@ protected:
 protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
 	TObjectPtr<UButton> ExitButton;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UTextBlock> ShopName;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
 	TObjectPtr<UMDefaultShopDetailWidget> ShopDetail;
