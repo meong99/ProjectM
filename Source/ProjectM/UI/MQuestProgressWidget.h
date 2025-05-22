@@ -20,6 +20,12 @@ class PROJECTM_API UMQuestProgressWidget : public UMWidgetBase
 {
 	GENERATED_BODY()
 
+	enum EMButtonState
+	{
+		Active,
+		Deactive,
+	};
+
 	/*
 	* Overrided Functions
 	*/

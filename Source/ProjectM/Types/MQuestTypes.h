@@ -24,12 +24,6 @@ enum EMQuestListButton
 	Finished,
 };
 
-enum EMButtonState
-{
-	Active,
-	Deactive,
-};
-
 USTRUCT(BlueprintType)
 struct FMQuestItem
 {

@@ -23,6 +23,12 @@ class PROJECTM_API UMInventoryWidget : public UMWidgetBase
 {
 	GENERATED_BODY()
 
+	enum EMButtonState
+	{
+		Active,
+		Deactive,
+	};
+
 /*
 * Overrided Functions
 */
@@ -70,14 +76,20 @@ protected:
 	TArray<UMTileView*> Inventories;
 
 	UPROPERTY(meta = (BindWidget))
-	UWidgetSwitcher* WidgetSwitcher;
+	TObjectPtr<UWidgetSwitcher> InventoryTileSwitcher;
 
 	UPROPERTY(meta = (BindWidget))
-	UButton* EquipmentButton;
+	TObjectPtr<UWidgetSwitcher> EquipButtonSwitcher;
 
 	UPROPERTY(meta = (BindWidget))
-	UButton* ConsumableButton;
+	TObjectPtr<UWidgetSwitcher> ConsumableButtonSwitcher;
 
 	UPROPERTY(meta = (BindWidget))
-	UButton* ExitButton;
+	TObjectPtr<UButton> EquipmentButton_Deactivated;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> ConsumableButton_Deactivated;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> ExitButton;
 };

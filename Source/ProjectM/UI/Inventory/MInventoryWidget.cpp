@@ -26,7 +26,7 @@ void UMInventoryWidget::Callback_OnInitInventory(const FPMInventoryItemList& Inv
 	if (InvenOfType)
 	{
 		Inventories.Add(InvenOfType->GetTileView());
-		WidgetSwitcher->AddChild(InvenOfType);
+		InventoryTileSwitcher->AddChild(InvenOfType);
 	}
 	InitInventorySlots(InventoryList);
 }
@@ -80,13 +80,13 @@ void UMInventoryWidget::BindDelegates()
 		MCHAE_ERROR("Can't get inventorycomponent!");
 	}
 
-	if (EquipmentButton)
+	if (EquipmentButton_Deactivated)
 	{
-		EquipmentButton->OnClicked.AddDynamic(this, &ThisClass::OnClick_EquipmentButton);
+		EquipmentButton_Deactivated->OnClicked.AddDynamic(this, &ThisClass::OnClick_EquipmentButton);
 	}
-	if (ConsumableButton)
+	if (ConsumableButton_Deactivated)
 	{
-		ConsumableButton->OnClicked.AddDynamic(this, &ThisClass::OnClick_ConsumableButton);
+		ConsumableButton_Deactivated->OnClicked.AddDynamic(this, &ThisClass::OnClick_ConsumableButton);
 	}
 	if (ExitButton)
 	{
@@ -120,18 +120,16 @@ UMTileView* UMInventoryWidget::GetItemSlotView(const EMItemType ItemType)
 
 void UMInventoryWidget::OnClick_EquipmentButton()
 {
-	if (WidgetSwitcher)
-	{
-		WidgetSwitcher->SetActiveWidgetIndex((int32)EMItemType::Equipment);
-	}
+	InventoryTileSwitcher->SetActiveWidgetIndex((int32)EMItemType::Equipment);
+	EquipButtonSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Active);
+	ConsumableButtonSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Deactive);
 }
 
 void UMInventoryWidget::OnClick_ConsumableButton()
 {
-	if (WidgetSwitcher)
-	{
-		WidgetSwitcher->SetActiveWidgetIndex((int32)EMItemType::Consumable);
-	}
+	InventoryTileSwitcher->SetActiveWidgetIndex((int32)EMItemType::Consumable);
+	EquipButtonSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Deactive);
+	ConsumableButtonSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Active);
 }
 
 void UMInventoryWidget::OnClick_ExitButton()
