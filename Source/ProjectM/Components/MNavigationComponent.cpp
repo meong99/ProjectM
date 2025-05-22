@@ -11,57 +11,78 @@
 #include "Character/MPlayerCharacterBase.h"
 #include "TimerManager.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 
 UMNavigationComponent::UMNavigationComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	SetIsReplicatedByDefault(true);
+}
+
+void UMNavigationComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UMNavigationComponent, MovementInput);
 }
 
 void UMNavigationComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (Path && OwnerCharacter)
+	if (HasAuthority())
 	{
-		if (!OwnerCharacter->IsOnCharacterStateFlags(EMCharacterStateFlag::BlockMovement))
+		if (Path && OwnerCharacter)
 		{
-			if (0 <= CurrentPathIndex && CurrentPathIndex < Path->PathPoints.Num() - 1)
+			if (!OwnerCharacter->IsOnCharacterStateFlags(EMCharacterStateFlag::BlockMovement) &&
+				OwnerCharacter->IsOnCharacterStateFlags(EMCharacterStateFlag::ControlledFromNavigation))
 			{
-				int32 NextPathIndex = CurrentPathIndex + 1;
-				FVector OwnerLocation = OwnerCharacter->GetActorLocation();
-				FVector NextPointLocation = Path->PathPoints[NextPathIndex];
-				float NextDist = FVector::Dist(OwnerLocation, NextPointLocation);
-
-				FVector CurrentPointLocation = Path->PathPoints[CurrentPathIndex];
-				float CurrentDist = FVector::Dist(OwnerLocation, CurrentPointLocation);
-
-				if (NextPathIndex == Path->PathPoints.Num() - 1 && NextDist <= GoalThreshold)
+				if (0 <= CurrentPathIndex && CurrentPathIndex < Path->PathPoints.Num() - 1)
 				{
-					CurrentPathIndex++;
-				}
-				else if (NextDist > DistanceThreshold)
-				{
-					if (OwnerCharacter)
+					int32 NextPathIndex = CurrentPathIndex + 1;
+					FVector OwnerLocation = OwnerCharacter->GetActorLocation();
+					FVector NextPointLocation = Path->PathPoints[NextPathIndex];
+					float NextDist = FVector::Dist(OwnerLocation, NextPointLocation);
+
+					FVector CurrentPointLocation = Path->PathPoints[CurrentPathIndex];
+					float CurrentDist = FVector::Dist(OwnerLocation, CurrentPointLocation);
+
+					if (NextPathIndex == Path->PathPoints.Num() - 1 && NextDist <= GoalThreshold)
 					{
-						OwnerCharacter->AddMovementInput((NextPointLocation - OwnerLocation).GetSafeNormal2D());
+						CurrentPathIndex++;
+					}
+					else if (NextDist > DistanceThreshold)
+					{
+						SetMovementInput((NextPointLocation - OwnerLocation).GetSafeNormal2D());
+					}
+					else
+					{
+						CurrentPathIndex++;
 					}
 				}
 				else
 				{
-					CurrentPathIndex++;
+					StopAndCheckDest();
 				}
 			}
 			else
 			{
-				StopAndCheckDest();
+				SetMovementInput(FVector::ZeroVector);
 			}
 		}
+		else
+		{
+			// 무조건 있어야하는 뭔가가 없음!
+			ensure(false);
+			Server_DeactivateNavigation();
+		}
 	}
-	else
+
+	if (GetNetMode() != ENetMode::NM_DedicatedServer && OwnerCharacter &&
+		!OwnerCharacter->IsOnCharacterStateFlags(EMCharacterStateFlag::BlockMovement) &&
+		OwnerCharacter->IsOnCharacterStateFlags(EMCharacterStateFlag::ControlledFromNavigation))
 	{
-		// 무조건 있어야하는 뭔가가 없음!
-		ensure(false);
-		DeactivateNavigation();
+		OwnerCharacter->AddMovementInput(MovementInput);
 	}
 }
 
@@ -69,67 +90,43 @@ void UMNavigationComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	SetComponentTickEnabled(false);
+	OwnerCharacter = Cast<AMPlayerCharacterBase>(GetOwner());
 }
 
-void UMNavigationComponent::ActivateNavigation(const FGameplayTag& SearchTag, const FGameplayTag& OriginLevelTag, FVector InTargetLocation /*= {}*/)
+void UMNavigationComponent::Server_ActivateNavigation_Implementation(const FGameplayTag& SearchTag, const FGameplayTag& OriginLevelTag)
 {
-	OwnerCharacter = Cast<AMPlayerCharacterBase>(GetOwner());
 	if (!OwnerCharacter)
 	{
 		ensure(false);
 		return;
 	}
 
-	DestQueue.Empty();
+	DestTags.Empty();
 	OwnerCharacter->AddCharacterStateFlag(EMCharacterStateFlag::ControlledFromNavigation);
 
-	APMGameStateBase* GameState = Cast<APMGameStateBase>(GetWorld()->GetGameState());
 	FGameplayTag DestLevelTag = SearchTag.RequestDirectParent();
 
-	if (GameState && OwnerCharacter)
+	if (OwnerCharacter)
 	{
 		if (OwnerCharacter->GetCurrentLevelTag() == DestLevelTag)
 		{
-			AActor* Target = GameState->TagMappedActor.FindRef(SearchTag);
-			bool bHit = false;
-			FVector Loc = GetFloorLocation(Target, bHit);
-			if (bHit)
-			{
-				DestQueue.Enqueue(Loc);
-			}
+			DestTags.Enqueue(SearchTag);
 		}
 		else
 		{
-			AActor* Target = GameState->TagMappedActor.FindRef(DestLevelTag);
-			bool bHit = false;
-			FVector Loc = GetFloorLocation(Target, bHit);
-			if (bHit)
-			{
-				DestQueue.Enqueue(Loc);
-				bHit = false;
-			}
-			Target = GameState->TagMappedActor.FindRef(SearchTag);
-			Loc = GetFloorLocation(Target, bHit);
-			if (bHit)
-			{
-				DestQueue.Enqueue(Loc);
-				bHit = false;
-			}
+			DestTags.Enqueue(DestLevelTag);
+			DestTags.Enqueue(SearchTag);
 		}
-	}
-
-	if (DestQueue.IsEmpty())
-	{
-		DestQueue.Enqueue(InTargetLocation);
 	}
 
 	GeneratePathData();
 	SetComponentTickEnabled(true);
 }
 
-void UMNavigationComponent::DeactivateNavigation()
+void UMNavigationComponent::Server_DeactivateNavigation_Implementation()
 {
 	SetComponentTickEnabled(false);
+	SetMovementInput(FVector::ZeroVector);
 	OwnerCharacter->RemoveCharacterStateFlag(EMCharacterStateFlag::ControlledFromNavigation);
 }
 
@@ -139,17 +136,36 @@ void UMNavigationComponent::RequestOngoingNavigation()
 	SetComponentTickEnabled(true);
 }
 
+void UMNavigationComponent::OnRep_MovementInput()
+{
+	if (MovementInput.IsNearlyZero())
+	{
+		SetComponentTickEnabled(false);
+	}
+	else
+	{
+		SetComponentTickEnabled(true);
+	}
+}
+
+void UMNavigationComponent::SetMovementInput(const FVector& NewMovementInput)
+{
+	if (MovementInput != NewMovementInput)
+	{
+		MovementInput = NewMovementInput;
+	}
+}
+
 void UMNavigationComponent::GeneratePathData()
 {
 	CurrentPathIndex = 0;
-	if (DestQueue.IsEmpty())
+	if (DestTags.IsEmpty())
 	{
-		DeactivateNavigation();
+		Server_DeactivateNavigation();
 		return;
 	}
 
-	FVector Dest = FVector::ZeroVector;
-	DestQueue.Dequeue(Dest);
+	FVector Dest = PopDestLocation();
 
 	if (Dest.IsZero())
 	{
@@ -183,10 +199,11 @@ void UMNavigationComponent::GeneratePathData()
 
 void UMNavigationComponent::StopAndCheckDest()
 {
+	SetMovementInput(FVector::ZeroVector);
 	SetComponentTickEnabled(false);
-	if (DestQueue.IsEmpty())
+	if (DestTags.IsEmpty())
 	{
-		DeactivateNavigation();
+		Server_DeactivateNavigation();
 	}
 }
 
@@ -201,6 +218,23 @@ void UMNavigationComponent::ShowPathPointDebugLine()
 				ETraceTypeQuery::TraceTypeQuery1, false, {}, EDrawDebugTrace::ForDuration, Result, true, FLinearColor::Red, FLinearColor::Green, 10);
 		}
 	}
+}
+
+FVector UMNavigationComponent::PopDestLocation()
+{
+	FGameplayTag DestTag;
+	DestTags.Dequeue(DestTag);
+
+	APMGameStateBase* GameState = Cast<APMGameStateBase>(GetWorld()->GetGameState());
+	AActor* Target = GameState->TagMappedActor.FindRef(DestTag);
+	bool bHit = false;
+	FVector Loc = GetFloorLocation(Target, bHit);
+	if (bHit)
+	{
+		return Loc;
+	}
+
+	return FVector::ZeroVector;
 }
 
 FVector UMNavigationComponent::GetFloorLocation(AActor* TargetActor, bool& bHit) const

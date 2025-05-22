@@ -13,6 +13,7 @@
 #include "Character/MCharacterBase.h"
 #include "Components/MNavigationComponent.h"
 #include "Components/ShapeComponent.h"
+#include "TimerManager.h"
 
 AMLevelTravelingActor::AMLevelTravelingActor()
 {
@@ -52,6 +53,11 @@ void AMLevelTravelingActor::PostInitializeComponents()
 			}
 		}
 	}
+}
+
+void AMLevelTravelingActor::BeginPlay()
+{
+	Super::BeginPlay();
 
 	APMGameStateBase* GameState = Cast<APMGameStateBase>(GetWorld()->GetGameState());
 	if (GameState && DestLevelTag.IsValid())
@@ -67,28 +73,32 @@ void AMLevelTravelingActor::OnBeginOverlap_LevelTravel(UPrimitiveComponent* Over
 
 	if (OverlapedPlayer)
 	{
-		OverlapedPlayer->AddCharacterStateFlag(EMCharacterStateFlag::BlockMovement);
-		TArray<AActor*> FoundActors;
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMPlayerStart::StaticClass(), FoundActors);
-		for (AActor* Actor : FoundActors)
+		FTimerHandle Handle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, [this, OverlapedPlayer]()->void
 		{
-			AMPlayerStart* PlayerStart = Cast<AMPlayerStart>(Actor);
-			if (PlayerStart)
+			OverlapedPlayer->AddCharacterStateFlag(EMCharacterStateFlag::BlockMovement);
+			TArray<AActor*> FoundActors;
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMPlayerStart::StaticClass(), FoundActors);
+			for (AActor* Actor : FoundActors)
 			{
-				if (PlayerStart->LevelTag == DestLevelTag)
+				AMPlayerStart* PlayerStart = Cast<AMPlayerStart>(Actor);
+				if (PlayerStart)
 				{
-					OverlapedPlayer->TeleportTo(PlayerStart->GetActorLocation(), PlayerStart->GetActorRotation());
+					if (PlayerStart->LevelTag == DestLevelTag)
+					{
+						OverlapedPlayer->TeleportTo(PlayerStart->GetActorLocation(), PlayerStart->GetActorRotation());
+					}
 				}
 			}
-		}
-		OverlapedPlayer->RemoveCharacterStateFlag(EMCharacterStateFlag::BlockMovement);
-		if (OverlapedPlayer->IsOnCharacterStateFlags(EMCharacterStateFlag::ControlledFromNavigation))
-		{
-			UMNavigationComponent* NavComp = OverlapedPlayer->FindComponentByClass<UMNavigationComponent>();
-			if (NavComp)
+			OverlapedPlayer->RemoveCharacterStateFlag(EMCharacterStateFlag::BlockMovement);
+			if (OverlapedPlayer->IsOnCharacterStateFlags(EMCharacterStateFlag::ControlledFromNavigation))
 			{
-				NavComp->RequestOngoingNavigation();
+				UMNavigationComponent* NavComp = OverlapedPlayer->FindComponentByClass<UMNavigationComponent>();
+				if (NavComp)
+				{
+					NavComp->RequestOngoingNavigation();
+				}
 			}
-		}
+		}, 1, false);
 	}
 }

@@ -43,12 +43,6 @@ void AMMonsterSpawner::PostInitializeComponents()
 	{
 		ChangeMonsterDefinition();
 	}
-
-	APMGameStateBase* GameState = Cast<APMGameStateBase>(GetWorld()->GetGameState());
-	if (GameState && SearchTag.IsValid())
-	{
-		GameState->TagMappedActor.Add(SearchTag, this);
-	}
 }
 
 void AMMonsterSpawner::BeginPlay()
@@ -65,6 +59,12 @@ void AMMonsterSpawner::BeginPlay()
 	else
 	{
 		SetActorTickEnabled(false);
+	}
+
+	APMGameStateBase* GameState = Cast<APMGameStateBase>(GetWorld()->GetGameState());
+	if (GameState && SearchTag.IsValid())
+	{
+		GameState->TagMappedActor.Add(SearchTag, this);
 	}
 }
 

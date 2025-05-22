@@ -25,6 +25,7 @@ class PROJECTM_API AMLevelTravelingActor : public ATriggerBox
 public:
 	AMLevelTravelingActor();
 	virtual void PostInitializeComponents() override;
+	virtual void BeginPlay() override;
 
 /*
 * Member Functions
@@ -35,7 +36,7 @@ public:
 
 protected:
 
-/*
+	/*
 * Member Variables
 */
 public:

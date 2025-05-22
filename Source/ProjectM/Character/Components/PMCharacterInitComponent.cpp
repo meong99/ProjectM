@@ -263,7 +263,7 @@ void UPMCharacterInitComponent::Input_Move(const FInputActionValue& InputActionV
 			UMNavigationComponent* NavComp = CharacterBase->FindComponentByClass<UMNavigationComponent>();
 			if (NavComp)
 			{
-				NavComp->DeactivateNavigation();
+				NavComp->Server_DeactivateNavigation();
 			}
 		}
 		const FVector2D Value = InputActionValue.Get<FVector2D>();

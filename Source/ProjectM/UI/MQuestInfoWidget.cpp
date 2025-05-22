@@ -105,7 +105,7 @@ void UMQuestInfoWidget::OnClick_SearchNpcButton()
 
 	if (NavigationComp && OwnerNpcDefinition)
 	{
-		NavigationComp->ActivateNavigation(OwnerNpcDefinition->SearchTag, OwningPlayerPawn->GetCurrentLevelTag());
+		NavigationComp->Server_ActivateNavigation(OwnerNpcDefinition->SearchTag, OwningPlayerPawn->GetCurrentLevelTag());
 		bOnActivatedNavigation = true;
 	}
 }
@@ -122,7 +122,7 @@ void UMQuestInfoWidget::OnClick_NavigationButton()
 	const UMQuestDefinition* QuestDefinition = QuestHandle.Slot ? QuestHandle.Slot->GetQuestDefinition() : nullptr;
 	if (NavigationComp && QuestDefinition)
 	{
-		NavigationComp->ActivateNavigation(QuestDefinition->SubSearchTag, OwningPlayerPawn->GetCurrentLevelTag());
+		NavigationComp->Server_ActivateNavigation(QuestDefinition->SubSearchTag, OwningPlayerPawn->GetCurrentLevelTag());
 		bOnActivatedNavigation = true;
 	}
 }
@@ -134,7 +134,7 @@ void UMQuestInfoWidget::StopNavigation()
 
 	if (NavigationComp)
 	{
-		NavigationComp->DeactivateNavigation();
+		NavigationComp->Server_DeactivateNavigation();
 		bOnActivatedNavigation = false;
 	}
 }
