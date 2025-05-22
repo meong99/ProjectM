@@ -29,3 +29,10 @@ struct FMShopDefinition
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FText ShopName;
 };
+
+UENUM(BlueprintType)
+enum class EMShopDetailType : uint8
+{
+	Shop,
+	UserInventory,
+};

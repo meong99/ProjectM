@@ -9,13 +9,7 @@
 
 class UMDefaultShopSlotWidget;
 class UVerticalBox;
-
-UENUM(BlueprintType)
-enum class EMShopDetailType : uint8
-{
-	Shop,
-	UserInventory,
-};
+class UTextBlock;
 
 UCLASS(Abstract)
 class PROJECTM_API UMDefaultShopDetailWidget : public UMWidgetBase
@@ -27,21 +21,28 @@ class PROJECTM_API UMDefaultShopDetailWidget : public UMWidgetBase
 	*/
 public:
 	UMDefaultShopDetailWidget(const FObjectInitializer& ObjectInitializer);
+	virtual void NativeOnInitialized() override;
 	virtual void SetWidgetInfo(const FMWidgetInfo& InWidgetInfo) override;
+	virtual void NativeDestruct() override;
 
-	/*
+		/*
 	* Member Functions
 	*/
 public:
 
 protected:
 	void InitShopDetail();
+	void InitInventoryDetail();
+	void CreateSlotsFromRowIds(const TArray<int32>& ItemRowIds);
+	void CreateSlot(const int32 ItemRowId);
 
-		/*
+	/*
 	* Member Variables
 	*/
 
 protected:
+	FDelegateHandle NewItemDelegateHandle;
+
 	UPROPERTY(EditAnywhere, Category="ProjectM")
 	EMShopDetailType Type = EMShopDetailType::Shop;
 
@@ -50,4 +51,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="ProjectM")
 	TObjectPtr<UVerticalBox> SlotVerticalBox;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UTextBlock> TitleText;
 };

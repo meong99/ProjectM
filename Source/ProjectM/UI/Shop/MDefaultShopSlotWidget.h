@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "UI/MWidgetBase.h"
+#include "Types/MShopTypes.h"
+#include "Inventory/MInventoryTypes.h"
 #include "MDefaultShopSlotWidget.generated.h"
 
 class UImage;
@@ -11,6 +13,7 @@ class UTextBlock;
 class UPMInventoryItemDefinition;
 class UMWalletComponent;
 class UWidgetSwitcher;
+struct FPMInventoryEntry;
 
 UCLASS(Abstract)
 class PROJECTM_API UMDefaultShopSlotWidget : public UMWidgetBase
@@ -24,23 +27,40 @@ public:
 	UMDefaultShopSlotWidget(const FObjectInitializer& ObjectInitializer);
 
 protected:
-	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	virtual void NativeDestruct() override;
 
 	/*
 	* Member Functions
 	*/
 public:
-	void InitSlot(const int32 InRowId);
+	void InitSlot(const int32 InRowId, EMShopDetailType InType);
 
 protected:
-	void OnClickItem();
-	void SetPrice(int32 BuyPrice);
+	void SetShopSlot();
+	void SetUserSlot();
+
+	void SetPrice(int32 NewPrice);
+
+	void OnClickItem_Buy();
+	void OnClickItem_Sell();
+	void Callback_OnChangeItem(const FMItemResponse& ItemRespons);
+	void Callback_OnRemoveItem(const FMItemResponse& ItemRespons);
+
 	/*
 	* Member Variables
 	*/
 protected:
 	int32 RowId = INDEX_NONE;
+
+	EMShopDetailType Type = EMShopDetailType::Shop;
+
+	TWeakObjectPtr<UMWalletComponent> PlayerWalletComp;
+
+	FPMInventoryEntry*	CachedEntry;
+	FDelegateHandle		OnChangeHandle;
+	FDelegateHandle		OnRemoveHandle;
 
 	UPROPERTY()
 	TObjectPtr<UPMInventoryItemDefinition> ItemCDO;
@@ -55,6 +75,9 @@ protected:
 	TObjectPtr<UTextBlock> ItemName;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UTextBlock> ItemCount;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
 	TObjectPtr<UImage> PriceImage;
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="ProjectM")
@@ -65,6 +88,4 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="ProjectM")
 	UWidgetSwitcher* PriceWidgetSwitcher;
-
-	TWeakObjectPtr<UMWalletComponent> PlayerWalletComp;
 };

@@ -48,6 +48,16 @@ int32 FPMInventoryEntry::GetItemRowId() const
 	return 0;
 }
 
+int32 FPMInventoryEntry::GetItemQuentity() const
+{
+	if (Instance)
+	{
+		return Instance->GetItemQuentity();
+	}
+
+	return 0;
+}
+
 TSubclassOf<UPMInventoryItemDefinition> FPMInventoryEntry::GetItemDefinition() const
 {
 	if (Instance)

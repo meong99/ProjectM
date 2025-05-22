@@ -23,6 +23,7 @@ public:
 protected:
 	virtual void PreAddToLayer() override;
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 
 /*
 * Member Functions
@@ -31,6 +32,9 @@ public:
 protected:
 	UFUNCTION()
 	void OnClicked_ExitButton();
+
+	UFUNCTION()
+	void OnChange_Gold(int64 AdjustNum, int64 NewGold);
 /*
 * Member Variables
 */
@@ -40,6 +44,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
 	TObjectPtr<UTextBlock> ShopName;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UTextBlock> OwnedGold;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
 	TObjectPtr<UMDefaultShopDetailWidget> ShopDetail;

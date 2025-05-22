@@ -11,16 +11,24 @@
 #include "Components/MTradeComponentBase.h"
 #include "Character/Components/MWalletComponent.h"
 #include "Components/WidgetSwitcher.h"
+#include "Inventory/PMInventoryManagerComponent.h"
 
 UMDefaultShopSlotWidget::UMDefaultShopSlotWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 }
 
-FReply UMDefaultShopSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+FReply UMDefaultShopSlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
-
-	OnClickItem();
+	Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
+	
+	if (Type == EMShopDetailType::Shop)
+	{
+		OnClickItem_Buy();
+	}
+	else
+	{
+		OnClickItem_Sell();
+	}
 
 	return FReply::Handled();
 }
@@ -31,7 +39,7 @@ void UMDefaultShopSlotWidget::NativeTick(const FGeometry& MyGeometry, float InDe
 
 	if (PlayerWalletComp.IsValid() && ItemCDO)
 	{
-		if (PlayerWalletComp->GetGold() < ItemCDO->BuyPrice)
+		if (PlayerWalletComp->GetGold() < ItemCDO->BuyPrice && Type == EMShopDetailType::Shop)
 		{
 			PriceWidgetSwitcher->SetActiveWidget(NotEnoughPrice);
 		}
@@ -42,31 +50,48 @@ void UMDefaultShopSlotWidget::NativeTick(const FGeometry& MyGeometry, float InDe
 	}
 }
 
-void UMDefaultShopSlotWidget::InitSlot(const int32 InRowId)
+void UMDefaultShopSlotWidget::NativeDestruct()
+{
+	if (CachedEntry)
+	{
+		APlayerController* PlayerController = GetOwningPlayer();
+		UPMInventoryManagerComponent* InvenManager = PlayerController ? PlayerController->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
+		if (InvenManager)
+		{
+			InvenManager->RemoveDelegateOnChangeItemQuentity(CachedEntry->ItemUid, OnChangeHandle);
+			InvenManager->Delegate_OnRemoveItem.Remove(OnRemoveHandle);
+		}
+	}
+
+	CachedEntry = nullptr;
+	OnChangeHandle.Reset();
+	OnRemoveHandle.Reset();
+}
+
+void UMDefaultShopSlotWidget::InitSlot(const int32 InRowId, EMShopDetailType InType)
 {
 	RowId = InRowId;
+	Type = InType;
 
 	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
 	if (TableManager)
 	{
 		ItemCDO = TableManager->GetItemDefinition(RowId);
-		if (ItemCDO)
-		{
-			ItemIcon->SetBrushFromTexture(ItemCDO->ItemIcon);
-// 			ItemIcon->Brush.SetImageSize(100.f, 100.f);
-			ItemName->SetText(ItemCDO->DisplayName);
-			SetPrice(ItemCDO->BuyPrice);
-		}
-		else
-		{
-			ensure(false);
-			SetVisibility(ESlateVisibility::Collapsed);
-		}
 	}
 	else
 	{
 		ensure(false);
 		SetVisibility(ESlateVisibility::Collapsed);
+		return;
+	}
+
+	if (Type == EMShopDetailType::Shop)
+	{
+		SetShopSlot();
+	}
+	else
+	{
+		SetUserSlot();
 	}
 
 	APlayerController* PlayerController = GetOwningPlayer();
@@ -76,13 +101,58 @@ void UMDefaultShopSlotWidget::InitSlot(const int32 InRowId)
 	}
 }
 
-void UMDefaultShopSlotWidget::OnClickItem()
+void UMDefaultShopSlotWidget::SetShopSlot()
+{
+	if (ItemCDO)
+	{
+		ItemIcon->SetBrushFromTexture(ItemCDO->ItemIcon);
+		ItemName->SetText(ItemCDO->DisplayName);
+		SetPrice(ItemCDO->BuyPrice);
+	}
+	else
+	{
+		ensure(false);
+		SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
+void UMDefaultShopSlotWidget::SetUserSlot()
+{
+	APlayerController* PlayerController = GetOwningPlayer();
+	UPMInventoryManagerComponent* InvenManager = PlayerController ? PlayerController->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
+	if (ItemCDO && InvenManager)
+	{
+		ItemIcon->SetBrushFromTexture(ItemCDO->ItemIcon);
+		ItemName->SetText(ItemCDO->DisplayName);
+		SetPrice(ItemCDO->SellPrice);
+		CachedEntry = InvenManager->FindEntry(ItemCDO->GetClass());
+		if (CachedEntry && CachedEntry->GetItemQuentity() > 0)
+		{
+			OnChangeHandle = InvenManager->AddDelegateOnChangeItemQuentity(CachedEntry->ItemUid, FOnChangeItemQuentity::FDelegate::CreateUObject(this, &UMDefaultShopSlotWidget::Callback_OnChangeItem));
+			OnRemoveHandle = InvenManager->Delegate_OnRemoveItem.AddUObject(this, &UMDefaultShopSlotWidget::Callback_OnRemoveItem);
+			ItemCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			ItemCount->SetText(FText::AsNumber(CachedEntry->GetItemQuentity()));
+		}
+	}
+	else
+	{
+		ensure(false);
+		SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
+void UMDefaultShopSlotWidget::SetPrice(int32 NewPrice)
+{
+	Price->SetText(FText::AsNumber(NewPrice));
+	NotEnoughPrice->SetText(FText::AsNumber(NewPrice));
+}
+
+void UMDefaultShopSlotWidget::OnClickItem_Buy()
 {
 	APlayerController* PlayerController = GetOwningPlayer();
 	UMTradeComponentBase* PlayerTradeComponent = PlayerController ? PlayerController->FindComponentByClass<UMTradeComponentBase>() : nullptr;
-	UMTradeManager* TradeManager = GetWorld()->GetGameState()->FindComponentByClass<UMTradeManager>();
 	AActor* ShopNpc = Cast<AActor>(WidgetInfo.WidgetOwnerActor);
-	if (!ShopNpc || !TradeManager || !PlayerTradeComponent)
+	if (!ShopNpc || !PlayerTradeComponent)
 	{
 		ensure(false);
 		return ;
@@ -102,8 +172,35 @@ void UMDefaultShopSlotWidget::OnClickItem()
 	PlayerTradeComponent->Server_OnRequestSimpleTrading(ShopNpc, Request);
 }
 
-void UMDefaultShopSlotWidget::SetPrice(int32 BuyPrice)
+void UMDefaultShopSlotWidget::OnClickItem_Sell()
 {
-	Price->SetText(FText::AsNumber(ItemCDO->BuyPrice));
-	NotEnoughPrice->SetText(FText::AsNumber(ItemCDO->BuyPrice));
+	APlayerController* PlayerController = GetOwningPlayer();
+	UMTradeComponentBase* PlayerTradeComponent = PlayerController ? PlayerController->FindComponentByClass<UMTradeComponentBase>() : nullptr;
+	AActor* ShopNpc = Cast<AActor>(WidgetInfo.WidgetOwnerActor);
+
+	if (!ShopNpc || !PlayerTradeComponent)
+	{
+		ensure(false);
+		return;
+	}
+
+	FMTradeRequest Request;
+	Request.RequestType = EMRequestType::Trade;
+	Request.RequiredItems.Add({ RowId, 1 });
+	Request.GrantGold = ItemCDO->SellPrice;
+
+	PlayerTradeComponent->Server_OnRequestSimpleTrading(ShopNpc, Request);
+}
+
+void UMDefaultShopSlotWidget::Callback_OnChangeItem(const FMItemResponse& ItemRespons)
+{
+	ItemCount->SetText(FText::AsNumber(ItemRespons.ItemQuentity));
+}
+
+void UMDefaultShopSlotWidget::Callback_OnRemoveItem(const FMItemResponse& ItemRespons)
+{
+	if (ItemRespons.ItemRequest.ItemRowId == RowId)
+	{
+		RemoveFromParent();
+	}
 }

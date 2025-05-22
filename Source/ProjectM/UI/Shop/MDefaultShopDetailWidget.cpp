@@ -2,9 +2,25 @@
 #include "Components/VerticalBox.h"
 #include "MDefaultShopSlotWidget.h"
 #include "Interaction/MInteractiveAction_OpenShop.h"
+#include "Components/TextBlock.h"
+#include "Inventory/PMInventoryManagerComponent.h"
 
 UMDefaultShopDetailWidget::UMDefaultShopDetailWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+}
+
+void UMDefaultShopDetailWidget::NativeOnInitialized()
+{
+	Super::NativeOnInitialized();
+
+	if (Type == EMShopDetailType::Shop)
+	{
+		TitleText->SetText(FText::FromString(TEXT("판매 가능")));
+	}
+	else
+	{
+		TitleText->SetText(FText::FromString(TEXT("판매 물품")));
+	}
 }
 
 void UMDefaultShopDetailWidget::SetWidgetInfo(const FMWidgetInfo& InWidgetInfo)
@@ -22,25 +38,91 @@ void UMDefaultShopDetailWidget::SetWidgetInfo(const FMWidgetInfo& InWidgetInfo)
 		return;
 	}
 
+	SlotVerticalBox->ClearChildren();
 	if (Type == EMShopDetailType::Shop)
 	{
 		InitShopDetail();
 	}
+	else
+	{
+		InitInventoryDetail();
+
+		UPMInventoryManagerComponent* InvenManager = GetOwningPlayer() ? GetOwningPlayer()->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
+		if (InvenManager)
+		{
+			NewItemDelegateHandle = InvenManager->Delegate_OnItemIncreased.AddWeakLambda(this, [this](const FMItemResponse& ItemRespons)->void
+			{
+				if (ItemRespons.ResponsType == EMItemResponseType::TotallyNewItem)
+				{
+					CreateSlot(ItemRespons.ItemRequest.ItemRowId);
+				}
+			});
+		}
+	}
+}
+
+void UMDefaultShopDetailWidget::NativeDestruct()
+{
+	UPMInventoryManagerComponent* InvenManager = GetOwningPlayer() ? GetOwningPlayer()->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
+	if (InvenManager && NewItemDelegateHandle.IsValid())
+	{
+		InvenManager->Delegate_OnItemIncreased.Remove(NewItemDelegateHandle);
+	}
+
+	NewItemDelegateHandle.Reset();
 }
 
 void UMDefaultShopDetailWidget::InitShopDetail()
 {
-	SlotVerticalBox->ClearChildren();
-	for (const int32 RowId : ShopDefinition.ShopItemRowids)
+	CreateSlotsFromRowIds(ShopDefinition.ShopItemRowids);
+}
+
+void UMDefaultShopDetailWidget::InitInventoryDetail()
+{
+	TArray<int32> ItemRowIds;
+
+	UPMInventoryManagerComponent* InvenManager = GetOwningPlayer() ? GetOwningPlayer()->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
+	if (InvenManager)
 	{
-		UMDefaultShopSlotWidget* SlotWidget = CreateWidget<UMDefaultShopSlotWidget>(GetOwningPlayer(), ShopDefinition.SlotClass);
-		if (!SlotWidget)
+		const FPMInventoryItemList& ConsumableItemList = InvenManager->GetConsumableItemList();
+		for (const FPMInventoryEntry& Entry : ConsumableItemList.Entries)
 		{
-			ensure(false);
-			continue;
+			if (Entry.IsValid())
+			{
+				ItemRowIds.Add(Entry.GetItemRowId());
+			}
 		}
-		SlotWidget->SetWidgetInfo(WidgetInfo);
-		SlotWidget->InitSlot(RowId);
-		SlotVerticalBox->AddChildToVerticalBox(SlotWidget);
+
+		const FPMInventoryItemList& EquipmentItemList = InvenManager->GetEquipmentItemList();
+		for (const FPMInventoryEntry& Entry : EquipmentItemList.Entries)
+		{
+			if (Entry.IsValid())
+			{
+				ItemRowIds.Add(Entry.GetItemRowId());
+			}
+		}
 	}
+
+	CreateSlotsFromRowIds(ItemRowIds);
+}
+
+void UMDefaultShopDetailWidget::CreateSlotsFromRowIds(const TArray<int32>& ItemRowIds)
+{
+	for (const int32 RowId : ItemRowIds)
+	{
+		CreateSlot(RowId);
+	}
+}
+
+void UMDefaultShopDetailWidget::CreateSlot(const int32 ItemRowId)
+{
+	UMDefaultShopSlotWidget* SlotWidget = CreateWidget<UMDefaultShopSlotWidget>(GetOwningPlayer(), ShopDefinition.SlotClass);
+	if (!SlotWidget)
+	{
+		ensure(false);
+		return;
+	}
+	SlotWidget->SetWidgetInfo(WidgetInfo);
+	SlotWidget->InitSlot(ItemRowId, Type);
+	SlotVerticalBox->AddChildToVerticalBox(SlotWidget);
 }

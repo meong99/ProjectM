@@ -4,6 +4,7 @@
 #include "Interaction/MInteractiveAction_Base.h"
 #include "Components/TextBlock.h"
 #include "Interaction/MInteractiveAction_OpenShop.h"
+#include "Character/Components/MWalletComponent.h"
 
 UMDefaultShopWidget::UMDefaultShopWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -12,18 +13,37 @@ UMDefaultShopWidget::UMDefaultShopWidget(const FObjectInitializer& ObjectInitial
 void UMDefaultShopWidget::PreAddToLayer()
 {
 	ExitButton->OnClicked.AddDynamic(this, &UMDefaultShopWidget::OnClicked_ExitButton);
-	UMInteractiveAction_OpenShop* ShopAction = Cast<UMInteractiveAction_OpenShop>(WidgetInfo.WidgetInstigator);
-	if (ShopAction)
-	{
-		const FMShopDefinition& ShopDefinition = ShopAction->GetShopDefinition();
-		ShopName->SetText(ShopDefinition.ShopName);
-	}
 }
 
 void UMDefaultShopWidget::NativeConstruct()
 {
 	ShopDetail->SetWidgetInfo(WidgetInfo);
 	UserInventoryDetail->SetWidgetInfo(WidgetInfo);
+
+	UMInteractiveAction_OpenShop* ShopAction = Cast<UMInteractiveAction_OpenShop>(WidgetInfo.WidgetInstigator);
+	if (ShopAction)
+	{
+		const FMShopDefinition& ShopDefinition = ShopAction->GetShopDefinition();
+		ShopName->SetText(ShopDefinition.ShopName);
+	}
+
+	APlayerController* PlayerController = GetOwningPlayer();
+	UMWalletComponent* PlayerWalletComp = PlayerController ? PlayerController->FindComponentByClass<UMWalletComponent>() : nullptr;
+	if (PlayerWalletComp)
+	{
+		PlayerWalletComp->Delegate_OnChangeGold.AddDynamic(this, &UMDefaultShopWidget::OnChange_Gold);
+		OwnedGold->SetText(FText::AsNumber(PlayerWalletComp->GetGold()));
+	}
+}
+
+void UMDefaultShopWidget::NativeDestruct()
+{
+	APlayerController* PlayerController = GetOwningPlayer();
+	UMWalletComponent* PlayerWalletComp = PlayerController ? PlayerController->FindComponentByClass<UMWalletComponent>() : nullptr;
+	if (PlayerWalletComp && PlayerWalletComp->Delegate_OnChangeGold.IsAlreadyBound(this, &UMDefaultShopWidget::OnChange_Gold))
+	{
+		PlayerWalletComp->Delegate_OnChangeGold.RemoveDynamic(this, &UMDefaultShopWidget::OnChange_Gold);
+	}
 }
 
 void UMDefaultShopWidget::OnClicked_ExitButton()
@@ -33,4 +53,9 @@ void UMDefaultShopWidget::OnClicked_ExitButton()
 	{
 		ActionBase->DeactivateAction();
 	}
+}
+
+void UMDefaultShopWidget::OnChange_Gold(int64 AdjustNum, int64 NewGold)
+{
+	OwnedGold->SetText(FText::AsNumber(NewGold));
 }
