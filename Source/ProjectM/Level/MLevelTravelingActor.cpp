@@ -76,7 +76,7 @@ void AMLevelTravelingActor::OnBeginOverlap_LevelTravel(UPrimitiveComponent* Over
 		FTimerHandle Handle;
 		GetWorld()->GetTimerManager().SetTimer(Handle, [this, OverlapedPlayer]()->void
 		{
-			OverlapedPlayer->AddCharacterStateFlag(EMCharacterStateFlag::BlockMovement);
+			OverlapedPlayer->Server_AddCharacterStateFlag(EMCharacterStateFlag::BlockMovement);
 			TArray<AActor*> FoundActors;
 			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMPlayerStart::StaticClass(), FoundActors);
 			for (AActor* Actor : FoundActors)
@@ -90,7 +90,7 @@ void AMLevelTravelingActor::OnBeginOverlap_LevelTravel(UPrimitiveComponent* Over
 					}
 				}
 			}
-			OverlapedPlayer->RemoveCharacterStateFlag(EMCharacterStateFlag::BlockMovement);
+			OverlapedPlayer->Server_RemoveCharacterStateFlag(EMCharacterStateFlag::BlockMovement);
 			if (OverlapedPlayer->IsOnCharacterStateFlags(EMCharacterStateFlag::ControlledFromNavigation))
 			{
 				UMNavigationComponent* NavComp = OverlapedPlayer->FindComponentByClass<UMNavigationComponent>();

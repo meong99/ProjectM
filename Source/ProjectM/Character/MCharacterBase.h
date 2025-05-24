@@ -34,11 +34,16 @@ public:
 
 	const FName&	GetCharacterName() const;
 	
+	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void	SetCharacterLifeState(const EMCharacterLiftState InState);
+	UFUNCTION(BlueprintCallable)
 	bool	IsOnCharacterStateFlags(const int64& InState)	{ return CharacterStateFlag & InState; }
+	UFUNCTION(BlueprintCallable)
 	int64	GetCharacterStateFlag() const					{ return CharacterStateFlag; }
-	void	AddCharacterStateFlag(const int64& InState)		{ CharacterStateFlag |= InState; }
-	void	RemoveCharacterStateFlag(const int64& InState)	{ CharacterStateFlag &= ~InState; }
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void	Server_AddCharacterStateFlag(const int64& InState);
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void	Server_RemoveCharacterStateFlag(const int64& InState);
 /*
 * Member Variables
 */

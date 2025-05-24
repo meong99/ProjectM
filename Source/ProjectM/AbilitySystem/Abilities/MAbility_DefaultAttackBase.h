@@ -45,4 +45,6 @@ protected:
 
 	UPROPERTY()
 	TSet<AActor*> OverlappedActors;
+
+	int32 MontageIndex = 0;
 };

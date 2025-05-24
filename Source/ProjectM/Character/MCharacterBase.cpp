@@ -45,10 +45,20 @@ const FName& AMCharacterBase::GetCharacterName() const
 	return CharacterName;
 }
 
-void AMCharacterBase::SetCharacterLifeState(const EMCharacterLiftState InState)
+void AMCharacterBase::SetCharacterLifeState_Implementation(const EMCharacterLiftState InState)
 {
 	if (InState > CharacterLifeState)
 	{
 		CharacterLifeState = InState;
 	}
+}
+
+void AMCharacterBase::Server_AddCharacterStateFlag_Implementation(const int64& InState)
+{
+	CharacterStateFlag |= InState;
+}
+
+void AMCharacterBase::Server_RemoveCharacterStateFlag_Implementation(const int64& InState)
+{
+	CharacterStateFlag &= ~InState;
 }

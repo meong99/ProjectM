@@ -1,5 +1,6 @@
 #include "PMGameplayAbility.h"
 #include "PMAbilityCost.h"
+#include "Engine/World.h"
 
 UPMGameplayAbility::UPMGameplayAbility()
 {
@@ -10,6 +11,8 @@ UPMGameplayAbility::UPMGameplayAbility()
 void UPMGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	CommitExecute(Handle, ActorInfo, ActivationInfo);
 }
 
 bool UPMGameplayAbility::CheckCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags) const

@@ -107,7 +107,8 @@ void UPMAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 			{
 				AbilitySpec->InputPressed = true;
 
-				if (AbilitySpec->IsActive())
+				UPMGameplayAbility* Ability = Cast<UPMGameplayAbility>(AbilitySpec->Ability);
+				if (Ability && !Ability->CanRetrigger() && AbilitySpec->IsActive())
 				{
 					AbilitySpecInputPressed(*AbilitySpec);
 				}

@@ -31,5 +31,5 @@ public:
 	TSubclassOf<UGameplayEffect> DefaultAttackEffectClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TObjectPtr<UAnimMontage> DefaultAttackMontage;
+	TArray<TObjectPtr<UAnimMontage>> DefaultAttackMontages;
 };

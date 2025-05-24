@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PMAbilityCost.h"
+#include "AbilitySystem/Abilities/PMAbilityCost.h"
 #include "PMAbilityCost_ItemTagStack.generated.h"
 
 /**

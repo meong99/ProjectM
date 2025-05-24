@@ -102,7 +102,7 @@ void UMNavigationComponent::Server_ActivateNavigation_Implementation(const FGame
 	}
 
 	DestTags.Empty();
-	OwnerCharacter->AddCharacterStateFlag(EMCharacterStateFlag::ControlledFromNavigation);
+	OwnerCharacter->Server_AddCharacterStateFlag(EMCharacterStateFlag::ControlledFromNavigation);
 
 	FGameplayTag DestLevelTag = SearchTag.RequestDirectParent();
 
@@ -127,7 +127,7 @@ void UMNavigationComponent::Server_DeactivateNavigation_Implementation()
 {
 	SetComponentTickEnabled(false);
 	SetMovementInput(FVector::ZeroVector);
-	OwnerCharacter->RemoveCharacterStateFlag(EMCharacterStateFlag::ControlledFromNavigation);
+	OwnerCharacter->Server_RemoveCharacterStateFlag(EMCharacterStateFlag::ControlledFromNavigation);
 }
 
 void UMNavigationComponent::RequestOngoingNavigation()

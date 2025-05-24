@@ -30,9 +30,12 @@ void UMAbility_DefaultAttackBase::ActivateAbility(const FGameplayAbilitySpecHand
 
 	if (ItemDef)
 	{
+		UAnimMontage* Montage = ItemDef->DefaultAttackMontages.IsValidIndex(MontageIndex) ? ItemDef->DefaultAttackMontages[MontageIndex] : nullptr;
 		UAbilityTask_PlayMontageAndWait* PlayMontageAndWait = nullptr;
 		PlayMontageAndWait = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-			   this, FName(GetName()), ItemDef->DefaultAttackMontage);
+			   this, FName(GetName()), Montage);
+
+		MontageIndex = (MontageIndex + 1) % ItemDef->DefaultAttackMontages.Num();
 
 		if (PlayMontageAndWait)
 		{
