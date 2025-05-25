@@ -4,7 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+#include "NativeGameplayTags.h"
 #include "PMGameplayAbility.generated.h"
+
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(Animation_Notify_StartAttack);
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(Animation_Notify_EndAttack);
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(Animation_Notify_StartDead);
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(Animation_Notify_EndDead);
 
 class UPMAbilityCost;
 
@@ -30,6 +36,8 @@ class PROJECTM_API UPMGameplayAbility : public UGameplayAbility
 public:
 	UPMGameplayAbility();
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	virtual bool CheckCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags /* = nullptr */) const override;
+	virtual void ApplyCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const override;
 
 protected:
 
@@ -37,10 +45,9 @@ protected:
 * Member Functions
 */
 public:
-	virtual bool CheckCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags /* = nullptr */) const override;
-	virtual void ApplyCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const override;
+	virtual void	OnReceivedGameplayTag(const FGameplayTag& Tag) {}
 
-	bool CanRetrigger() const { return bRetriggerInstancedAbility; }
+	bool	CanRetrigger() const { return bRetriggerInstancedAbility; }
 	EPMAbilityActivationPolicy GetActivationPolicy() const { return ActivationPolicy; }
 /*
 * Member Variables

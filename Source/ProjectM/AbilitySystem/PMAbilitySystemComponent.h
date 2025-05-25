@@ -33,6 +33,9 @@ public:
 	void ProcessAbilityInput(float DeltaTime, bool bGamePaused);
 
 	UFUNCTION(BlueprintCallable)
+	void SendGameplayTagToAbility(const FGameplayTag& InputTag, const FGameplayTag& SendTag);
+
+	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyEffectToTargetWithSetByCaller(TSubclassOf<UGameplayEffect> EffectClass, AActor* Target, AActor* EffectCauser, TMap<FGameplayTag, float> SetbyCallerMap, float Level = 0);
 	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyEffectToSelfWithSetByCaller(TSubclassOf<UGameplayEffect> EffectClass, AActor* EffectCauser, TMap<FGameplayTag, float> SetbyCallerMap, float Level = 0);

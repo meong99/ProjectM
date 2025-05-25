@@ -10,6 +10,7 @@ class ACharacter;
 class AActor;
 class UMWeaponItemDefinition;
 class UPMWeaponInstance;
+class UAbilityTask;
 
 UCLASS()
 class PROJECTM_API UMAbility_DefaultAttackBase : public UPMGameplayAbility
@@ -30,12 +31,19 @@ protected:
 * Member Functions
 */
 public:
-	virtual void TraceAttack(ACharacter* OwnerCharacter, UPMWeaponInstance* WeaponInstance);
-	virtual void Callback_OnHit(const TArray<AActor*>& HitActors);
 
 protected:
 	UFUNCTION()
-	void NotifyMontageCanceledCallBack();
+	virtual void StartAttackTracing(FGameplayEventData Payload);
+	UFUNCTION()
+	virtual void EndAttackTracing(FGameplayEventData Payload);
+
+	virtual void TraceAttack(ACharacter* OwnerCharacter, UPMWeaponInstance* WeaponInstance);
+	virtual void Callback_OnHit(const TArray<AActor*>& HitActors);
+
+	UFUNCTION()
+	void NotifyMontageEndCallBack();
+
 /*
 * Member Variables
 */
@@ -45,6 +53,9 @@ protected:
 
 	UPROPERTY()
 	TSet<AActor*> OverlappedActors;
+
+	UPROPERTY()
+	TObjectPtr<UAbilityTask> TraceTask;
 
 	int32 MontageIndex = 0;
 };

@@ -151,6 +151,29 @@ void UPMAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 	InputReleasedSpecHandles.Reset();
 }
 
+void UPMAbilitySystemComponent::SendGameplayTagToAbility(const FGameplayTag& InputTag, const FGameplayTag& SendTag)
+{
+	if (InputTag.IsValid())
+	{
+		for (const FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
+		{
+			if (AbilitySpec.Ability && AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+			{
+				UPMGameplayAbility* Ability = Cast<UPMGameplayAbility>(AbilitySpec.Ability);
+				if (Ability)
+				{
+					Ability->OnReceivedGameplayTag(SendTag);
+				}
+				else
+				{
+					ensure(false);
+				}
+				break;
+			}
+		}
+	}
+}
+
 FActiveGameplayEffectHandle UPMAbilitySystemComponent::ApplyEffectToTargetWithSetByCaller(TSubclassOf<UGameplayEffect> EffectClass, AActor* Target, AActor* EffectCauser, TMap<FGameplayTag, float> SetbyCallerMap, float Level/* = 0*/)
 {
 	IAbilitySystemInterface* TargetASCInterface = Cast<IAbilitySystemInterface>(Target);

@@ -14,6 +14,7 @@
 #include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "Equipment/PMEquipmentManagerComponent.h"
 #include "AbilitySystem/Attributes/PMCombatSet.h"
+#include "../../GameplayAbilities/Source/GameplayAbilities/Public/Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 
 UMAbility_DefaultAttackBase::UMAbility_DefaultAttackBase()
 {
@@ -39,32 +40,36 @@ void UMAbility_DefaultAttackBase::ActivateAbility(const FGameplayAbilitySpecHand
 
 		if (PlayMontageAndWait)
 		{
-			PlayMontageAndWait->OnCompleted.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageCanceledCallBack);
-			PlayMontageAndWait->OnBlendOut.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageCanceledCallBack);
-			PlayMontageAndWait->OnCancelled.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageCanceledCallBack);
-			PlayMontageAndWait->OnInterrupted.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageCanceledCallBack);
+			PlayMontageAndWait->OnCompleted.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageEndCallBack);
+			PlayMontageAndWait->OnBlendOut.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageEndCallBack);
+			PlayMontageAndWait->OnCancelled.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageEndCallBack);
+			PlayMontageAndWait->OnInterrupted.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageEndCallBack);
 
 			PlayMontageAndWait->ReadyForActivation();
 		}
 		else
 		{
-			NotifyMontageCanceledCallBack();
+			NotifyMontageEndCallBack();
 		}
 
-		UPMWeaponInstance* WeaponInstance = Cast<UPMWeaponInstance>(Spec->SourceObject);
-		if (HasAuthority(&ActivationInfo) && WeaponInstance)
+		if (HasAuthority(&ActivationInfo))
 		{
-			ACharacter* OwnerCharacter = Cast<ACharacter>(WeaponInstance->GetPawn());
-			
-			if (OwnerCharacter)
+			UAbilityTask_WaitGameplayEvent* WaitAttactStart =
+				UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, Animation_Notify_StartAttack);
+			UAbilityTask_WaitGameplayEvent* WaitAttackEnd =
+				UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, Animation_Notify_EndAttack);
+			if (WaitAttactStart && WaitAttackEnd)
 			{
-				TraceAttack(OwnerCharacter, WeaponInstance);
+				WaitAttactStart->EventReceived.AddDynamic(this, &UMAbility_DefaultAttackBase::StartAttackTracing);
+				WaitAttackEnd->EventReceived.AddDynamic(this, &UMAbility_DefaultAttackBase::EndAttackTracing);
+				WaitAttactStart->ReadyForActivation();
+				WaitAttackEnd->ReadyForActivation();
 			}
 		}
 	}
 	else
 	{
-		NotifyMontageCanceledCallBack();
+		NotifyMontageEndCallBack();
 	}
 }
 
@@ -74,6 +79,31 @@ void UMAbility_DefaultAttackBase::EndAbility(const FGameplayAbilitySpecHandle Ha
 	
 	OverlappedActors.Empty();
 	ItemDef = nullptr;
+}
+
+void UMAbility_DefaultAttackBase::StartAttackTracing(FGameplayEventData Payload)
+{
+	FGameplayAbilitySpec* Spec = GetCurrentAbilitySpec();
+	UPMWeaponInstance* WeaponInstance = Cast<UPMWeaponInstance>(Spec->SourceObject);
+	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
+	if (HasAuthority(&ActivationInfo) && WeaponInstance)
+	{
+		ACharacter* OwnerCharacter = Cast<ACharacter>(WeaponInstance->GetPawn());
+
+		if (OwnerCharacter)
+		{
+			TraceAttack(OwnerCharacter, WeaponInstance);
+		}
+	}
+}
+
+void UMAbility_DefaultAttackBase::EndAttackTracing(FGameplayEventData Payload)
+{
+	if (TraceTask)
+	{
+		TraceTask->EndTask();
+		TraceTask = nullptr;
+	}
 }
 
 void UMAbility_DefaultAttackBase::TraceAttack(ACharacter* OwnerCharacter, UPMWeaponInstance* WeaponInstance)
@@ -110,6 +140,7 @@ void UMAbility_DefaultAttackBase::TraceAttack(ACharacter* OwnerCharacter, UPMWea
 	if (Task)
 	{
 		Task->ReadyForActivation();
+		TraceTask = Task;
 	}
 	else
 	{
@@ -144,11 +175,12 @@ void UMAbility_DefaultAttackBase::Callback_OnHit(const TArray<AActor*>& HitActor
 	}
 }
 
-void UMAbility_DefaultAttackBase::NotifyMontageCanceledCallBack()
+void UMAbility_DefaultAttackBase::NotifyMontageEndCallBack()
 {
+	MontageIndex = 0;
 	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
 	if (HasAuthority(&ActivationInfo))
 	{
-		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), ActivationInfo, true, false);
 	}
 }
