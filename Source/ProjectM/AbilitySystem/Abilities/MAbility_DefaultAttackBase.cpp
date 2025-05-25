@@ -21,6 +21,14 @@ UMAbility_DefaultAttackBase::UMAbility_DefaultAttackBase()
 
 }
 
+bool UMAbility_DefaultAttackBase::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags /*= nullptr*/, const FGameplayTagContainer* TargetTags /*= nullptr*/, OUT FGameplayTagContainer* OptionalRelevantTags /*= nullptr*/) const
+{
+	bool bCanActivate = Super::CanActivateAbility(Handle, ActorInfo, nullptr, nullptr, nullptr);
+	bCanActivate &= bCanCombo;
+
+	return bCanActivate;
+}
+
 void UMAbility_DefaultAttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
@@ -40,6 +48,8 @@ void UMAbility_DefaultAttackBase::ActivateAbility(const FGameplayAbilitySpecHand
 
 		if (PlayMontageAndWait)
 		{
+			bCanCombo = false;
+
 			PlayMontageAndWait->OnCompleted.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageEndCallBack);
 			PlayMontageAndWait->OnBlendOut.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageEndCallBack);
 			PlayMontageAndWait->OnCancelled.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageEndCallBack);
@@ -99,6 +109,7 @@ void UMAbility_DefaultAttackBase::StartAttackTracing(FGameplayEventData Payload)
 
 void UMAbility_DefaultAttackBase::EndAttackTracing(FGameplayEventData Payload)
 {
+	bCanCombo = true;
 	if (TraceTask)
 	{
 		TraceTask->EndTask();
