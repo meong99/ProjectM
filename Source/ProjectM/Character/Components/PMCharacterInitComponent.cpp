@@ -256,7 +256,7 @@ void UPMCharacterInitComponent::Input_Move(const FInputActionValue& InputActionV
 	AMCharacterBase* CharacterBase = GetPawn<AMCharacterBase>();
 	AController* Controller = CharacterBase ? CharacterBase->GetController() : nullptr;
 
-	if (Controller)
+	if (Controller && !CharacterBase->IsOnCharacterStateFlags(EMCharacterStateFlag::BlockMovement))
 	{
 		if (CharacterBase->IsOnCharacterStateFlags(EMCharacterStateFlag::ControlledFromNavigation))
 		{
@@ -285,8 +285,8 @@ void UPMCharacterInitComponent::Input_Move(const FInputActionValue& InputActionV
 
 void UPMCharacterInitComponent::Input_Jump(const FInputActionValue& InputActionValue)
 {
-	ACharacter* Character = GetPawn<ACharacter>();
-	if (Character && Character->CanJump())
+	AMCharacterBase* Character = GetPawn<AMCharacterBase>();
+	if (Character && Character->CanJump() && !Character->IsOnCharacterStateFlags(EMCharacterStateFlag::BlockMovement))
 	{
 		Character->Jump();
 	}
