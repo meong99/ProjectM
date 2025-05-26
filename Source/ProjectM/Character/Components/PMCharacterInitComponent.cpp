@@ -136,7 +136,8 @@ void UPMCharacterInitComponent::HandleChangeInitState(UGameFrameworkComponentMan
 		// Pawn Setting
 		const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
 		const UPMPawnData* PawnData = nullptr;
-		if (UPMPawnExtensionComponent* PawnExtComp = UPMPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+		UPMPawnExtensionComponent* PawnExtComp = UPMPawnExtensionComponent::FindPawnExtensionComponent(Pawn);
+		if (HasAuthority() && PawnExtComp)
 		{
 			PawnData = PawnExtComp->GetPawnData<UPMPawnData>();
 
@@ -315,13 +316,16 @@ void UPMCharacterInitComponent::Input_LookMouse(const FInputActionValue& InputAc
 
 void UPMCharacterInitComponent::Input_AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	if (const APawn* Pawn = GetPawn<APawn>())
+	if (AMCharacterBase* Character = GetPawn<AMCharacterBase>())
 	{
-		if (const UPMPawnExtensionComponent* PawnExtComp = UPMPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+		if (!Character->IsOnCharacterStateFlags(EMCharacterStateFlag::BlockAll))
 		{
-			if (UPMAbilitySystemComponent* ASC = PawnExtComp->GetPMAbilitySystemComponent())
+			if (const UPMPawnExtensionComponent* PawnExtComp = UPMPawnExtensionComponent::FindPawnExtensionComponent(Character))
 			{
-				ASC->AbilityInputTagPressed(InputTag);
+				if (UPMAbilitySystemComponent* ASC = PawnExtComp->GetPMAbilitySystemComponent())
+				{
+					ASC->AbilityInputTagPressed(InputTag);
+				}
 			}
 		}
 	}
@@ -329,13 +333,16 @@ void UPMCharacterInitComponent::Input_AbilityInputTagPressed(FGameplayTag InputT
 
 void UPMCharacterInitComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag)
 {
-	if (const APawn* Pawn = GetPawn<APawn>())
+	if (AMCharacterBase* Character = GetPawn<AMCharacterBase>())
 	{
-		if (const UPMPawnExtensionComponent* PawnExtComp = UPMPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+		if (!Character->IsOnCharacterStateFlags(EMCharacterStateFlag::BlockAll))
 		{
-			if (UPMAbilitySystemComponent* ASC = PawnExtComp->GetPMAbilitySystemComponent())
+			if (const UPMPawnExtensionComponent* PawnExtComp = UPMPawnExtensionComponent::FindPawnExtensionComponent(Character))
 			{
-				ASC->AbilityInputTagReleased(InputTag);
+				if (UPMAbilitySystemComponent* ASC = PawnExtComp->GetPMAbilitySystemComponent())
+				{
+					ASC->AbilityInputTagReleased(InputTag);
+				}
 			}
 		}
 	}
@@ -343,8 +350,8 @@ void UPMCharacterInitComponent::Input_AbilityInputTagReleased(FGameplayTag Input
 
 void UPMCharacterInitComponent::Input_ToggleInputTag(FGameplayTag InputTag)
 {
-	UE_LOG(LogTemp, Log, TEXT("mchae : 인터렉션됨"));
-	if (InputComponent)
+	AMCharacterBase* Character = GetPawn<AMCharacterBase>();
+	if (Character && !Character->IsOnCharacterStateFlags(EMCharacterStateFlag::BlockAll) && InputComponent)
 	{
 		FInputActionDelegate::FDelegate* Delegate = InputComponent->InputActionDelegateMap.Find(InputTag);
 		if (Delegate && Delegate->IsBound())

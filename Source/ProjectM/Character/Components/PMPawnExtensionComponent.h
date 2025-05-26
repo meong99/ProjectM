@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Components/PawnComponent.h"
+#include "Components/MPawnComponentBase.h"
 #include "Components/GameFrameworkInitStateInterface.h"
 #include "PMPawnExtensionComponent.generated.h"
 
@@ -14,7 +14,7 @@ class UPMAbilitySystemComponent;
 * @Warning !! 이 컴포넌트는 무조건 C++ 생성자에서 생성해야한다!! 그리고 하위 컴포넌트는 꼭 BP에서 추가되어야만 한다!! 그렇지 않으면 초기화 순서 보장이 안된다!
 */
 UCLASS()
-class PROJECTM_API UPMPawnExtensionComponent : public UPawnComponent, public IGameFrameworkInitStateInterface/*GameInstance에서 추가한 컴포넌트 초기화 과정을 도와주는 인터페이스*/
+class PROJECTM_API UPMPawnExtensionComponent : public UMPawnComponentBase, public IGameFrameworkInitStateInterface/*GameInstance에서 추가한 컴포넌트 초기화 과정을 도와주는 인터페이스*/
 {
 	GENERATED_BODY()
 
@@ -58,7 +58,7 @@ public:
 
 	void HandleControllerChanged();
 
-	template <class T>
+	template <class T = UPMPawnData>
 	const T*					GetPawnData() const { return Cast<T>(PawnData); }
 	UPMAbilitySystemComponent*	GetPMAbilitySystemComponent() const;
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ControllerComponent.h"
+#include "Components/MControllerComponentBase.h"
 #include "Inventory/PMInventoryItemList.h"
 
 #include "PMInventoryManagerComponent.generated.h"
@@ -18,7 +18,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnInitInventory, const FPMInventoryItemList
  * InventoryManager는 Controller에서 아이템에 관한 메타데이터 및 Instance를 들고있고, 실제 Actor(무기)자체를 스폰하는거는 Character에 부착된 EquipmentManagerComponent에서 한다.
  */
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class PROJECTM_API UPMInventoryManagerComponent : public UControllerComponent
+class PROJECTM_API UPMInventoryManagerComponent : public UMControllerComponentBase
 {
 	GENERATED_BODY()
 

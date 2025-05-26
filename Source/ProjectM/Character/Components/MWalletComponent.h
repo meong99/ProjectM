@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ControllerComponent.h"
+#include "Components/MControllerComponentBase.h"
 #include "MWalletComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnChangeGold, int64, AdjustNum, int64, NewGold);
 
 UCLASS()
-class PROJECTM_API UMWalletComponent : public UControllerComponent
+class PROJECTM_API UMWalletComponent : public UMControllerComponentBase
 {
 	GENERATED_BODY()
 

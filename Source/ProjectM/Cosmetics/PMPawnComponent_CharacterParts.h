@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/PawnComponent.h"
+#include "Components/MPawnComponentBase.h"
 #include "PMCharacterPartTypes.h"
 #include "PMCosmeticAnimationTypes.h"
 #include "Net/Serialization/FastArraySerializer.h"
@@ -85,7 +85,7 @@ struct TStructOpsTypeTraits<FPMCharacterPartList> : public TStructOpsTypeTraitsB
 
 // Character에 부착되는 CharacterPart를 들고있을 Component.
 UCLASS(meta = (BlueprintSpawnableComponent))
-class PROJECTM_API UPMPawnComponent_CharacterParts : public UPawnComponent
+class PROJECTM_API UPMPawnComponent_CharacterParts : public UMPawnComponentBase
 {
 	GENERATED_BODY()
 

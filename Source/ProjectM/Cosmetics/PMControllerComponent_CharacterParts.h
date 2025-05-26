@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Components/ControllerComponent.h"
+#include "Components/MControllerComponentBase.h"
 #include "PMCharacterPartTypes.h"
 #include "PMPawnComponent_CharacterParts.h"
 #include "PMControllerComponent_CharacterParts.generated.h"
@@ -27,7 +27,7 @@ struct FPMControllerCharacterPartEntry
 * Controller는 기본적으로 MetaData를 들고있고, Character에서 그 메타데이터를 이용해서 실제 보여지는 메쉬들을 생성 및 장착하게된다.
 */
 UCLASS(meta = (BlueprintSpawnableComponent))
-class PROJECTM_API UPMControllerComponent_CharacterParts : public UControllerComponent
+class PROJECTM_API UPMControllerComponent_CharacterParts : public UMControllerComponentBase
 {
 	GENERATED_BODY()
 

@@ -40,10 +40,8 @@ void UPMPawnExtensionComponent::InitializeAbilitySystem(UPMAbilitySystemComponen
 
 	APawn* Pawn = GetPawnChecked<APawn>();
 	AActor* ExistingAvatar = InAbilitySystemComponent->GetAvatarActor();
-	if ((ExistingAvatar != nullptr) && (ExistingAvatar != Pawn))
+	if ((ExistingAvatar != nullptr) && (ExistingAvatar != Pawn) && ExistingAvatar->IsA(APawn::StaticClass()))
 	{
-		// There is already a pawn acting as the ASC's avatar, so we need to kick it out
-		// This can happen on clients if they're lagged: their new pawn is spawned + possessed before the dead one is removed
 		ensure(!ExistingAvatar->HasAuthority());
 
 		if (UPMPawnExtensionComponent* OtherExtensionComponent = FindPawnExtensionComponent(ExistingAvatar))
@@ -74,7 +72,6 @@ void UPMPawnExtensionComponent::UninitializeAbilitySystem()
 		}
 		else
 		{
-			// If the ASC doesn't have a valid owner, we need to clear *all* actor info, not just the avatar pairing
 			AbilitySystemComponent->ClearActorInfo();
 		}
 

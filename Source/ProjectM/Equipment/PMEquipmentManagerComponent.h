@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystem/PMAbilitySet.h"
 #include "Net/Serialization/FastArraySerializer.h"
-#include "Components/ControllerComponent.h"
+#include "Components/MControllerComponentBase.h"
 
 #include "PMEquipmentManagerComponent.generated.h"
 
@@ -15,7 +15,7 @@ class UPMAbilitySystemComponent;
  *
  */
 UCLASS(BlueprintType)
-class PROJECTM_API UPMEquipmentManagerComponent : public UControllerComponent
+class PROJECTM_API UPMEquipmentManagerComponent : public UMControllerComponentBase
 {
 	GENERATED_BODY()
 

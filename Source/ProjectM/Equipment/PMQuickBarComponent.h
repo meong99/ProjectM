@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ControllerComponent.h"
+#include "Components/MControllerComponentBase.h"
 #include "Templates/SubclassOf.h"
 
 #include "PMQuickBarComponent.generated.h"
@@ -14,7 +14,7 @@ class UPMEquipmentManagerComponent;
  * 
  */
 UCLASS()
-class PROJECTM_API UPMQuickBarComponent : public UControllerComponent
+class PROJECTM_API UPMQuickBarComponent : public UMControllerComponentBase
 {
 	GENERATED_BODY()
 

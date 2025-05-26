@@ -5,6 +5,7 @@
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/PMHealthSet.h"
+#include "Character/MCharacterBase.h"
 
 UPMHealthComponent::UPMHealthComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -79,6 +80,14 @@ void UPMHealthComponent::HandleHealthChanged(const FOnAttributeChangeData& Chang
 
 void UPMHealthComponent::Multicast_HandleHealthChanged_Implementation(UPMHealthComponent* HealthComponent, float OldValue, float NewValue, AActor* Instigator)
 {
+	if (NewValue == 0)
+	{
+		AMCharacterBase* Owner = Cast<AMCharacterBase>(GetOwner());
+		if (Owner)
+		{
+			Owner->OnDead();
+		}
+	}
 	OnHealthChanged.Broadcast(HealthComponent, OldValue, NewValue, Instigator);
 }
 

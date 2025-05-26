@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Components/PawnComponent.h"
 #include "Components/GameFrameworkInitStateInterface.h"
 #include "Input/PMMappableConfigPair.h"
+#include "Components/MPawnComponentBase.h"
 #include "PMCharacterInitComponent.generated.h"
 
 class UPMCameraMode;
@@ -17,7 +17,7 @@ class UPMInputComponent;
 */
 // @Warning PawnExtensionComponent의 하위 컴포넌트는 무조건 BP에서 추가되어야한다! 그렇지 않으면 초기화 순서가 보장되지 않는다!
 UCLASS(Blueprintable, Meta = (BlueprintSpawnableComponent))
-class PROJECTM_API UPMCharacterInitComponent : public UPawnComponent, public IGameFrameworkInitStateInterface
+class PROJECTM_API UPMCharacterInitComponent : public UMPawnComponentBase, public IGameFrameworkInitStateInterface
 {
 	GENERATED_BODY()
 

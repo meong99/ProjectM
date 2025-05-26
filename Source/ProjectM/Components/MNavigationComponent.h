@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/PawnComponent.h"
+#include "Components/MPawnComponentBase.h"
 #include "GameplayTagContainer.h"
 #include "Containers/Queue.h"
 #include "MNavigationComponent.generated.h"
@@ -16,7 +16,7 @@ class AMPlayerCharacterBase;
  *
  */
 UCLASS(BlueprintType, meta = (BlueprintSpawnableComponent))
-class PROJECTM_API UMNavigationComponent : public UPawnComponent
+class PROJECTM_API UMNavigationComponent : public UMPawnComponentBase
 {
 	GENERATED_BODY()
 
