@@ -12,10 +12,13 @@
 #include "Util/MGameplayStatics.h"
 #include "MInteractiveAction_OverlapActionBase.h"
 #include "MInteractiveAction_OnInteractionBase.h"
+#include "GameFramework/PlayerController.h"
 
 UMInteractionComponent::UMInteractionComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	bWantsInitializeComponent = true;
+	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bStartWithTickEnabled = false;
 	SetCollisionProfileName(*UEnum::GetDisplayValueAsText(EMCollisionChannel::Interaction).ToString());
 }
 
@@ -47,6 +50,23 @@ void UMInteractionComponent::BeginPlay()
 	}
 }
 
+void UMInteractionComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (WeakOverlappedController.IsValid() && WeakOverlappedController->GetPawn())
+	{
+		if (FVector::Dist(WeakOverlappedController->GetPawn()->GetActorLocation(), GetComponentLocation()) > SphereRadius * 2)
+		{
+			DisableInteraction();
+		}
+	}
+	else
+	{
+		DisableInteraction();
+	}
+}
+
 void UMInteractionComponent::SetNewInteractions(const TArray<UMInteractiveAction_OverlapActionBase*>& OnBeginOverlap, const TArray<UMInteractiveAction_OnInteractionBase*>& OnInteract)
 {
 	Action_OnBeginOverlap.Empty();
@@ -70,22 +90,37 @@ void UMInteractionComponent::SetNewInteractions(const TArray<UMInteractiveAction
 
 void UMInteractionComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	EnableInteraction(OtherActor);
+}
+
+void UMInteractionComponent::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	DisableInteraction();
+}
+
+void UMInteractionComponent::EnableInteraction(AActor* OtherActor)
+{
 	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
 	if (Controller && Controller->GetPawn() == OtherActor)
 	{
 		ActivateAllOverlapAction();
 	}
 
+	ACharacter* Character = Cast<ACharacter>(OtherActor);
+	if (Character)
+	{
+		WeakOverlappedController = Cast<APlayerController>(Character->GetController());
+	}
+	SetComponentTickEnabled(true);
+
 	BindDelegate();
 }
 
-void UMInteractionComponent::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void UMInteractionComponent::DisableInteraction()
 {
-	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
-	if (Controller && Controller->GetPawn() == OtherActor)
-	{
-		DeactivateAllOverlapAction();
-	}
+	DeactivateAllOverlapAction();
+	SetComponentTickEnabled(false);
+	WeakOverlappedController = nullptr;
 
 	UnbindDelegate();
 }

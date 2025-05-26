@@ -12,6 +12,11 @@
 #include "Util/MGameplayStatics.h"
 #include "Components/MNavigationComponent.h"
 #include "Components/PMCharacterInitComponent.h"
+#include "Character/PMPawnData.h"
+#include "Animation/AnimInstance.h"
+#include "PMGameplayTags.h"
+#include "Player/PMPlayerState.h"
+#include "GameplayEffect.h"
 
 AMPlayerCharacterBase::AMPlayerCharacterBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UMCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -25,8 +30,8 @@ AMPlayerCharacterBase::AMPlayerCharacterBase(const FObjectInitializer& ObjectIni
 	GetCapsuleComponent()->SetCollisionProfileName(*UEnum::GetDisplayValueAsText(EMCollisionChannel::Player).ToString());
 
 	PawnExtComp	= CreateDefaultSubobject<UPMPawnExtensionComponent>(TEXT("PawnExtensionComponent"));
-	PawnExtComp->OnAbilitySystemInitialized_RegisterAndCall(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemInitialized));
-	PawnExtComp->OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemUninitialzed));
+	PawnExtComp->OnAbilitySystemInitialized_RegisterAndCall(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &AMPlayerCharacterBase::Callback_OnAbilitySystemInitialized));
+	PawnExtComp->OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &AMPlayerCharacterBase::Callback_OnAbilitySystemUninitialzed));
 
 	CameraComponent = CreateDefaultSubobject<UPMCameraComponent>(TEXT("CameraComponent"));
 	CameraComponent->SetRelativeLocation(FVector(-300.f, 0.f, 75.f));
@@ -42,12 +47,73 @@ AMPlayerCharacterBase::AMPlayerCharacterBase(const FObjectInitializer& ObjectIni
 	NavigationComponent = CreateDefaultSubobject<UMNavigationComponent>(TEXT("NavigationComponent"));
 }
 
-void AMPlayerCharacterBase::Test_ActivateWidget(const FGameplayTag& RegisterTag, const FGameplayTag& WidgetTag)
+void AMPlayerCharacterBase::OnDead()
 {
-	UMViewportClient* ViewportClient = UMViewportClient::Get(this);
-	if (IsValid(ViewportClient))
+	if (CharacterLifeState > EMCharacterLiftState::Alive)
 	{
-		ViewportClient->AddWidgetToViewport(WidgetTag);
+		return;
+	}
+
+	if (HasAuthority())
+	{
+		Super::OnDead();
+		CharacterLifeState = EMCharacterLiftState::Dead;
+		ClearAbilityActorInfo();
+		if (Controller)
+		{
+			Controller->UnPossess();
+		}
+	}
+
+	if (GetNetMode() != NM_DedicatedServer)
+	{
+		const UPMPawnData* PawnData = PawnExtComp->GetPawnData();
+		USkeletalMeshComponent* MeshComp = GetMesh();
+		UAnimInstance* AnimInstance = MeshComp ? MeshComp->GetAnimInstance() : nullptr;
+		if (PawnData && AnimInstance)
+		{
+			AnimInstance->Montage_Play(PawnData->DeathAnimation);
+		}
+		UMViewportClient* ViewportClient = UMViewportClient::Get(this);
+		if (IsValid(ViewportClient))
+		{
+			FMWidgetInfo Info{ this, this };
+			ViewportClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_Game_Restart, Info);
+		}
+	}
+}
+
+void AMPlayerCharacterBase::Restart()
+{
+	Super::Restart();
+	if (HasAuthority())
+	{
+		CharacterLifeState = EMCharacterLiftState::Alive;
+		Server_RemoveCharacterStateFlag(EMCharacterStateFlag::BlockAll);
+		InitAbilityActorInfo();
+		InitCharacterDefaultSpec();
+	}
+	else
+	{
+		USkeletalMeshComponent* MeshComp = GetMesh();
+		UAnimInstance* AnimInstance = MeshComp ? MeshComp->GetAnimInstance() : nullptr;
+		if (AnimInstance)
+		{
+			AnimInstance->StopAllMontages(false);
+		}
+	}
+}
+
+void AMPlayerCharacterBase::PawnClientRestart()
+{
+	Super::PawnClientRestart();
+	if (HasAuthority())
+	{
+		MCHAE_LOG("PawnClientRestart Authority");
+	}
+	else
+	{
+		MCHAE_LOG("PawnClientRestart");
 	}
 }
 
@@ -93,15 +159,17 @@ UPMAbilitySystemComponent* AMPlayerCharacterBase::GetMAbilitySystemComponent() c
 	return Cast<UPMAbilitySystemComponent>(GetAbilitySystemComponent());
 }
 
-void AMPlayerCharacterBase::OnAbilitySystemInitialized()
+void AMPlayerCharacterBase::Callback_OnAbilitySystemInitialized()
 {
 	UPMAbilitySystemComponent* ASC = Cast<UPMAbilitySystemComponent>(GetAbilitySystemComponent());
 	check(ASC);
 
+
 	HealthComponent->InitializeWithAbilitySystem(ASC);
+	InitCharacterDefaultSpec();
 }
 
-void AMPlayerCharacterBase::OnAbilitySystemUninitialzed()
+void AMPlayerCharacterBase::Callback_OnAbilitySystemUninitialzed()
 {
 	HealthComponent->UninitializeWithAbilitySystem();
 }
@@ -117,3 +185,60 @@ void AMPlayerCharacterBase::CallOrRegister_OnSetInputComponent(FOnSetInputCompon
 		OnSetInputComponentDelegate.Add(MoveTemp(Delegate));
 	}
 }
+
+void AMPlayerCharacterBase::InitCharacterDefaultSpec()
+{
+	UPMAbilitySystemComponent* AbilitySystemComponent = GetMAbilitySystemComponent();
+	if (AbilitySystemComponent)
+	{
+		APMPlayerState* CurPlayerState = GetPlayerState<APMPlayerState>();
+		const UPMPawnData* PawnData = CurPlayerState ? CurPlayerState->GetPawnData() : nullptr;
+		if (PawnData)
+		{
+			FGameplayEffectContextHandle Handle;
+			FGameplayEffectSpec Spec(PawnData->DefaultCharacterStatEffect->GetDefaultObject<UGameplayEffect>(), Handle);
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(Spec);
+
+		}
+		else
+		{
+			ensure(false);
+			MCHAE_ERROR("Can't access data for initialize character default spec!!!!");
+		}
+	}
+}
+
+void AMPlayerCharacterBase::ClearAbilityActorInfo()
+{
+	UPMAbilitySystemComponent* AbilitySystemComponent = GetMAbilitySystemComponent();
+	if (AbilitySystemComponent && AbilitySystemComponent->AbilityActorInfo.IsValid())
+	{
+		AbilitySystemComponent->ClearActorInfo();
+	}
+}
+
+void AMPlayerCharacterBase::InitAbilityActorInfo()
+{
+	UPMAbilitySystemComponent* AbilitySystemComponent = GetMAbilitySystemComponent();
+	if (AbilitySystemComponent && !AbilitySystemComponent->AbilityActorInfo.IsValid())
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(GetPlayerState(), this);
+	}
+}
+
+#if WITH_EDITOR
+void AMPlayerCharacterBase::Test_KillPlayer()
+{
+	if (GetNetMode() == NM_Client)
+	{
+		OnDead();
+	}
+	Server_KillPlayer();
+}
+
+void AMPlayerCharacterBase::Server_KillPlayer_Implementation()
+{
+	OnDead();
+}
+
+#endif

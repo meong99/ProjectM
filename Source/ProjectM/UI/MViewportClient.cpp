@@ -157,7 +157,7 @@ void UMViewportClient::AddWidgetToLayer(const FGameplayTag& WidgetTag, const FMW
 void UMViewportClient::RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, const int32 LayerId)
 {
 	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
-	if (WidgetLayout && Widget)
+	if (WidgetLayout && Widget && Widget->IsInLayer())
 	{
 		Widget->SetWidgetInfo({});
 		WidgetLayout->RemoveWidgetFromLayer(GetWidgetInstance(WidgetTag), (EMWidgetLayout)LayerId);

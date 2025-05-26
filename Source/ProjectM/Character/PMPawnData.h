@@ -8,6 +8,7 @@ class UPMInputConfig;
 class UPMAbilitySet;
 class UPMInventoryItemDefinition;
 class UGameplayEffect;
+class UAnimMontage;
 
 UCLASS()
 class PROJECTM_API UPMPawnData : public UPrimaryDataAsset
@@ -34,6 +35,9 @@ public:
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Pawn")
 	TSubclassOf<APawn> PawnClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Pawn")
+	TObjectPtr<UAnimMontage> DeathAnimation;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Camera")
 	TSubclassOf<UPMCameraMode> DefaultCameraMode;

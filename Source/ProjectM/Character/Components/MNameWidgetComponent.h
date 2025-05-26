@@ -10,6 +10,7 @@ class AMNpcBase;
 class APawn;
 class ACharacter;
 class UMNameWidget;
+class APlayerCameraManager;
 
 /**
  * 
@@ -43,7 +44,6 @@ protected:
 * Member Variables
 */
 protected:
-	TWeakObjectPtr<APawn> WeakPlayerPawn;
 	TWeakObjectPtr<ACharacter> WeakOwnerCharacter;
 	UMNameWidget* NameWidget;
 

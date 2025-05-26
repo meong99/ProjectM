@@ -9,9 +9,11 @@
 
 UMNameWidgetComponent::UMNameWidgetComponent()
 {
-	bWantsInitializeComponent = true;
 	PrimaryComponentTick.bAllowTickOnDedicatedServer = false;
+	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.bStartWithTickEnabled = false;
+	TickMode = ETickMode::Disabled;
+	Space = EWidgetSpace::Screen;
 }
 
 void UMNameWidgetComponent::InitWidget()
@@ -24,18 +26,14 @@ void UMNameWidgetComponent::InitWidget()
 	{
 		AdjustNameWidgetCompLocation();
 	}
-	if (NameWidget)
-	{
-		NameWidget->SetVisibility(ESlateVisibility::Hidden);
-	}
 }
 
 void UMNameWidgetComponent::EnableNameWidget()
 {
 	if (NameWidget)
 	{
-		SetTickMode(ETickMode::Enabled);
 		NameWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		SetTickMode(ETickMode::Enabled);
 	}
 }
 

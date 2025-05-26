@@ -12,6 +12,7 @@ class UPMInputComponent;
 class USphereComponent;
 class UMInteractiveAction_OnInteractionBase;
 class UMInteractiveAction_OverlapActionBase;
+class APlayerController;
 
 UCLASS(meta = (BlueprintSpawnableComponent))
 class PROJECTM_API UMInteractionComponent : public USphereComponent
@@ -25,6 +26,7 @@ public:
 	UMInteractionComponent(const FObjectInitializer& ObjectInitializer);
 	virtual void InitializeComponent() override;
 	virtual void BeginPlay() override;
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 /*
 * Member Functions
@@ -47,7 +49,9 @@ public:
 	const TArray<UMInteractiveAction_OverlapActionBase*>& GetOnBeginOverlapActions() const {return Action_OnBeginOverlap; }
 	const TArray<UMInteractiveAction_OnInteractionBase*>& GetOnOnInteractActions() const {return Action_OnInteract; }
 
-protected:
+private:
+	void EnableInteraction(AActor* OtherActor);
+	void DisableInteraction();
 	void OnInteract(const FGameplayTag& Tag);
 	void Callback_OnSetInputComponent(UInputComponent* InInputComponent);
 	void BindDelegate();
@@ -63,4 +67,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectM")
 	TArray<TObjectPtr<UMInteractiveAction_OnInteractionBase>> Action_OnInteract;
+
+	TWeakObjectPtr<APlayerController> WeakOverlappedController;
 };

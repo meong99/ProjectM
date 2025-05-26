@@ -20,7 +20,6 @@
 #include "Engine/Engine.h"
 #include "System/MDataTableManager.h"
 #include "PMGameplayTags.h"
-#include "../../GameplayAbilities/Source/GameplayAbilities/Public/GameplayEffect.h"
 
 #define PLAYER_ID 1
 #define PLAYER_NAME TEXT("PlayerName")
@@ -44,8 +43,6 @@ void APMPlayerState::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	check(AbilitySystemComponent);
-	AbilitySystemComponent->InitAbilityActorInfo(this, GetPawn());
-
 
 	UWorld* World = GetWorld();
 	if (World && World->IsGameWorld() && World->GetNetMode() != NM_Client)
@@ -114,10 +111,6 @@ void APMPlayerState::Server_SavePlayerData_Implementation()
 
 void APMPlayerState::Server_LoadPlayerData_Implementation()
 {
-	FGameplayEffectContextHandle Handle;
-	FGameplayEffectSpec Spec(PawnData->DefaultCharacterStatEffect->GetDefaultObject<UGameplayEffect>(), Handle);
-	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(Spec);
-
 	if (!PlayerSaveData)
 	{
 		PlayerSaveData = Cast<UMPlayerSaveGame>(UGameplayStatics::LoadGameFromSlot(PLAYER_NAME, PLAYER_ID));

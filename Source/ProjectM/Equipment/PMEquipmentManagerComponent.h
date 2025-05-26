@@ -25,8 +25,9 @@ class PROJECTM_API UPMEquipmentManagerComponent : public UMControllerComponentBa
 public:
 	UPMEquipmentManagerComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	virtual void BeginDestroy() override;
+	virtual void OnServerRestartPlayer() override;
 
-	/*
+/*
 * Member Functions
 */
 public:
@@ -39,6 +40,9 @@ protected:
 
 	UFUNCTION()
 	void OnRep_OnChangeEquipedItem();
+
+	void SpawnEquipmentActors();
+	void DestroyEquipmentActors();
 
 	UPMAbilitySystemComponent* GetAbilitySystemComponent() const;
 /*

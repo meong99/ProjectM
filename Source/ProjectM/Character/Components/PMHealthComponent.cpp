@@ -80,7 +80,8 @@ void UPMHealthComponent::HandleHealthChanged(const FOnAttributeChangeData& Chang
 
 void UPMHealthComponent::Multicast_HandleHealthChanged_Implementation(UPMHealthComponent* HealthComponent, float OldValue, float NewValue, AActor* Instigator)
 {
-	if (NewValue == 0)
+	OnHealthChanged.Broadcast(HealthComponent, OldValue, NewValue, Instigator);
+	if (OldValue > 0 && NewValue == 0)
 	{
 		AMCharacterBase* Owner = Cast<AMCharacterBase>(GetOwner());
 		if (Owner)
@@ -88,7 +89,6 @@ void UPMHealthComponent::Multicast_HandleHealthChanged_Implementation(UPMHealthC
 			Owner->OnDead();
 		}
 	}
-	OnHealthChanged.Broadcast(HealthComponent, OldValue, NewValue, Instigator);
 }
 
 UPMHealthComponent* UPMHealthComponent::FindHealthComponent(const AActor* Actor)

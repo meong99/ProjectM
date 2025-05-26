@@ -24,6 +24,9 @@ class PROJECTM_API AMPlayerCharacterBase : public AMCharacterBase
 */
 public:
 	AMPlayerCharacterBase(const FObjectInitializer& ObjectInitializer);
+	virtual void OnDead() override;
+	virtual void Restart() override;
+	virtual void PawnClientRestart() override;
 
 protected:
 	virtual void PossessedBy(AController* NewController) override;
@@ -38,17 +41,25 @@ public:
 * Member Functions
 */
 public:
-	void OnAbilitySystemInitialized();
-	void OnAbilitySystemUninitialzed();
+	void Callback_OnAbilitySystemInitialized();
+	void Callback_OnAbilitySystemUninitialzed();
 
 	void CallOrRegister_OnSetInputComponent(FOnSetInputComponent::FDelegate&& Delegate);
 	
-	UFUNCTION(BlueprintCallable)
-	void Test_ActivateWidget(const FGameplayTag& RegisterTag, const FGameplayTag& WidgetTag);
-
 	void SetCurrentLevelTag(const FGameplayTag& InCurrentLevelTag) { CurrentLevelTag = InCurrentLevelTag; }
 	const FGameplayTag& GetCurrentLevelTag() const { return CurrentLevelTag; }
+	
+protected:
+	void InitCharacterDefaultSpec();
+	void ClearAbilityActorInfo();
+	void InitAbilityActorInfo();
 
+#if WITH_EDITOR
+	UFUNCTION(Exec)
+	void Test_KillPlayer();
+	UFUNCTION(Server, Reliable)
+	void Server_KillPlayer();
+#endif
 /*
 * Member Variables
 */

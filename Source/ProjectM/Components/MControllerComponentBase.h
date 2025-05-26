@@ -24,6 +24,8 @@ public:
 * Member Functions
 */
 public:
+	virtual void OnServerRestartPlayer() {}
+	virtual void OnClientRestart(APawn* NewPawn) {}
 
 protected:
 /*

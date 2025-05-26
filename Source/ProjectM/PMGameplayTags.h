@@ -42,6 +42,7 @@ struct FPMGameplayTags
 
 	FGameplayTag UI_Registry_Game_InteractionList;
 	FGameplayTag UI_Registry_Game_Shop;
+	FGameplayTag UI_Registry_Game_Restart;
 
 	FGameplayTag UI_Game_NameWidget;
 	/*

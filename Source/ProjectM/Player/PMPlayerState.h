@@ -28,7 +28,7 @@ public:
 public:
 	void OnExperienceLoaded(const UPMExperienceDefinition* CurrentExperience);
 
-	template<class T>
+	template<class T = UPMPawnData>
 	const T* GetPawnData() const { return Cast<T>(PawnData); }
 	UPMAbilitySystemComponent* GetPMAbilitySystemComponent() const { return AbilitySystemComponent; }
 

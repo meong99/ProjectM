@@ -37,7 +37,14 @@ void AMCharacterBase::BeginPlay()
 void AMCharacterBase::InitCharacterName()
 {
 	NameComponent->InitNameWidget();
-	K2_InitCharacterName();
+}
+
+void AMCharacterBase::OnDead()
+{
+	if (HasAuthority())
+	{
+		Server_AddCharacterStateFlag(EMCharacterStateFlag::BlockAll);
+	}
 }
 
 const FName& AMCharacterBase::GetCharacterName() const

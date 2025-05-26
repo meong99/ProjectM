@@ -144,9 +144,29 @@ void AMMonsterBase::InitCharacterName()
 	Super::InitCharacterName();
 }
 
-UAbilitySystemComponent* AMMonsterBase::GetAbilitySystemComponent() const
+void AMMonsterBase::OnDead()
 {
-	return AbilitySystemComponent;
+	Super::OnDead();
+
+	SetCharacterLifeState(EMCharacterLiftState::Dead);
+	GiveRewardToPlayer();
+
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (AIController)
+	{
+		AIController->UnPossess();
+	}
+
+	SetCharacterLifeState(EMCharacterLiftState::ReadyToDestroy);
+
+	if (Spawner.IsValid())
+	{
+		Spawner->OnDeadMonster(this);
+	}
+	else
+	{
+		Destroy();
+	}
 }
 
 void AMMonsterBase::SetSpawner(AMMonsterSpawner* InSpawner)
@@ -179,25 +199,7 @@ void AMMonsterBase::GiveRewardToPlayer()
 	}
 }
 
-void AMMonsterBase::OnDead()
+UAbilitySystemComponent* AMMonsterBase::GetAbilitySystemComponent() const
 {
-	SetCharacterLifeState(EMCharacterLiftState::Dead);
-	GiveRewardToPlayer();
-
-	AAIController* AIController = Cast<AAIController>(GetController());
-	if (AIController)
-	{
-		AIController->UnPossess();
-	}
-
-	SetCharacterLifeState(EMCharacterLiftState::ReadyToDestroy);
-
-	if (Spawner.IsValid())
-	{
-		Spawner->OnDeadMonster(this);
-	}
-	else
-	{
-		Destroy();
-	}
+	return AbilitySystemComponent;
 }

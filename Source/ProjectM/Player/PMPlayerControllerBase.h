@@ -26,7 +26,8 @@ public:
 
 	virtual void OnPossess(APawn* aPawn) override;
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
-
+	virtual void ServerRestartPlayer_Implementation() override;
+	virtual void ClientRestart_Implementation(APawn* NewPawn) override;
 /*
 * Member Functions
 */
@@ -41,6 +42,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure=false)
 	void Debug_WidgetControl(const FGameplayTag& WidgetTag, bool bAddWidget, UObject* WidgetInstigator = nullptr);
+	UFUNCTION(BlueprintCallable, BlueprintPure=false)
+	void Debug_ServerRestartPlayer();
 /*
 * Member Variables
 */
@@ -53,6 +56,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UMPlayerQuestComponent> PlayerQuestComponent;
+
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<APawn> OldPawn;
 
 	FOnPossessed Delegate_OnPossessed;
 };

@@ -35,13 +35,13 @@ void UPMEquipmentManagerComponent::BeginDestroy()
 {
 	Super::BeginDestroy();
 
-	for (UMEquipmentItemInstance* Instance : EquippedItems)
-	{
-		if (IsValid(Instance))
-		{
-			Instance->DestroyEquipmentActors();
-		}
-	}
+	DestroyEquipmentActors();
+}
+
+void UPMEquipmentManagerComponent::OnServerRestartPlayer()
+{
+	DestroyEquipmentActors();
+	SpawnEquipmentActors();
 }
 
 void UPMEquipmentManagerComponent::EquipItem(UMEquipmentItemInstance* ItemInstance)
@@ -143,6 +143,32 @@ UMEquipmentItemInstance* UPMEquipmentManagerComponent::FindEquippedItem(int32 Eq
 void UPMEquipmentManagerComponent::OnRep_OnChangeEquipedItem()
 {
 
+}
+
+void UPMEquipmentManagerComponent::SpawnEquipmentActors()
+{
+	for (UMEquipmentItemInstance* Instance : EquippedItems)
+	{
+		if (IsValid(Instance))
+		{
+			const UMEquipmentItemDefinition* ItemCDO = Instance->ItemDef->GetDefaultObject<UMEquipmentItemDefinition>();
+			if (ItemCDO)
+			{
+				Instance->SpawnEquipmentActors(ItemCDO->ActorsToSpawn);
+			}
+		}
+	}
+}
+
+void UPMEquipmentManagerComponent::DestroyEquipmentActors()
+{
+	for (UMEquipmentItemInstance* Instance : EquippedItems)
+	{
+		if (IsValid(Instance))
+		{
+			Instance->DestroyEquipmentActors();
+		}
+	}
 }
 
 UPMAbilitySystemComponent* UPMEquipmentManagerComponent::GetAbilitySystemComponent() const

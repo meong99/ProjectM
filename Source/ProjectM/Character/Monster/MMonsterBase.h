@@ -29,9 +29,12 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void InitCharacterName() override;
+
+	virtual void OnDead() override;
+
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-	/*
+/*
 * Member Functions
 */
 public:
@@ -48,7 +51,6 @@ protected:
 	UFUNCTION()
 	void Callback_OnDamaged(AActor* Attacker);
 	void GiveRewardToPlayer();
-	void OnDead();
 /*
 * Member Variables
 */

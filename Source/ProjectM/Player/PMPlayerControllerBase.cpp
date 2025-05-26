@@ -20,6 +20,12 @@ APMPlayerControllerBase::APMPlayerControllerBase()
 
 void APMPlayerControllerBase::OnPossess(APawn* aPawn)
 {
+	if (IsValid(OldPawn))
+	{
+		OldPawn->Destroy();
+	}
+	OldPawn = GetPawn();
+
 	Super::OnPossess(aPawn);
 
 	AMPlayerCharacterBase* MyCharacter = Cast<AMPlayerCharacterBase>(GetPawn());
@@ -37,6 +43,36 @@ void APMPlayerControllerBase::PostProcessInput(const float DeltaTime, const bool
 	}
 
 	Super::PostProcessInput(DeltaTime, bGamePaused);
+}
+
+void APMPlayerControllerBase::ServerRestartPlayer_Implementation()
+{
+	Super::ServerRestartPlayer_Implementation();
+
+	const TSet<UActorComponent*>& SubComponents = GetComponents();
+	for (UActorComponent* Component : SubComponents)
+	{
+		UMControllerComponentBase* SubComponent = Cast<UMControllerComponentBase>(Component);
+		if (SubComponent)
+		{
+			SubComponent->OnServerRestartPlayer();
+		}
+	}
+}
+
+void APMPlayerControllerBase::ClientRestart_Implementation(APawn* NewPawn)
+{
+	Super::ClientRestart_Implementation(NewPawn);
+
+	const TSet<UActorComponent*>& SubComponents = GetComponents();
+	for (UActorComponent* Component : SubComponents)
+	{
+		UMControllerComponentBase* SubComponent = Cast<UMControllerComponentBase>(Component);
+		if (SubComponent)
+		{
+			SubComponent->OnClientRestart(NewPawn);
+		}
+	}
 }
 
 void APMPlayerControllerBase::CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate&& Delegate)
@@ -87,4 +123,9 @@ void APMPlayerControllerBase::Debug_WidgetControl(const FGameplayTag& WidgetTag,
 	{
 		VC->RemoveWidgetFromLayer(WidgetTag);
 	}
+}
+
+void APMPlayerControllerBase::Debug_ServerRestartPlayer()
+{
+	ServerRestartPlayer();
 }

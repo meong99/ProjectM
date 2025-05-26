@@ -119,6 +119,8 @@ void UMEquipmentItemInstance::DestroyEquipmentActors()
 			Actor->Destroy();
 		}
 	}
+
+	SpawnedActors.Empty();
 }
 
 APawn* UMEquipmentItemInstance::GetPawn() const

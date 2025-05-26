@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/MPawnComponentBase.h"
+#include "Components/PawnComponent.h"
 #include "MPawnComponentBase.generated.h"
 
 /**
  *
  */
 UCLASS(BlueprintType)
-class PROJECTM_API UMPawnComponentBase : public UMPawnComponentBase
+class PROJECTM_API UMPawnComponentBase : public UPawnComponent
 {
 	GENERATED_BODY()
 

@@ -29,8 +29,8 @@ public:
 	virtual UAbilitySystemComponent*	GetAbilitySystemComponent() const override { return nullptr; }
 	virtual UPMAbilitySystemComponent*	GetMAbilitySystemComponent() const { return nullptr; }
 	virtual void InitCharacterName();
-	UFUNCTION(BlueprintImplementableEvent)
-	void K2_InitCharacterName();
+	virtual void OnDead();
+
 
 	const FName&	GetCharacterName() const;
 	
