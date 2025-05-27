@@ -59,7 +59,7 @@ struct FMMonsterCombatInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DefaultAttack MontageInfo")
 	FMMontageInfo MontageInfo;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

@@ -3,9 +3,24 @@
 #include "PMAnimInstance.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
+#include "PMGameplayTags.h"
+#include "Character/MCharacterBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 UPMAnimInstance::UPMAnimInstance()
 {
+}
+
+void UPMAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+{
+	Super::NativeUpdateAnimation(DeltaSeconds);
+
+	if (MovementComponent)
+	{
+		Velocity = MovementComponent->Velocity;
+		bIsFalling = MovementComponent->IsFalling();
+		bCanMove = !CharacterBase->IsOnCharacterStateFlags(EMCharacterStateFlag::BlockMovement);
+	}
 }
 
 void UPMAnimInstance::NativeInitializeAnimation()
@@ -17,6 +32,12 @@ void UPMAnimInstance::NativeInitializeAnimation()
 		if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OwningActor))
 		{
 			InitializeWithAbilitySystem(ASC);
+		}
+
+		CharacterBase = Cast<AMCharacterBase>(OwningActor);
+		if (CharacterBase)
+		{
+			MovementComponent = CharacterBase->GetCharacterMovement();
 		}
 	}
 }

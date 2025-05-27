@@ -25,6 +25,7 @@ AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Supe
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bUseControllerRotationYaw = false;
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -120,7 +121,6 @@ void AMMonsterBase::BeginPlay()
 
 	if (HasAuthority())
 	{
-		SpawnDefaultController();
 		SetCharacterLifeState(EMCharacterLiftState::Alive);
 	}
 

@@ -6,6 +6,7 @@
 
 class UMMonsterDefinition;
 class UAISenseConfig_Sight;
+class UBehaviorTree;
 
 UCLASS()
 class PROJECTM_API AMAIControllerBase : public AAIController

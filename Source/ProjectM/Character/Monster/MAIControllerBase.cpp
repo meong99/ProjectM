@@ -7,9 +7,12 @@
 #include "Character/MCharacterBase.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Types/MTeamTypes.h"
+#include "BehaviorTree/BehaviorTree.h"
 
 AMAIControllerBase::AMAIControllerBase()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception Component"));
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));;
 	SightConfig->SightRadius = 1500.f;
@@ -20,6 +23,7 @@ AMAIControllerBase::AMAIControllerBase()
 
 	PerceptionComponent->ConfigureSense(*SightConfig);
 	PerceptionComponent->SetDominantSense(SightConfig->GetSenseImplementation());
+
 	PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AMAIControllerBase::OnTargetDetectedDelegated);
 	PerceptionComponent->OnTargetPerceptionForgotten.AddDynamic(this, &AMAIControllerBase::OnTargetForgotDelegated);
 }
@@ -75,11 +79,14 @@ void AMAIControllerBase::OnChange_CharacterStateFlag(const int64& OldFlag, const
 
 void AMAIControllerBase::OnTargetDetectedDelegated(AActor* Actor, struct FAIStimulus Stimulus)
 {
-	UBlackboardComponent* BlackboardComp = GetBlackboardComponent();
-	if (BlackboardComp && UseBlackboard(BlackboardComp->GetBlackboardAsset(), BlackboardComp))
+	if (Stimulus.WasSuccessfullySensed())
 	{
-		BlackboardComp->SetValueAsObject(BBKey::TARGET_ACTOR, Actor);
-		BlackboardComp->SetValueAsBool(BBKey::FOUND_PLAYER, true);
+		UBlackboardComponent* BlackboardComp = GetBlackboardComponent();
+		if (BlackboardComp && UseBlackboard(BlackboardComp->GetBlackboardAsset(), BlackboardComp))
+		{
+			BlackboardComp->SetValueAsObject(BBKey::TARGET_ACTOR, Actor);
+			BlackboardComp->SetValueAsBool(BBKey::FOUND_PLAYER, true);
+		}
 	}
 }
 
