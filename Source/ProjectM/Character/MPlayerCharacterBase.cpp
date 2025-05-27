@@ -16,6 +16,7 @@
 #include "PMGameplayTags.h"
 #include "Player/PMPlayerState.h"
 #include "GameplayEffect.h"
+#include "Types/MTeamTypes.h"
 
 AMPlayerCharacterBase::AMPlayerCharacterBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UMCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -104,6 +105,13 @@ void AMPlayerCharacterBase::PawnClientRestart()
 	{
 		MCHAE_LOG("PawnClientRestart");
 	}
+}
+
+void AMPlayerCharacterBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SetGenericTeamId((int32)EMGenericTeamId::Player);
 }
 
 void AMPlayerCharacterBase::PossessedBy(AController* NewController)

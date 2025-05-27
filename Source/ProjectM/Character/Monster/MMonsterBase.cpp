@@ -19,6 +19,7 @@
 #include "Table/MTable_MonsterTable.h"
 #include "AbilitySystem/PMAbilitySet.h"
 #include "AbilitySystem/Attributes/PMCombatSet.h"
+#include "Types/MTeamTypes.h"
 
 AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -120,6 +121,8 @@ void AMMonsterBase::BeginPlay()
 		SpawnDefaultController();
 		SetCharacterLifeState(EMCharacterLiftState::Alive);
 	}
+
+	SetGenericTeamId((int32)EMGenericTeamId::Monster);
 }
 
 void AMMonsterBase::Tick(float DeltaSeconds)

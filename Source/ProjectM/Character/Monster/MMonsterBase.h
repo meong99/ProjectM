@@ -33,7 +33,6 @@ public:
 	virtual void OnDead() override;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
 /*
 * Member Functions
 */

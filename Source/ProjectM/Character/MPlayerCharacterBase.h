@@ -27,6 +27,7 @@ public:
 	virtual void OnDead() override;
 	virtual void Restart() override;
 	virtual void PawnClientRestart() override;
+	virtual void BeginPlay() override;
 
 protected:
 	virtual void PossessedBy(AController* NewController) override;

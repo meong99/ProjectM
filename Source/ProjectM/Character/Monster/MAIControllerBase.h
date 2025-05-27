@@ -5,6 +5,7 @@
 #include "MAIControllerBase.generated.h"
 
 class UMMonsterDefinition;
+class UAISenseConfig_Sight;
 
 UCLASS()
 class PROJECTM_API AMAIControllerBase : public AAIController
@@ -23,8 +24,22 @@ public:
 * Member Functions
 */
 public:
+	void	OnChange_CharacterStateFlag(const int64& OldFlag, const int64& NewFlag);
+
+	UFUNCTION()
+    void    OnTargetDetectedDelegated(AActor* Actor, struct FAIStimulus Stimulus);
+	UFUNCTION()
+    void    OnTargetForgotDelegated(AActor* Actor);
+
+protected:
+	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
+
 /*
 * Member Variables
 */
 protected:
+	UPROPERTY()
+    UAISenseConfig_Sight* SightConfig;
+
+	FDelegateHandle Handle;
 };

@@ -64,12 +64,24 @@ void AMCharacterBase::SetCharacterLifeState_Implementation(const EMCharacterLift
 
 void AMCharacterBase::Server_AddCharacterStateFlag_Implementation(const int64& InState)
 {
+	const int64& OldFlag = CharacterStateFlag;
 	CharacterStateFlag |= InState;
+
+	if (Delegate_OnChangeCharacterStateFlags.IsBound())
+	{
+		Delegate_OnChangeCharacterStateFlags.Broadcast(OldFlag, CharacterStateFlag);
+	}
 }
 
 void AMCharacterBase::Server_RemoveCharacterStateFlag_Implementation(const int64& InState)
 {
+	const int64& OldFlag = CharacterStateFlag;
 	CharacterStateFlag &= ~InState;
+
+	if (Delegate_OnChangeCharacterStateFlags.IsBound())
+	{
+		Delegate_OnChangeCharacterStateFlags.Broadcast(OldFlag, CharacterStateFlag);
+	}
 }
 
 void AMCharacterBase::Multicast_PlayMontage_Implementation(UAnimMontage* MontageToPlay, float InPlayRate /*= 1.f*/, EMontagePlayReturnType ReturnValueType /*= EMontagePlayReturnType::MontageLength*/, float InTimeToStartMontageAt /*= 0.f*/, bool bStopAllMontages /*= true*/)
@@ -79,5 +91,13 @@ void AMCharacterBase::Multicast_PlayMontage_Implementation(UAnimMontage* Montage
 	if (MontageToPlay && AnimInstance)
 	{
 		AnimInstance->Montage_Play(MontageToPlay);
+	}
+}
+
+void AMCharacterBase::OnRep_OnChangeStateFlags(const int64& OldFlag)
+{
+	if (Delegate_OnChangeCharacterStateFlags.IsBound())
+	{
+		Delegate_OnChangeCharacterStateFlags.Broadcast(OldFlag, CharacterStateFlag);
 	}
 }
