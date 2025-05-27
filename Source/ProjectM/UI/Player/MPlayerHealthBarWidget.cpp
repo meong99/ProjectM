@@ -7,11 +7,6 @@ UMPlayerHealthBarWidget::UMPlayerHealthBarWidget(const FObjectInitializer& Objec
 {
 }
 
-void UMPlayerHealthBarWidget::NativeOnInitialized()
-{
-	int32 a = 0;
-}
-
 void UMPlayerHealthBarWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -40,9 +35,7 @@ void UMPlayerHealthBarWidget::Callback_OnPossessedPawnChanged(APawn* OldPawn, AP
 		UPMHealthComponent* HealthComp = NewPawn->FindComponentByClass<UPMHealthComponent>();
 		if (HealthComp)
 		{
-			// 초기화 타이밍때문에 폰이 바뀌면 현재 값 가져와서 초기화
-			float CurrentHealth = HealthComp->GetCurrentHealth();
-			Callback_OnHealthChanged(HealthComp, 0, CurrentHealth, nullptr);
+			HealthComp->CallOrRegister_OnInitHealthComponent(FOnInitHealth::FDelegate::CreateUObject(this, &UMPlayerHealthBarWidget::Callback_OnHealthChanged));
 			HealthComp->OnHealthChanged.AddDynamic(this, &UMPlayerHealthBarWidget::Callback_OnHealthChanged);
 		}
 	}

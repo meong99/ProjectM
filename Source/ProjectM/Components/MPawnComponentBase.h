@@ -24,6 +24,7 @@ public:
 * Member Functions
 */
 public:
+	bool IsNetConnectionReady() const;
 
 protected:
 /*

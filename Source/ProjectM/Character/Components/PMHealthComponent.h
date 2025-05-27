@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/GameFrameworkComponent.h"
 #include "Delegates/Delegate.h"
+#include "Components/MPawnComponentBase.h"
 #include "PMHealthComponent.generated.h"
 
 class UPMAbilitySystemComponent;
@@ -15,14 +15,25 @@ struct FOnAttributeChangeData;
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FPMHealth_AttributeChanged, UPMHealthComponent*, HealthComponent, float, OldValue, float, NewValue, AActor*, Instigator);
+DECLARE_MULTICAST_DELEGATE_FourParams(FOnInitHealth, UPMHealthComponent* HealthComponent, float OldValue, float NewValue, AActor* Instigator);
 
 
 UCLASS()
-class PROJECTM_API UPMHealthComponent : public UGameFrameworkComponent
+class PROJECTM_API UPMHealthComponent : public UMPawnComponentBase
 {
 	GENERATED_BODY()
+
+/*
+* Overrided Function
+*/
 public:
 	UPMHealthComponent(const FObjectInitializer& ObjectInitializer);
+
+/*
+* Member Functions
+*/
+public:
+	void CallOrRegister_OnInitHealthComponent(FOnInitHealth::FDelegate&& Delegate);
 
 	UFUNCTION(BlueprintPure, Category = "ProjectM | Health")
 	static UPMHealthComponent* FindHealthComponent(const AActor* Actor);
@@ -40,18 +51,30 @@ public:
 	void UninitializeWithAbilitySystem();
 
 	float	GetCurrentHealth();
-	void	HandleHealthChanged(const FOnAttributeChangeData& ChangeData);
-	UFUNCTION(NetMulticast, Reliable)
-	void	Multicast_HandleHealthChanged(UPMHealthComponent* HealthComponent, float OldValue, float NewValue, AActor* Instigator);
 
+private:
+	UFUNCTION(Client, Reliable)
+	void	Client_HandleHealthChanged(UPMHealthComponent* HealthComponent, float OldValue, float NewValue, AActor* Instigator);
+
+	void	HandleHealthChanged(const FOnAttributeChangeData& ChangeData);
+	void	OnChangeHealth(float OldValue, float NewValue, AActor* Instigator);
+	void	CheckAndNotifyDeath(float OldValue, float NewValue);
+
+/*
+* Member Variables
+*/
 public:
 	UPROPERTY(BlueprintAssignable)
 	FPMHealth_AttributeChanged OnHealthChanged;
 
 private:
+	FOnInitHealth Delegate_OnInitHealth;
+
 	UPROPERTY()
 	TObjectPtr<UPMAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY()
 	TObjectPtr<const UPMHealthSet> HealthSet;
+
+	FTimerHandle Handle;
 };

@@ -137,7 +137,7 @@ void UPMCharacterInitComponent::HandleChangeInitState(UGameFrameworkComponentMan
 		const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
 		const UPMPawnData* PawnData = nullptr;
 		UPMPawnExtensionComponent* PawnExtComp = UPMPawnExtensionComponent::FindPawnExtensionComponent(Pawn);
-		if (HasAuthority() && PawnExtComp)
+		if (PawnExtComp)
 		{
 			PawnData = PawnExtComp->GetPawnData<UPMPawnData>();
 

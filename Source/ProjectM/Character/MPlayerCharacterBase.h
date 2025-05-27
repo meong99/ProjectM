@@ -41,6 +41,8 @@ public:
 * Member Functions
 */
 public:
+	void InitCharacterDefaultSpec();
+
 	void Callback_OnAbilitySystemInitialized();
 	void Callback_OnAbilitySystemUninitialzed();
 
@@ -50,7 +52,6 @@ public:
 	const FGameplayTag& GetCurrentLevelTag() const { return CurrentLevelTag; }
 	
 protected:
-	void InitCharacterDefaultSpec();
 	void ClearAbilityActorInfo();
 	void InitAbilityActorInfo();
 

@@ -6,6 +6,10 @@
 #include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/PMHealthSet.h"
 #include "Character/MCharacterBase.h"
+#include "Util/MGameplayStatics.h"
+#include "Character/MPlayerCharacterBase.h"
+#include "TimerManager.h"
+#include "Engine/World.h"
 
 UPMHealthComponent::UPMHealthComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -15,6 +19,18 @@ UPMHealthComponent::UPMHealthComponent(const FObjectInitializer& ObjectInitializ
 	AbilitySystemComponent = nullptr;
 	HealthSet = nullptr;
 	SetIsReplicatedByDefault(true);
+}
+
+void UPMHealthComponent::CallOrRegister_OnInitHealthComponent(FOnInitHealth::FDelegate&& Delegate)
+{
+	if (HealthSet)
+	{
+		Delegate.ExecuteIfBound(this, 0, HealthSet->GetHealth(), nullptr);
+	}
+	else
+	{
+		Delegate_OnInitHealth.Add(MoveTemp(Delegate));
+	}
 }
 
 void UPMHealthComponent::InitializeWithAbilitySystem(UPMAbilitySystemComponent* InASC)
@@ -43,7 +59,18 @@ void UPMHealthComponent::InitializeWithAbilitySystem(UPMAbilitySystemComponent* 
 	}
 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UPMHealthSet::GetHealthAttribute()).AddUObject(this, &ThisClass::HandleHealthChanged);
-	Multicast_HandleHealthChanged(this, 0, HealthSet->GetHealth(), nullptr);
+	if (HasAuthority())
+	{
+		AMPlayerCharacterBase* Character = Cast<AMPlayerCharacterBase>(GetOwner());
+		if (Character)
+		{
+			Character->InitCharacterDefaultSpec();
+		}
+	}
+
+	float CurrentHealth = HealthSet->GetHealth();
+	Delegate_OnInitHealth.Broadcast(this, 0, CurrentHealth, nullptr);
+	Delegate_OnInitHealth.Clear();
 }
 
 void UPMHealthComponent::UninitializeWithAbilitySystem()
@@ -75,12 +102,44 @@ static AActor* GetInstigatorFromAttrChangeData(const FOnAttributeChangeData& Cha
 
 void UPMHealthComponent::HandleHealthChanged(const FOnAttributeChangeData& ChangeData)
 {
-	Multicast_HandleHealthChanged(this, ChangeData.OldValue, ChangeData.NewValue, GetInstigatorFromAttrChangeData(ChangeData));
+	float OldValue = ChangeData.OldValue;
+	float NewValue = ChangeData.NewValue;
+	AActor* Instigator = GetInstigatorFromAttrChangeData(ChangeData);
+
+	OnChangeHealth(OldValue, NewValue, Instigator);
+	if (GetNetMode() != NM_Standalone)
+	{
+		if (IsNetConnectionReady())
+		{
+			Client_HandleHealthChanged(this, OldValue, NewValue, Instigator);
+		}
+		else
+		{
+			GetWorld()->GetTimerManager().SetTimer(Handle, [OldValue, NewValue, Instigator, this]()->void
+			{
+				if (IsNetConnectionReady())
+				{
+					Client_HandleHealthChanged(this, OldValue, NewValue, Instigator);
+					GetWorld()->GetTimerManager().ClearTimer(Handle);
+				}
+			}, .5f, true, .5f);
+		}
+	}
 }
 
-void UPMHealthComponent::Multicast_HandleHealthChanged_Implementation(UPMHealthComponent* HealthComponent, float OldValue, float NewValue, AActor* Instigator)
+void UPMHealthComponent::OnChangeHealth(float OldValue, float NewValue, AActor* Instigator)
 {
-	OnHealthChanged.Broadcast(HealthComponent, OldValue, NewValue, Instigator);
+	OnHealthChanged.Broadcast(this, OldValue, NewValue, Instigator);
+	CheckAndNotifyDeath(OldValue, NewValue);
+}
+
+void UPMHealthComponent::Client_HandleHealthChanged_Implementation(UPMHealthComponent* HealthComponent, float OldValue, float NewValue, AActor* Instigator)
+{
+	OnChangeHealth(OldValue, NewValue, Instigator);
+}
+
+void UPMHealthComponent::CheckAndNotifyDeath(float OldValue, float NewValue)
+{
 	if (OldValue > 0 && NewValue == 0)
 	{
 		AMCharacterBase* Owner = Cast<AMCharacterBase>(GetOwner());

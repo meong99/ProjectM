@@ -22,7 +22,6 @@ class PROJECTM_API UMPlayerHealthBarWidget : public UMWidgetBase
 public:
 	UMPlayerHealthBarWidget(const FObjectInitializer& ObjectInitializer);
 
-	virtual void	NativeOnInitialized() override;
 	virtual void	NativeConstruct() override;
 
 /*

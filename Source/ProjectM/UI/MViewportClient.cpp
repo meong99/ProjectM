@@ -157,11 +157,14 @@ void UMViewportClient::AddWidgetToLayer(const FGameplayTag& WidgetTag, const FMW
 void UMViewportClient::RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, const int32 LayerId)
 {
 	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
-	if (WidgetLayout && Widget && Widget->IsInLayer())
+	if (WidgetLayout && Widget)
 	{
-		Widget->SetWidgetInfo({});
-		WidgetLayout->RemoveWidgetFromLayer(GetWidgetInstance(WidgetTag), (EMWidgetLayout)LayerId);
-		Widget->SetActivate(false);
+		if (Widget->IsInLayer())
+		{
+			Widget->SetWidgetInfo({});
+			WidgetLayout->RemoveWidgetFromLayer(GetWidgetInstance(WidgetTag), (EMWidgetLayout)LayerId);
+			Widget->SetActivate(false);
+		}
 	}
 	else
 	{

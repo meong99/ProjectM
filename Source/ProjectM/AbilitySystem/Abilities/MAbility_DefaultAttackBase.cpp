@@ -9,12 +9,12 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "AbilitySystem/AbilityTasks/MAbilityTask_SphereTracer.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Character/Monster/MMonsterBase.h"
 #include "PMGameplayTags.h"
 #include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "Equipment/PMEquipmentManagerComponent.h"
 #include "AbilitySystem/Attributes/PMCombatSet.h"
-#include "../../GameplayAbilities/Source/GameplayAbilities/Public/Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 
 UMAbility_DefaultAttackBase::UMAbility_DefaultAttackBase()
 {
@@ -24,7 +24,11 @@ UMAbility_DefaultAttackBase::UMAbility_DefaultAttackBase()
 bool UMAbility_DefaultAttackBase::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags /*= nullptr*/, const FGameplayTagContainer* TargetTags /*= nullptr*/, OUT FGameplayTagContainer* OptionalRelevantTags /*= nullptr*/) const
 {
 	bool bCanActivate = Super::CanActivateAbility(Handle, ActorInfo, nullptr, nullptr, nullptr);
-	bCanActivate &= bCanCombo;
+	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
+	if (HasAuthority(&ActivationInfo))
+	{
+		bCanActivate &= bCanCombo;
+	}
 
 	return bCanActivate;
 }

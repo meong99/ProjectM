@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UI/MWidgetInstanceList.h"
-#include "MPawnComponent.h"
+#include "Components/MPawnComponentBase.h"
 
 #include "MBindWidgetByInputComponent.generated.h"
 
@@ -16,7 +16,7 @@ class UPMInputComponent;
 * 위젯을 다루는 클래스라서 클라이언트 전용 클래스다
 */
 UCLASS()
-class PROJECTM_API UMBindWidgetByInputComponent : public UMPawnComponent
+class PROJECTM_API UMBindWidgetByInputComponent : public UMPawnComponentBase
 {
 	GENERATED_BODY()
 

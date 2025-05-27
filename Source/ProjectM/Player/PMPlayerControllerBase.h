@@ -28,12 +28,17 @@ public:
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 	virtual void ServerRestartPlayer_Implementation() override;
 	virtual void ClientRestart_Implementation(APawn* NewPawn) override;
-/*
+	virtual void BeginDestroy() override;
+
+	/*
 * Member Functions
 */
 public:
 	void CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate&& Delegate);
 	void CallOrRegister_OnPossessed(FOnPossessed::FDelegate&& Delegate);
+
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void Server_RespawnPlayer();
 
 	APMPlayerState* GetPlayerState() const;
 
@@ -42,8 +47,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure=false)
 	void Debug_WidgetControl(const FGameplayTag& WidgetTag, bool bAddWidget, UObject* WidgetInstigator = nullptr);
-	UFUNCTION(BlueprintCallable, BlueprintPure=false)
-	void Debug_ServerRestartPlayer();
 /*
 * Member Variables
 */

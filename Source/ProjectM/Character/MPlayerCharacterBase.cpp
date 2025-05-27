@@ -59,10 +59,6 @@ void AMPlayerCharacterBase::OnDead()
 		Super::OnDead();
 		CharacterLifeState = EMCharacterLiftState::Dead;
 		ClearAbilityActorInfo();
-		if (Controller)
-		{
-			Controller->UnPossess();
-		}
 	}
 
 	if (GetNetMode() != NM_DedicatedServer)
@@ -90,8 +86,6 @@ void AMPlayerCharacterBase::Restart()
 	{
 		CharacterLifeState = EMCharacterLiftState::Alive;
 		Server_RemoveCharacterStateFlag(EMCharacterStateFlag::BlockAll);
-		InitAbilityActorInfo();
-		InitCharacterDefaultSpec();
 	}
 	else
 	{
@@ -164,9 +158,7 @@ void AMPlayerCharacterBase::Callback_OnAbilitySystemInitialized()
 	UPMAbilitySystemComponent* ASC = Cast<UPMAbilitySystemComponent>(GetAbilitySystemComponent());
 	check(ASC);
 
-
 	HealthComponent->InitializeWithAbilitySystem(ASC);
-	InitCharacterDefaultSpec();
 }
 
 void AMPlayerCharacterBase::Callback_OnAbilitySystemUninitialzed()
@@ -189,7 +181,7 @@ void AMPlayerCharacterBase::CallOrRegister_OnSetInputComponent(FOnSetInputCompon
 void AMPlayerCharacterBase::InitCharacterDefaultSpec()
 {
 	UPMAbilitySystemComponent* AbilitySystemComponent = GetMAbilitySystemComponent();
-	if (AbilitySystemComponent)
+	if (AbilitySystemComponent && HasAuthority())
 	{
 		APMPlayerState* CurPlayerState = GetPlayerState<APMPlayerState>();
 		const UPMPawnData* PawnData = CurPlayerState ? CurPlayerState->GetPawnData() : nullptr;

@@ -7,6 +7,7 @@
 #include "Inventory/PMInventoryManagerComponent.h"
 #include "Components/MPlayerTradeComponent.h"
 #include "Components/MPlayerQuestComponent.h"
+#include "Util/MGameplayStatics.h"
 
 APMPlayerControllerBase::APMPlayerControllerBase()
 {
@@ -75,6 +76,17 @@ void APMPlayerControllerBase::ClientRestart_Implementation(APawn* NewPawn)
 	}
 }
 
+void APMPlayerControllerBase::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+	if (IsValid(OldPawn))
+	{
+		OldPawn->Destroy();
+		OldPawn = nullptr;
+	}
+}
+
 void APMPlayerControllerBase::CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate&& Delegate)
 {
 	if (GetWorld() && GetWorld()->GetGameState())
@@ -85,6 +97,18 @@ void APMPlayerControllerBase::CallOrRegister_OnExperienceLoaded(FOnExperienceLoa
 			ExperienceManager->CallOrRegister_OnExperienceLoaded(MoveTemp(Delegate));
 		}
 	}
+}
+
+void APMPlayerControllerBase::Server_RespawnPlayer_Implementation()
+{
+	APawn* ControlledPawn = GetPawn();
+	ChangeState(NAME_Inactive);
+	if (ControlledPawn)
+	{
+		ControlledPawn->Destroy();
+	}
+
+	ServerRestartPlayer();
 }
 
 void APMPlayerControllerBase::CallOrRegister_OnPossessed(FOnPossessed::FDelegate&& Delegate)
@@ -123,9 +147,4 @@ void APMPlayerControllerBase::Debug_WidgetControl(const FGameplayTag& WidgetTag,
 	{
 		VC->RemoveWidgetFromLayer(WidgetTag);
 	}
-}
-
-void APMPlayerControllerBase::Debug_ServerRestartPlayer()
-{
-	ServerRestartPlayer();
 }
