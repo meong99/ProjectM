@@ -1,6 +1,8 @@
 #include "MCharacterBase.h"
 #include "Components/MNameWidgetComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Animation/AnimInstance.h"
+#include "Components/SkeletalMeshComponent.h"
 
 AMCharacterBase::AMCharacterBase(const FObjectInitializer& ObjectInitializer)
 {
@@ -68,4 +70,14 @@ void AMCharacterBase::Server_AddCharacterStateFlag_Implementation(const int64& I
 void AMCharacterBase::Server_RemoveCharacterStateFlag_Implementation(const int64& InState)
 {
 	CharacterStateFlag &= ~InState;
+}
+
+void AMCharacterBase::Multicast_PlayMontage_Implementation(UAnimMontage* MontageToPlay, float InPlayRate /*= 1.f*/, EMontagePlayReturnType ReturnValueType /*= EMontagePlayReturnType::MontageLength*/, float InTimeToStartMontageAt /*= 0.f*/, bool bStopAllMontages /*= true*/)
+{
+	USkeletalMeshComponent* MeshComp = GetMesh();
+	UAnimInstance* AnimInstance = MeshComp ? MeshComp->GetAnimInstance() : nullptr;
+	if (MontageToPlay && AnimInstance)
+	{
+		AnimInstance->Montage_Play(MontageToPlay);
+	}
 }

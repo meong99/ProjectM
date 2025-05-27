@@ -75,6 +75,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
 	FMMonsterCombatInfo MonsterCombatInfo;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
+	FMMontageInfo DeathAnimation;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Abilities")
 	TArray<TObjectPtr<UPMAbilitySet>> AbilitySets;
 

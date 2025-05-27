@@ -24,11 +24,7 @@ UMAbility_DefaultAttackBase::UMAbility_DefaultAttackBase()
 bool UMAbility_DefaultAttackBase::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags /*= nullptr*/, const FGameplayTagContainer* TargetTags /*= nullptr*/, OUT FGameplayTagContainer* OptionalRelevantTags /*= nullptr*/) const
 {
 	bool bCanActivate = Super::CanActivateAbility(Handle, ActorInfo, nullptr, nullptr, nullptr);
-	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
-	if (HasAuthority(&ActivationInfo))
-	{
-		bCanActivate &= bCanCombo;
-	}
+	bCanActivate &= bCanCombo;
 
 	return bCanActivate;
 }

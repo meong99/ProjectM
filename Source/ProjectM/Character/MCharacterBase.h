@@ -3,6 +3,7 @@
 #include "ModularCharacter.h"
 #include "AbilitySystemInterface.h"
 #include "Types/MCharacterTypes.h"
+#include "Animation/AnimInstance.h"
 #include "MCharacterBase.generated.h"
 
 class UMNameWidgetComponent;
@@ -31,7 +32,6 @@ public:
 	virtual void InitCharacterName();
 	virtual void OnDead();
 
-
 	const FName&	GetCharacterName() const;
 	
 	UFUNCTION(Server, Reliable, BlueprintCallable)
@@ -44,6 +44,10 @@ public:
 	void	Server_AddCharacterStateFlag(const int64& InState);
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void	Server_RemoveCharacterStateFlag(const int64& InState);
+
+protected:
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_PlayMontage(UAnimMontage* MontageToPlay, float InPlayRate = 1.f, EMontagePlayReturnType ReturnValueType = EMontagePlayReturnType::MontageLength, float InTimeToStartMontageAt = 0.f, bool bStopAllMontages = true);
 /*
 * Member Variables
 */

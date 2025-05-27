@@ -94,7 +94,6 @@ void AMMonsterSpawner::OnDeadMonster(AMMonsterBase* DeadMonster)
 	if (DeadMonster)
 	{
 		SpawnedMonsters.Remove(DeadMonster);
-		DeadMonster->Destroy();
 	}
 }
 

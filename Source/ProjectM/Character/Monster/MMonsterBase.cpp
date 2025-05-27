@@ -151,21 +151,30 @@ void AMMonsterBase::OnDead()
 	SetCharacterLifeState(EMCharacterLiftState::Dead);
 	GiveRewardToPlayer();
 
-	AAIController* AIController = Cast<AAIController>(GetController());
-	if (AIController)
+	if (HasAuthority())
 	{
-		AIController->UnPossess();
-	}
+		AAIController* AIController = Cast<AAIController>(GetController());
+		if (AIController)
+		{
+			AIController->UnPossess();
+		}
 
-	SetCharacterLifeState(EMCharacterLiftState::ReadyToDestroy);
+		SetCharacterLifeState(EMCharacterLiftState::ReadyToDestroy);
 
-	if (Spawner.IsValid())
-	{
-		Spawner->OnDeadMonster(this);
-	}
-	else
-	{
-		Destroy();
+		if (MonsterDefinition->DeathAnimation.Montage)
+		{
+			float Duration = MonsterDefinition->DeathAnimation.Montage->GetPlayLength();
+			Multicast_PlayMontage(MonsterDefinition->DeathAnimation.Montage);
+			UMGameplayStatics::SetTimer(this, [this]()->void
+			{
+				if (Spawner.IsValid())
+				{
+					Spawner->OnDeadMonster(this);
+				}
+
+				Destroy();
+			}, Duration, false);
+		}
 	}
 }
 

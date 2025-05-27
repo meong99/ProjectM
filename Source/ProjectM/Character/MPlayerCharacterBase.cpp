@@ -13,7 +13,6 @@
 #include "Components/MNavigationComponent.h"
 #include "Components/PMCharacterInitComponent.h"
 #include "Character/PMPawnData.h"
-#include "Animation/AnimInstance.h"
 #include "PMGameplayTags.h"
 #include "Player/PMPlayerState.h"
 #include "GameplayEffect.h"
@@ -59,17 +58,13 @@ void AMPlayerCharacterBase::OnDead()
 		Super::OnDead();
 		CharacterLifeState = EMCharacterLiftState::Dead;
 		ClearAbilityActorInfo();
+
+		const UPMPawnData* PawnData = PawnExtComp->GetPawnData();
+		Multicast_PlayMontage(PawnData->DeathAnimation);
 	}
 
 	if (GetNetMode() != NM_DedicatedServer)
 	{
-		const UPMPawnData* PawnData = PawnExtComp->GetPawnData();
-		USkeletalMeshComponent* MeshComp = GetMesh();
-		UAnimInstance* AnimInstance = MeshComp ? MeshComp->GetAnimInstance() : nullptr;
-		if (PawnData && AnimInstance)
-		{
-			AnimInstance->Montage_Play(PawnData->DeathAnimation);
-		}
 		UMViewportClient* ViewportClient = UMViewportClient::Get(this);
 		if (IsValid(ViewportClient))
 		{
