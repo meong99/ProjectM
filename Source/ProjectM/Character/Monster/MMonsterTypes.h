@@ -43,6 +43,9 @@ struct FMMonsterInfo
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 0, ClampMax = 2147483647))
 	int32 MonsterReward = 0;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float MonsterMaxSpeed = 300.f;
+
 	// Key = ItemId, Value = 확률
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<FMDropInfo> ItemDropTable;

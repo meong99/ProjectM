@@ -29,6 +29,7 @@ AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Supe
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	GetCharacterMovement()->bRequestedMoveUseAcceleration = true;
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 
 	GetCapsuleComponent()->SetCollisionProfileName(*UEnum::GetDisplayValueAsText(EMCollisionChannel::Monster).ToString());
 
@@ -71,6 +72,7 @@ void AMMonsterBase::PreInitializeComponents()
 				if (RowData && RowData->Definition)
 				{
 					MonsterDefinition = DuplicateObject(RowData->Definition->GetDefaultObject<UMMonsterDefinition>(), this);
+					GetCharacterMovement()->MaxWalkSpeed = MonsterDefinition->GetMonsterInfo().MonsterMaxSpeed;
 				}
 			}
 		}
