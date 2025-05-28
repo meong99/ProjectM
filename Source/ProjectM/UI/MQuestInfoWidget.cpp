@@ -33,7 +33,7 @@ void UMQuestInfoWidget::NativeOnInitialized()
 	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
 	if (TableManager)
 	{
-		const UDataTable* ItemTable = TableManager->GetDataTable(EMTableKey::OthersItem);
+		const UDataTable* ItemTable = TableManager->GetDataTable(EMTableKey::MiscellaneousItem);
 		if (ItemTable)
 		{
 			TArray<FMTable_ItemBase*> ItemRows;

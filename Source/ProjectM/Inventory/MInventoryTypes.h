@@ -13,7 +13,7 @@ enum class EMItemType : uint8
 {
 	Equipment,
 	Consumable,
-	Others,
+	Miscellaneous,
 
 	None,
 };

@@ -59,6 +59,8 @@ protected:
 	UFUNCTION()
 	void	OnClick_ConsumableButton();
 	UFUNCTION()
+	void	OnClick_MiscellaneousButton();
+	UFUNCTION()
 	void	OnClick_ExitButton();
 
 protected:
@@ -69,7 +71,7 @@ protected:
 	UPROPERTY()
 	UPMInventoryManagerComponent* InventoryComponent;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="ProjectM")
 	TSubclassOf<UMInventoryTemplete> InventoryTemplete;
 
 	// 타입 별 인벤토리
@@ -85,10 +87,16 @@ protected:
 	TObjectPtr<UWidgetSwitcher> ConsumableButtonSwitcher;
 
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidgetSwitcher> MiscellaneousButtonSwitcher;
+
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> EquipmentButton_Deactivated;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> ConsumableButton_Deactivated;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> MiscellaneousButton_Deactivated;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> ExitButton;

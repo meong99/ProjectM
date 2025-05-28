@@ -19,12 +19,14 @@ UPMInventoryManagerComponent::UPMInventoryManagerComponent(const FObjectInitiali
 	: Super(ObjectInitializer)
 	, InventoryList(this)
 	, ConsumableItemList(this)
+	, MiscellaneousItemList(this)
 {
 	SetIsReplicatedByDefault(true);
 	bWantsInitializeComponent = true;
 
 	InventoryList.OwnedItemType = EMItemType::Equipment;
 	ConsumableItemList.OwnedItemType = EMItemType::Consumable;
+	MiscellaneousItemList.OwnedItemType = EMItemType::Miscellaneous;
 }
 
 void UPMInventoryManagerComponent::InitializeComponent()
@@ -40,6 +42,7 @@ void UPMInventoryManagerComponent::CallOrRegister_OnInitInventory(FOnInitInvento
 	{
 		Delegate.Execute(InventoryList);
 		Delegate.Execute(ConsumableItemList);
+		Delegate.Execute(MiscellaneousItemList);
 	}
 	else
 	{
@@ -53,6 +56,7 @@ void UPMInventoryManagerComponent::GetLifetimeReplicatedProps(TArray< FLifetimeP
 
 	DOREPLIFETIME(ThisClass, InventoryList);
 	DOREPLIFETIME(ThisClass, ConsumableItemList);
+	DOREPLIFETIME(ThisClass, MiscellaneousItemList);
 }
 
 bool UPMInventoryManagerComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
@@ -70,6 +74,16 @@ bool UPMInventoryManagerComponent::ReplicateSubobjects(UActorChannel* Channel, F
 	}
 
 	for (FPMInventoryEntry& Entry : ConsumableItemList.Entries)
+	{
+		UPMInventoryItemInstance* Instance = Entry.Instance;
+
+		if (Instance && IsValid(Instance))
+		{
+			WroteSomething |= Channel->ReplicateSubobject(Instance, *Bunch, *RepFlags);
+		}
+	}
+
+	for (FPMInventoryEntry& Entry : MiscellaneousItemList.Entries)
 	{
 		UPMInventoryItemInstance* Instance = Entry.Instance;
 
@@ -100,6 +114,16 @@ void UPMInventoryManagerComponent::ReadyForReplication()
 		}
 
 		for (const FPMInventoryEntry& Entry : ConsumableItemList.Entries)
+		{
+			UPMInventoryItemInstance* Instance = Entry.Instance;
+
+			if (IsValid(Instance))
+			{
+				AddReplicatedSubObject(Instance);
+			}
+		}
+
+		for (const FPMInventoryEntry& Entry : MiscellaneousItemList.Entries)
 		{
 			UPMInventoryItemInstance* Instance = Entry.Instance;
 
@@ -396,6 +420,7 @@ void UPMInventoryManagerComponent::InitInventory()
 	bIsInitInventory = true;
 	Delegate_OnInitInventory.Broadcast(InventoryList);
 	Delegate_OnInitInventory.Broadcast(ConsumableItemList);
+	Delegate_OnInitInventory.Broadcast(MiscellaneousItemList);
 	Delegate_OnInitInventory.Clear();
 }
 
@@ -470,6 +495,10 @@ FPMInventoryItemList* UPMInventoryManagerComponent::GetItemList(const EMItemType
 		case EMItemType::Consumable :
 		{
 			return &ConsumableItemList;
+		}
+		case EMItemType::Miscellaneous:
+		{
+			return &MiscellaneousItemList;
 		}
 		default:
 		{

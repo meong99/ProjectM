@@ -70,9 +70,9 @@ void UMInventoryWidget::BindDelegates()
 	InventoryComponent = PlayerController ? PlayerController->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
 	if (IsValid(InventoryComponent))
 	{
-		InventoryComponent->CallOrRegister_OnInitInventory(FOnInitInventory::FDelegate::CreateUObject(this, &ThisClass::Callback_OnInitInventory));
-		InventoryComponent->Delegate_OnItemIncreased.AddUObject(this, &ThisClass::Callback_AddNewItem);
-		InventoryComponent->Delegate_OnRemoveItem.AddUObject(this, &ThisClass::Callback_RemoveItem);
+		InventoryComponent->CallOrRegister_OnInitInventory(FOnInitInventory::FDelegate::CreateUObject(this, &UMInventoryWidget::Callback_OnInitInventory));
+		InventoryComponent->Delegate_OnItemIncreased.AddUObject(this, &UMInventoryWidget::Callback_AddNewItem);
+		InventoryComponent->Delegate_OnRemoveItem.AddUObject(this, &UMInventoryWidget::Callback_RemoveItem);
 	}
 	else
 	{
@@ -82,15 +82,19 @@ void UMInventoryWidget::BindDelegates()
 
 	if (EquipmentButton_Deactivated)
 	{
-		EquipmentButton_Deactivated->OnClicked.AddDynamic(this, &ThisClass::OnClick_EquipmentButton);
+		EquipmentButton_Deactivated->OnClicked.AddDynamic(this, &UMInventoryWidget::OnClick_EquipmentButton);
 	}
 	if (ConsumableButton_Deactivated)
 	{
-		ConsumableButton_Deactivated->OnClicked.AddDynamic(this, &ThisClass::OnClick_ConsumableButton);
+		ConsumableButton_Deactivated->OnClicked.AddDynamic(this, &UMInventoryWidget::OnClick_ConsumableButton);
+	}
+	if (MiscellaneousButton_Deactivated)
+	{
+		MiscellaneousButton_Deactivated->OnClicked.AddDynamic(this, &UMInventoryWidget::OnClick_MiscellaneousButton);
 	}
 	if (ExitButton)
 	{
-		ExitButton->OnClicked.AddDynamic(this, &ThisClass::OnClick_ExitButton);
+		ExitButton->OnClicked.AddDynamic(this, &UMInventoryWidget::OnClick_ExitButton);
 	}
 }
 
@@ -123,6 +127,7 @@ void UMInventoryWidget::OnClick_EquipmentButton()
 	InventoryTileSwitcher->SetActiveWidgetIndex((int32)EMItemType::Equipment);
 	EquipButtonSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Active);
 	ConsumableButtonSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Deactive);
+	MiscellaneousButtonSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Deactive);
 }
 
 void UMInventoryWidget::OnClick_ConsumableButton()
@@ -130,6 +135,15 @@ void UMInventoryWidget::OnClick_ConsumableButton()
 	InventoryTileSwitcher->SetActiveWidgetIndex((int32)EMItemType::Consumable);
 	EquipButtonSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Deactive);
 	ConsumableButtonSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Active);
+	MiscellaneousButtonSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Deactive);
+}
+
+void UMInventoryWidget::OnClick_MiscellaneousButton()
+{
+	InventoryTileSwitcher->SetActiveWidgetIndex((int32)EMItemType::Miscellaneous);
+	EquipButtonSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Deactive);
+	ConsumableButtonSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Deactive);
+	MiscellaneousButtonSwitcher->SetActiveWidgetIndex((int32)EMButtonState::Active);
 }
 
 void UMInventoryWidget::OnClick_ExitButton()
