@@ -3,6 +3,7 @@
 #include "Character/MCharacterBase.h"
 #include "Character/Monster/MMonsterTypes.h"
 #include "AbilitySystem/PMAbilitySet.h"
+#include "GameplayEffectTypes.h"
 #include "MMonsterBase.generated.h"
 
 class UMInteractionComponent;
@@ -13,6 +14,7 @@ class UMMonsterDefinition;
 class AMMonsterSpawner;
 class UMMonsterTradeComponent;
 class UPMCombatSet;
+class UWidgetComponent;
 
 UCLASS(Blueprintable, BlueprintType)
 class PROJECTM_API AMMonsterBase : public AMCharacterBase
@@ -52,8 +54,7 @@ public:
 	void	SetMonsterRowId(const int32 InRowId) { MonsterRowId = InRowId; }
 #endif
 protected:
-	UFUNCTION()
-	void Callback_OnDamaged(AActor* Attacker);
+	void Callback_OnDamaged(const FOnAttributeChangeData& ChangeData);
 	void GiveRewardToPlayer();
 /*
 * Member Variables
@@ -61,6 +62,9 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (ClampMin = 1400001, ClampMax = 1499999), Category = "ProjectM")
 	int32 MonsterRowId = INDEX_NONE;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Monster")
+	TObjectPtr<UWidgetComponent> DamageWidgetComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Monster")
 	TObjectPtr<UPMAbilitySystemComponent> AbilitySystemComponent;

@@ -57,9 +57,5 @@ void UPMHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackDat
 	else if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(), MinimumHealth, GetMaxHealth()));
-		if (Data.EvaluatedData.Magnitude < 0)
-		{
-			Delegate_OnDamaged.Broadcast(Data.EffectSpec.GetEffectContext().GetInstigator());
-		}
 	}
 }

@@ -20,6 +20,10 @@
 #include "AbilitySystem/PMAbilitySet.h"
 #include "AbilitySystem/Attributes/PMCombatSet.h"
 #include "Types/MTeamTypes.h"
+#include "GameplayEffectTypes.h"
+#include "GameplayEffectExtension.h"
+#include "Components/WidgetComponent.h"
+#include "UI/Text/MDamageTextWidget.h"
 
 AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -48,6 +52,8 @@ AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Supe
 	CombatSet = CreateDefaultSubobject<UPMCombatSet>(TEXT("CombatSet"));
 
 	MonsterTradeComponent = CreateDefaultSubobject<UMMonsterTradeComponent>(TEXT("MonsterTradeComponent"));
+	DamageWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("DamageWidget"));
+	DamageWidgetComponent->SetupAttachment(RootComponent);
 }
 
 void AMMonsterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -93,7 +99,7 @@ void AMMonsterBase::PostInitializeComponents()
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 		SetCharacterLifeState(EMCharacterLiftState::Spawned);
-		HealthSet->Delegate_OnDamaged.AddDynamic(this, &AMMonsterBase::Callback_OnDamaged);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UPMHealthSet::GetHealthAttribute()).AddUObject(this, &AMMonsterBase::Callback_OnDamaged);
 
 		if (MonsterDefinition)
 		{
@@ -193,9 +199,19 @@ UPMAbilitySystemComponent* AMMonsterBase::GetMAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-void AMMonsterBase::Callback_OnDamaged(AActor* Attacker)
+void AMMonsterBase::Callback_OnDamaged(const FOnAttributeChangeData& ChangeData)
 {
-	LastAttacker = Attacker;
+	if (ChangeData.GEModData != nullptr)
+	{
+		const FGameplayEffectContextHandle& EffectContext = ChangeData.GEModData->EffectSpec.GetEffectContext();
+		LastAttacker = EffectContext.GetOriginalInstigator();
+
+		UMDamageTextWidget* Widget = Cast<UMDamageTextWidget>(DamageWidgetComponent->GetWidget());
+		if (Widget)
+		{
+			Widget->OnDamaged(FMath::Abs(ChangeData.GEModData->EvaluatedData.Magnitude));
+		}
+	}
 }
 
 void AMMonsterBase::GiveRewardToPlayer()

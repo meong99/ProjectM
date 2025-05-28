@@ -86,7 +86,7 @@ protected:
 */
 protected:
 	UPROPERTY(EditDefaultsOnly)
-	EMWidgetInputMode InputMode = EMWidgetInputMode::GameOnly;
+	EMWidgetInputMode InputMode = EMWidgetInputMode::GameAndUIWithShowMouse;
 
 	UPROPERTY(VisibleInstanceOnly)
 	FGameplayTag WidgetTag;

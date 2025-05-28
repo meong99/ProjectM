@@ -3,6 +3,7 @@
 #include "Definitions/MMonsterDefinition.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AISenseConfig_Damage.h"
 #include "Types/MBlackboardTypes.h"
 #include "Character/MCharacterBase.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -14,15 +15,23 @@ AMAIControllerBase::AMAIControllerBase()
 	PrimaryActorTick.bCanEverTick = true;
 
 	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception Component"));
-	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));;
+
+	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
 	SightConfig->SightRadius = 1500.f;
 	SightConfig->LoseSightRadius = SightConfig->SightRadius * 1.2;
 	SightConfig->PeripheralVisionAngleDegrees = 90.f;
 	SightConfig->SetMaxAge(5.f);
+	SightConfig->SetStartsEnabled(true);
 	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
+
+	DamageConfig = CreateDefaultSubobject<UAISenseConfig_Damage>(TEXT("DamageConfig"));
+	DamageConfig->SetMaxAge(5.0f);
+	DamageConfig->SetStartsEnabled(true);
 
 	PerceptionComponent->ConfigureSense(*SightConfig);
 	PerceptionComponent->SetDominantSense(SightConfig->GetSenseImplementation());
+	PerceptionComponent->ConfigureSense(*DamageConfig);
+	PerceptionComponent->SetDominantSense(DamageConfig->GetSenseImplementation());
 
 	PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AMAIControllerBase::OnTargetDetectedDelegated);
 	PerceptionComponent->OnTargetPerceptionForgotten.AddDynamic(this, &AMAIControllerBase::OnTargetForgotDelegated);

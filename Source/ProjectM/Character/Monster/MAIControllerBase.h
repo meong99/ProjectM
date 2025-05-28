@@ -7,6 +7,7 @@
 class UMMonsterDefinition;
 class UAISenseConfig_Sight;
 class UBehaviorTree;
+class UAISenseConfig_Damage;
 
 UCLASS()
 class PROJECTM_API AMAIControllerBase : public AAIController
@@ -41,6 +42,9 @@ protected:
 protected:
 	UPROPERTY()
     UAISenseConfig_Sight* SightConfig;
+
+	UPROPERTY()
+    UAISenseConfig_Damage* DamageConfig;
 
 	FDelegateHandle Handle;
 };
