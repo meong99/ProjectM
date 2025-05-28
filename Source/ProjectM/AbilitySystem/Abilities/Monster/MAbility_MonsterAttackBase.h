@@ -34,6 +34,9 @@ protected:
 
 	UFUNCTION()
 	void CallBack_MontageEnded();
+
+	UFUNCTION()
+	void Callback_AttackPoint(FGameplayEventData Payload);
 /*
 * Member Variables
 */

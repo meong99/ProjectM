@@ -12,6 +12,7 @@
 #include "PMGameplayTags.h"
 #include "Character/Monster/MMonsterBase.h"
 #include "AbilitySystem/Attributes/PMCombatSet.h"
+#include "../../GameplayAbilities/Source/GameplayAbilities/Public/Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 
 UMAbility_MonsterAttackBase::UMAbility_MonsterAttackBase()
 {
@@ -43,7 +44,13 @@ void UMAbility_MonsterAttackBase::ActivateAbility(const FGameplayAbilitySpecHand
 
 		if (HasAuthority(&ActivationInfo))
 		{
-			TraceAttack();
+			UAbilityTask_WaitGameplayEvent* WaitAttactPoint =
+				UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, Animation_Notify_StartAttack);
+			if (WaitAttactPoint)
+			{
+				WaitAttactPoint->EventReceived.AddDynamic(this, &UMAbility_MonsterAttackBase::Callback_AttackPoint);
+				WaitAttactPoint->ReadyForActivation();
+			}
 		}
 	}
 }
@@ -75,10 +82,10 @@ void UMAbility_MonsterAttackBase::TraceAttack()
 			AMPlayerCharacterBase* Player = Cast<AMPlayerCharacterBase>(Hit.GetActor());
 			if (Player)
 			{
-				UPMAbilitySystemComponent* MonsterASC = OwnerActor ? OwnerActor->GetMAbilitySystemComponent() : nullptr;
-				UPMAbilitySystemComponent* PlayerASC = Player->GetMAbilitySystemComponent();
-				const UPMCombatSet* CombatSet = MonsterASC->GetSet<UPMCombatSet>();
-				const UPMCombatSet* PlayerCombatSet = PlayerASC ? PlayerASC->GetSet<UPMCombatSet>() : nullptr;
+				UPMAbilitySystemComponent*	MonsterASC		= OwnerActor->GetMAbilitySystemComponent();
+				UPMAbilitySystemComponent*	PlayerASC		= Player->GetMAbilitySystemComponent();
+				const UPMCombatSet*			CombatSet		= MonsterASC ? MonsterASC->GetSet<UPMCombatSet>() : nullptr;
+				const UPMCombatSet*			PlayerCombatSet = PlayerASC ? PlayerASC->GetSet<UPMCombatSet>() : nullptr;
 				if (MonsterASC && CombatSet && PlayerCombatSet)
 				{
 					TMap<FGameplayTag, float> SetbyCallerMap;
@@ -102,4 +109,9 @@ void UMAbility_MonsterAttackBase::CallBack_MontageEnded()
 	{
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
+}
+
+void UMAbility_MonsterAttackBase::Callback_AttackPoint(FGameplayEventData Payload)
+{
+	TraceAttack();
 }

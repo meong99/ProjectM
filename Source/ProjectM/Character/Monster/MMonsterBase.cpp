@@ -45,7 +45,7 @@ AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Supe
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 	AbilitySystemComponent->bWantsInitializeComponent = true;
 	HealthSet = CreateDefaultSubobject<UPMHealthSet>(TEXT("HealthSet"));
-	CreateDefaultSubobject<UPMCombatSet>(TEXT("CombatSet"));
+	CombatSet = CreateDefaultSubobject<UPMCombatSet>(TEXT("CombatSet"));
 
 	MonsterTradeComponent = CreateDefaultSubobject<UMMonsterTradeComponent>(TEXT("MonsterTradeComponent"));
 }

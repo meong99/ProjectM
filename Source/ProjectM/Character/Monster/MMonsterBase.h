@@ -12,6 +12,7 @@ class UPMHealthSet;
 class UMMonsterDefinition;
 class AMMonsterSpawner;
 class UMMonsterTradeComponent;
+class UPMCombatSet;
 
 UCLASS(Blueprintable, BlueprintType)
 class PROJECTM_API AMMonsterBase : public AMCharacterBase
@@ -44,8 +45,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual UPMAbilitySystemComponent* GetMAbilitySystemComponent() const override;
 
-	UMMonsterDefinition* GetMonsterDefinition() { return MonsterDefinition; }
+	UMMonsterDefinition*	GetMonsterDefinition() { return MonsterDefinition; }
+	const int32				GetMonsterRowId() const { return MonsterRowId; }
 
+#if WITH_EDITOR
+	void	SetMonsterRowId(const int32 InRowId) { MonsterRowId = InRowId; }
+#endif
 protected:
 	UFUNCTION()
 	void Callback_OnDamaged(AActor* Attacker);
@@ -54,7 +59,7 @@ protected:
 * Member Variables
 */
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1400001, ClampMax = 1499999), Category = "ProjectM")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (ClampMin = 1400001, ClampMax = 1499999), Category = "ProjectM")
 	int32 MonsterRowId = INDEX_NONE;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Monster")
@@ -71,6 +76,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Monster")
 	TObjectPtr<UPMHealthSet> HealthSet;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Monster")
+	TObjectPtr<UPMCombatSet> CombatSet;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Monster")
 	AActor* LastAttacker;

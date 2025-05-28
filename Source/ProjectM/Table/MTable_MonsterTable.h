@@ -19,6 +19,7 @@ struct FMTable_MonsterTable : public FMTable_TableBase
 	* Overrided Functions
 	*/
 public:
+	virtual void OnDataTableChanged(const UDataTable* InDataTable, const FName InRowName) override;
 
 	/*
 	* Member Functions
