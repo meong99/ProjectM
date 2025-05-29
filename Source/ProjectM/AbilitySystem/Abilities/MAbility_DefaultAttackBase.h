@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PMGameplayAbility.h"
+#include "GameplayTagContainer.h"
 #include "MAbility_DefaultAttackBase.generated.h"
 
 class ACharacter;
@@ -11,6 +12,8 @@ class AActor;
 class UMWeaponItemDefinition;
 class UPMWeaponInstance;
 class UAbilityTask;
+class UPMAbilitySystemComponent;
+struct FGameplayEffectSpec;
 
 UCLASS()
 class PROJECTM_API UMAbility_DefaultAttackBase : public UPMGameplayAbility
@@ -40,7 +43,9 @@ protected:
 	virtual void EndAttackTracing(FGameplayEventData Payload);
 
 	virtual void TraceAttack(ACharacter* OwnerCharacter, UPMWeaponInstance* WeaponInstance);
-	virtual void Callback_OnHit(const TArray<AActor*>& HitActors);
+	virtual void Callback_OnHit(const TArray<FHitResult>& HitResults);
+	virtual void ApplyEffectToTarget(UPMAbilitySystemComponent* OwnerAbilitySystem, const FHitResult& HitResult);
+	virtual void SendGameplayCue(UPMAbilitySystemComponent* OwnerAbilitySystem, const FGameplayTag& CueTag, const FGameplayEffectSpec& InSpec);
 
 	UFUNCTION()
 	void NotifyMontageEndCallBack();

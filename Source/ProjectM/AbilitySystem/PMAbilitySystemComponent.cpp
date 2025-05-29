@@ -2,7 +2,7 @@
 #include "Abilities/PMGameplayAbility.h"
 #include "Animation/PMAnimInstance.h"
 #include "GameFramework/Pawn.h"
-#include "GameplayAbilities/Public/AbilitySystemInterface.h"
+#include "AbilitySystemInterface.h"
 
 UPMAbilitySystemComponent::UPMAbilitySystemComponent()
 {
@@ -151,6 +151,28 @@ void UPMAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 	InputReleasedSpecHandles.Reset();
 }
 
+FGameplayEffectSpec UPMAbilitySystemComponent::MakeGameplayEffectSpecWithSetByCaller(TSubclassOf<UGameplayEffect> EffectClass, AActor* EffectCauser, TMap<FGameplayTag, float> SetbyCallerMap, const FHitResult& HitResult, float Level /*= 0*/)
+{
+	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
+	ContextHandle.AddInstigator(GetOwner(), EffectCauser);
+	ContextHandle.AddHitResult(HitResult);
+
+	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingSpec(EffectClass, Level, ContextHandle);
+	FGameplayEffectSpec* Spec = EffectSpecHandle.Data.Get();
+	if (Spec == nullptr)
+	{
+		MCHAE_WARNING("EffectSpec is not valid");
+		return {};
+	}
+
+	for (const auto& Iter : SetbyCallerMap)
+	{
+		Spec->SetSetByCallerMagnitude(Iter.Key, Iter.Value);
+	}
+
+	return *Spec;
+}
+
 void UPMAbilitySystemComponent::SendGameplayTagToAbility(const FGameplayTag& InputTag, const FGameplayTag& SendTag)
 {
 	if (InputTag.IsValid())
@@ -174,7 +196,7 @@ void UPMAbilitySystemComponent::SendGameplayTagToAbility(const FGameplayTag& Inp
 	}
 }
 
-FActiveGameplayEffectHandle UPMAbilitySystemComponent::ApplyEffectToTargetWithSetByCaller(TSubclassOf<UGameplayEffect> EffectClass, AActor* Target, AActor* EffectCauser, TMap<FGameplayTag, float> SetbyCallerMap, float Level/* = 0*/)
+FActiveGameplayEffectHandle UPMAbilitySystemComponent::ApplyEffectToTargetWithSetByCaller(const FGameplayEffectSpec& InSpec, AActor* Target)
 {
 	IAbilitySystemInterface* TargetASCInterface = Cast<IAbilitySystemInterface>(Target);
 	if (TargetASCInterface == nullptr)
@@ -190,42 +212,10 @@ FActiveGameplayEffectHandle UPMAbilitySystemComponent::ApplyEffectToTargetWithSe
 		return FActiveGameplayEffectHandle{};
 	}
 
-	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
-	ContextHandle.AddInstigator(GetOwner(), EffectCauser);
-
-	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingSpec(EffectClass, Level, ContextHandle);
-	FGameplayEffectSpec* Spec = EffectSpecHandle.Data.Get();
-	if (Spec == nullptr)
-	{
-		MCHAE_WARNING("EffectSpec is not valid");
-		return FActiveGameplayEffectHandle{};
-	}
-
-	for (const auto& Iter : SetbyCallerMap)
-	{
-		Spec->SetSetByCallerMagnitude(Iter.Key, Iter.Value);
-	}
-
-	return TargetASC->ApplyGameplayEffectSpecToSelf(*Spec);
+	return TargetASC->ApplyGameplayEffectSpecToSelf(InSpec);
 }
 
-FActiveGameplayEffectHandle UPMAbilitySystemComponent::ApplyEffectToSelfWithSetByCaller(TSubclassOf<UGameplayEffect> EffectClass, AActor* EffectCauser, TMap<FGameplayTag, float> SetbyCallerMap, float Level /*= 0*/)
+FActiveGameplayEffectHandle UPMAbilitySystemComponent::ApplyEffectToSelfWithSetByCaller(const FGameplayEffectSpec& InSpec)
 {
-	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
-	ContextHandle.AddInstigator(GetOwner(), EffectCauser);
-
-	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingSpec(EffectClass, Level, ContextHandle);
-	FGameplayEffectSpec* Spec = EffectSpecHandle.Data.Get();
-	if (Spec == nullptr)
-	{
-		MCHAE_WARNING("EffectSpec is not valid");
-		return FActiveGameplayEffectHandle{};
-	}
-
-	for (const auto& Iter : SetbyCallerMap)
-	{
-		Spec->SetSetByCallerMagnitude(Iter.Key, Iter.Value);
-	}
-
-	return ApplyGameplayEffectSpecToSelf(*Spec);
+	return ApplyGameplayEffectSpecToSelf(InSpec);
 }

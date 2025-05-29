@@ -108,7 +108,8 @@ void AMMonsterBase::PostInitializeComponents()
 			SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_MaxHealth, MonsterDefinition->GetMonsterHp());
 			SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_AttackPower, MonsterDefinition->MonsterCombatInfo.MonsterAttackPower);
 			SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_DefensePower, MonsterDefinition->MonsterCombatInfo.MonsterDefensePower);
-			AbilitySystemComponent->ApplyEffectToSelfWithSetByCaller(MonsterDefinition->GetMonsterInfo().DefaultApplyEffect, nullptr, SetMap);
+			const FGameplayEffectSpec& Spec = AbilitySystemComponent->MakeGameplayEffectSpecWithSetByCaller(MonsterDefinition->GetMonsterInfo().DefaultApplyEffect, this, SetMap, {});
+			AbilitySystemComponent->ApplyEffectToSelfWithSetByCaller(Spec);
 
 			FPMAbilitySet_GrantedHandles TempGrantedHandles;
 			for (const UPMAbilitySet* AbilitySet : MonsterDefinition->AbilitySets)

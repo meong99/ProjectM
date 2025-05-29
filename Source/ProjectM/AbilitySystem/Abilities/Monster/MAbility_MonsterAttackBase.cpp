@@ -62,8 +62,10 @@ void UMAbility_MonsterAttackBase::EndAbility(const FGameplayAbilitySpecHandle Ha
 
 void UMAbility_MonsterAttackBase::TraceAttack()
 {
-	AMMonsterBase* OwnerActor = Cast<AMMonsterBase>(GetActorInfo().OwnerActor.Get());
-	if (OwnerActor)
+	AMMonsterBase*				OwnerActor = Cast<AMMonsterBase>(GetActorInfo().OwnerActor.Get());
+	UPMAbilitySystemComponent*	MonsterASC = OwnerActor ? OwnerActor->GetMAbilitySystemComponent() : nullptr;
+	const UPMCombatSet*			CombatSet = MonsterASC ? MonsterASC->GetSet<UPMCombatSet>() : nullptr;
+	if (CombatSet)
 	{
 		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes = { UEngineTypes::ConvertToObjectType(UMGameplayStatics::GetCollisionChannel(EMCollisionChannel::Player)) };
 		TArray<AActor*> ActorsToIgnore = { OwnerActor };
@@ -82,16 +84,15 @@ void UMAbility_MonsterAttackBase::TraceAttack()
 			AMPlayerCharacterBase* Player = Cast<AMPlayerCharacterBase>(Hit.GetActor());
 			if (Player)
 			{
-				UPMAbilitySystemComponent*	MonsterASC		= OwnerActor->GetMAbilitySystemComponent();
 				UPMAbilitySystemComponent*	PlayerASC		= Player->GetMAbilitySystemComponent();
-				const UPMCombatSet*			CombatSet		= MonsterASC ? MonsterASC->GetSet<UPMCombatSet>() : nullptr;
 				const UPMCombatSet*			PlayerCombatSet = PlayerASC ? PlayerASC->GetSet<UPMCombatSet>() : nullptr;
-				if (MonsterASC && CombatSet && PlayerCombatSet)
+				if (PlayerCombatSet)
 				{
 					TMap<FGameplayTag, float> SetbyCallerMap;
 					SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_AttackPower, CombatSet->GetAttackPower());
 					SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_DefensePower, PlayerCombatSet->GetDefensePower());
-					MonsterASC->ApplyEffectToTargetWithSetByCaller(MonsterDef->MonsterCombatInfo.DamageApplyEffect, Player, OwnerActor, SetbyCallerMap);
+					const FGameplayEffectSpec& Spec = MonsterASC->MakeGameplayEffectSpecWithSetByCaller(MonsterDef->MonsterCombatInfo.DamageApplyEffect, OwnerActor, SetbyCallerMap, Hit);
+					MonsterASC->ApplyEffectToTargetWithSetByCaller(Spec, Player);
 				}
 			}
 		}

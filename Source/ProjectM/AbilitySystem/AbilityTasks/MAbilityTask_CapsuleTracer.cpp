@@ -33,16 +33,14 @@ void UMAbilityTask_CapsuleTracer::TickTask(float DeltaTime)
 	UKismetSystemLibrary::CapsuleTraceMultiForObjects(this, Start, End, Radius, HalfHeight, ObjectTypes, false, ActorsToIgnore, DebugType, OutHits, true);
 	if (OutHits.Num())
 	{
-		TArray<AActor*> HitActors;
 		for (const FHitResult& HitResult : OutHits)
 		{
 			if (HitResult.GetActor())
 			{
-				HitActors.Add(HitResult.GetActor());
 				ActorsToIgnore.Add(HitResult.GetActor());
 			}
 		}
-		Delegate_OnHit.ExecuteIfBound(HitActors);
+		Delegate_OnHit.ExecuteIfBound(OutHits);
 	}
 }
 

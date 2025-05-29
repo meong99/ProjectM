@@ -15,6 +15,7 @@
 #include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "Equipment/PMEquipmentManagerComponent.h"
 #include "AbilitySystem/Attributes/PMCombatSet.h"
+#include "../../GameplayAbilities/Source/GameplayAbilities/Public/GameplayCueFunctionLibrary.h"
 
 UMAbility_DefaultAttackBase::UMAbility_DefaultAttackBase()
 {
@@ -160,30 +161,53 @@ void UMAbility_DefaultAttackBase::TraceAttack(ACharacter* OwnerCharacter, UPMWea
 	}
 }
 
-void UMAbility_DefaultAttackBase::Callback_OnHit(const TArray<AActor*>& HitActors)
+void UMAbility_DefaultAttackBase::Callback_OnHit(const TArray<FHitResult>& HitResults)
 {
-	for (AActor* HitActor : HitActors)
+	UPMAbilitySystemComponent* OwnerAbilitySystem = Cast<UPMAbilitySystemComponent>(GetCurrentActorInfo()->AbilitySystemComponent);
+	for (const FHitResult& HitResult : HitResults)
 	{
-		AMMonsterBase* Monster = Cast<AMMonsterBase>(HitActor);
-		if (Monster && !OverlappedActors.Contains(HitActor) && ItemDef)
-		{
-			UPMAbilitySystemComponent* OwnerAbilitySystem = Cast<UPMAbilitySystemComponent>(GetCurrentActorInfo()->AbilitySystemComponent);
-			UPMAbilitySystemComponent* MonsterAbilitySystem = Monster->GetMAbilitySystemComponent();
-			UMWeaponItemDefinition* WeaponDefCDO = Cast<UMWeaponItemDefinition>(ItemDef);
-			const UPMCombatSet* CombatSet = OwnerAbilitySystem->GetSet<UPMCombatSet>();
-			const UPMCombatSet* MonsterCombatSet = MonsterAbilitySystem ? MonsterAbilitySystem->GetSet<UPMCombatSet>() : nullptr;
-
-			if (OwnerAbilitySystem && WeaponDefCDO && CombatSet && MonsterCombatSet)
-			{
-				TMap<FGameplayTag, float> SetbyCallerMap;
-				SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_AttackPower, CombatSet->GetAttackPower());
-				SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_DefensePower, MonsterCombatSet->GetDefensePower());
-				OwnerAbilitySystem->ApplyEffectToTargetWithSetByCaller(WeaponDefCDO->DefaultAttackEffectClass, Monster, OwnerAbilitySystem->GetOwner(), SetbyCallerMap);
-			}
-
-			OverlappedActors.Add(HitActor);
-		}
+		ApplyEffectToTarget(OwnerAbilitySystem, HitResult);
 	}
+}
+
+void UMAbility_DefaultAttackBase::ApplyEffectToTarget(UPMAbilitySystemComponent* OwnerAbilitySystem, const FHitResult& HitResult)
+{
+	AActor* HitActor = HitResult.GetActor();
+	AMMonsterBase* Monster = Cast<AMMonsterBase>(HitActor);
+	if (Monster && !OverlappedActors.Contains(HitActor) && ItemDef)
+	{
+		UPMAbilitySystemComponent* MonsterAbilitySystem = Monster->GetMAbilitySystemComponent();
+		UMWeaponItemDefinition* WeaponDefCDO = Cast<UMWeaponItemDefinition>(ItemDef);
+		const UPMCombatSet* CombatSet = OwnerAbilitySystem->GetSet<UPMCombatSet>();
+		const UPMCombatSet* MonsterCombatSet = MonsterAbilitySystem ? MonsterAbilitySystem->GetSet<UPMCombatSet>() : nullptr;
+
+		if (OwnerAbilitySystem && WeaponDefCDO && CombatSet && MonsterCombatSet)
+		{
+			TMap<FGameplayTag, float> SetbyCallerMap;
+			SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_AttackPower, CombatSet->GetAttackPower());
+			SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_DefensePower, MonsterCombatSet->GetDefensePower());
+			FGameplayEffectSpec Spec = OwnerAbilitySystem->MakeGameplayEffectSpecWithSetByCaller(WeaponDefCDO->DefaultAttackEffectClass, OwnerAbilitySystem->GetOwner(), SetbyCallerMap, HitResult);
+			OwnerAbilitySystem->ApplyEffectToTargetWithSetByCaller(Spec, Monster);
+			SendGameplayCue(OwnerAbilitySystem, GameplayCue_Combat_Hit, Spec);
+		}
+
+		OverlappedActors.Add(HitActor);
+	}
+}
+
+void UMAbility_DefaultAttackBase::SendGameplayCue(UPMAbilitySystemComponent* OwnerAbilitySystem, const FGameplayTag& CueTag, const FGameplayEffectSpec& InSpec)
+{
+	FGameplayCueParameters CueParams;
+	const FGameplayEffectContextHandle& EffectContext = InSpec.GetEffectContext();
+	const FHitResult* HitResult = EffectContext.GetHitResult();
+	if (HitResult)
+	{
+		CueParams = UGameplayCueFunctionLibrary::MakeGameplayCueParametersFromHitResult(*HitResult);
+	}
+
+	CueParams.EffectContext = EffectContext;
+
+	OwnerAbilitySystem->ExecuteGameplayCue(CueTag, CueParams);
 }
 
 void UMAbility_DefaultAttackBase::NotifyMontageEndCallBack()

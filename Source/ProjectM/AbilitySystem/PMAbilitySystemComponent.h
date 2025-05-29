@@ -32,13 +32,14 @@ public:
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 	void ProcessAbilityInput(float DeltaTime, bool bGamePaused);
 
+	FGameplayEffectSpec MakeGameplayEffectSpecWithSetByCaller(TSubclassOf<UGameplayEffect> EffectClass, AActor* EffectCauser, TMap<FGameplayTag, float> SetbyCallerMap,
+												const FHitResult& HitResult, float Level = 0);
+
 	UFUNCTION(BlueprintCallable)
 	void SendGameplayTagToAbility(const FGameplayTag& InputTag, const FGameplayTag& SendTag);
 
-	UFUNCTION(BlueprintCallable)
-	FActiveGameplayEffectHandle ApplyEffectToTargetWithSetByCaller(TSubclassOf<UGameplayEffect> EffectClass, AActor* Target, AActor* EffectCauser, TMap<FGameplayTag, float> SetbyCallerMap, float Level = 0);
-	UFUNCTION(BlueprintCallable)
-	FActiveGameplayEffectHandle ApplyEffectToSelfWithSetByCaller(TSubclassOf<UGameplayEffect> EffectClass, AActor* EffectCauser, TMap<FGameplayTag, float> SetbyCallerMap, float Level = 0);
+	FActiveGameplayEffectHandle ApplyEffectToTargetWithSetByCaller(const FGameplayEffectSpec& InSpec, AActor* Target);
+	FActiveGameplayEffectHandle ApplyEffectToSelfWithSetByCaller(const FGameplayEffectSpec& InSpec);
 
 /*
 * Member Variables

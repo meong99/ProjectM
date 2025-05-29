@@ -7,7 +7,7 @@
 
 class USkeletalMeshComponent;
 
-DECLARE_DELEGATE_OneParam(FOnHit, const TArray<AActor*>& HitActors);
+DECLARE_DELEGATE_OneParam(FOnHit, const TArray<FHitResult>& HitResults);
 
 /**
  *

@@ -34,16 +34,14 @@ void UMAbilityTask_SphereTracer::TickTask(float DeltaTime)
 	UKismetSystemLibrary::SphereTraceMultiForObjects(this, Start, End, Radius, ObjectTypes, false, ActorsToIgnore, DebugType, OutHits, true);
 	if (OutHits.Num())
 	{
-		TArray<AActor*> HitActors;
 		for (const FHitResult& HitResult : OutHits)
 		{
 			if (HitResult.GetActor())
 			{
-				HitActors.Add(HitResult.GetActor());
 				ActorsToIgnore.Add(HitResult.GetActor());
 			}
 		}
-		Delegate_OnHit.ExecuteIfBound(HitActors);
+		Delegate_OnHit.ExecuteIfBound(OutHits);
 	}
 }
 

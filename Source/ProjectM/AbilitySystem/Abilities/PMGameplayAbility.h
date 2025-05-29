@@ -12,6 +12,8 @@ UE_DECLARE_GAMEPLAY_TAG_EXTERN(Animation_Notify_EndAttack);
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(Animation_Notify_StartDead);
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(Animation_Notify_EndDead);
 
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayCue_Combat_Hit);
+
 class UPMAbilityCost;
 
 UENUM(BlueprintType)
