@@ -186,26 +186,10 @@ void UMAbility_DefaultAttackBase::ApplyEffectToTarget(UPMAbilitySystemComponent*
 			FGameplayEffectSpec Spec = OwnerAbilitySystem->MakeGameplayEffectSpecWithSetByCaller(ContextHandle, WeaponDefCDO->DefaultAttackEffectClass, SetbyCallerMap, GameplayCue_Combat_Hit);
 
 			OwnerAbilitySystem->ApplyEffectToTargetWithSetByCaller(Spec, Monster);
-			//SendGameplayCue(MonsterAbilitySystem, GameplayCue_Combat_Hit, Spec);
 		}
 
 		OverlappedActors.Add(HitActor);
 	}
-}
-
-void UMAbility_DefaultAttackBase::SendGameplayCue(UPMAbilitySystemComponent* TargetAbilitySystem, const FGameplayTag& CueTag, const FGameplayEffectSpec& InSpec)
-{
-	FGameplayCueParameters CueParams;
-	const FGameplayEffectContextHandle& EffectContext = InSpec.GetEffectContext();
-	const FHitResult* HitResult = EffectContext.GetHitResult();
-	if (HitResult)
-	{
-		CueParams = UGameplayCueFunctionLibrary::MakeGameplayCueParametersFromHitResult(*HitResult);
-	}
-
-	CueParams.EffectContext = EffectContext;
-
-	TargetAbilitySystem->ExecuteGameplayCue(CueTag, CueParams);
 }
 
 void UMAbility_DefaultAttackBase::NotifyMontageEndCallBack()

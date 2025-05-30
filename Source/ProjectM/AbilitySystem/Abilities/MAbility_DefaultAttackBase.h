@@ -45,7 +45,6 @@ protected:
 	virtual void TraceAttack(ACharacter* OwnerCharacter);
 	virtual void Callback_OnHit(const TArray<FHitResult>& HitResults);
 	virtual void ApplyEffectToTarget(UPMAbilitySystemComponent* OwnerAbilitySystem, const FHitResult& HitResult);
-	virtual void SendGameplayCue(UPMAbilitySystemComponent* TargetAbilitySystem, const FGameplayTag& CueTag, const FGameplayEffectSpec& InSpec);
 
 	UFUNCTION()
 	void NotifyMontageEndCallBack();
