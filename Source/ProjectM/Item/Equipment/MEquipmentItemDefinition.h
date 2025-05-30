@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Inventory/PMInventoryItemDefinition.h"
+#include "Types/MItemTypes.h"
 #include "MEquipmentItemDefinition.generated.h"
 
 class UPMAbilitySet;
@@ -49,6 +50,9 @@ public:
 * Member Variables
 */
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment")
+	TArray<FMSetbyCallerFloat> EffectValues;
+
 	// Spawn될 장비에 대한 메타데이터
 	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
 	TArray<FPMEquipmentActorToSpawn> ActorsToSpawn;
