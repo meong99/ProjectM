@@ -41,7 +41,7 @@ void UPMEquipmentManagerComponent::BeginDestroy()
 void UPMEquipmentManagerComponent::OnServerRestartPlayer()
 {
 	DestroyEquipmentActors();
-	SpawnEquipmentActors();
+	SpawnEquipmentActor();
 }
 
 void UPMEquipmentManagerComponent::EquipItem(UMEquipmentItemInstance* ItemInstance)
@@ -72,7 +72,7 @@ void UPMEquipmentManagerComponent::EquipItem(UMEquipmentItemInstance* ItemInstan
 
 			GrantedHandles.Add(ItemInstance->ItemHandle.ItemUid, TempGrantedHandles);
 
-			ItemInstance->SpawnEquipmentActors(ItemCDO->ActorsToSpawn);
+			ItemInstance->SpawnEquipmentActor(ItemCDO->ActorToSpawn);
 			EquippedItems.Add(ItemInstance);
 			OnRep_OnChangeEquipedItem();
 		}
@@ -145,7 +145,7 @@ void UPMEquipmentManagerComponent::OnRep_OnChangeEquipedItem()
 
 }
 
-void UPMEquipmentManagerComponent::SpawnEquipmentActors()
+void UPMEquipmentManagerComponent::SpawnEquipmentActor()
 {
 	for (UMEquipmentItemInstance* Instance : EquippedItems)
 	{
@@ -154,7 +154,7 @@ void UPMEquipmentManagerComponent::SpawnEquipmentActors()
 			const UMEquipmentItemDefinition* ItemCDO = Instance->ItemDef->GetDefaultObject<UMEquipmentItemDefinition>();
 			if (ItemCDO)
 			{
-				Instance->SpawnEquipmentActors(ItemCDO->ActorsToSpawn);
+				Instance->SpawnEquipmentActor(ItemCDO->ActorToSpawn);
 			}
 		}
 	}

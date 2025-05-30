@@ -15,7 +15,7 @@
 #include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "Equipment/PMEquipmentManagerComponent.h"
 #include "AbilitySystem/Attributes/PMCombatSet.h"
-#include "../../GameplayAbilities/Source/GameplayAbilities/Public/GameplayCueFunctionLibrary.h"
+#include "GameplayCueFunctionLibrary.h"
 
 UMAbility_DefaultAttackBase::UMAbility_DefaultAttackBase()
 {
@@ -100,10 +100,10 @@ void UMAbility_DefaultAttackBase::StartAttackTracing(FGameplayEventData Payload)
 	if (HasAuthority(&ActivationInfo) && WeaponInstance)
 	{
 		ACharacter* OwnerCharacter = Cast<ACharacter>(WeaponInstance->GetPawn());
-
+		WeakWeaponActor = WeaponInstance->GetSpawnedActor();
 		if (OwnerCharacter)
 		{
-			TraceAttack(OwnerCharacter, WeaponInstance);
+			TraceAttack(OwnerCharacter);
 		}
 	}
 }
@@ -118,20 +118,14 @@ void UMAbility_DefaultAttackBase::EndAttackTracing(FGameplayEventData Payload)
 	}
 }
 
-void UMAbility_DefaultAttackBase::TraceAttack(ACharacter* OwnerCharacter, UPMWeaponInstance* WeaponInstance)
+void UMAbility_DefaultAttackBase::TraceAttack(ACharacter* OwnerCharacter)
 {
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes = { UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1) };
 	TArray<AActor*> ActorsToIgnore = { OwnerCharacter };
 	EDrawDebugTrace::Type DebugType = EDrawDebugTrace::None;
 	TArray<FHitResult> OutHits;
 
-	AActor* Weapon = nullptr;
-	if (WeaponInstance->GetSpawnedActors().Num() > 0)
-	{
-		Weapon = WeaponInstance->GetSpawnedActors()[0];
-	}
-
-	if (!Weapon || !Weapon->FindComponentByClass<USkeletalMeshComponent>())
+	if (!WeakWeaponActor.IsValid() || !WeakWeaponActor->FindComponentByClass<USkeletalMeshComponent>())
 	{
 		ensure(false);
 		MCHAE_WARNING("Ability trace fail!! Because can't found weapon actor! Weapon actor must be spawned! ");
@@ -140,7 +134,7 @@ void UMAbility_DefaultAttackBase::TraceAttack(ACharacter* OwnerCharacter, UPMWea
 
 	UMAbilityTask_SphereTracer* Task = UMAbilityTask_SphereTracer::CreateSphereTracerTask(
 		this, 
-		Weapon->FindComponentByClass<USkeletalMeshComponent>(),
+		WeakWeaponActor->FindComponentByClass<USkeletalMeshComponent>(),
 		30.f,
 		TEXT("weapon_start"),
 		TEXT("weapon_end"),
@@ -183,19 +177,23 @@ void UMAbility_DefaultAttackBase::ApplyEffectToTarget(UPMAbilitySystemComponent*
 
 		if (OwnerAbilitySystem && WeaponDefCDO && CombatSet && MonsterCombatSet)
 		{
+			const FGameplayEffectContextHandle& ContextHandle = OwnerAbilitySystem->MakeGameplayEffectContext(OwnerAbilitySystem->GetOwner(), WeakWeaponActor.Get(), HitResult);
+
 			TMap<FGameplayTag, float> SetbyCallerMap;
 			SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_AttackPower, CombatSet->GetAttackPower());
 			SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_DefensePower, MonsterCombatSet->GetDefensePower());
-			FGameplayEffectSpec Spec = OwnerAbilitySystem->MakeGameplayEffectSpecWithSetByCaller(WeaponDefCDO->DefaultAttackEffectClass, OwnerAbilitySystem->GetOwner(), SetbyCallerMap, HitResult);
+
+			FGameplayEffectSpec Spec = OwnerAbilitySystem->MakeGameplayEffectSpecWithSetByCaller(ContextHandle, WeaponDefCDO->DefaultAttackEffectClass, SetbyCallerMap, GameplayCue_Combat_Hit);
+
 			OwnerAbilitySystem->ApplyEffectToTargetWithSetByCaller(Spec, Monster);
-			SendGameplayCue(OwnerAbilitySystem, GameplayCue_Combat_Hit, Spec);
+			//SendGameplayCue(MonsterAbilitySystem, GameplayCue_Combat_Hit, Spec);
 		}
 
 		OverlappedActors.Add(HitActor);
 	}
 }
 
-void UMAbility_DefaultAttackBase::SendGameplayCue(UPMAbilitySystemComponent* OwnerAbilitySystem, const FGameplayTag& CueTag, const FGameplayEffectSpec& InSpec)
+void UMAbility_DefaultAttackBase::SendGameplayCue(UPMAbilitySystemComponent* TargetAbilitySystem, const FGameplayTag& CueTag, const FGameplayEffectSpec& InSpec)
 {
 	FGameplayCueParameters CueParams;
 	const FGameplayEffectContextHandle& EffectContext = InSpec.GetEffectContext();
@@ -207,7 +205,7 @@ void UMAbility_DefaultAttackBase::SendGameplayCue(UPMAbilitySystemComponent* Own
 
 	CueParams.EffectContext = EffectContext;
 
-	OwnerAbilitySystem->ExecuteGameplayCue(CueTag, CueParams);
+	TargetAbilitySystem->ExecuteGameplayCue(CueTag, CueParams);
 }
 
 void UMAbility_DefaultAttackBase::NotifyMontageEndCallBack()

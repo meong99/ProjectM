@@ -151,13 +151,10 @@ void UPMAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 	InputReleasedSpecHandles.Reset();
 }
 
-FGameplayEffectSpec UPMAbilitySystemComponent::MakeGameplayEffectSpecWithSetByCaller(TSubclassOf<UGameplayEffect> EffectClass, AActor* EffectCauser, TMap<FGameplayTag, float> SetbyCallerMap, const FHitResult& HitResult, float Level /*= 0*/)
+FGameplayEffectSpec UPMAbilitySystemComponent::MakeGameplayEffectSpecWithSetByCaller(const FGameplayEffectContextHandle& ContextHandle, TSubclassOf<UGameplayEffect> EffectClass, 
+																					 TMap<FGameplayTag, float> SetbyCallerMap, const FGameplayTag& DynamicTag)
 {
-	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
-	ContextHandle.AddInstigator(GetOwner(), EffectCauser);
-	ContextHandle.AddHitResult(HitResult);
-
-	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingSpec(EffectClass, Level, ContextHandle);
+	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingSpec(EffectClass, 1, ContextHandle);
 	FGameplayEffectSpec* Spec = EffectSpecHandle.Data.Get();
 	if (Spec == nullptr)
 	{
@@ -170,7 +167,18 @@ FGameplayEffectSpec UPMAbilitySystemComponent::MakeGameplayEffectSpecWithSetByCa
 		Spec->SetSetByCallerMagnitude(Iter.Key, Iter.Value);
 	}
 
+	Spec->AddDynamicAssetTag(DynamicTag);
+
 	return *Spec;
+}
+
+FGameplayEffectContextHandle UPMAbilitySystemComponent::MakeGameplayEffectContext(AActor* Instigator, AActor* EffectCauser, const FHitResult& HitResult)
+{
+	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
+	ContextHandle.AddInstigator(Instigator, EffectCauser);
+	ContextHandle.AddHitResult(HitResult);
+
+	return ContextHandle;
 }
 
 void UPMAbilitySystemComponent::SendGameplayTagToAbility(const FGameplayTag& InputTag, const FGameplayTag& SendTag)
@@ -212,7 +220,7 @@ FActiveGameplayEffectHandle UPMAbilitySystemComponent::ApplyEffectToTargetWithSe
 		return FActiveGameplayEffectHandle{};
 	}
 
-	return TargetASC->ApplyGameplayEffectSpecToSelf(InSpec);
+	return ApplyGameplayEffectSpecToTarget(InSpec, TargetASC);
 }
 
 FActiveGameplayEffectHandle UPMAbilitySystemComponent::ApplyEffectToSelfWithSetByCaller(const FGameplayEffectSpec& InSpec)

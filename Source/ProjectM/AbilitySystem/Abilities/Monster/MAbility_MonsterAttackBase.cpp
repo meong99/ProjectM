@@ -91,7 +91,8 @@ void UMAbility_MonsterAttackBase::TraceAttack()
 					TMap<FGameplayTag, float> SetbyCallerMap;
 					SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_AttackPower, CombatSet->GetAttackPower());
 					SetbyCallerMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_DefensePower, PlayerCombatSet->GetDefensePower());
-					const FGameplayEffectSpec& Spec = MonsterASC->MakeGameplayEffectSpecWithSetByCaller(MonsterDef->MonsterCombatInfo.DamageApplyEffect, OwnerActor, SetbyCallerMap, Hit);
+					const FGameplayEffectContextHandle& ContextHandle = MonsterASC->MakeGameplayEffectContext(OwnerActor, OwnerActor, Hit);
+					const FGameplayEffectSpec& Spec = MonsterASC->MakeGameplayEffectSpecWithSetByCaller(ContextHandle, MonsterDef->MonsterCombatInfo.DamageApplyEffect, SetbyCallerMap);
 					MonsterASC->ApplyEffectToTargetWithSetByCaller(Spec, Player);
 				}
 			}

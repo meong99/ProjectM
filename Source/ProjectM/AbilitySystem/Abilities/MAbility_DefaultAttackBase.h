@@ -42,10 +42,10 @@ protected:
 	UFUNCTION()
 	virtual void EndAttackTracing(FGameplayEventData Payload);
 
-	virtual void TraceAttack(ACharacter* OwnerCharacter, UPMWeaponInstance* WeaponInstance);
+	virtual void TraceAttack(ACharacter* OwnerCharacter);
 	virtual void Callback_OnHit(const TArray<FHitResult>& HitResults);
 	virtual void ApplyEffectToTarget(UPMAbilitySystemComponent* OwnerAbilitySystem, const FHitResult& HitResult);
-	virtual void SendGameplayCue(UPMAbilitySystemComponent* OwnerAbilitySystem, const FGameplayTag& CueTag, const FGameplayEffectSpec& InSpec);
+	virtual void SendGameplayCue(UPMAbilitySystemComponent* TargetAbilitySystem, const FGameplayTag& CueTag, const FGameplayEffectSpec& InSpec);
 
 	UFUNCTION()
 	void NotifyMontageEndCallBack();
@@ -62,6 +62,8 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UAbilityTask> TraceTask;
+
+	TWeakObjectPtr<AActor> WeakWeaponActor;
 
 	int32 MontageIndex = 0;
 

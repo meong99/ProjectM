@@ -108,7 +108,9 @@ void AMMonsterBase::PostInitializeComponents()
 			SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_MaxHealth, MonsterDefinition->GetMonsterHp());
 			SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_AttackPower, MonsterDefinition->MonsterCombatInfo.MonsterAttackPower);
 			SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_DefensePower, MonsterDefinition->MonsterCombatInfo.MonsterDefensePower);
-			const FGameplayEffectSpec& Spec = AbilitySystemComponent->MakeGameplayEffectSpecWithSetByCaller(MonsterDefinition->GetMonsterInfo().DefaultApplyEffect, this, SetMap, {});
+
+			const FGameplayEffectContextHandle& ContextHandle = AbilitySystemComponent->MakeGameplayEffectContext(this, this, {});
+			const FGameplayEffectSpec& Spec = AbilitySystemComponent->MakeGameplayEffectSpecWithSetByCaller(ContextHandle, MonsterDefinition->GetMonsterInfo().DefaultApplyEffect, SetMap);
 			AbilitySystemComponent->ApplyEffectToSelfWithSetByCaller(Spec);
 
 			FPMAbilitySet_GrantedHandles TempGrantedHandles;
@@ -207,11 +209,11 @@ void AMMonsterBase::Callback_OnDamaged(const FOnAttributeChangeData& ChangeData)
 		const FGameplayEffectContextHandle& EffectContext = ChangeData.GEModData->EffectSpec.GetEffectContext();
 		LastAttacker = EffectContext.GetOriginalInstigator();
 
-		UMDamageTextWidget* Widget = Cast<UMDamageTextWidget>(DamageWidgetComponent->GetWidget());
-		if (Widget)
-		{
-			Widget->OnDamaged(FMath::Abs(ChangeData.GEModData->EvaluatedData.Magnitude));
-		}
+		//UMDamageTextWidget* Widget = Cast<UMDamageTextWidget>(DamageWidgetComponent->GetWidget());
+		//if (Widget)
+		//{
+		//	Widget->OnDamaged(FMath::Abs(ChangeData.GEModData->EvaluatedData.Magnitude));
+		//}
 	}
 }
 

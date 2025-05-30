@@ -1,6 +1,7 @@
 #include "MDamageExecution.h"
 #include "AbilitySystem/Attributes/PMCombatSet.h"
 #include "AbilitySystem/Attributes/PMHealthSet.h"
+#include "../../GameplayAbilities/Source/GameplayAbilities/Public/GameplayCueFunctionLibrary.h"
 
 struct FCombatStatics
 {
@@ -48,5 +49,25 @@ void UMDamageExecution::Execute_Implementation(const FGameplayEffectCustomExecut
 	if (Damage > 0.0f)
 	{
 		OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(UPMHealthSet::GetHealthAttribute(), EGameplayModOp::Additive, -Damage));
+	}
+
+	UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
+	if (TargetASC)
+	{
+		FGameplayCueParameters CueParams;
+		const FGameplayEffectContextHandle& EffectContext = Spec.GetEffectContext();
+		const FHitResult* HitResult = EffectContext.GetHitResult();
+		if (HitResult)
+		{
+			CueParams = UGameplayCueFunctionLibrary::MakeGameplayCueParametersFromHitResult(*HitResult);
+		}
+
+		CueParams.EffectContext = EffectContext;
+		CueParams.RawMagnitude = Damage;
+
+		for (const FGameplayTag& CueTag : Spec.GetDynamicAssetTags())
+		{
+			TargetASC->ExecuteGameplayCue(CueTag, CueParams);
+		}
 	}
 }

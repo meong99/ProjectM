@@ -37,7 +37,7 @@ public:
 	virtual void	OnEquipped();
 	virtual void	OnUnequipped();
 
-	void	SpawnEquipmentActors(const TArray<FPMEquipmentActorToSpawn>& ActorsToSpawn);
+	void	SpawnEquipmentActor(const FPMEquipmentActorToSpawn& ActorInfo);
 	void	DestroyEquipmentActors();
 
 	UFUNCTION(BlueprintPure, Category = "Equipment")
@@ -51,7 +51,7 @@ public:
 	APawn*					GetTypedPawn(TSubclassOf<APawn> PawnType) const;
 
 	UFUNCTION(BlueprintPure, Category = "Equipment")
-	const TArray<AActor*>&	GetSpawnedActors() const { return SpawnedActors; }
+	AActor*	GetSpawnedActor() const { return SpawnedActor; }
 
 	EMEquipmentItemType		GetEquipmentItemType() const { return EquipmentItemType; }
 
@@ -64,7 +64,7 @@ protected:
 public:
 	// EquipmentDefinition에 따라서 Instancing된 Actor들
 	UPROPERTY(Replicated)
-	TArray<TObjectPtr<AActor>> SpawnedActors;
+	TObjectPtr<AActor> SpawnedActor;
 
 	UPROPERTY(VisibleAnywhere)
 	EMEquipmentItemType EquipmentItemType = EMEquipmentItemType::None;

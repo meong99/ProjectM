@@ -41,7 +41,7 @@ protected:
 	UFUNCTION()
 	void OnRep_OnChangeEquipedItem();
 
-	void SpawnEquipmentActors();
+	void SpawnEquipmentActor();
 	void DestroyEquipmentActors();
 
 	UPMAbilitySystemComponent* GetAbilitySystemComponent() const;

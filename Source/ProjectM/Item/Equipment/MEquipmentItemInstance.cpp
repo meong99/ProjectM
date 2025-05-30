@@ -17,7 +17,7 @@ UMEquipmentItemInstance::UMEquipmentItemInstance(const FObjectInitializer& Objec
 void UMEquipmentItemInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ThisClass, SpawnedActors);
+	DOREPLIFETIME(UMEquipmentItemInstance, SpawnedActor);
 }
 
 void UMEquipmentItemInstance::OnInstanceCreated()
@@ -81,46 +81,53 @@ void UMEquipmentItemInstance::OnUnequipped()
 
 }
 
-void UMEquipmentItemInstance::SpawnEquipmentActors(const TArray<FPMEquipmentActorToSpawn>& ActorsToSpawn)
+void UMEquipmentItemInstance::SpawnEquipmentActor(const FPMEquipmentActorToSpawn& ActorInfo)
 {
-	if (APawn* OwningPawn = GetPawn())
+	APawn* OwningPawn = GetPawn();
+	if (OwningPawn)
 	{
-		USceneComponent* AttachTarget = OwningPawn->GetRootComponent();
-		if (ACharacter* Character = Cast<ACharacter>(OwningPawn))
+		if (ActorInfo.ActorToSpawn)
 		{
-			AttachTarget = Character->GetMesh();
-		}
+			USceneComponent* AttachTarget = OwningPawn->GetRootComponent();
+			if (ACharacter* Character = Cast<ACharacter>(OwningPawn))
+			{
+				AttachTarget = Character->GetMesh();
+			}
 
-		for (const FPMEquipmentActorToSpawn& SpawnInfo : ActorsToSpawn)
-		{
-			AActor* NewActor = GetWorld()->SpawnActorDeferred<AActor>(SpawnInfo.ActorToSpawn, FTransform::Identity, OwningPawn);
+			AActor* NewActor = GetWorld()->SpawnActorDeferred<AActor>(ActorInfo.ActorToSpawn, FTransform::Identity, OwningPawn);
 			NewActor->FinishSpawning(FTransform::Identity, true);
 
-			NewActor->SetActorRelativeTransform(SpawnInfo.AttachTransform);
+			NewActor->SetActorRelativeTransform(ActorInfo.AttachTransform);
 
-			NewActor->AttachToComponent(AttachTarget, FAttachmentTransformRules::KeepRelativeTransform, SpawnInfo.AttachSocket);
+			NewActor->AttachToComponent(AttachTarget, FAttachmentTransformRules::KeepRelativeTransform, ActorInfo.AttachSocket);
 			AMEquipableActorBase* EquippableActor = Cast<AMEquipableActorBase>(NewActor);
 			if (EquippableActor)
 			{
 				EquippableActor->SetItemDef(ItemDef.Get());
 			}
 
-			SpawnedActors.Add(NewActor);
+			SpawnedActor = NewActor;
 		}
+		else
+		{
+			ensure(false);
+			MCHAE_ERROR("장비 테이블에 스폰할 액터가 설정되어있지 않음.");
+		}
+	}
+	else
+	{
+		ensure(false);
+		// 왜 Pawn이 없지?
 	}
 }
 
 void UMEquipmentItemInstance::DestroyEquipmentActors()
 {
-	for (AActor* Actor : SpawnedActors)
+	if (IsValid(SpawnedActor))
 	{
-		if (Actor)
-		{
-			Actor->Destroy();
-		}
+		SpawnedActor->Destroy();
+		SpawnedActor = nullptr;
 	}
-
-	SpawnedActors.Empty();
 }
 
 APawn* UMEquipmentItemInstance::GetPawn() const

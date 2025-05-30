@@ -21,6 +21,7 @@ class PROJECTM_API UMDamageTextWidget : public UMWidgetBase
 public:
 	UMDamageTextWidget(const FObjectInitializer& ObjectInitializer);
 
+	UFUNCTION(BlueprintCallable)
 	void OnDamaged(const float Damage);
 
 /*

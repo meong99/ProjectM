@@ -48,14 +48,22 @@ void UPMEquipmentInstance::SpawnEquipmentActors(const TArray<FPMEquipmentActorTo
 
 		for (const FPMEquipmentActorToSpawn& SpawnInfo : ActorsToSpawn)
 		{
-			AActor* NewActor = GetWorld()->SpawnActorDeferred<AActor>(SpawnInfo.ActorToSpawn, FTransform::Identity, OwningPawn);
-			NewActor->FinishSpawning(FTransform::Identity, true);
+			if (SpawnInfo.ActorToSpawn)
+			{
+				AActor* NewActor = GetWorld()->SpawnActorDeferred<AActor>(SpawnInfo.ActorToSpawn, FTransform::Identity, OwningPawn);
+				NewActor->FinishSpawning(FTransform::Identity, true);
 
-			NewActor->SetActorRelativeTransform(SpawnInfo.AttachTransform);
+				NewActor->SetActorRelativeTransform(SpawnInfo.AttachTransform);
 
-			NewActor->AttachToComponent(AttachTarget, FAttachmentTransformRules::KeepRelativeTransform, SpawnInfo.AttachSocket);
+				NewActor->AttachToComponent(AttachTarget, FAttachmentTransformRules::KeepRelativeTransform, SpawnInfo.AttachSocket);
 
-			SpawnedActors.Add(NewActor);
+				SpawnedActors.Add(NewActor);
+			}
+			else
+			{
+				ensure(false);
+				MCHAE_ERROR("장비 테이블에 스폰할 액터가 설정되어있지 않음.");
+			}
 		}
 	}
 }
