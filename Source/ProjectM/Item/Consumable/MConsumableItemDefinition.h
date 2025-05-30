@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Inventory/PMInventoryItemDefinition.h"
 #include "Templates/SubclassOf.h"
+#include "Types/MItemTypes.h"
 #include "MConsumableItemDefinition.generated.h"
 
 class UGameplayEffect;
@@ -15,4 +16,7 @@ class PROJECTM_API UMConsumableItemDefinition : public UPMInventoryItemDefinitio
 
 public:
 	UMConsumableItemDefinition();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Consumable")
+	TArray<FMSetbyCallerFloat> EffectValues;
 };

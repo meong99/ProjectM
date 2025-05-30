@@ -13,7 +13,7 @@ struct FMDropInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1100001, ClampMax = 1199999))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32 ItemId = INDEX_NONE;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1))
