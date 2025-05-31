@@ -29,16 +29,6 @@ void UMEquipmentItemInstance::OnInstanceCreated()
 	}
 }
 
-int32 UMEquipmentItemInstance::ActivateItem()
-{
-	if (CanUseItem() == false)
-	{
-		return GetStatTagStackCount(FPMGameplayTags::Get().Item_Quentity);
-	}
-
-	return Super::ActivateItem();
-}
-
 bool UMEquipmentItemInstance::CanUseItem() const
 {
 	bool bCanUseItem = false;

@@ -23,11 +23,10 @@ class PROJECTM_API UMEquipableItemInstance : public UPMInventoryItemInstance
 public:
 	UMEquipableItemInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	virtual bool IsSupportedForNetworking() const override { return true; }
-
-	virtual void OnInstanceCreated() override;
-	virtual int32 ActivateItem() override;
-	virtual bool CanUseItem() const override;
+	virtual bool	IsSupportedForNetworking() const override { return true; }
+	virtual void	OnInstanceCreated() override;
+	virtual bool	ActivateItem() override;
+	virtual bool	CanUseItem() const override;
 
 	/*
 * Member Functions

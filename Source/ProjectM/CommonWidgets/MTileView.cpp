@@ -68,6 +68,7 @@ void UMTileView::RemoveItem(const FMItemHandle& ItemHandle)
 		if (Data && Data->ItemEntry.ItemUid == ItemHandle.ItemUid)
 		{
 			Data->SetNewEntry({});
+			UpdateEmptySlot(Data->SlotIndex);
 			RegenerateAllEntries();
 			break;
 		}

@@ -38,7 +38,7 @@ public:
 
 	virtual void OnInstanceCreated() {};
 
-	virtual int32 ActivateItem();
+	virtual bool ActivateItem();
 	virtual bool CanUseItem() const { return false; }
 
 	/** add/remove stack count to stat tag(=gameplay-tag stack) */

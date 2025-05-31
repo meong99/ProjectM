@@ -8,48 +8,48 @@ UMConsumableItemInstance::UMConsumableItemInstance(const FObjectInitializer& Obj
 {
 }
 
-int32 UMConsumableItemInstance::ActivateItem()
+bool UMConsumableItemInstance::ActivateItem()
 {
-	if (CanUseItem() == false)
-	{
-		return GetStatTagStackCount(FPMGameplayTags::Get().Item_Quentity);
-	}
+	const bool bIsActivated = Super::ActivateItem();
 
-	const UMConsumableItemDefinition* ItemDefCDO = GetDefault<UMConsumableItemDefinition>(ItemDef);
-	UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
-	if (ItemDefCDO && ASC)
+	if (bIsActivated)
 	{
-		for (const FMApplyEffectDefinition& EffectDef : ItemDefCDO->ApplyEffectToSelf)
+		const UMConsumableItemDefinition* ItemDefCDO = GetDefault<UMConsumableItemDefinition>(ItemDef);
+		UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+		if (ItemDefCDO && ASC)
 		{
-			if (EffectDef.EffectClass)
+			for (const FMApplyEffectDefinition& EffectDef : ItemDefCDO->ApplyEffectToSelf)
 			{
-				FGameplayEffectContextHandle EffectContextHandle = ASC->MakeGameplayEffectContext(Cast<APMPlayerControllerBase>(GetOuter()), nullptr);
-				EffectContextHandle.AddSourceObject(this);
-
-				TMap<FGameplayTag, float> SetbyCallerMap;
-				for (const FMSetbyCallerFloat& Value : EffectDef.EffectValues)
+				if (EffectDef.EffectClass)
 				{
-					if (Value.SetByCallerTag.IsValid())
+					FGameplayEffectContextHandle EffectContextHandle = ASC->MakeGameplayEffectContext(Cast<APMPlayerControllerBase>(GetOuter()), nullptr);
+					EffectContextHandle.AddSourceObject(this);
+
+					TMap<FGameplayTag, float> SetbyCallerMap;
+					for (const FMSetbyCallerFloat& Value : EffectDef.EffectValues)
 					{
-						SetbyCallerMap.Add(Value.SetByCallerTag, Value.Value);
+						if (Value.SetByCallerTag.IsValid())
+						{
+							SetbyCallerMap.Add(Value.SetByCallerTag, Value.Value);
+						}
 					}
+
+					const FGameplayEffectSpec& Spec = ASC->MakeGameplayEffectSpecWithSetByCaller(EffectContextHandle, EffectDef.EffectClass, SetbyCallerMap);
+
+					ASC->ApplyGameplayEffectSpecToSelf(Spec);
 				}
-
-				const FGameplayEffectSpec& Spec = ASC->MakeGameplayEffectSpecWithSetByCaller(EffectContextHandle, EffectDef.EffectClass, SetbyCallerMap);
-
-				ASC->ApplyGameplayEffectSpecToSelf(Spec);
+				else
+				{
+					MCHAE_ERROR("Effect class is not defined! check item definition! Definition name is %s", *ItemDefCDO->GetName());
+				}
 			}
-			else
-			{
-				MCHAE_ERROR("Effect class is not defined! check item definition! Definition name is %s", *ItemDefCDO->GetName());
-			}
-		}
 
-		MCHAE_TEST("ItemUse");
+			MCHAE_TEST("ItemUse");
 		
+		}
 	}
 
-	return Super::ActivateItem();
+	return bIsActivated;
 }
 
 bool UMConsumableItemInstance::CanUseItem() const

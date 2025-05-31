@@ -408,13 +408,7 @@ void UPMInventoryManagerComponent::Server_UseItem_Implementation(const FMItemHan
 	UPMInventoryItemInstance* ItemInstance = FindItemInstance(ItemHandle);
 	if (ItemInstance)
 	{
-		if (ItemInstance->CanUseItem())
-		{
-			FMItemRequest Request;
-			Request.SetItemRequest(EMItemRequestType::RemoveItem, ItemInstance->ItemRowId, -1, ItemHandle, ItemInstance);
-			ChangeItemQuantity(ItemInstance, Request);
-			ItemInstance->ActivateItem();
-		}
+		ItemInstance->ActivateItem();
 	}
 }
 

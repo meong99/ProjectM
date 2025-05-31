@@ -34,9 +34,20 @@ const UPMInventoryItemFragment* UPMInventoryItemInstance::FindFragmentByClass(TS
 	return nullptr;
 }
 
-int32 UPMInventoryItemInstance::ActivateItem()
+bool UPMInventoryItemInstance::ActivateItem()
 {
-	return GetStatTagStackCount(FPMGameplayTags::Get().Item_Quentity);
+	AActor* Controller = Cast<AActor>(GetOuter());
+	UPMInventoryManagerComponent* InventoryManager = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
+	if (CanUseItem() && InventoryManager)
+	{
+		FMItemRequest Request;
+		Request.SetItemRequest(EMItemRequestType::RemoveItem, ItemRowId, -1, ItemHandle, this);
+		InventoryManager->ChangeItemQuantity(this, Request);
+
+		return true;
+	}
+
+	return false;
 }
 
 int32 UPMInventoryItemInstance::AddStatTagStack(FGameplayTag Tag, int32 StackCount)

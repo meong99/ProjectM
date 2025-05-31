@@ -28,7 +28,6 @@ public:
 	virtual bool IsSupportedForNetworking() const override { return true; }
 
 	virtual void OnInstanceCreated() override;
-	virtual int32 ActivateItem() override;
 	virtual bool CanUseItem() const override;
 
 /*

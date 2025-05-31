@@ -25,21 +25,26 @@ void UMEquipableItemInstance::OnInstanceCreated()
 	}
 }
 
-int32 UMEquipableItemInstance::ActivateItem()
+bool UMEquipableItemInstance::ActivateItem()
 {
-	AActor* Controller = Cast<AActor>(GetOuter());
-	UPMEquipmentManagerComponent* EquipmentManager = Controller ? Controller->FindComponentByClass<UPMEquipmentManagerComponent>() : nullptr;
-	if (EquipmentManager)
+	const bool bIsActivated = Super::ActivateItem();
+
+	if (bIsActivated)
 	{
-		EquipmentManager->EquipItem(ItemRowId);
-	}
-	else
-	{
-		ensure(false);
-		MCHAE_WARNING("EquipmentManager is not valid");
+		AActor* Controller = Cast<AActor>(GetOuter());
+		UPMEquipmentManagerComponent* EquipmentManager = Controller ? Controller->FindComponentByClass<UPMEquipmentManagerComponent>() : nullptr;
+		if (EquipmentManager)
+		{
+			EquipmentManager->EquipItem(ItemRowId);
+		}
+		else
+		{
+			ensure(false);
+			MCHAE_WARNING("EquipmentManager is not valid");
+		}
 	}
 
-	return Super::ActivateItem();
+	return bIsActivated;
 }
 
 bool UMEquipableItemInstance::CanUseItem() const

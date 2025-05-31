@@ -19,8 +19,8 @@ class PROJECTM_API UMConsumableItemInstance : public UPMInventoryItemInstance
 */
 public:
 	UMConsumableItemInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-	virtual int32 ActivateItem() override;
-	virtual bool CanUseItem() const override;
+	virtual bool	ActivateItem() override;
+	virtual bool	CanUseItem() const override;
 
 /*
 * Member Functions

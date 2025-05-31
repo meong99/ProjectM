@@ -50,7 +50,10 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_UseItem(const FMItemHandle& ItemHandle);
-
+	
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
+	int32	ChangeItemQuantity(UPMInventoryItemInstance* ItemInstance, const FMItemRequest& ItemRequest);
+	
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UPMInventoryItemInstance*	FindItemInstance(const FMItemHandle& ItemHandle);
 	FPMInventoryEntry*			FindEntry(const FMItemHandle& ItemHandle);
@@ -72,9 +75,6 @@ protected:
 	UFUNCTION()
 	void	InitInventory();
 
-	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
-	int32	ChangeItemQuantity(UPMInventoryItemInstance* ItemInstance, const FMItemRequest& ItemRequest);
-	
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
 	void	RemoveItem(UPMInventoryItemInstance* ItemInstance, const FMItemRequest& ItemRequest);
 
