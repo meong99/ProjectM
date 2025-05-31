@@ -1,10 +1,8 @@
 #include "PMQuickBarComponent.h"
 #include "PMEquipmentManagerComponent.h"
-#include "Inventory/Fragments/PMInventoryFragment_EquippableItem.h"
-#include "PMEquipmentInstance.h"
 #include "Inventory/PMInventoryItemInstance.h"
 #include "Net/UnrealNetwork.h"
-#include "Item/Equipment/MEquipmentItemInstance.h"
+#include "Item/Equipment/MEquipableItemInstance.h"
 
 UPMQuickBarComponent::UPMQuickBarComponent(const FObjectInitializer& ObjectInitializer /*= FObjectInitializer::Get()*/) : Super(ObjectInitializer)
 {

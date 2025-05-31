@@ -9,6 +9,7 @@ class UPMAbilitySet;
 class UPMInventoryItemDefinition;
 class UGameplayEffect;
 class UAnimMontage;
+class UMEquipmentItemDefinition;
 
 UCLASS()
 class PROJECTM_API UPMPawnData : public UPrimaryDataAsset
@@ -53,5 +54,5 @@ public:
 	TArray<TObjectPtr<UPMAbilitySet>> AbilitySets;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Equipment")
-	TSubclassOf<UPMInventoryItemDefinition> DefaultEquipment;
+	int32 DefaultEquipmentRowId;
 };

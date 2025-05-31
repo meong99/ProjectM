@@ -111,9 +111,9 @@ void AMMonsterBase::PostInitializeComponents()
 
 			const FGameplayEffectContextHandle& ContextHandle = AbilitySystemComponent->MakeGameplayEffectContext(this, this, {});
 			const FGameplayEffectSpec& Spec = AbilitySystemComponent->MakeGameplayEffectSpecWithSetByCaller(ContextHandle, MonsterDefinition->GetMonsterInfo().DefaultApplyEffect, SetMap);
-			AbilitySystemComponent->ApplyEffectToSelfWithSetByCaller(Spec);
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(Spec);
 
-			FPMAbilitySet_GrantedHandles TempGrantedHandles;
+			FMAbilitySet_GrantedHandles TempGrantedHandles;
 			for (const UPMAbilitySet* AbilitySet : MonsterDefinition->AbilitySets)
 			{
 				AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, &TempGrantedHandles, this, MonsterDefinition->RowId);

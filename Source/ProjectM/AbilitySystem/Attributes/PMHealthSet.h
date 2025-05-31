@@ -21,23 +21,23 @@ public:
 
 	ATTRIBUTE_ACCESSORS(UPMHealthSet, Health);
 	ATTRIBUTE_ACCESSORS(UPMHealthSet, MaxHealth);
-	ATTRIBUTE_ACCESSORS(UPMHealthSet, Healing);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void ClampAttribute(const FGameplayAttribute& Attribute, float& NewValue) const;
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 
 	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
+protected:
+	void AdjustAttributeForMaxChange(FGameplayAttributeData& AffectedAttribute,
+									 const FGameplayAttributeData& MaxAttribute,
+									 float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty);
+public:
 	UPROPERTY(BlueprintReadWrite, Replicated, Category = "ProjectM | Health")
 	FGameplayAttributeData Health;
 
 	UPROPERTY(BlueprintReadWrite, Replicated, Category = "ProjectM | Health")
 	FGameplayAttributeData MaxHealth;
-
-	UPROPERTY(BlueprintReadWrite, Category = "ProjectM | Health")
-	FGameplayAttributeData Healing;
 };

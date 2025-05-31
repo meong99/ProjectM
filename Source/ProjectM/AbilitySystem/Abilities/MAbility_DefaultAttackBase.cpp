@@ -185,7 +185,7 @@ void UMAbility_DefaultAttackBase::ApplyEffectToTarget(UPMAbilitySystemComponent*
 
 			FGameplayEffectSpec Spec = OwnerAbilitySystem->MakeGameplayEffectSpecWithSetByCaller(ContextHandle, WeaponDefCDO->DefaultAttackEffectClass, SetbyCallerMap, GameplayCue_Combat_Hit);
 
-			OwnerAbilitySystem->ApplyEffectToTargetWithSetByCaller(Spec, Monster);
+			OwnerAbilitySystem->ApplyGameplayEffectSpecToTarget(Spec, MonsterAbilitySystem);
 		}
 
 		OverlappedActors.Add(HitActor);

@@ -234,6 +234,7 @@ FMItemHandle FPMInventoryItemList::AddEntry_Impl(FPMInventoryEntry& Entry)
 
 	Entry.ItemUid = ItemUid;
 	Entry.Instance->ItemHandle = NewHandle;
+	Entry.Instance->ItemResponse.ItemRequest.ItemHandle = NewHandle;
 
 	ItemUid++;
 

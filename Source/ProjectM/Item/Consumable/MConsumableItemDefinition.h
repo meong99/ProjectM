@@ -16,7 +16,4 @@ class PROJECTM_API UMConsumableItemDefinition : public UPMInventoryItemDefinitio
 
 public:
 	UMConsumableItemDefinition();
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Consumable")
-	TArray<FMSetbyCallerFloat> EffectValues;
 };

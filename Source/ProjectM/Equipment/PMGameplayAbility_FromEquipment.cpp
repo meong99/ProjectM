@@ -3,20 +3,19 @@
 
 #include "PMGameplayAbility_FromEquipment.h"
 #include "GameplayAbilitySpec.h"
-#include "PMEquipmentInstance.h"
 #include "Inventory/PMInventoryItemInstance.h"
-#include "Item/Equipment/MEquipmentItemInstance.h"
+#include "Item/Equipment/MEquipableItemInstance.h"
 
 UPMGameplayAbility_FromEquipment::UPMGameplayAbility_FromEquipment()
 {
 
 }
 
-UMEquipmentItemInstance* UPMGameplayAbility_FromEquipment::GetAssociatedEquipment() const
+UMEquipableItemInstance* UPMGameplayAbility_FromEquipment::GetAssociatedEquipment() const
 {
 	if (FGameplayAbilitySpec* Spec = UGameplayAbility::GetCurrentAbilitySpec())
 	{
-		return Cast<UMEquipmentItemInstance>(Spec->SourceObject.Get());
+		return Cast<UMEquipableItemInstance>(Spec->SourceObject.Get());
 	}
 
 	return  nullptr;
@@ -24,7 +23,7 @@ UMEquipmentItemInstance* UPMGameplayAbility_FromEquipment::GetAssociatedEquipmen
 
 UPMInventoryItemInstance* UPMGameplayAbility_FromEquipment::GetAssociatedItem() const
 {
-	if (UMEquipmentItemInstance* Equipment = GetAssociatedEquipment())
+	if (UMEquipableItemInstance* Equipment = GetAssociatedEquipment())
 	{
 		return Cast<UPMInventoryItemInstance>(Equipment->GetInstigator());
 	}

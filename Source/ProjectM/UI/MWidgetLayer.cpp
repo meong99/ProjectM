@@ -95,6 +95,7 @@ void UMWidgetLayer::SetInputMode(UMWidgetBase* Widget) const
 		{
 			FInputModeUIOnly NewMode;
 			PlayerController->SetInputMode(NewMode);
+			PlayerController->FlushPressedKeys();
 			PlayerController->bShowMouseCursor = true;
 			break;
 		}

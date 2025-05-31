@@ -118,20 +118,6 @@ void APMPlayerState::Server_LoadPlayerData_Implementation()
 		{
 			ApplyLoadedData();
 		}
-		else
-		{
-			APlayerController* Controller = GetPlayerController();
-			UPMInventoryManagerComponent* InventoryManager = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
-			const TSubclassOf<UPMInventoryItemDefinition>& ItemDef = PawnData->DefaultEquipment;
-			if (ItemDef && InventoryManager)
-			{
-				FMItemRequest Request;
-
-				Request.SetItemRequest(EMItemRequestType::InitItem, ItemDef->GetDefaultObject<UPMInventoryItemDefinition>()->RowId, 1);
-				const FMItemHandle& ItemHandle = InventoryManager->RequestItemToInventory(Request);
-				InventoryManager->Server_UseItem(ItemHandle);
-			}
-		}
 	}
 	else
 	{
@@ -150,9 +136,8 @@ void APMPlayerState::UpdateCurrentData()
 	PlayerSaveData->SaveSlotName = PLAYER_NAME;
 	APlayerController* Controller = GetPlayerController();
 	UPMInventoryManagerComponent* InventoryManager = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
-	UPMQuickBarComponent* QuickBarComp = Controller ? Controller->FindComponentByClass<UPMQuickBarComponent>() : nullptr;
 
-	if (InventoryManager && QuickBarComp)
+	if (InventoryManager)
 	{
 		PlayerSaveData->ItemDefinitions.Empty();
 
@@ -174,12 +159,6 @@ void APMPlayerState::UpdateCurrentData()
 			{
 				PlayerSaveData->ItemDefinitions.Add(ItemDef);
 			}
-		}
-
-		const UPMInventoryItemInstance* EquippedItem = QuickBarComp->GetEquippedItemInstance();
-		if (EquippedItem)
-		{
-			PlayerSaveData->EquippedItem = EquippedItem->ItemDef;
 		}
 	}
 	else
@@ -209,15 +188,6 @@ void APMPlayerState::ApplyLoadedData()
 				Request.SetItemRequest(EMItemRequestType::InitItem, ItemDef->GetDefaultObject<UPMInventoryItemDefinition>()->RowId, 1);
 				InventoryManager->RequestItemToInventory(Request);
 			}
-		}
-
-		const TSubclassOf<UPMInventoryItemDefinition>& ItemDef = PawnData->DefaultEquipment;
-		if (ItemDef)
-		{
-			FMItemRequest Request;
-			Request.SetItemRequest(EMItemRequestType::InitItem, ItemDef->GetDefaultObject<UPMInventoryItemDefinition>()->RowId, 1);
-			const FMItemHandle& ItemHandle = InventoryManager->RequestItemToInventory(Request);
-			InventoryManager->Server_UseItem(ItemHandle);
 		}
 	}
 	else

@@ -1,7 +1,9 @@
 #include "MEquipmentItemDefinition.h"
+#include "MEquipableItemInstance.h"
 #include "MEquipmentItemInstance.h"
 
 UMEquipmentItemDefinition::UMEquipmentItemDefinition()
 {
-	InstanceType = UMEquipmentItemInstance::StaticClass();
+	InstanceType = UMEquipableItemInstance::StaticClass();
+	EquipmentInstanceType = UMEquipmentItemInstance::StaticClass();
 }

@@ -10,6 +10,7 @@ class UPMAbilitySystemComponent;
 class UPMInventoryManagerComponent;
 class UMPlayerTradeComponent;
 class UMPlayerQuestComponent;
+class UPMExperienceDefinition;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPossessed, AMPlayerCharacterBase* /*Character*/);
 
@@ -25,6 +26,7 @@ public:
 	APMPlayerControllerBase();
 
 	virtual void OnPossess(APawn* aPawn) override;
+	virtual void BeginPlay() override;
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 	virtual void ServerRestartPlayer_Implementation() override;
 	virtual void ClientRestart_Implementation(APawn* NewPawn) override;
@@ -47,6 +49,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure=false)
 	void Debug_WidgetControl(const FGameplayTag& WidgetTag, bool bAddWidget, UObject* WidgetInstigator = nullptr);
+protected:
+	void OnExperienceLoaded(const UPMExperienceDefinition* LoadedExperienceDefinition);
+
 /*
 * Member Variables
 */

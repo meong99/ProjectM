@@ -37,9 +37,9 @@ void UMInventoryWidget::Callback_AddNewItem(const FMItemResponse& ItemRespons)
 	{
 		APlayerController* PlayerController = GetOwningPlayer();
 		InventoryComponent = PlayerController ? PlayerController->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
-		if (IsValid(InventoryComponent))
+		if (IsValid(InventoryComponent) && ItemRespons.ItemRequest.ItemInstance)
 		{
-			FPMInventoryEntry* Entry = InventoryComponent->FindEntry(ItemRespons.ItemRequest.ItemHandle);
+			FPMInventoryEntry* Entry = InventoryComponent->FindEntry(ItemRespons.ItemRequest.ItemInstance->ItemHandle);
 			if (Entry)
 			{
 				UMTileView* View = GetItemSlotView(Entry->GetItemType());

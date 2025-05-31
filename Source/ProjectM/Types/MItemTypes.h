@@ -6,6 +6,8 @@
 #include "GameplayTagContainer.h"
 #include "MItemTypes.generated.h"
 
+class UGameplayEffect;
+
 USTRUCT(BlueprintType)
 struct FMSetbyCallerFloat 
 {
@@ -16,4 +18,23 @@ struct FMSetbyCallerFloat
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float Value = 0.0f;
+};
+
+USTRUCT(Blueprintable)
+struct FMApplyEffectDefinition 
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> EffectClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<FMSetbyCallerFloat> EffectValues;
+};
+
+UENUM(BlueprintType)
+enum class EMEquipmentItemType : uint8
+{
+	None UMETA(DisplayName = "None"),
+	Weapon UMETA(DisplayName = "Weapon"),
 };

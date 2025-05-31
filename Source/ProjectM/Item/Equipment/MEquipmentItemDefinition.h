@@ -6,14 +6,8 @@
 #include "MEquipmentItemDefinition.generated.h"
 
 class UPMAbilitySet;
+class UMEquipableItemInstance;
 class UMEquipmentItemInstance;
-
-UENUM(BlueprintType)
-enum class EMEquipmentItemType : uint8
-{
-	None UMETA(DisplayName = "None"),
-	Weapon UMETA(DisplayName = "Weapon"),
-};
 
 USTRUCT()
 struct FPMEquipmentActorToSpawn
@@ -50,8 +44,9 @@ public:
 * Member Variables
 */
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment")
-	TArray<FMSetbyCallerFloat> EffectValues;
+	// 장비 장착 시 사용될 Instance의 Type
+	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
+	TSubclassOf<UMEquipmentItemInstance> EquipmentInstanceType;
 
 	// Spawn될 장비에 대한 메타데이터
 	UPROPERTY(EditDefaultsOnly, Category = "Equipment")

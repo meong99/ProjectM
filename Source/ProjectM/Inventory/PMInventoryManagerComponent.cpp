@@ -163,13 +163,9 @@ FMItemHandle UPMInventoryManagerComponent::RequestItemToInventory(const FMItemRe
 			Handle = Entry->GetItemHandle();
 			ChangeItemQuantity(Entry->Instance, ItemRequest);
 		}
-		else if (ItemRequest.RequestType == EMItemRequestType::AddItem || ItemRequest.RequestType == EMItemRequestType::InitItem)
+		else
 		{
 			Handle = AddItemDefinition_Impl(ItemCDO->GetClass(), *ItemList, ItemRequest);
-		}
-		else if (ItemRequest.RequestType == EMItemRequestType::ReturnItemToInventory)
-		{
-			Handle = ReturnItem(ItemRequest.ItemInstance);
 		}
 	}
 
@@ -213,7 +209,15 @@ FMItemHandle UPMInventoryManagerComponent::ReturnItem(UPMInventoryItemInstance* 
 
 		if (ItemList)
 		{
-			return ItemList->AddEntry(Instance);
+			Instance->ItemResponse.ResponsType = EMItemResponseType::TotallyNewItem;
+
+			FMItemHandle Handle = ItemList->AddEntry(Instance);
+			if (GetNetMode() == ENetMode::NM_Standalone)
+			{
+				Broadcast_OnItemIncreased(Instance->ItemResponse);
+			}
+
+			return Handle;
 		}
 	}
 
@@ -227,7 +231,7 @@ UPMInventoryItemDefinition* UPMInventoryManagerComponent::GetItemDefCDO(const in
 	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
 	if (TableManager)
 	{
-		TSubclassOf<UPMInventoryItemDefinition> Class = TableManager->GetDefinitionClass<UPMInventoryItemDefinition>(ItemRowId);
+		TSubclassOf<UPMInventoryItemDefinition> Class = UMDataTableManager::GetDefinitionClass<UPMInventoryItemDefinition>(this, ItemRowId);
 
 		if (Class)
 		{
@@ -406,11 +410,10 @@ void UPMInventoryManagerComponent::Server_UseItem_Implementation(const FMItemHan
 	{
 		if (ItemInstance->CanUseItem())
 		{
-			ItemInstance->ActivateItem();
 			FMItemRequest Request;
 			Request.SetItemRequest(EMItemRequestType::RemoveItem, ItemInstance->ItemRowId, -1, ItemHandle, ItemInstance);
-
 			ChangeItemQuantity(ItemInstance, Request);
+			ItemInstance->ActivateItem();
 		}
 	}
 }

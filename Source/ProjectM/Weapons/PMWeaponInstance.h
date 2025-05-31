@@ -1,9 +1,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Item/Equipment/MEquipmentItemInstance.h"
+#include "Item/Equipment/MEquipableItemInstance.h"
 #include "Cosmetics/PMCosmeticAnimationTypes.h"
 #include "Animation/AnimMontage.h"
+#include "Item/Equipment/MEquipmentItemInstance.h"
 
 #include "PMWeaponInstance.generated.h"
 
@@ -23,30 +24,15 @@ class PROJECTM_API UPMWeaponInstance : public UMEquipmentItemInstance
 public:
 	UPMWeaponInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	virtual int32 ActivateItem() override;
-	virtual void OnEquipped() override;
-	virtual void OnUnequipped() override;
-
+	virtual void	OnEquipped() override;
+	virtual void	OnUnequipped() override;
 /*
 * Member Functions
 */
-public:
-	void DetermineCosmeticTag();
-	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Animation")
-	TSubclassOf<UAnimInstance> PickBestAnimLayer(bool bEquipped, const FGameplayTagContainer& CosmeticTags) const;
-
+protected:
+	void	SpawnEquipmentActor(const FPMEquipmentActorToSpawn& ActorInfo);
+	void	DestroySpawnedActor();
 /*
 * Member Variables
 */
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Animation")
-	FPMAnimInstanceSelectionSet EquippedAnimSet;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Animation")
-	FPMAnimInstanceSelectionSet UnEquippedAnimSet;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "Animation")
-	UAnimMontage* WeaponMontageToPlay;
-
-	FGameplayTagContainer CosmeticAnimStyle;
 };

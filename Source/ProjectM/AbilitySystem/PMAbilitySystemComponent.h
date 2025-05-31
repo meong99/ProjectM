@@ -39,9 +39,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SendGameplayTagToAbility(const FGameplayTag& InputTag, const FGameplayTag& SendTag);
 
-	FActiveGameplayEffectHandle ApplyEffectToTargetWithSetByCaller(const FGameplayEffectSpec& InSpec, AActor* Target);
-	FActiveGameplayEffectHandle ApplyEffectToSelfWithSetByCaller(const FGameplayEffectSpec& InSpec);
-
 /*
 * Member Variables
 */

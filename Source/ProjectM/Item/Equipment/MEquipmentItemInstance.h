@@ -1,16 +1,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Inventory/PMInventoryItemInstance.h"
 #include "GameFramework/Pawn.h"
 #include "MEquipmentItemDefinition.h"
+#include "Inventory/PMInventoryItemInstance.h"
+#include "Types/MAbilityTypes.h"
 #include "MEquipmentItemInstance.generated.h"
 
 class UPMAbilitySystemComponent;
 class UAnimMontage;
 
 /**
- *
+ * EquipmentManager에서 관리하는 장착중인 장비에 대한 Instance
  */
 UCLASS(BlueprintType, Blueprintable)
 class PROJECTM_API UMEquipmentItemInstance : public UPMInventoryItemInstance
@@ -30,30 +31,27 @@ public:
 	virtual int32 ActivateItem() override;
 	virtual bool CanUseItem() const override;
 
-	/*
+/*
 * Member Functions
 */
 public:
 	virtual void	OnEquipped();
 	virtual void	OnUnequipped();
 
-	void	SpawnEquipmentActor(const FPMEquipmentActorToSpawn& ActorInfo);
-	void	DestroyEquipmentActors();
+	UFUNCTION(BlueprintPure, Category = "Equipment")
+	UObject*	GetInstigator() { return this; }
 
 	UFUNCTION(BlueprintPure, Category = "Equipment")
-	UObject*				GetInstigator() { return this; }
-
-	UFUNCTION(BlueprintPure, Category = "Equipment")
-	APawn*					GetPawn() const;
+	APawn*		GetPawn() const;
 
 	// DeterminesOutputType을 지정해주면 BP에서 내가 원하는 Type으로 형변환해서 돌려준다
 	UFUNCTION(BlueprintPure, Category = "Equipment", meta = (DeterminesOutputType = PawnType))
-	APawn*					GetTypedPawn(TSubclassOf<APawn> PawnType) const;
+	APawn*		GetTypedPawn(TSubclassOf<APawn> PawnType) const;
 
 	UFUNCTION(BlueprintPure, Category = "Equipment")
-	AActor*	GetSpawnedActor() const { return SpawnedActor; }
+	AActor*		GetSpawnedActor() const { return SpawnedActor; }
 
-	EMEquipmentItemType		GetEquipmentItemType() const { return EquipmentItemType; }
+	EMEquipmentItemType	GetEquipmentItemType() const { return EquipmentItemType; }
 
 protected:
 	UPMAbilitySystemComponent* GetAbilitySystemComponent() const;
@@ -68,4 +66,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	EMEquipmentItemType EquipmentItemType = EMEquipmentItemType::None;
+
+	UPROPERTY()
+	FPMAbilitySet_AppliedEffectHandles AppliedEffectHandles;
 };

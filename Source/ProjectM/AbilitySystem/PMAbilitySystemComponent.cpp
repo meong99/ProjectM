@@ -203,27 +203,3 @@ void UPMAbilitySystemComponent::SendGameplayTagToAbility(const FGameplayTag& Inp
 		}
 	}
 }
-
-FActiveGameplayEffectHandle UPMAbilitySystemComponent::ApplyEffectToTargetWithSetByCaller(const FGameplayEffectSpec& InSpec, AActor* Target)
-{
-	IAbilitySystemInterface* TargetASCInterface = Cast<IAbilitySystemInterface>(Target);
-	if (TargetASCInterface == nullptr)
-	{
-		MCHAE_WARNING("Target actor is not inheritanced IAbilitySystemInterface.");
-		return FActiveGameplayEffectHandle{};
-	}
-
-	UAbilitySystemComponent* TargetASC = TargetASCInterface->GetAbilitySystemComponent();
-	if (TargetASC == nullptr)
-	{
-		MCHAE_WARNING("AbilitySystemComponent is not valid. Check Target's abilitysystemcomponent");
-		return FActiveGameplayEffectHandle{};
-	}
-
-	return ApplyGameplayEffectSpecToTarget(InSpec, TargetASC);
-}
-
-FActiveGameplayEffectHandle UPMAbilitySystemComponent::ApplyEffectToSelfWithSetByCaller(const FGameplayEffectSpec& InSpec)
-{
-	return ApplyGameplayEffectSpecToSelf(InSpec);
-}

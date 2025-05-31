@@ -3,5 +3,5 @@
 
 UMWeaponItemDefinition::UMWeaponItemDefinition()
 {
-	InstanceType = UPMWeaponInstance::StaticClass();
+	EquipmentInstanceType = UPMWeaponInstance::StaticClass();
 }

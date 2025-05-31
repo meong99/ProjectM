@@ -48,10 +48,11 @@ public:
 */
 public:
 	template<class T>
-	static T* GetDefinitionObject(UObject* WorldContext, const int32 RowId);
-
+	static const TSubclassOf<T>	GetDefinitionClass(const UObject* WorldContext, const int32 RowId);
 	template<class T>
-	static T* GetTableRowData(UObject* WorldContext, const int32 RowId);
+	static T*					GetDefinitionObject(UObject* WorldContext, const int32 RowId);
+	template<class T>
+	static T*					GetTableRowData(const UObject* WorldContext, const int32 RowId);
 
 	static int32 ChangeRowIdToKey(int32 RowId);
 	static int32 ChangeRowIdToElementId(int32 RowId);
@@ -63,8 +64,6 @@ public:
 	UPMInventoryItemDefinition*	GetItemDefinition(int32 RowId) const;
 	UFUNCTION(BlueprintCallable)
 	UMMonsterDefinition*		GetMonsterDefinition(int32 RowId) const;
-	template<class T>
-	const TSubclassOf<T>		GetDefinitionClass(int32 RowId) const;
 
 	int32 GetTableNum() const { return TableMap.Num(); }
 private:
@@ -109,7 +108,7 @@ T* UMDataTableManager::GetDefinitionObject(UObject* WorldContext, const int32 Ro
 }
 
 template<class T>
-T* UMDataTableManager::GetTableRowData(UObject* WorldContext, const int32 RowId)
+T* UMDataTableManager::GetTableRowData(const UObject* WorldContext, const int32 RowId)
 {
 	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
 
@@ -131,19 +130,24 @@ T* UMDataTableManager::GetTableRowData(UObject* WorldContext, const int32 RowId)
 }
 
 template<class T>
-const TSubclassOf<T> UMDataTableManager::GetDefinitionClass(int32 RowId) const
+const TSubclassOf<T> UMDataTableManager::GetDefinitionClass(const UObject* WorldContext, const int32 RowId)
 {
-	const UDataTable* DataTable = GetDataTable(RowId);
-	if (DataTable)
+	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
+
+	if (TableManager)
 	{
-		int32 ElementIndex = ChangeRowIdToElementId(RowId) - 1;
-		const TArray<FName>& Names = DataTable->GetRowNames();
-		if (Names.IsValidIndex(ElementIndex))
+		const UDataTable* Table = TableManager->GetDataTable(RowId);
+		if (Table)
 		{
-			FMTable_TableBase* RowData = DataTable->FindRow<FMTable_TableBase>(Names[ElementIndex], Names[ElementIndex].ToString());
-			if (RowData)
+			int32 ElementIndex = UMDataTableManager::ChangeRowIdToElementId(RowId) - 1;
+			const TArray<FName>& Names = Table->GetRowNames();
+			if (Names.IsValidIndex(ElementIndex))
 			{
-				return RowData->Definition.Get();
+				FMTable_TableBase* RowData = Table->FindRow<FMTable_TableBase>(Names[ElementIndex], Names[ElementIndex].ToString());
+				if (RowData && RowData->Definition)
+				{
+					return TSubclassOf<T>(RowData->Definition.Get());
+				}
 			}
 		}
 	}

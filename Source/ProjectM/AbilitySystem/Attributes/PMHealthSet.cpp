@@ -14,28 +14,19 @@ void UPMHealthSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(UPMHealthSet, MaxHealth);
 }
 
-void UPMHealthSet::ClampAttribute(const FGameplayAttribute& Attribute, float& NewValue) const
-{
-	if (Attribute == GetHealthAttribute())
-	{
-		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxHealth());
-	}
-	else if (Attribute == GetMaxHealthAttribute())
-	{
-		NewValue = FMath::Max(NewValue, 1.0f);
-	}
-}
-
 void UPMHealthSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
 {
 	Super::PreAttributeBaseChange(Attribute, NewValue);
-	ClampAttribute(Attribute, NewValue);
 }
 
 void UPMHealthSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
-	ClampAttribute(Attribute, NewValue);
+
+	if (Attribute == GetMaxHealthAttribute())
+	{
+		AdjustAttributeForMaxChange(Health, MaxHealth, NewValue, GetHealthAttribute());
+	}
 }
 
 bool UPMHealthSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
@@ -49,13 +40,22 @@ void UPMHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackDat
 
 	float MinimumHealth = 0.0f;
 
-	if (Data.EvaluatedData.Attribute == GetHealingAttribute())
-	{
-		SetHealth(FMath::Clamp(GetHealth() + GetHealing(), MinimumHealth, GetMaxHealth()));
-		SetHealing(0.0f);
-	}
-	else if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(), MinimumHealth, GetMaxHealth()));
+	}
+}
+
+void UPMHealthSet::AdjustAttributeForMaxChange(FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute, float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty)
+{
+	UAbilitySystemComponent*	AbilityComp = GetOwningAbilitySystemComponent();
+	const float					CurrentMaxValue = MaxAttribute.GetCurrentValue();
+
+	if (!FMath::IsNearlyEqual(CurrentMaxValue, NewMaxValue) && IsValid(AbilityComp))
+	{
+		const float CurrentValue = AffectedAttribute.GetCurrentValue();
+		float       NewDelta = (CurrentMaxValue > 0.f) ? (CurrentValue * NewMaxValue / CurrentMaxValue) - CurrentValue : NewMaxValue;
+
+		AbilityComp->ApplyModToAttribute(AffectedAttributeProperty, EGameplayModOp::Additive, NewDelta);
 	}
 }

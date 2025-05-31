@@ -5,6 +5,7 @@
 #include "Inventory/MInventoryTypes.h"
 #include "Templates/SubclassOf.h"
 #include "Definitions/MDefinitionBase.h"
+#include "Types/MItemTypes.h"
 
 #include "PMInventoryItemDefinition.generated.h"
 
@@ -12,18 +13,6 @@ class UPMInventoryItemInstance;
 class UTexture2D;
 class UGameplayEffect;
 class UCurveTable;
-
-USTRUCT(Blueprintable)
-struct FMApplyEffectDefinition 
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UGameplayEffect> EffectClass;
-
-	UPROPERTY(EditDefaultsOnly)
-	int32 EffectLevel = 1;
-};
 
 /* Remind
 * Item의 Component라고 이해하면 편하다.
@@ -82,7 +71,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	TSubclassOf<UPMInventoryItemInstance> InstanceType;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
 	TArray<FMApplyEffectDefinition> ApplyEffectToSelf;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")

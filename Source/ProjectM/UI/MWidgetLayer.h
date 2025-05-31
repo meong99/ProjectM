@@ -34,7 +34,7 @@ protected:
 	void PushInputMode(EMWidgetInputMode Input, const FGameplayTag& Tag);
 	void PopInputMode(EMWidgetInputMode Input);
 
-	EMWidgetInputMode GetTopInputMode(EMWidgetInputMode Input = EMWidgetInputMode::GameOnly) const;
+	EMWidgetInputMode GetTopInputMode(EMWidgetInputMode Input = EMWidgetInputMode::GameAndUIWithShowMouse) const;
 
 /*
 * Member Variables
@@ -43,7 +43,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="ProjectM")
 	bool bIsActiveByDefault = false;
 
-	EMWidgetInputMode CurrentTopInputMode = EMWidgetInputMode::GameOnly;
+	EMWidgetInputMode CurrentTopInputMode = EMWidgetInputMode::GameAndUIWithShowMouse;
 	EMWidgetInputMode OldTopInputMode = EMWidgetInputMode::None;
 
 	TMap<EMWidgetInputMode, TStack<FGameplayTag>> WidgetMapByInputMode;

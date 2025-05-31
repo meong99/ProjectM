@@ -23,7 +23,21 @@ int32 UMConsumableItemInstance::ActivateItem()
 		{
 			if (EffectDef.EffectClass)
 			{
-				ASC->ApplyGameplayEffectToSelf(EffectDef.EffectClass->GetDefaultObject<UGameplayEffect>(), EffectDef.EffectLevel, FGameplayEffectContextHandle{});
+				FGameplayEffectContextHandle EffectContextHandle = ASC->MakeGameplayEffectContext(Cast<APMPlayerControllerBase>(GetOuter()), nullptr);
+				EffectContextHandle.AddSourceObject(this);
+
+				TMap<FGameplayTag, float> SetbyCallerMap;
+				for (const FMSetbyCallerFloat& Value : EffectDef.EffectValues)
+				{
+					if (Value.SetByCallerTag.IsValid())
+					{
+						SetbyCallerMap.Add(Value.SetByCallerTag, Value.Value);
+					}
+				}
+
+				const FGameplayEffectSpec& Spec = ASC->MakeGameplayEffectSpecWithSetByCaller(EffectContextHandle, EffectDef.EffectClass, SetbyCallerMap);
+
+				ASC->ApplyGameplayEffectSpecToSelf(Spec);
 			}
 			else
 			{

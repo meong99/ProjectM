@@ -3,40 +3,13 @@
 #include "Abilities/PMGameplayAbility.h"
 
 /*
-* FPMAbilitySet_GrantedHandles --------------------------------------
-*/
-void FPMAbilitySet_GrantedHandles::AddAbilitySpecHandle(const FGameplayAbilitySpecHandle& Handle)
-{
-	if (Handle.IsValid())
-	{
-		AbilitySpecHandles.Add(Handle);
-	}
-}
-
-void FPMAbilitySet_GrantedHandles::TakeFromAbilitySystem(UPMAbilitySystemComponent* AbilitySystemComp)
-{
-	if (!AbilitySystemComp->IsOwnerActorAuthoritative())
-	{
-		return;
-	}
-
-	for (const FGameplayAbilitySpecHandle& Handle : AbilitySpecHandles)
-	{
-		if (Handle.IsValid())
-		{
-			AbilitySystemComp->ClearAbility(Handle);
-		}
-	}
-}
-
-/*
 * UPMAbilitySet --------------------------------------
 */
 UPMAbilitySet::UPMAbilitySet()
 {
 }
 
-void UPMAbilitySet::GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystemComp, OUT FPMAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject, int32 AdditiveInfo) const
+void UPMAbilitySet::GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystemComp, OUT FMAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject, int32 AdditiveInfo) const
 {
 	check(AbilitySystemComp);
 

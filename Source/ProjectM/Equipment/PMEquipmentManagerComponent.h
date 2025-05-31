@@ -4,6 +4,8 @@
 #include "AbilitySystem/PMAbilitySet.h"
 #include "Net/Serialization/FastArraySerializer.h"
 #include "Components/MControllerComponentBase.h"
+#include "MEquipmentItemList.h"
+#include "Types/MItemTypes.h"
 
 #include "PMEquipmentManagerComponent.generated.h"
 
@@ -24,34 +26,41 @@ class PROJECTM_API UPMEquipmentManagerComponent : public UMControllerComponentBa
 */
 public:
 	UPMEquipmentManagerComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-	virtual void BeginDestroy() override;
 	virtual void OnServerRestartPlayer() override;
+	virtual void BeginDestroy() override;
+	virtual void OnPossess(APawn* aPawn) override;
 
 /*
 * Member Functions
 */
 public:
-	void EquipItem(UMEquipmentItemInstance* ItemInstance);
-	void UnequipItem(int32 EquipmentItemType);
+	void EquipItem(const int32 ItemRowId);
+	void UnequipItem(EMEquipmentItemType EquipmentItemType);
 
 protected:
-	UFUNCTION(BlueprintCallable)
-	UMEquipmentItemInstance* FindEquippedItem(int32 EquipmentItemType);
+	UMEquipmentItemInstance*	FindEquippedItemInstance(EMEquipmentItemType EquipmentItemType);
+	FMEquipmentItemEntry*		FindEntry(EMEquipmentItemType EquipmentItemType);
 
-	UFUNCTION()
-	void OnRep_OnChangeEquipedItem();
+	void EquipItem_Impl(const UMEquipmentItemDefinition* EquipDef);
+	void RemoveEntry(EMEquipmentItemType EquipmentItemType);
 
-	void SpawnEquipmentActor();
-	void DestroyEquipmentActors();
+	void EquipAllItems();
+	void UnequipAllItems();
+	void EquipDefaultWeapon();
 
 	UPMAbilitySystemComponent* GetAbilitySystemComponent() const;
 /*
 * Member Variables
 */
 private:
-	UPROPERTY(ReplicatedUsing = "OnRep_OnChangeEquipedItem")
-	TArray<UMEquipmentItemInstance*> EquippedItems;
+	UPROPERTY(Replicated)
+	FMEquipmentItemList EquippedItemList;
 
 	UPROPERTY()
-	TMap<int32, FPMAbilitySet_GrantedHandles> GrantedHandles;
+	TMap<int32, FMAbilitySet_GrantedHandles> GrantedHandles;
+
+	UPROPERTY()
+	TMap<EMEquipmentItemType, FMItemHandle> EquippedEntryMap;
+
+	bool bIsInitialized = false;
 };

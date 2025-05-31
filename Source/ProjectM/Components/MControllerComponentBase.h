@@ -6,6 +6,9 @@
 #include "Components/ControllerComponent.h"
 #include "MControllerComponentBase.generated.h"
 
+class UPMExperienceDefinition;
+class APawn;
+
 /**
  *
  */
@@ -26,6 +29,8 @@ public:
 public:
 	virtual void OnServerRestartPlayer() {}
 	virtual void OnClientRestart(APawn* NewPawn) {}
+	virtual void OnExperienceLoaded(const UPMExperienceDefinition* LoadedExperienceDefinition){}
+	virtual void OnPossess(APawn* aPawn) {}
 
 protected:
 /*

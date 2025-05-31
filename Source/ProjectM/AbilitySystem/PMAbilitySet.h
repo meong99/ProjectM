@@ -6,41 +6,11 @@
 #include "Engine/DataAsset.h"
 #include "GameplayTagContainer.h"
 #include "GameplayAbilitySpecHandle.h"
+#include "Types/MAbilityTypes.h"
 #include "PMAbilitySet.generated.h"
 
 class UPMGameplayAbility;
 class UPMAbilitySystemComponent;
-
-// Ability와 Tag를 Wrapping해놓은 구조체
-USTRUCT(BlueprintType)
-struct FPMAbilitySet_GameplayAbility
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UPMGameplayAbility> Ability = nullptr;
-
-	UPROPERTY(EditDefaultsOnly)
-	FGameplayTag InputTag;
-
-	UPROPERTY(EditDefaultsOnly)
-	int32 AbilityLevel = 1;
-};
-
-USTRUCT(BlueprintType)
-struct FPMAbilitySet_GrantedHandles 
-{
-	GENERATED_BODY()
-
-	void AddAbilitySpecHandle(const FGameplayAbilitySpecHandle& Handle);
-
-	// 부여된 어빌리티 모두 제거
-	void TakeFromAbilitySystem(UPMAbilitySystemComponent* AbilitySystemComp);
-
-protected:
-	UPROPERTY()
-	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
-};
 
 /**
  * 
@@ -60,7 +30,7 @@ public:
 * Member Functions
 */
 public:
-	void GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystemComp, OUT FPMAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject = nullptr, int32 AdditiveInfo = INDEX_NONE) const;
+	void GiveToAbilitySystem(UPMAbilitySystemComponent* AbilitySystemComp, OUT FMAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject = nullptr, int32 AdditiveInfo = INDEX_NONE) const;
 
 /*
 * Member Variables

@@ -8,7 +8,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/World.h"
 #include "MEquipmentItemDefinition.h"
-#include "Equipment/MEquipableActorBase.h"
+#include "GameplayTagContainer.h"
 
 UMEquipmentItemInstance::UMEquipmentItemInstance(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -36,23 +36,6 @@ int32 UMEquipmentItemInstance::ActivateItem()
 		return GetStatTagStackCount(FPMGameplayTags::Get().Item_Quentity);
 	}
 
-	const UMEquipmentItemDefinition* ItemDefCDO = GetDefault<UMEquipmentItemDefinition>(ItemDef);
-	UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
-	if (ItemDefCDO && ASC)
-	{
-		for (const FMApplyEffectDefinition& EffectDef : ItemDefCDO->ApplyEffectToSelf)
-		{
-			if (EffectDef.EffectClass)
-			{
-				ASC->ApplyGameplayEffectToSelf(EffectDef.EffectClass->GetDefaultObject<UGameplayEffect>(), EffectDef.EffectLevel, FGameplayEffectContextHandle{});
-			}
-			else
-			{
-				MCHAE_ERROR("Effect class is not defined! check item definition! Definition name is %s", *ItemDefCDO->GetName());
-			}
-		}
-	}
-
 	return Super::ActivateItem();
 }
 
@@ -74,59 +57,48 @@ bool UMEquipmentItemInstance::CanUseItem() const
 
 void UMEquipmentItemInstance::OnEquipped()
 {
+	const UMEquipmentItemDefinition* ItemDefCDO = GetDefault<UMEquipmentItemDefinition>(ItemDef);
+	UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	if (ItemDefCDO && ASC)
+	{
+		for (const FMApplyEffectDefinition& EffectDef : ItemDefCDO->ApplyEffectToSelf)
+		{
+			if (EffectDef.EffectClass)
+			{
+				FGameplayEffectContextHandle EffectContextHandle = ASC->MakeGameplayEffectContext(Cast<APMPlayerControllerBase>(GetOuter()), nullptr);
+				EffectContextHandle.AddSourceObject(this);
+
+				TMap<FGameplayTag, float> SetbyCallerMap;
+				for (const FMSetbyCallerFloat& Value : EffectDef.EffectValues)
+				{
+					if (Value.SetByCallerTag.IsValid())
+					{
+						SetbyCallerMap.Add(Value.SetByCallerTag, Value.Value);
+					}
+				}
+
+				const FGameplayEffectSpec& Spec = ASC->MakeGameplayEffectSpecWithSetByCaller(EffectContextHandle, EffectDef.EffectClass, SetbyCallerMap);
+
+				FActiveGameplayEffectHandle AppliedEffectHandle = ASC->ApplyGameplayEffectSpecToSelf(Spec);
+				if (AppliedEffectHandle.IsValid())
+				{
+					AppliedEffectHandles.AddAppliedEffectHandle(AppliedEffectHandle);
+				}
+			}
+			else
+			{
+				MCHAE_ERROR("Effect class is not defined! check item definition! Definition name is %s", *ItemDefCDO->GetName());
+			}
+		}
+	}
 }
 
 void UMEquipmentItemInstance::OnUnequipped()
 {
-
-}
-
-void UMEquipmentItemInstance::SpawnEquipmentActor(const FPMEquipmentActorToSpawn& ActorInfo)
-{
-	APawn* OwningPawn = GetPawn();
-	if (OwningPawn)
+	UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	if (ASC)
 	{
-		if (ActorInfo.ActorToSpawn)
-		{
-			USceneComponent* AttachTarget = OwningPawn->GetRootComponent();
-			if (ACharacter* Character = Cast<ACharacter>(OwningPawn))
-			{
-				AttachTarget = Character->GetMesh();
-			}
-
-			AActor* NewActor = GetWorld()->SpawnActorDeferred<AActor>(ActorInfo.ActorToSpawn, FTransform::Identity, OwningPawn);
-			NewActor->FinishSpawning(FTransform::Identity, true);
-
-			NewActor->SetActorRelativeTransform(ActorInfo.AttachTransform);
-
-			NewActor->AttachToComponent(AttachTarget, FAttachmentTransformRules::KeepRelativeTransform, ActorInfo.AttachSocket);
-			AMEquipableActorBase* EquippableActor = Cast<AMEquipableActorBase>(NewActor);
-			if (EquippableActor)
-			{
-				EquippableActor->SetItemDef(ItemDef.Get());
-			}
-
-			SpawnedActor = NewActor;
-		}
-		else
-		{
-			ensure(false);
-			MCHAE_ERROR("장비 테이블에 스폰할 액터가 설정되어있지 않음.");
-		}
-	}
-	else
-	{
-		ensure(false);
-		// 왜 Pawn이 없지?
-	}
-}
-
-void UMEquipmentItemInstance::DestroyEquipmentActors()
-{
-	if (IsValid(SpawnedActor))
-	{
-		SpawnedActor->Destroy();
-		SpawnedActor = nullptr;
+		AppliedEffectHandles.RemoveAppliedEffects(ASC);
 	}
 }
 

@@ -59,6 +59,7 @@ void UPMHealthComponent::InitializeWithAbilitySystem(UPMAbilitySystemComponent* 
 	}
 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UPMHealthSet::GetHealthAttribute()).AddUObject(this, &ThisClass::HandleHealthChanged);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UPMHealthSet::GetMaxHealthAttribute()).AddUObject(this, &ThisClass::HandleHealthChanged);
 	if (HasAuthority())
 	{
 		AMPlayerCharacterBase* Character = Cast<AMPlayerCharacterBase>(GetOwner());

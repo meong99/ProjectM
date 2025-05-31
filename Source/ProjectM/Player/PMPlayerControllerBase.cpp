@@ -34,6 +34,23 @@ void APMPlayerControllerBase::OnPossess(APawn* aPawn)
 	{
 		Delegate_OnPossessed.Broadcast(MyCharacter);
 	}
+
+	const TSet<UActorComponent*>& SubComponents = GetComponents();
+	for (UActorComponent* Component : SubComponents)
+	{
+		UMControllerComponentBase* SubComponent = Cast<UMControllerComponentBase>(Component);
+		if (SubComponent)
+		{
+			SubComponent->OnPossess(aPawn);
+		}
+	}
+}
+
+void APMPlayerControllerBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate::CreateUObject(this, &APMPlayerControllerBase::OnExperienceLoaded));
 }
 
 void APMPlayerControllerBase::PostProcessInput(const float DeltaTime, const bool bGamePaused)
@@ -146,5 +163,18 @@ void APMPlayerControllerBase::Debug_WidgetControl(const FGameplayTag& WidgetTag,
 	else if (VC && !bAddWidget)
 	{
 		VC->RemoveWidgetFromLayer(WidgetTag);
+	}
+}
+
+void APMPlayerControllerBase::OnExperienceLoaded(const UPMExperienceDefinition* LoadedExperienceDefinition)
+{
+	const TSet<UActorComponent*>& SubComponents = GetComponents();
+	for (UActorComponent* Component : SubComponents)
+	{
+		UMControllerComponentBase* SubComponent = Cast<UMControllerComponentBase>(Component);
+		if (SubComponent)
+		{
+			SubComponent->OnExperienceLoaded(LoadedExperienceDefinition);
+		}
 	}
 }

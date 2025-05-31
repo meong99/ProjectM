@@ -36,7 +36,7 @@ const UDataTable* UMDataTableManager::GetDataTable(EMTableKey Key) const
 
 UPMInventoryItemDefinition* UMDataTableManager::GetItemDefinition(int32 RowId) const
 {
-	const TSubclassOf<UPMInventoryItemDefinition>& ItemDefinition = GetDefinitionClass<UPMInventoryItemDefinition>(RowId);
+	const TSubclassOf<UPMInventoryItemDefinition>& ItemDefinition = GetDefinitionClass<UPMInventoryItemDefinition>(this, RowId);
 	if (ItemDefinition)
 	{
 		return Cast<UPMInventoryItemDefinition>(DuplicateObject(ItemDefinition->GetDefaultObject<UPMInventoryItemDefinition>(), GetTransientPackage()));
@@ -47,7 +47,7 @@ UPMInventoryItemDefinition* UMDataTableManager::GetItemDefinition(int32 RowId) c
 
 UMMonsterDefinition* UMDataTableManager::GetMonsterDefinition(int32 RowId) const
 {
-	const TSubclassOf<UMMonsterDefinition>& MonsterDefinition = GetDefinitionClass<UMMonsterDefinition>(RowId);
+	const TSubclassOf<UMMonsterDefinition>& MonsterDefinition = GetDefinitionClass<UMMonsterDefinition>(this, RowId);
 	if (MonsterDefinition)
 	{
 		return Cast<UMMonsterDefinition>(DuplicateObject(MonsterDefinition->GetDefaultObject<UMMonsterDefinition>(), GetTransientPackage()));

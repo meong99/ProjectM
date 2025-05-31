@@ -88,7 +88,7 @@ protected:
 	AActor* LastAttacker;
 
 	UPROPERTY()
-	TMap<int32, FPMAbilitySet_GrantedHandles> GrantedHandles;
+	TMap<int32, FMAbilitySet_GrantedHandles> GrantedHandles;
 
 	TWeakObjectPtr<AMMonsterSpawner> Spawner;
 };

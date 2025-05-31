@@ -6,6 +6,7 @@
 
 class UGameplayEffect;
 class UAnimMontage;
+class UMEquipmentItemInstance;
 
 UCLASS()
 class PROJECTM_API UMWeaponItemDefinition : public UMEquipmentItemDefinition
@@ -27,9 +28,9 @@ public:
 * Member Variables
 */
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Equipment")
 	TSubclassOf<UGameplayEffect> DefaultAttackEffectClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment")
 	TArray<TObjectPtr<UAnimMontage>> DefaultAttackMontages;
 };
