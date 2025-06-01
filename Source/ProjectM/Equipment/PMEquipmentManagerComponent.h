@@ -12,6 +12,7 @@
 class UMEquipmentItemDefinition;
 class UMEquipmentItemInstance;
 class UPMAbilitySystemComponent;
+class UPMAbilitySet;
 
 /**
  *
@@ -43,6 +44,9 @@ protected:
 
 	void EquipItem_Impl(const UMEquipmentItemDefinition* EquipDef);
 	void RemoveEntry(EMEquipmentItemType EquipmentItemType);
+
+	void GiveAbilities(const UMEquipmentItemDefinition* EquipDef, UMEquipmentItemInstance* Instance);
+	void TakeAbilitiesFromAsc(UMEquipmentItemInstance* Instance);
 
 	void EquipAllItems();
 	void UnequipAllItems();

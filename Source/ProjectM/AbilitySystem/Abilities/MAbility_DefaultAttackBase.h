@@ -25,6 +25,7 @@ class PROJECTM_API UMAbility_DefaultAttackBase : public UPMGameplayAbility
 	*/
 public:
 	UMAbility_DefaultAttackBase();
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
@@ -66,5 +67,6 @@ protected:
 
 	int32 MontageIndex = 0;
 
+	UPROPERTY(Replicated)
 	bool bCanCombo = true;
 };

@@ -49,8 +49,8 @@ protected:
 public:
 	virtual void	OnReceivedGameplayTag(const FGameplayTag& Tag) {}
 
-	bool	CanRetrigger() const { return bRetriggerInstancedAbility; }
-	EPMAbilityActivationPolicy GetActivationPolicy() const { return ActivationPolicy; }
+	bool						CanRetrigger() const { return bRetriggerInstancedAbility; }
+	EPMAbilityActivationPolicy	GetActivationPolicy() const { return ActivationPolicy; }
 /*
 * Member Variables
 */

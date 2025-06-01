@@ -88,20 +88,8 @@ void UPMEquipmentManagerComponent::UnequipItem(EMEquipmentItemType EquipmentItem
 			Request.SetItemRequest(EMItemRequestType::ReturnItemToInventory, UnEquippedItem->ItemRowId, 1, UnEquippedItem->ItemHandle);
 			InvenManager->RequestItemToInventory(Request);
 		}
-
-		UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
-		if (ASC == nullptr)
-		{
-			ensure(false);
-			MCHAE_ERROR("Can't access to abilitysystem when equip item. So item equip sequence will be canceled.");
-			return;
-		}
-
-		FMAbilitySet_GrantedHandles TempGrantedHandles;
-		GrantedHandles.RemoveAndCopyValue(UnEquippedItem->ItemHandle.ItemUid, TempGrantedHandles);
-		TempGrantedHandles.TakeFromAbilitySystem(ASC);
-
 		UnEquippedItem->OnUnequipped();
+		TakeAbilitiesFromAsc(UnEquippedItem);
 		RemoveEntry(EquipmentItemType);
 		if (IsUsingRegisteredSubObjectList())
 		{
@@ -130,30 +118,16 @@ FMEquipmentItemEntry* UPMEquipmentManagerComponent::FindEntry(EMEquipmentItemTyp
 
 void UPMEquipmentManagerComponent::EquipItem_Impl(const UMEquipmentItemDefinition* EquipDef)
 {
-	UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
-	if (ASC == nullptr)
-	{
-		ensure(false);
-		MCHAE_ERROR("Can't access to abilitysystem when equip item. So item equip sequence will be canceled.");
-		return;
-	}
-
 	FMItemHandle Handle = EquippedItemList.AddEntry(EquipDef->GetClass(), 1);
 	FMEquipmentItemEntry* Entry = EquippedItemList.FindEntry(Handle);
 	if (Entry && Entry->Instance)
 	{
-		FMAbilitySet_GrantedHandles TempGrantedHandles;
-		for (const UPMAbilitySet* AbilitySet : EquipDef->AbilitySetsToGrant)
-		{
-			AbilitySet->GiveToAbilitySystem(ASC, &TempGrantedHandles, Entry->Instance, EquipDef->RowId);
-		}
-
+		GiveAbilities(EquipDef, Entry->Instance);
 		if (IsUsingRegisteredSubObjectList() && IsReadyForReplication() && Entry->Instance)
 		{
 			AddReplicatedSubObject(Entry->Instance);
 		}
 
-		GrantedHandles.Add(Entry->Instance->ItemHandle.ItemUid, TempGrantedHandles);
 		EquippedEntryMap.Add(Entry->Instance->EquipmentItemType, Entry->GetItemHandle());
 		Entry->Instance->OnEquipped();
 	}
@@ -163,6 +137,41 @@ void UPMEquipmentManagerComponent::RemoveEntry(EMEquipmentItemType EquipmentItem
 {
 	FMItemHandle Handle = EquippedEntryMap.FindRef(EquipmentItemType);
 	EquippedItemList.RemoveEntry(Handle);
+}
+
+void UPMEquipmentManagerComponent::GiveAbilities(const UMEquipmentItemDefinition* EquipDef, UMEquipmentItemInstance* Instance)
+{
+	UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	if (ASC == nullptr)
+	{
+		ensure(false);
+		MCHAE_ERROR("Can't access to abilitysystem when equip item. So item equip sequence will be canceled.");
+		return;
+	}
+
+	FMAbilitySet_GrantedHandles TempGrantedHandles;
+	for (const UPMAbilitySet* AbilitySet : EquipDef->AbilitySetsToGrant)
+	{
+		AbilitySet->GiveToAbilitySystem(ASC, &TempGrantedHandles, Instance, EquipDef->RowId);
+	}
+
+	GrantedHandles.Add(Instance->ItemHandle.ItemUid, TempGrantedHandles);
+}
+
+void UPMEquipmentManagerComponent::TakeAbilitiesFromAsc(UMEquipmentItemInstance* Instance)
+{
+	UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	if (ASC == nullptr)
+	{
+		ensure(false);
+		MCHAE_ERROR("Can't access to abilitysystem when equip item. So item equip sequence will be canceled.");
+		return;
+	}
+
+	FMAbilitySet_GrantedHandles TempGrantedHandles;
+	GrantedHandles.RemoveAndCopyValue(Instance->ItemHandle.ItemUid, TempGrantedHandles);
+	TempGrantedHandles.TakeFromAbilitySystem(ASC);
+
 }
 
 void UPMEquipmentManagerComponent::EquipAllItems()
@@ -176,6 +185,7 @@ void UPMEquipmentManagerComponent::EquipAllItems()
 			if (ItemCDO)
 			{
 				Instance->OnEquipped();
+				GiveAbilities(ItemCDO, Instance);
 			}
 		}
 	}
@@ -189,6 +199,7 @@ void UPMEquipmentManagerComponent::UnequipAllItems()
 		if (IsValid(Instance))
 		{
 			Instance->OnUnequipped();
+			TakeAbilitiesFromAsc(Instance);
 		}
 	}
 }

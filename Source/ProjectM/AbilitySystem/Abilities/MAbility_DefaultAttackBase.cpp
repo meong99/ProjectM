@@ -16,10 +16,18 @@
 #include "Equipment/PMEquipmentManagerComponent.h"
 #include "AbilitySystem/Attributes/PMCombatSet.h"
 #include "GameplayCueFunctionLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 UMAbility_DefaultAttackBase::UMAbility_DefaultAttackBase()
 {
 
+}
+
+void UMAbility_DefaultAttackBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UMAbility_DefaultAttackBase, bCanCombo);
 }
 
 bool UMAbility_DefaultAttackBase::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags /*= nullptr*/, const FGameplayTagContainer* TargetTags /*= nullptr*/, OUT FGameplayTagContainer* OptionalRelevantTags /*= nullptr*/) const
