@@ -2,6 +2,9 @@
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
 #include "Character/Components/PMHealthComponent.h"
+#include "Components/ProgressBar.h"
+#include "Components/TextBlock.h"
+#include "AbilitySystem/Attributes/PMHealthSet.h"
 
 UMPlayerHealthBarWidget::UMPlayerHealthBarWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -41,7 +44,28 @@ void UMPlayerHealthBarWidget::Callback_OnPossessedPawnChanged(APawn* OldPawn, AP
 	}
 }
 
-void UMPlayerHealthBarWidget::Callback_OnHealthChanged(UPMHealthComponent* HealthComp, const float OldValue, const float NewValue, AActor* Instigator)
+void UMPlayerHealthBarWidget::Callback_OnHealthChanged(const FGameplayAttribute& Attribute, UPMHealthComponent* HealthComp, const float OldValue, const float NewValue, AActor* Instigator)
 {
-	BP_OnHealthChanged(HealthComp, OldValue, NewValue, Instigator);
+	if (HealthComp)
+	{
+		const float MaxHealth = Attribute == UPMHealthSet::GetMaxHealthAttribute() ? NewValue : HealthComp->GetMaxHealth();
+		const float CurrentHealth = Attribute == UPMHealthSet::GetMaxHealthAttribute() ? HealthComp->GetCurrentHealth() : NewValue;
+		const float Percent = CurrentHealth / MaxHealth;
+
+		FText Template = MakeFormatText(CurrentHealth, MaxHealth);
+
+		ProgressBar->SetPercent(Percent);
+		HealthText->SetText(Template);
+	}
+}
+
+FText UMPlayerHealthBarWidget::MakeFormatText(const float Health, const float MaxHealth) const
+{
+	FText Template = FText::FromString("{Health} / {MaxHealth}");
+	FFormatNamedArguments Args;
+
+	Args.Add("Health", FText::AsNumber((int32)Health));
+	Args.Add("MaxHealth", FText::AsNumber(MaxHealth));
+
+	return FText::Format(Template, Args);
 }

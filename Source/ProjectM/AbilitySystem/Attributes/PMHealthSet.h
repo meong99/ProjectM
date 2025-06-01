@@ -26,15 +26,12 @@ public:
 
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
-
-	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
-	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 
 protected:
-	void AdjustAttributeForMaxChange(FGameplayAttributeData& AffectedAttribute,
-									 const FGameplayAttributeData& MaxAttribute,
-									 float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty);
+	void AdjustAttributeForMaxChange(const float CurrentValue, const float OldMaxValue, float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty);
 	void ClampAttribute(const FGameplayAttribute& Attribute, float& NewValue) const;
+	void CheckZeroHealth();
 public:
 	UPROPERTY(BlueprintReadWrite, Replicated, Category = "ProjectM | Health")
 	FGameplayAttributeData Health;

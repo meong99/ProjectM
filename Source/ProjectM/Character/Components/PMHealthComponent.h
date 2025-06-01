@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Delegates/Delegate.h"
 #include "Components/MPawnComponentBase.h"
+#include "AttributeSet.h"
 #include "PMHealthComponent.generated.h"
 
 class UPMAbilitySystemComponent;
@@ -14,8 +15,8 @@ class AActor;
 struct FOnAttributeChangeData;
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FPMHealth_AttributeChanged, UPMHealthComponent*, HealthComponent, float, OldValue, float, NewValue, AActor*, Instigator);
-DECLARE_MULTICAST_DELEGATE_FourParams(FOnInitHealth, UPMHealthComponent* HealthComponent, float OldValue, float NewValue, AActor* Instigator);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FPMHealth_AttributeChanged, const FGameplayAttribute&, Attribute, UPMHealthComponent*, HealthComponent, float, OldValue, float, NewValue, AActor*, Instigator);
+DECLARE_MULTICAST_DELEGATE_FiveParams(FOnInitHealth, const FGameplayAttribute& Attribute, UPMHealthComponent* HealthComponent, float OldValue, float NewValue, AActor* Instigator);
 
 
 UCLASS()
@@ -54,10 +55,10 @@ public:
 
 private:
 	UFUNCTION(Client, Reliable)
-	void	Client_HandleHealthChanged(UPMHealthComponent* HealthComponent, float OldValue, float NewValue, AActor* Instigator);
+	void	Client_HandleHealthChanged(const FGameplayAttribute& Attribute, float OldValue, float NewValue, AActor* Instigator);
 
 	void	HandleHealthChanged(const FOnAttributeChangeData& ChangeData);
-	void	OnChangeHealth(float OldValue, float NewValue, AActor* Instigator);
+	void	OnChangeHealth(const FGameplayAttribute& Attribute, float OldValue, float NewValue, AActor* Instigator);
 	void	CheckAndNotifyDeath(float OldValue, float NewValue);
 
 /*

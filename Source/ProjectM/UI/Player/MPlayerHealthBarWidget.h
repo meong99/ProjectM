@@ -4,12 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "UI/MWidgetBase.h"
+#include "AttributeSet.h"
 #include "MPlayerHealthBarWidget.generated.h"
 
 class UImage;
 class APawn;
 class UPMHealthComponent;
 class AActor;
+class UProgressBar;
+class UTextBlock;
 
 UCLASS()
 class PROJECTM_API UMPlayerHealthBarWidget : public UMWidgetBase
@@ -32,12 +35,15 @@ protected:
 	void Callback_OnPossessedPawnChanged(APawn* OldPawn, APawn* NewPawn);
 
 	UFUNCTION()
-	void Callback_OnHealthChanged(UPMHealthComponent* HealthComp, const float OldValue, const float NewValue, AActor* Instigator);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void BP_OnHealthChanged(UPMHealthComponent* HealthComp, const float OldValue, const float NewValue, AActor* Instigator);
+	void Callback_OnHealthChanged(const FGameplayAttribute& Attribute, UPMHealthComponent* HealthComp, const float OldValue, const float NewValue, AActor* Instigator);
+	FText MakeFormatText(const float Health, const float MaxHealth) const;
 /*
 * Member Variables
 */
 protected:
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UProgressBar> ProgressBar;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> HealthText;
 };

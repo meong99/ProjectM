@@ -20,6 +20,38 @@ void UPMHealthSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, f
 	Super::PreAttributeBaseChange(Attribute, NewValue);
 }
 
+void UPMHealthSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+{
+	Super::PreAttributeChange(Attribute, NewValue);
+
+	ClampAttribute(Attribute, NewValue);
+}
+
+void UPMHealthSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+
+	if (Attribute == GetMaxHealthAttribute())
+	{
+		CheckZeroHealth();
+		AdjustAttributeForMaxChange(GetHealth(), OldValue, NewValue, GetHealthAttribute());
+	}
+}
+
+void UPMHealthSet::AdjustAttributeForMaxChange(const float CurrentValue, const float OldMaxValue, float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty)
+{
+	UAbilitySystemComponent*	AbilityComp = GetOwningAbilitySystemComponent();
+
+	if (!FMath::IsNearlyEqual(OldMaxValue, NewMaxValue) && IsValid(AbilityComp))
+	{
+		float	NewDelta = (OldMaxValue > 0.f) ? (CurrentValue * NewMaxValue / OldMaxValue) - CurrentValue : NewMaxValue;
+		if (!FMath::IsNearlyEqual(NewDelta, 0.f))
+		{
+			AbilityComp->ApplyModToAttribute(AffectedAttributeProperty, EGameplayModOp::Additive, NewDelta);
+		}
+	}
+}
+
 void UPMHealthSet::ClampAttribute(const FGameplayAttribute& Attribute, float& NewValue) const
 {
 	if (Attribute == GetHealthAttribute())
@@ -28,48 +60,11 @@ void UPMHealthSet::ClampAttribute(const FGameplayAttribute& Attribute, float& Ne
 	}
 }
 
-void UPMHealthSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+void UPMHealthSet::CheckZeroHealth()
 {
-	Super::PreAttributeChange(Attribute, NewValue);
-
-	if (Attribute == GetMaxHealthAttribute())
+	UAbilitySystemComponent* AbilityComp = GetOwningAbilitySystemComponent();
+	if (FMath::IsNearlyEqual(GetHealth(), 0.f))
 	{
-		AdjustAttributeForMaxChange(Health, MaxHealth, NewValue, GetHealthAttribute());
-	}
-
-	ClampAttribute(Attribute, NewValue);
-}
-
-bool UPMHealthSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
-{
-	return Super::PreGameplayEffectExecute(Data);
-}
-
-void UPMHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
-{
-	Super::PostGameplayEffectExecute(Data);
-
-	float MinimumHealth = 0.0f;
-
-	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
-	{
-		SetHealth(FMath::Clamp(GetHealth(), MinimumHealth, GetMaxHealth()));
-	}
-}
-
-void UPMHealthSet::AdjustAttributeForMaxChange(FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute, float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty)
-{
-	UAbilitySystemComponent*	AbilityComp = GetOwningAbilitySystemComponent();
-	const float					CurrentMaxValue = MaxAttribute.GetCurrentValue();
-
-	if (!FMath::IsNearlyEqual(CurrentMaxValue, NewMaxValue) && IsValid(AbilityComp))
-	{
-		const float CurrentValue = AffectedAttribute.GetCurrentValue();
-		float       NewDelta = (CurrentMaxValue > 0.f) ? (CurrentValue * NewMaxValue / CurrentMaxValue) - CurrentValue : NewMaxValue;
-
-		UMGameplayStatics::SetTimerForNextTick(this, [=, this]()->void
-		{
-			AbilityComp->ApplyModToAttribute(AffectedAttributeProperty, EGameplayModOp::Additive, NewDelta);
-		});
+		AbilityComp->ApplyModToAttribute(GetHealthAttribute(), EGameplayModOp::Override, GetMaxHealth());
 	}
 }

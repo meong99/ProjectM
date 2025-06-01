@@ -25,7 +25,7 @@ void UPMHealthComponent::CallOrRegister_OnInitHealthComponent(FOnInitHealth::FDe
 {
 	if (HealthSet)
 	{
-		Delegate.ExecuteIfBound(this, 0, HealthSet->GetHealth(), nullptr);
+		Delegate.ExecuteIfBound(HealthSet->GetHealthAttribute(), this, 0, HealthSet->GetHealth(), nullptr);
 	}
 	else
 	{
@@ -70,7 +70,7 @@ void UPMHealthComponent::InitializeWithAbilitySystem(UPMAbilitySystemComponent* 
 	}
 
 	float CurrentHealth = HealthSet->GetHealth();
-	Delegate_OnInitHealth.Broadcast(this, 0, CurrentHealth, nullptr);
+	Delegate_OnInitHealth.Broadcast(HealthSet->GetHealthAttribute(), this, 0, CurrentHealth, nullptr);
 	Delegate_OnInitHealth.Clear();
 }
 
@@ -96,21 +96,22 @@ void UPMHealthComponent::HandleHealthChanged(const FOnAttributeChangeData& Chang
 	float OldValue = ChangeData.OldValue;
 	float NewValue = ChangeData.NewValue;
 	AActor* Instigator = UPMAbilitySystemComponent::GetInstigatorFromAttrChangeData(ChangeData);
+	const FGameplayAttribute& Attribute = ChangeData.Attribute;
 
-	OnChangeHealth(OldValue, NewValue, Instigator);
+	OnChangeHealth(Attribute, OldValue, NewValue, Instigator);
 	if (GetNetMode() != NM_Standalone)
 	{
 		if (IsNetConnectionReady())
 		{
-			Client_HandleHealthChanged(this, OldValue, NewValue, Instigator);
+			Client_HandleHealthChanged(Attribute, OldValue, NewValue, Instigator);
 		}
 		else
 		{
-			GetWorld()->GetTimerManager().SetTimer(Handle, [OldValue, NewValue, Instigator, this]()->void
+			GetWorld()->GetTimerManager().SetTimer(Handle, [Attribute, OldValue, NewValue, Instigator, this]()->void
 			{
 				if (IsNetConnectionReady())
 				{
-					Client_HandleHealthChanged(this, OldValue, NewValue, Instigator);
+					Client_HandleHealthChanged(Attribute, OldValue, NewValue, Instigator);
 					GetWorld()->GetTimerManager().ClearTimer(Handle);
 				}
 			}, .5f, true, .5f);
@@ -118,15 +119,18 @@ void UPMHealthComponent::HandleHealthChanged(const FOnAttributeChangeData& Chang
 	}
 }
 
-void UPMHealthComponent::OnChangeHealth(float OldValue, float NewValue, AActor* Instigator)
+void UPMHealthComponent::OnChangeHealth(const FGameplayAttribute& Attribute, float OldValue, float NewValue, AActor* Instigator)
 {
-	OnHealthChanged.Broadcast(this, OldValue, NewValue, Instigator);
-	CheckAndNotifyDeath(OldValue, NewValue);
+	OnHealthChanged.Broadcast(Attribute, this, OldValue, NewValue, Instigator);
+	if (Attribute == UPMHealthSet::GetHealthAttribute())
+	{
+		CheckAndNotifyDeath(OldValue, NewValue);
+	}
 }
 
-void UPMHealthComponent::Client_HandleHealthChanged_Implementation(UPMHealthComponent* HealthComponent, float OldValue, float NewValue, AActor* Instigator)
+void UPMHealthComponent::Client_HandleHealthChanged_Implementation(const FGameplayAttribute& Attribute, float OldValue, float NewValue, AActor* Instigator)
 {
-	OnChangeHealth(OldValue, NewValue, Instigator);
+	OnChangeHealth(Attribute, OldValue, NewValue, Instigator);
 }
 
 void UPMHealthComponent::CheckAndNotifyDeath(float OldValue, float NewValue)
