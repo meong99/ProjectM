@@ -29,14 +29,15 @@ void UMInteractiveAction_AcceptQuest::ActivateAction()
 	if (ViewportClient)
 	{
 		UMDialogueBoxWidget* DialogWidget = Cast<UMDialogueBoxWidget>(ViewportClient->GetWidgetInstance(FPMGameplayTags::Get().UI_Registry_Game_Dialogue));
-		if (DialogWidget && QuestDefinition)
+		UMQuestDefinition* DefCDO = QuestDefinitionClass ? QuestDefinitionClass->GetDefaultObject<UMQuestDefinition>() : nullptr;
+		if (DialogWidget && DefCDO)
 		{
 			FMWidgetInfo WidgetInfo;
 			WidgetInfo.WidgetInstigator = this;
 			WidgetInfo.WidgetOwnerActor = OwnerActor;
 			DialogWidget->SetWidgetInfo(WidgetInfo);
 
-			DialogWidget->InitDialogueWidget(QuestDefinition->DialogueRowId);
+			DialogWidget->InitDialogueWidget(DefCDO->DialogueRowId);
 			DialogWidget->SetCallback1([this](){OnClick_Accept();});
 			DialogWidget->SetCallback2([this](){OnClick_Refuse();});
 			DialogWidget->AddWidgetToLayer(WidgetInfo);

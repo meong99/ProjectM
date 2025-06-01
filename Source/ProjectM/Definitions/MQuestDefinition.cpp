@@ -47,7 +47,7 @@ void UMQuestDefinition::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 		{
 			QuestAction->ActionName = QuestName;
 			QuestAction->QuestRowId = RowId;
-			QuestAction->QuestDefinition = this;
+			QuestAction->QuestDefinitionClass = GetClass();
 			NpcDef->Action_OnInteract.Add(QuestAction);
 		}
 	}

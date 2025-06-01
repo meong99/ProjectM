@@ -191,7 +191,7 @@ void UMInteractionComponent::DeactivateAllOverlapAction()
 
 bool UMInteractionComponent::ExistActivatableAction() const
 {
-	bool bExistActivatableAction = true;
+	bool bExistActivatableAction = false;
 	if (Action_OnInteract.Num() == 0)
 	{
 		bExistActivatableAction = false;
@@ -200,9 +200,9 @@ bool UMInteractionComponent::ExistActivatableAction() const
 
 	for (UMInteractiveAction_OnInteractionBase* Action : Action_OnInteract)
 	{
-		if (Action && !Action->ShouldActivate())
+		if (Action && Action->ShouldActivate())
 		{
-			bExistActivatableAction = false;
+			bExistActivatableAction = true;
 			break;
 		}
 	}

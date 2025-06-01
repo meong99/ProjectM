@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "MInteractiveAction_OnInteractionBase.h"
+#include "Templates/SubclassOf.h"
 #include "MInteractiveAction_AcceptQuest.generated.h"
 
 class UInputComponent;
@@ -41,5 +42,5 @@ public:
 	int32 QuestRowId;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Quest")
-	TObjectPtr<const UMQuestDefinition> QuestDefinition;
+	TSubclassOf<UMQuestDefinition> QuestDefinitionClass;
 };
