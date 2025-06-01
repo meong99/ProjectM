@@ -78,37 +78,3 @@ void UMInteractiveAction_AcceptQuest::OnClick_Refuse()
 {
 	DeactivateAction();
 }
-
-#if WITH_EDITOR
-void UMInteractiveAction_AcceptQuest::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
-{
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-
-	FName PropertyName = PropertyChangedEvent.Property->GetFName();
-	if (PropertyName == GET_MEMBER_NAME_CHECKED(UMInteractiveAction_AcceptQuest, QuestRowId))
-	{
-		ChangeQuestDefinition();
-	}
-}
-
-void UMInteractiveAction_AcceptQuest::ChangeQuestDefinition()
-{
-	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
-	if (TableManager)
-	{
-		const UDataTable* QuestTable = TableManager->GetDataTable(QuestRowId);
-		int32 ElementIndex = UMDataTableManager::ChangeRowIdToElementId(QuestRowId) - 1;
-		const TArray<FName>& Names = QuestTable->GetRowNames();
-		if (Names.IsValidIndex(ElementIndex))
-		{
-			FMTable_QuestTable* RowData = QuestTable->FindRow<FMTable_QuestTable>(Names[ElementIndex], Names[ElementIndex].ToString());
-			if (RowData && RowData->Definition)
-			{
-				QuestDefinition = DuplicateObject(RowData->Definition->GetDefaultObject<UMQuestDefinition>(), this);
-				ActionName = QuestDefinition->QuestName;
-			}
-		}
-	}
-}
-
-#endif

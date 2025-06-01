@@ -8,6 +8,7 @@ void FMTable_TableBase::OnDataTableChanged(const UDataTable* InDataTable, const 
 	UMDefinitionBase* DefinitionCDO = Cast<UMDefinitionBase>(Definition.GetDefaultObject());
 	if (DefinitionCDO)
 	{
+		DefinitionCDO->Modify();
 		DefinitionCDO->RowId = RowId;
 	}
 #endif

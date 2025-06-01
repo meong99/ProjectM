@@ -62,10 +62,10 @@ private:
 * Member Variables
 */
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectM")
+	UPROPERTY(BlueprintReadOnly, Category = "ProjectM")
 	TArray<TObjectPtr<UMInteractiveAction_OverlapActionBase>> Action_OnBeginOverlap;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectM")
+	UPROPERTY(BlueprintReadOnly, Category = "ProjectM")
 	TArray<TObjectPtr<UMInteractiveAction_OnInteractionBase>> Action_OnInteract;
 
 	TWeakObjectPtr<APlayerController> WeakOverlappedController;

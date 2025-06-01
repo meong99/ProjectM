@@ -30,6 +30,7 @@ void AMMonsterSpawner::PostEditChangeProperty(FPropertyChangedEvent& PropertyCha
 		PropertyName == GET_MEMBER_NAME_CHECKED(AMMonsterSpawner, MonsterRowId) &&
 		!IsRunningGame())
 	{
+		Modify();
 		ChangeMonsterDefinition();
 	}
 }

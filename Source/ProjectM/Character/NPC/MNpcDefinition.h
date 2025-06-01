@@ -10,6 +10,7 @@
 class UMNameWidgetComponent;
 class UMInteractiveAction_OnInteractionBase;
 class UMInteractiveAction_OverlapActionBase;
+class AMNpcBase;
 
 /**
  *
@@ -34,6 +35,9 @@ public:
 * Member Variables
 */
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
+	TSubclassOf<AMNpcBase> NpcClass;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM")
 	FName NpcName;
 

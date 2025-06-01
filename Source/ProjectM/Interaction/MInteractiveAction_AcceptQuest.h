@@ -33,14 +33,10 @@ public:
 	void OnClick_Refuse();
 
 protected:
-#if WITH_EDITOR
-	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
-	void ChangeQuestDefinition();
-#endif
 /*
 * Member Variables
 */
-protected:
+public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1700001, ClampMax = 1799999), Category = "Quest")
 	int32 QuestRowId;
 

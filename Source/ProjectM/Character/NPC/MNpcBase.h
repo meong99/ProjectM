@@ -26,13 +26,17 @@ public:
 	virtual void BeginPlay() override;
 	virtual void InitCharacterName() override;
 
-	/*
+/*
 * Member Functions
 */
 public:
 	const UMNpcDefinition* GetNpcDefinition() const { return NpcDefinition; }
-/*
+	UMInteractionComponent* GetInteractionComponent() const { return InteractionComponent; }
 
+#if WITH_EDITOR
+	void SetNpcRowId(const int32 InRowId) { NpcRowId = InRowId; }
+#endif
+/*
 * Member Variables
 */
 protected:

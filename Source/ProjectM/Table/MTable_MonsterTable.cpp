@@ -13,6 +13,7 @@ void FMTable_MonsterTable::OnDataTableChanged(const UDataTable* InDataTable, con
 		AMMonsterBase* MonsterCDO = DefinitionCDO->MonsterInfo.MonsterClass->GetDefaultObject<AMMonsterBase>();
 		if (MonsterCDO && MonsterCDO->GetMonsterRowId() == INDEX_NONE)
 		{
+			MonsterCDO->Modify();
 			MonsterCDO->SetMonsterRowId(RowId);
 		}
 	}

@@ -50,6 +50,8 @@ public:
 	template<class T>
 	static const TSubclassOf<T>	GetDefinitionClass(const UObject* WorldContext, const int32 RowId);
 	template<class T>
+	static T* GetDefinitionDefaultObject(UObject* WorldContext, const int32 RowId);
+	template<class T>
 	static T*					GetDefinitionObject(UObject* WorldContext, const int32 RowId);
 	template<class T>
 	static T*					GetTableRowData(const UObject* WorldContext, const int32 RowId);
@@ -82,7 +84,7 @@ public:
 };
 
 template<class T>
-T* UMDataTableManager::GetDefinitionObject(UObject* WorldContext, const int32 RowId)
+T* UMDataTableManager::GetDefinitionDefaultObject(UObject* WorldContext, const int32 RowId)
 {
 	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
 
@@ -98,13 +100,19 @@ T* UMDataTableManager::GetDefinitionObject(UObject* WorldContext, const int32 Ro
 				FMTable_TableBase* RowData = Table->FindRow<FMTable_TableBase>(Names[ElementIndex], Names[ElementIndex].ToString());
 				if (RowData && RowData->Definition)
 				{
-					return DuplicateObject<T>(RowData->Definition->GetDefaultObject<T>(), WorldContext);
+					return RowData->Definition->GetDefaultObject<T>();
 				}
 			}
 		}
 	}
 
 	return nullptr;
+}
+
+template<class T>
+T* UMDataTableManager::GetDefinitionObject(UObject* WorldContext, const int32 RowId)
+{
+	return DuplicateObject<T>(GetDefinitionDefaultObject<T>(WorldContext, RowId), WorldContext);
 }
 
 template<class T>

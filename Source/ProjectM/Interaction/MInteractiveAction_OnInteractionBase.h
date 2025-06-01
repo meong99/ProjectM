@@ -26,7 +26,7 @@ public:
 /*
 * Member Variables
 */
-protected:
+public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Action")
 	FText ActionName;
 
