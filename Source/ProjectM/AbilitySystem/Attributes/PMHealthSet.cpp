@@ -1,6 +1,7 @@
 #include "PMHealthSet.h"
 #include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
+#include "Util/MGameplayStatics.h"
 
 UPMHealthSet::UPMHealthSet() : Super(), Health(1.f), MaxHealth(1.f)
 {
@@ -19,6 +20,14 @@ void UPMHealthSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, f
 	Super::PreAttributeBaseChange(Attribute, NewValue);
 }
 
+void UPMHealthSet::ClampAttribute(const FGameplayAttribute& Attribute, float& NewValue) const
+{
+	if (Attribute == GetHealthAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxHealth());
+	}
+}
+
 void UPMHealthSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
@@ -27,6 +36,8 @@ void UPMHealthSet::PreAttributeChange(const FGameplayAttribute& Attribute, float
 	{
 		AdjustAttributeForMaxChange(Health, MaxHealth, NewValue, GetHealthAttribute());
 	}
+
+	ClampAttribute(Attribute, NewValue);
 }
 
 bool UPMHealthSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
@@ -56,6 +67,9 @@ void UPMHealthSet::AdjustAttributeForMaxChange(FGameplayAttributeData& AffectedA
 		const float CurrentValue = AffectedAttribute.GetCurrentValue();
 		float       NewDelta = (CurrentMaxValue > 0.f) ? (CurrentValue * NewMaxValue / CurrentMaxValue) - CurrentValue : NewMaxValue;
 
-		AbilityComp->ApplyModToAttribute(AffectedAttributeProperty, EGameplayModOp::Additive, NewDelta);
+		UMGameplayStatics::SetTimerForNextTick(this, [=, this]()->void
+		{
+			AbilityComp->ApplyModToAttribute(AffectedAttributeProperty, EGameplayModOp::Additive, NewDelta);
+		});
 	}
 }

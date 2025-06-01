@@ -131,7 +131,7 @@ void UPMHealthComponent::Client_HandleHealthChanged_Implementation(UPMHealthComp
 
 void UPMHealthComponent::CheckAndNotifyDeath(float OldValue, float NewValue)
 {
-	if (OldValue > 0 && NewValue == 0)
+	if (OldValue > 0 && NewValue <= 0)
 	{
 		AMCharacterBase* Owner = Cast<AMCharacterBase>(GetOwner());
 		if (Owner)
