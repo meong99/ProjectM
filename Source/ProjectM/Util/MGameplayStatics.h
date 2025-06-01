@@ -33,7 +33,6 @@ public:
 	static void								SetTimer(const UObject* WorldContext, TFunction<void()> Callback, float InRate, bool InbLoop, float InFirstDelay = -1.f);
 	static bool								CheckNetGuid(const UObject* WorldContext, const UObject* Object);
 
-
 	// 에디터일땐 에디터팝업, 아닐때는 로그
 	static void	ShowErrorOrLog(const FString& Error);
 

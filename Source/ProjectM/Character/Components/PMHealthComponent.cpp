@@ -91,21 +91,11 @@ float UPMHealthComponent::GetCurrentHealth()
 	return 0;
 }
 
-static AActor* GetInstigatorFromAttrChangeData(const FOnAttributeChangeData& ChangeData)
-{
-	if (ChangeData.GEModData != nullptr)
-	{
-		const FGameplayEffectContextHandle& EffectContext = ChangeData.GEModData->EffectSpec.GetEffectContext();
-		return EffectContext.GetOriginalInstigator();
-	}
-	return nullptr;
-}
-
 void UPMHealthComponent::HandleHealthChanged(const FOnAttributeChangeData& ChangeData)
 {
 	float OldValue = ChangeData.OldValue;
 	float NewValue = ChangeData.NewValue;
-	AActor* Instigator = GetInstigatorFromAttrChangeData(ChangeData);
+	AActor* Instigator = UPMAbilitySystemComponent::GetInstigatorFromAttrChangeData(ChangeData);
 
 	OnChangeHealth(OldValue, NewValue, Instigator);
 	if (GetNetMode() != NM_Standalone)

@@ -6,6 +6,7 @@
 #include "UI/MWidgetBase.h"
 #include "Util/MPriorityQueue.h"
 #include "Inventory/PMInventoryItemList.h"
+#include "GameplayEffectTypes.h"
 #include "MInventoryWidget.generated.h"
 
 class UTileView;
@@ -17,6 +18,7 @@ class UButton;
 class UWidgetSwitcher;
 class UMTileView;
 class UMInventoryTemplete;
+class UTextBlock;
 
 UCLASS()
 class PROJECTM_API UMInventoryWidget : public UMWidgetBase
@@ -63,7 +65,11 @@ protected:
 	UFUNCTION()
 	void	OnClick_ExitButton();
 
-protected:
+	void	Callback_CombatChange(const FOnAttributeChangeData& ChangeData);
+	void	OnChange_AttackPower(const float OldValue, const float NewValue, AActor* Intigator);
+	void	OnChange_DefencePower(const float OldValue, const float NewValue, AActor* Intigator);
+	FText	MakeFormatText(const FString& Name, const float Value);
+
 /*
 * Member Variables
 */
@@ -100,4 +106,10 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> ExitButton;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> AttackPower;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> DefencePower;
 };

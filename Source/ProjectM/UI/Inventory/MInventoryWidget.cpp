@@ -9,6 +9,10 @@
 #include "CommonWidgets/MTileView.h"
 #include "MInventoryTemplete.h"
 #include "Inventory/PMInventoryItemInstance.h"
+#include "Player/PMPlayerControllerBase.h"
+#include "AbilitySystem/PMAbilitySystemComponent.h"
+#include "AbilitySystem/Attributes/PMCombatSet.h"
+#include "Components/TextBlock.h"
 
 UMInventoryWidget::UMInventoryWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {}
@@ -66,7 +70,7 @@ void UMInventoryWidget::Callback_RemoveItem(const FMItemResponse& ItemRespons)
 
 void UMInventoryWidget::BindDelegates()
 {
-	APlayerController* PlayerController = GetOwningPlayer();
+	APMPlayerControllerBase* PlayerController = Cast<APMPlayerControllerBase>(GetOwningPlayer());
 	InventoryComponent = PlayerController ? PlayerController->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
 	if (IsValid(InventoryComponent))
 	{
@@ -78,6 +82,13 @@ void UMInventoryWidget::BindDelegates()
 	{
 		ensure(false);
 		MCHAE_ERROR("Can't get inventorycomponent!");
+	}
+
+	UPMAbilitySystemComponent* ASC = PlayerController ? PlayerController->GetAbilitySystemComponent() : nullptr;
+	if (ASC)
+	{
+		ASC->GetGameplayAttributeValueChangeDelegate(UPMCombatSet::GetAttackPowerAttribute()).AddUObject(this, &UMInventoryWidget::Callback_CombatChange);
+		ASC->GetGameplayAttributeValueChangeDelegate(UPMCombatSet::GetDefensePowerAttribute()).AddUObject(this, &UMInventoryWidget::Callback_CombatChange);
 	}
 
 	if (EquipmentButton_Deactivated)
@@ -149,4 +160,43 @@ void UMInventoryWidget::OnClick_MiscellaneousButton()
 void UMInventoryWidget::OnClick_ExitButton()
 {
 	RemoveWidgetFromLayer();
+}
+
+void UMInventoryWidget::Callback_CombatChange(const FOnAttributeChangeData& ChangeData)
+{
+	float OldValue = ChangeData.OldValue;
+	float NewValue = ChangeData.NewValue;
+	AActor* Instigator = UPMAbilitySystemComponent::GetInstigatorFromAttrChangeData(ChangeData);
+
+	if (UPMCombatSet::GetAttackPowerAttribute() == ChangeData.Attribute)
+	{
+		OnChange_AttackPower(OldValue, NewValue, Instigator);
+	}
+	else if (UPMCombatSet::GetDefensePowerAttribute() == ChangeData.Attribute)
+	{
+		OnChange_DefencePower(OldValue, NewValue, Instigator);
+	}
+}
+
+void UMInventoryWidget::OnChange_AttackPower(const float OldValue, const float NewValue, AActor* Intigator)
+{
+	const FText& NewText = MakeFormatText(TEXT("공격력"), NewValue);
+	AttackPower->SetText(NewText);
+}
+
+void UMInventoryWidget::OnChange_DefencePower(const float OldValue, const float NewValue, AActor* Intigator)
+{
+	const FText& NewText = MakeFormatText(TEXT("방어력"), NewValue);
+	DefencePower->SetText(NewText);
+}
+
+FText UMInventoryWidget::MakeFormatText(const FString& Name, const float Value)
+{
+	FText Template = FText::FromString("{Name} : {Value}");
+	FFormatNamedArguments Args;
+
+	Args.Add("Name", FText::FromString(Name));
+	Args.Add("Value", FText::AsNumber(Value));
+
+	return FText::Format(Template, Args);
 }

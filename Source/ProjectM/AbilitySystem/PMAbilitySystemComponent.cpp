@@ -3,6 +3,9 @@
 #include "Animation/PMAnimInstance.h"
 #include "GameFramework/Pawn.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayEffectTypes.h"
+#include "GameplayEffect.h"
+#include "GameplayEffectExtension.h"
 
 UPMAbilitySystemComponent::UPMAbilitySystemComponent()
 {
@@ -45,6 +48,16 @@ void UPMAbilitySystemComponent::AbilitySpecInputReleased(FGameplayAbilitySpec& S
 	{
 		InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, Spec.Handle, Spec.ActivationInfo.GetActivationPredictionKey());
 	}
+}
+
+AActor* UPMAbilitySystemComponent::GetInstigatorFromAttrChangeData(const FOnAttributeChangeData& ChangeData)
+{
+	if (ChangeData.GEModData != nullptr)
+	{
+		const FGameplayEffectContextHandle& EffectContext = ChangeData.GEModData->EffectSpec.GetEffectContext();
+		return EffectContext.GetOriginalInstigator();
+	}
+	return nullptr;
 }
 
 void UPMAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
