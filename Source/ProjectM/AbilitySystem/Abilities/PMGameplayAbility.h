@@ -5,14 +5,8 @@
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
 #include "NativeGameplayTags.h"
+#include "Types/MAbilityTypes.h"
 #include "PMGameplayAbility.generated.h"
-
-UE_DECLARE_GAMEPLAY_TAG_EXTERN(Animation_Notify_StartAttack);
-UE_DECLARE_GAMEPLAY_TAG_EXTERN(Animation_Notify_EndAttack);
-UE_DECLARE_GAMEPLAY_TAG_EXTERN(Animation_Notify_StartDead);
-UE_DECLARE_GAMEPLAY_TAG_EXTERN(Animation_Notify_EndDead);
-
-UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayCue_Combat_Hit);
 
 class UPMAbilityCost;
 

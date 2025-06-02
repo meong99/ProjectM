@@ -40,10 +40,6 @@ struct FPMGameplayTags
 	FGameplayTag UI_Registry_Layout_DefaultLayout;
 	FGameplayTag UI_Registry_HUD_MainHUD;
 
-	FGameplayTag UI_Registry_Game_InteractionList;
-	FGameplayTag UI_Registry_Game_Shop;
-	FGameplayTag UI_Registry_Game_Restart;
-
 	FGameplayTag UI_Game_NameWidget;
 	/*
 	* Item
@@ -62,6 +58,10 @@ struct FPMGameplayTags
 	* Gameplay
 	*/
 	FGameplayTag UI_Registry_Game_Dialogue;
+	FGameplayTag UI_Registry_Game_InteractionList;
+	FGameplayTag UI_Registry_Game_Shop;
+	FGameplayTag UI_Registry_Game_Restart;
+	FGameplayTag UI_Registry_Game_ItemContext;
 
 	/*
 	* WorldTag

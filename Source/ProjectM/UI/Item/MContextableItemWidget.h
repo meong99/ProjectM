@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UI/MWidgetBase.h"
+#include "GameplayTagContainer.h"
 #include "MContextableItemWidget.generated.h"
 
 class UImage;
@@ -18,7 +19,11 @@ class PROJECTM_API UMContextableItemWidget : public UMWidgetBase
 */
 public:
 	UMContextableItemWidget(const FObjectInitializer& ObjectInitializer);
+
 protected:
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+	virtual void NativeDestruct() override;
 
 /*
 * Member Functions
@@ -26,17 +31,18 @@ protected:
 public:
 	void SetDesiredSizeOverride(FVector2D DesiredSize);
 	void SetBrushFromTexture(UTexture2D* Texture, bool bMatchSize = false);
-	void SetItemRowId(const int32 InRowId) { ItemRowId = InRowId; OnSetRowId(); }
+	void SetItemRowId(const int32 InRowId);
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnSetRowId();
+protected:
+	void EnableContextWidget() const;
+	void DisableContextWidget() const;
 /*
 * Member Variables
 */
 protected:
-	UPROPERTY(EditDefaultsOnly, meta=(BindWidget))
-	UImage* ItemImage;
-
 	UPROPERTY(BlueprintReadOnly)
 	int32 ItemRowId = INDEX_NONE;
+	
+	UPROPERTY(EditDefaultsOnly, meta=(BindWidget))
+	TObjectPtr<UImage> ItemImage;
 };

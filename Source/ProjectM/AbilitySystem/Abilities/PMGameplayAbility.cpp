@@ -2,12 +2,6 @@
 #include "PMAbilityCost.h"
 #include "Engine/World.h"
 
-UE_DEFINE_GAMEPLAY_TAG(Animation_Notify_StartAttack, "Animation.Notify.StartAttack");
-UE_DEFINE_GAMEPLAY_TAG(Animation_Notify_EndAttack, "Animation.Notify.EndAttack");
-UE_DEFINE_GAMEPLAY_TAG(Animation_Notify_StartDead, "Animation.Notify.StartDead");
-UE_DEFINE_GAMEPLAY_TAG(Animation_Notify_EndDead, "Animation.Notify.EndDead");
-UE_DEFINE_GAMEPLAY_TAG(GameplayCue_Combat_Hit, "GameplayCue.Combat.Hit");
-
 UPMGameplayAbility::UPMGameplayAbility()
 {
 	ActivationPolicy = EPMAbilityActivationPolicy::OnInputTriggered;
