@@ -65,6 +65,7 @@ public:
 	int32						GetMaxInventoryCount() const { return MaxInventoryCount; }
 	const FPMInventoryItemList& GetEquipmentItemList() const { return InventoryList; }
 	const FPMInventoryItemList& GetConsumableItemList() const { return ConsumableItemList; }
+	const FPMInventoryItemList& GetMiscellaneousItemList() const { return MiscellaneousItemList; }
 
 	void Broadcast_OnItemIncreased(const FMItemResponse& ItemRespons);
 	void Broadcast_OnItemDecreased(const FMItemResponse& ItemRespons);

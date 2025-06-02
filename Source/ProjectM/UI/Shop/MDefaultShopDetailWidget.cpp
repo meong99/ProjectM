@@ -101,6 +101,15 @@ void UMDefaultShopDetailWidget::InitInventoryDetail()
 				ItemRowIds.Add(Entry.GetItemRowId());
 			}
 		}
+
+		const FPMInventoryItemList& MiscellaneousItemList = InvenManager->GetMiscellaneousItemList();
+		for (const FPMInventoryEntry& Entry : MiscellaneousItemList.Entries)
+		{
+			if (Entry.IsValid())
+			{
+				ItemRowIds.Add(Entry.GetItemRowId());
+			}
+		}
 	}
 
 	CreateSlotsFromRowIds(ItemRowIds);

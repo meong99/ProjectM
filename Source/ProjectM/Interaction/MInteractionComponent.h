@@ -57,7 +57,7 @@ private:
 	void Callback_OnSetInputComponent(UInputComponent* InInputComponent);
 	void BindDelegate();
 	void UnbindDelegate();
-	bool HasOwnerAuthority() const;
+	bool IsItServer() const;
 
 	UPMInputComponent* GetInputComponent() const;
 /*

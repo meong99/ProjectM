@@ -36,7 +36,7 @@ void UMInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!HasOwnerAuthority())
+	if (!IsItServer())
 	{
 		for (UMInteractiveAction_OverlapActionBase* Action : Action_OnBeginOverlap)
 		{
@@ -74,7 +74,7 @@ void UMInteractionComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 
 void UMInteractionComponent::SetNewInteractions(const TArray<UMInteractiveAction_OverlapActionBase*>& OnBeginOverlap, const TArray<UMInteractiveAction_OnInteractionBase*>& OnInteract)
 {
-	if (!HasOwnerAuthority())
+	if (!IsItServer())
 	{
 		Action_OnBeginOverlap.Empty();
 		Action_OnInteract.Empty();
@@ -128,7 +128,7 @@ void UMInteractionComponent::EnableInteraction(AActor* OtherActor)
 		WeakOverlappedCharacter = Character;
 	}
 
-	if (!HasOwnerAuthority())
+	if (!IsItServer())
 	{
 		ActivateAllOverlapAction();
 		SetComponentTickEnabled(true);
@@ -149,7 +149,7 @@ void UMInteractionComponent::DisableInteraction(AActor* OtherActor)
 	}
 
 	WeakOverlappedCharacter = nullptr;
-	if (!HasOwnerAuthority())
+	if (!IsItServer())
 	{
 		DeactivateAllOverlapAction();
 		SetComponentTickEnabled(false);
@@ -200,9 +200,9 @@ void UMInteractionComponent::UnbindDelegate()
 	}
 }
 
-bool UMInteractionComponent::HasOwnerAuthority() const
+bool UMInteractionComponent::IsItServer() const
 {
-	return GetOwner() && GetOwner()->HasAuthority();
+	return GetNetMode() == ENetMode::NM_DedicatedServer;
 }
 
 void UMInteractionComponent::ActivateAllOverlapAction()

@@ -28,8 +28,22 @@ void UMQuestDefinition::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 			}
 		}
 
+		auto IsDuplicate = [&, this]()->bool
+		{
+			for (const UMInteractiveAction_OnInteractionBase* Action : NpcDef->Action_OnInteract)
+			{
+				const UMInteractiveAction_AcceptQuest* QuestAction = Cast<UMInteractiveAction_AcceptQuest>(Action);
+				if (QuestAction && QuestAction->QuestRowId == RowId)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		};
+
 		UMInteractiveAction_AcceptQuest* QuestAction = NewObject<UMInteractiveAction_AcceptQuest>(NpcDef, UMInteractiveAction_AcceptQuest::StaticClass(), NAME_None, RF_Transactional);
-		if (QuestAction)
+		if (QuestAction && !IsDuplicate())
 		{
 			NpcDef->Action_OnInteract.Empty();
 			QuestAction->ActionName = QuestName;
