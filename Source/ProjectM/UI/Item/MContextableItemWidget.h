@@ -19,6 +19,7 @@ class PROJECTM_API UMContextableItemWidget : public UMWidgetBase
 */
 public:
 	UMContextableItemWidget(const FObjectInitializer& ObjectInitializer);
+	virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 protected:
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;

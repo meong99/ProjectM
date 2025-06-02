@@ -8,6 +8,12 @@ UMContextableItemWidget::UMContextableItemWidget(const FObjectInitializer& Objec
 {
 }
 
+FReply UMContextableItemWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
+	return FReply::Unhandled();
+}
+
 void UMContextableItemWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
