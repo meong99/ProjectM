@@ -18,6 +18,9 @@ struct FMTable_NPC : public FMTable_TableBase
 * Overrided Functions
 */
 public:
+#if WITH_EDITOR
+	virtual void OnDataTableChanged(const UDataTable* InDataTable, const FName InRowName) override;
+#endif
 
 /*
 * Member Functions

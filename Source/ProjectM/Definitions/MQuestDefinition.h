@@ -33,7 +33,7 @@ public:
 * Member Variables
 */
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1500004, ClampMax = 1599999), Category = "Quest Infomation")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1500001, ClampMax = 1599999), Category = "Quest Infomation")
 	int32 OwnerNpcRowId;
 
 	// 레벨 내에 특정 목적지가 있을 때 사용하는 태그
