@@ -12,10 +12,12 @@
 #include "Player/PMPlayerControllerBase.h"
 #include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/PMCombatSet.h"
+#include "AbilitySystem/Attributes/PMHealthSet.h"
 #include "Components/TextBlock.h"
 
 UMInventoryWidget::UMInventoryWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
-{}
+{
+}
 
 void UMInventoryWidget::NativeOnInitialized()
 {
@@ -89,6 +91,18 @@ void UMInventoryWidget::BindDelegates()
 	{
 		ASC->GetGameplayAttributeValueChangeDelegate(UPMCombatSet::GetAttackPowerAttribute()).AddUObject(this, &UMInventoryWidget::Callback_CombatChange);
 		ASC->GetGameplayAttributeValueChangeDelegate(UPMCombatSet::GetDefensePowerAttribute()).AddUObject(this, &UMInventoryWidget::Callback_CombatChange);
+		ASC->GetGameplayAttributeValueChangeDelegate(UPMHealthSet::GetMaxHealthAttribute()).AddUObject(this, &UMInventoryWidget::Callback_MaxHealthChange);
+		const UPMCombatSet* CombatSet = ASC->GetSet<UPMCombatSet>();
+		if (CombatSet)
+		{
+			SetCombatStat(CombatSet->GetAttackPowerAttribute(), 0, CombatSet->GetAttackPower(), nullptr);
+			SetCombatStat(CombatSet->GetDefensePowerAttribute(), 0, CombatSet->GetDefensePower(), nullptr);
+		}
+		const UPMHealthSet* HealthSet = ASC->GetSet<UPMHealthSet>();
+		if (HealthSet)
+		{
+			OnChange_MaxHealth(0, HealthSet->GetMaxHealth(), nullptr);
+		}
 	}
 
 	if (EquipmentButton_Deactivated)
@@ -129,7 +143,7 @@ UMTileView* UMInventoryWidget::GetItemSlotView(const EMItemType ItemType)
 	{
 		return Inventories[(int32)ItemType];
 	}
-	
+
 	return nullptr;
 }
 
@@ -168,23 +182,43 @@ void UMInventoryWidget::Callback_CombatChange(const FOnAttributeChangeData& Chan
 	float NewValue = ChangeData.NewValue;
 	AActor* Instigator = UPMAbilitySystemComponent::GetInstigatorFromAttrChangeData(ChangeData);
 
-	if (UPMCombatSet::GetAttackPowerAttribute() == ChangeData.Attribute)
+	SetCombatStat(ChangeData.Attribute, OldValue, NewValue, Instigator);
+}
+
+void UMInventoryWidget::Callback_MaxHealthChange(const FOnAttributeChangeData& ChangeData)
+{
+	float OldValue = ChangeData.OldValue;
+	float NewValue = ChangeData.NewValue;
+	AActor* Instigator = UPMAbilitySystemComponent::GetInstigatorFromAttrChangeData(ChangeData);
+
+	OnChange_MaxHealth(OldValue, NewValue, Instigator);
+}
+
+void UMInventoryWidget::SetCombatStat(const FGameplayAttribute& Attribute, const float OldValue, const float NewValue, AActor* Instigator)
+{
+	if (UPMCombatSet::GetAttackPowerAttribute() == Attribute)
 	{
 		OnChange_AttackPower(OldValue, NewValue, Instigator);
 	}
-	else if (UPMCombatSet::GetDefensePowerAttribute() == ChangeData.Attribute)
+	else if (UPMCombatSet::GetDefensePowerAttribute() == Attribute)
 	{
 		OnChange_DefencePower(OldValue, NewValue, Instigator);
 	}
 }
 
-void UMInventoryWidget::OnChange_AttackPower(const float OldValue, const float NewValue, AActor* Intigator)
+void UMInventoryWidget::OnChange_MaxHealth(const float OldValue, const float NewValue, AActor* Instigator)
+{
+	const FText& NewText = MakeFormatText(TEXT("최대 체력"), NewValue);
+	MaxHealth->SetText(NewText);
+}
+
+void UMInventoryWidget::OnChange_AttackPower(const float OldValue, const float NewValue, AActor* Instigator)
 {
 	const FText& NewText = MakeFormatText(TEXT("공격력"), NewValue);
 	AttackPower->SetText(NewText);
 }
 
-void UMInventoryWidget::OnChange_DefencePower(const float OldValue, const float NewValue, AActor* Intigator)
+void UMInventoryWidget::OnChange_DefencePower(const float OldValue, const float NewValue, AActor* Instigator)
 {
 	const FText& NewText = MakeFormatText(TEXT("방어력"), NewValue);
 	DefencePower->SetText(NewText);

@@ -66,8 +66,11 @@ protected:
 	void	OnClick_ExitButton();
 
 	void	Callback_CombatChange(const FOnAttributeChangeData& ChangeData);
-	void	OnChange_AttackPower(const float OldValue, const float NewValue, AActor* Intigator);
-	void	OnChange_DefencePower(const float OldValue, const float NewValue, AActor* Intigator);
+	void	Callback_MaxHealthChange(const FOnAttributeChangeData& ChangeData);
+	void	SetCombatStat(const FGameplayAttribute& Attribute, const float OldValue, const float NewValue, AActor* Instigator);
+	void	OnChange_MaxHealth(const float OldValue, const float NewValue, AActor* Instigator);
+	void	OnChange_AttackPower(const float OldValue, const float NewValue, AActor* Instigator);
+	void	OnChange_DefencePower(const float OldValue, const float NewValue, AActor* Instigator);
 	FText	MakeFormatText(const FString& Name, const float Value);
 
 /*
@@ -106,6 +109,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> ExitButton;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> MaxHealth;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> AttackPower;
