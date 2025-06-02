@@ -86,6 +86,7 @@ void UMWidgetLayer::SetInputMode(UMWidgetBase* Widget) const
 		case EMWidgetInputMode::GameAndUIWithShowMouse:
 		{
 			FInputModeGameAndUI NewMode;
+			NewMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
 			PlayerController->SetInputMode(NewMode);
 			PlayerController->bShowMouseCursor = true;
 			break;
@@ -93,6 +94,7 @@ void UMWidgetLayer::SetInputMode(UMWidgetBase* Widget) const
 		case EMWidgetInputMode::UIOnly:
 		{
 			FInputModeUIOnly NewMode;
+			NewMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
 			PlayerController->SetInputMode(NewMode);
 			PlayerController->FlushPressedKeys();
 			PlayerController->bShowMouseCursor = true;
