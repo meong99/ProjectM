@@ -20,6 +20,12 @@ class PROJECTM_API UMItemContextWidget : public UMWidgetBase
 */
 public:
 	UMItemContextWidget(const FObjectInitializer& ObjectInitializer);
+	virtual void NativeConstruct() override;
+
+/*
+* Member Functions
+*/
+public:
 	void UpdateContextWidget(const int32 RowId);
 
 protected:
@@ -30,10 +36,7 @@ protected:
 	void SetItemName(const FText& NewName);
 	void SetSpecText(UTextBlock* InTextBlock, const FText& InName, const float Value);
 	void GetTextBlockByTag(const FGameplayTag& AttributeTag, UTextBlock*& OutTextBlock, FText& OutName);
-/*
-* Member Functions
-*/
-public:
+
 /*
 * Member Variables
 */

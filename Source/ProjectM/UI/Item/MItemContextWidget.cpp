@@ -7,16 +7,20 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "PMGameplayTags.h"
-
 UMItemContextWidget::UMItemContextWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+}
+
+void UMItemContextWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
 }
 
 void UMItemContextWidget::UpdateContextWidget(const int32 RowId)
 {
 	ItemRowId = RowId;
-	SetWidgetPosition();
 	UPMInventoryItemDefinition* ItemDef = UMDataTableManager::GetDefinitionObject<UPMInventoryItemDefinition>(this, ItemRowId);
+	DisableTexts();
 	if (ItemDef)
 	{
 		SetItemImage(ItemDef->ItemIcon);
@@ -41,6 +45,8 @@ void UMItemContextWidget::UpdateContextWidget(const int32 RowId)
 
 		bExistStat ? StatOverlay->SetVisibility(ESlateVisibility::SelfHitTestInvisible) : StatOverlay->SetVisibility(ESlateVisibility::Collapsed);
 	}
+
+	SetWidgetPosition();
 }
 
 void UMItemContextWidget::SetWidgetPosition()
@@ -48,9 +54,32 @@ void UMItemContextWidget::SetWidgetPosition()
 	UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(FloatingTarget->Slot);
 	if (CanvasSlot)
 	{
+		const float ViewportScale = UWidgetLayoutLibrary::GetViewportScale(GetWorld());
+		FVector2D ViewportSize = UWidgetLayoutLibrary::GetViewportSize(this) / ViewportScale;
+		FloatingTarget->ForceLayoutPrepass();
+		FVector2D WidgetSize = FloatingTarget->GetDesiredSize();
 		FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(this);
-		CanvasSlot->SetPosition(MousePosition);
-		DisableTexts();
+		FVector2D WidgetPosition = MousePosition;
+		const float NewPositionPadding = 10.f;
+
+		if (WidgetPosition.X < 0)
+		{
+			WidgetPosition.X = 0;
+		}
+		else if (WidgetPosition.X + WidgetSize.X > ViewportSize.X)
+		{
+			WidgetPosition.X = ViewportSize.X - WidgetSize.X - NewPositionPadding;
+		}
+		if (WidgetPosition.Y < 0)
+		{
+			WidgetPosition.Y = 0;
+		}
+		else if (WidgetPosition.Y + WidgetSize.Y > ViewportSize.Y)
+		{
+			WidgetPosition.Y = ViewportSize.Y - WidgetSize.Y - NewPositionPadding;
+		}
+
+		CanvasSlot->SetPosition(WidgetPosition);
 	}
 }
 
