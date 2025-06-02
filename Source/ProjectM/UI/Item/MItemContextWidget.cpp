@@ -15,10 +15,10 @@ UMItemContextWidget::UMItemContextWidget(const FObjectInitializer& ObjectInitial
 void UMItemContextWidget::UpdateContextWidget(const int32 RowId)
 {
 	ItemRowId = RowId;
+	SetWidgetPosition();
 	UPMInventoryItemDefinition* ItemDef = UMDataTableManager::GetDefinitionObject<UPMInventoryItemDefinition>(this, ItemRowId);
 	if (ItemDef)
 	{
-		SetWidgetPosition();
 		SetItemImage(ItemDef->ItemIcon);
 		SetItemContextText(ItemDef->ItemContext);
 		SetItemName(ItemDef->DisplayName);

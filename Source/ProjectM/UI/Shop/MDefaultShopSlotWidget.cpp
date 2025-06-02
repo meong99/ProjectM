@@ -12,9 +12,11 @@
 #include "Character/Components/MWalletComponent.h"
 #include "Components/WidgetSwitcher.h"
 #include "Inventory/PMInventoryManagerComponent.h"
+#include "UI/Item/MContextableItemWidget.h"
 
 UMDefaultShopSlotWidget::UMDefaultShopSlotWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	
 }
 
 FReply UMDefaultShopSlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -72,6 +74,7 @@ void UMDefaultShopSlotWidget::InitSlot(const int32 InRowId, EMShopDetailType InT
 {
 	RowId = InRowId;
 	Type = InType;
+	ItemIcon->SetItemRowId(RowId);
 
 	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
 	if (TableManager)

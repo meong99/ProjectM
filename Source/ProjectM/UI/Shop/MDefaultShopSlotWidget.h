@@ -13,6 +13,7 @@ class UTextBlock;
 class UPMInventoryItemDefinition;
 class UMWalletComponent;
 class UWidgetSwitcher;
+class UMContextableItemWidget;
 struct FPMInventoryEntry;
 
 UCLASS(Abstract)
@@ -69,7 +70,7 @@ protected:
 	TObjectPtr<UImage> ItemIconBackground;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
-	TObjectPtr<UImage> ItemIcon;
+	TObjectPtr<UMContextableItemWidget> ItemIcon;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
 	TObjectPtr<UTextBlock> ItemName;
