@@ -1,6 +1,7 @@
 #include "MDragableWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/Image.h"
+#include "Item/MContextableItemWidget.h"
 
 UMDragableWidget::UMDragableWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {

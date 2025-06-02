@@ -7,6 +7,7 @@
 #include "MDragableWidget.generated.h"
 
 class UImage;
+class UMContextableItemWidget;
 
 UCLASS()
 class PROJECTM_API UMDragableWidget : public UMWidgetBase
@@ -34,5 +35,5 @@ public:
 */
 protected:
 	UPROPERTY(EditDefaultsOnly, meta=(BindWidget))
-	UImage* ItemImage;
+	UMContextableItemWidget* ItemImage;
 };

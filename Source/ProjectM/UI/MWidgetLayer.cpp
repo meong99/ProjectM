@@ -66,7 +66,6 @@ void UMWidgetLayer::SetInputMode(UMWidgetBase* Widget) const
 	APlayerController* PlayerController = GetOwningPlayer();
 	if (PlayerController == nullptr)
 	{
-		ensure(false);
 		return;
 	}
 

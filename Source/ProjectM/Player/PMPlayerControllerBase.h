@@ -11,6 +11,7 @@ class UPMInventoryManagerComponent;
 class UMPlayerTradeComponent;
 class UMPlayerQuestComponent;
 class UPMExperienceDefinition;
+class UMWidgetBase;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPossessed, AMPlayerCharacterBase* /*Character*/);
 
@@ -48,9 +49,9 @@ public:
 	UPMAbilitySystemComponent* GetAbilitySystemComponent() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure=false)
-	void AddOrRemoveWidget(const FGameplayTag& WidgetTag, bool bAddWidget, UObject* WidgetInstigator = nullptr);
+	UMWidgetBase* AddOrRemoveWidget(const FGameplayTag& WidgetTag, bool bAddWidget, UObject* WidgetInstigator = nullptr);
 	UFUNCTION(BlueprintCallable, BlueprintPure=false)
-	void ToggleWidget(const FGameplayTag& WidgetTag, UObject* WidgetInstigator = nullptr);
+	UMWidgetBase* ToggleWidget(const FGameplayTag& WidgetTag, UObject* WidgetInstigator = nullptr);
 protected:
 	void OnExperienceLoaded(const UPMExperienceDefinition* LoadedExperienceDefinition);
 

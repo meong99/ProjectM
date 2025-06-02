@@ -153,26 +153,30 @@ UPMAbilitySystemComponent* APMPlayerControllerBase::GetAbilitySystemComponent() 
 	return PMPlayerState ? PMPlayerState->GetPMAbilitySystemComponent() : nullptr;
 }
 
-void APMPlayerControllerBase::AddOrRemoveWidget(const FGameplayTag& WidgetTag, bool bAddWidget, UObject* WidgetInstigator)
+UMWidgetBase* APMPlayerControllerBase::AddOrRemoveWidget(const FGameplayTag& WidgetTag, bool bAddWidget, UObject* WidgetInstigator)
 {
 	UMViewportClient* VC = Cast<UMViewportClient>(GetGameInstance()->GetGameViewportClient());
 	if (VC && bAddWidget)
 	{
-		VC->AddWidgetToLayer(WidgetTag, { WidgetInstigator, this});
+		return VC->AddWidgetToLayer(WidgetTag, { WidgetInstigator, this});
 	}
 	else if (VC && !bAddWidget)
 	{
 		VC->RemoveWidgetFromLayer(WidgetTag);
 	}
+
+	return nullptr;
 }
 
-void APMPlayerControllerBase::ToggleWidget(const FGameplayTag& WidgetTag, UObject* WidgetInstigator /*= nullptr*/)
+UMWidgetBase* APMPlayerControllerBase::ToggleWidget(const FGameplayTag& WidgetTag, UObject* WidgetInstigator /*= nullptr*/)
 {
 	UMViewportClient* VC = Cast<UMViewportClient>(GetGameInstance()->GetGameViewportClient());
 	if (VC)
 	{
-		VC->ToggleWidgetOnLayer(WidgetTag, { WidgetInstigator, this });
+		return VC->ToggleWidgetOnLayer(WidgetTag, { WidgetInstigator, this });
 	}
+
+	return nullptr;
 }
 
 void APMPlayerControllerBase::OnExperienceLoaded(const UPMExperienceDefinition* LoadedExperienceDefinition)

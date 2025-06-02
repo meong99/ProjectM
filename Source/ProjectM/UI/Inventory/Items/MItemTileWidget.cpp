@@ -10,6 +10,8 @@
 #include "Components/TextBlock.h"
 #include "CommonWidgets/MTileView.h"
 #include "Kismet/GameplayStatics.h"
+#include "PMGameplayTags.h"
+#include "UI/Item/MContextableItemWidget.h"
 
 /*
 * UMItemDetailData
@@ -110,7 +112,7 @@ void UMItemTileWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 
 	if (ItemImage)
 	{
-		ItemImage->SetBrushSize({ ItemData->EntryWidth, ItemData->EntryHeight });
+		ItemImage->SetDesiredSizeOverride({ ItemData->EntryWidth, ItemData->EntryHeight });
 	}
 
 	UpdateItemData();
@@ -174,17 +176,13 @@ void UMItemTileWidget::UpdateItemData()
 		const UPMInventoryItemDefinition* ItemDef = GetDefault<UPMInventoryItemDefinition>(NewItemEntry.Instance->ItemDef);
 		ItemImage->SetBrushFromTexture(ItemDef->ItemIcon);
 		ItemImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		ItemImage->SetItemRowId(ItemDef->RowId);
 
 		ItemHandle.ItemUid = NewItemEntry.ItemUid;
 		ItemHandle.ItemType = NewItemEntry.GetItemType();
 
-// 		if (ItemNum)
-// 		{
-// 			ItemNum->SetText(NewItemEntry->Instance->GetStatTagStackCount());
-// 		}
+		SetItemNum(NewItemEntry);
 	}
-
-	K2_UpdateItemData();
 
 	if (OwnerWidget)
 	{
@@ -207,6 +205,27 @@ void UMItemTileWidget::ResetItemSlot()
 	ItemImage->SetVisibility(ESlateVisibility::Hidden);
 
 	ItemHandle.ItemUid = INDEX_NONE;
+}
+
+void UMItemTileWidget::SetItemNum(const FPMInventoryEntry& NewItemEntry)
+{
+	if (ItemNum && NewItemEntry.Instance)
+	{
+		int32 ItemQuentity = NewItemEntry.Instance->GetStatTagStackCount(FPMGameplayTags::Get().Item_Quentity);
+		if (NewItemEntry.Instance->GetItemType() != EMItemType::Equipment && ItemQuentity > 0)
+		{
+			ItemNum->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			ItemNum->SetText(FText::AsNumber(ItemQuentity));
+		}
+		else
+		{
+			ItemNum->SetVisibility(ESlateVisibility::Collapsed);
+		}
+	}
+	else
+	{
+		ItemNum->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
 void UMItemTileWidget::SwapItemData(UMItemTileWidget* Other)

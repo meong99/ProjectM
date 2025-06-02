@@ -51,9 +51,9 @@ public:
 	void RemoveWidgetFromParent(const FGameplayTag& WidgetTag);
 
 	// Layer에 Widget을 설정한다.
-	void AddWidgetToLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo, const int32 LayerId = 0/*GameLayer*/);
-	void RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, const int32 LayerId = 0/*GameLayer*/);
-	void ToggleWidgetOnLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo, const int32 LayerId = 0/*GameLayer*/);
+	UMWidgetBase*	AddWidgetToLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo, const int32 LayerId = 0/*GameLayer*/);
+	void			RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, const int32 LayerId = 0/*GameLayer*/);
+	UMWidgetBase*	ToggleWidgetOnLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo, const int32 LayerId = 0/*GameLayer*/);
 
 	// Widget의 Instance를 반환한다. 만약 Instancing되지 않았다면 Class를 찾아 Instancing후 반환한다.
 	UMWidgetBase* GetWidgetInstance(const FGameplayTag& WidgetTag);

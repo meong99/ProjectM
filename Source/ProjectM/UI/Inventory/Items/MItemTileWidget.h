@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+	// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -73,13 +73,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	UMItemDetailData* GetItemDatailData() const;
-	UFUNCTION(BlueprintImplementableEvent)
-	void K2_UpdateItemData();
 
 protected:
 	void UpdateItemData();
 	void SetSlotIndex(const int32 InIndex);
 	void ResetItemSlot();
+	void SetItemNum(const FPMInventoryEntry& NewItemEntry);
 
 /*
 * Member Variables
@@ -91,8 +90,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	int32 SlotIndex = INDEX_NONE;
 	
-// 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
-// 	UTextBlock* ItemNum;
+ 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+ 	UTextBlock* ItemNum;
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	UTextBlock* Index;
