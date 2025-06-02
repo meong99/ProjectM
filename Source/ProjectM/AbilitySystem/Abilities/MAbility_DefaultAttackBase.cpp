@@ -1,5 +1,4 @@
 #include "MAbility_DefaultAttackBase.h"
-#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Weapons/PMWeaponInstance.h"
 #include "Weapons/MWeaponBase.h"
 #include "System/MDataTableManager.h"
@@ -9,14 +8,17 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "AbilitySystem/AbilityTasks/MAbilityTask_SphereTracer.h"
+#include "AbilitySystem/AbilityTasks/MAbilityTask_RotateToActor.h"
+#include "AbilitySystem/Attributes/PMCombatSet.h"
+#include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Character/Monster/MMonsterBase.h"
 #include "PMGameplayTags.h"
-#include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "Equipment/PMEquipmentManagerComponent.h"
-#include "AbilitySystem/Attributes/PMCombatSet.h"
 #include "GameplayCueFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "Character/MPlayerCharacterBase.h"
 
 UMAbility_DefaultAttackBase::UMAbility_DefaultAttackBase()
 {
@@ -48,48 +50,23 @@ void UMAbility_DefaultAttackBase::ActivateAbility(const FGameplayAbilitySpecHand
 
 	if (ItemDef)
 	{
-		UAnimMontage* Montage = ItemDef->DefaultAttackMontages.IsValidIndex(MontageIndex) ? ItemDef->DefaultAttackMontages[MontageIndex] : nullptr;
-		if (!Montage)
+		if (!PlayMontage())
 		{
 			NotifyMontageEndCallBack();
 			return;
 		}
-		UAbilityTask_PlayMontageAndWait* PlayMontageAndWait = nullptr;
-		PlayMontageAndWait = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-			   this, FName(GetName()), Montage);
-
-		MontageIndex = (MontageIndex + 1) % ItemDef->DefaultAttackMontages.Num();
-
-		if (PlayMontageAndWait)
-		{
-			bCanCombo = false;
-
-			PlayMontageAndWait->OnCompleted.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageEndCallBack);
-			PlayMontageAndWait->OnBlendOut.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageEndCallBack);
-			PlayMontageAndWait->OnCancelled.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageEndCallBack);
-			PlayMontageAndWait->OnInterrupted.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageEndCallBack);
-
-			PlayMontageAndWait->ReadyForActivation();
-		}
-		else
-		{
-			NotifyMontageEndCallBack();
-		}
 
 		if (HasAuthority(&ActivationInfo))
 		{
-			UAbilityTask_WaitGameplayEvent* WaitAttactStart =
-				UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, Animation_Notify_StartAttack);
-			UAbilityTask_WaitGameplayEvent* WaitAttackEnd =
-				UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, Animation_Notify_EndAttack);
-			if (WaitAttactStart && WaitAttackEnd)
+			if (!BindAnimNotify())
 			{
-				WaitAttactStart->EventReceived.AddDynamic(this, &UMAbility_DefaultAttackBase::StartAttackTracing);
-				WaitAttackEnd->EventReceived.AddDynamic(this, &UMAbility_DefaultAttackBase::EndAttackTracing);
-				WaitAttactStart->ReadyForActivation();
-				WaitAttackEnd->ReadyForActivation();
+				NotifyMontageEndCallBack();
+				return;
 			}
 		}
+
+		AActor* Nearlest = FindNearlestTarget();
+		RotateToTarget(Nearlest);
 	}
 	else
 	{
@@ -213,4 +190,99 @@ void UMAbility_DefaultAttackBase::NotifyMontageEndCallBack()
 	{
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), ActivationInfo, true, false);
 	}
+}
+
+bool UMAbility_DefaultAttackBase::PlayMontage()
+{
+	UAnimMontage* Montage = ItemDef->DefaultAttackMontages.IsValidIndex(MontageIndex) ? ItemDef->DefaultAttackMontages[MontageIndex] : nullptr;
+	if (!Montage)
+	{
+		return false;
+	}
+
+	UAbilityTask_PlayMontageAndWait* PlayMontageAndWait = nullptr;
+	PlayMontageAndWait = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+		this, FName(GetName()), Montage);
+
+	MontageIndex = (MontageIndex + 1) % ItemDef->DefaultAttackMontages.Num();
+
+	if (PlayMontageAndWait)
+	{
+		bCanCombo = false;
+
+		PlayMontageAndWait->OnCompleted.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageEndCallBack);
+		PlayMontageAndWait->OnBlendOut.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageEndCallBack);
+		PlayMontageAndWait->OnCancelled.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageEndCallBack);
+		PlayMontageAndWait->OnInterrupted.AddDynamic(this, &UMAbility_DefaultAttackBase::NotifyMontageEndCallBack);
+
+		PlayMontageAndWait->ReadyForActivation();
+		return true;
+	}
+
+	return false;
+}
+
+bool UMAbility_DefaultAttackBase::BindAnimNotify()
+{
+	UAbilityTask_WaitGameplayEvent* WaitAttactStart =
+		UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, Animation_Notify_StartAttack);
+	UAbilityTask_WaitGameplayEvent* WaitAttackEnd =
+		UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, Animation_Notify_EndAttack);
+	if (WaitAttactStart && WaitAttackEnd)
+	{
+		WaitAttactStart->EventReceived.AddDynamic(this, &UMAbility_DefaultAttackBase::StartAttackTracing);
+		WaitAttackEnd->EventReceived.AddDynamic(this, &UMAbility_DefaultAttackBase::EndAttackTracing);
+		WaitAttactStart->ReadyForActivation();
+		WaitAttackEnd->ReadyForActivation();
+
+		return true;
+	}
+
+	return false;
+}
+
+bool UMAbility_DefaultAttackBase::RotateToTarget(AActor* Target)
+{
+	if (!Target)
+	{
+		return false;
+	}
+
+	UMAbilityTask_RotateToActor* Task = UMAbilityTask_RotateToActor::CreateRotateToActorTask(this, Target);
+	if (Task)
+	{
+		Task->ReadyForActivation();
+		return true;
+	}
+
+	return false;
+}
+
+AActor* UMAbility_DefaultAttackBase::FindNearlestTarget() const
+{
+	AMPlayerCharacterBase* Player = Cast<AMPlayerCharacterBase>(GetActorInfo().AvatarActor);
+	AActor* Nearlest = nullptr;
+	if (Player)
+	{
+		for (AActor* Monster : Player->GetOverlappedMonsters())
+		{
+			if (Monster)
+			{
+				if (!Nearlest)
+				{
+					Nearlest = Monster;
+					continue;
+				}
+
+				float Dist1 = FVector::Distance(Monster->GetActorLocation(), Player->GetActorLocation());
+				float Dist2 = FVector::Distance(Nearlest->GetActorLocation(), Player->GetActorLocation());
+				if (Dist1 < Dist2)
+				{
+					Nearlest = Monster;
+				}
+			}
+		}
+	}
+
+	return Nearlest;
 }

@@ -48,9 +48,13 @@ public:
 	void Callback_OnAbilitySystemUninitialzed();
 
 	void CallOrRegister_OnSetInputComponent(FOnSetInputComponent::FDelegate&& Delegate);
+	void AddOverlappedMonster(AActor* Monster);
+	void RemoveOverlappedMonster(AActor* Monster);
 	
 	void SetCurrentLevelTag(const FGameplayTag& InCurrentLevelTag) { CurrentLevelTag = InCurrentLevelTag; }
-	const FGameplayTag& GetCurrentLevelTag() const { return CurrentLevelTag; }
+
+	const TArray<AActor*>&	GetOverlappedMonsters() const { return OverlappedMonsters; }
+	const FGameplayTag&		GetCurrentLevelTag() const { return CurrentLevelTag; }
 	
 protected:
 	void ClearAbilityActorInfo();
@@ -80,6 +84,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	FGameplayTag CurrentLevelTag;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<AActor*> OverlappedMonsters;
 
 private:
 	FOnSetInputComponent OnSetInputComponentDelegate;

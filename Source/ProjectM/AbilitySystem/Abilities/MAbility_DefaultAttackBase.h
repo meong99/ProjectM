@@ -42,13 +42,18 @@ protected:
 	virtual void StartAttackTracing(FGameplayEventData Payload);
 	UFUNCTION()
 	virtual void EndAttackTracing(FGameplayEventData Payload);
+	UFUNCTION()
+	void NotifyMontageEndCallBack();
+
+	bool PlayMontage();
+	bool BindAnimNotify();
+	bool RotateToTarget(AActor* Target);
+
+	AActor* FindNearlestTarget() const;
 
 	virtual void TraceAttack(ACharacter* OwnerCharacter);
 	virtual void Callback_OnHit(const TArray<FHitResult>& HitResults);
 	virtual void ApplyEffectToTarget(UPMAbilitySystemComponent* OwnerAbilitySystem, const FHitResult& HitResult);
-
-	UFUNCTION()
-	void NotifyMontageEndCallBack();
 
 /*
 * Member Variables

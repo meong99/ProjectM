@@ -181,6 +181,22 @@ void AMPlayerCharacterBase::CallOrRegister_OnSetInputComponent(FOnSetInputCompon
 	}
 }
 
+void AMPlayerCharacterBase::AddOverlappedMonster(AActor* Monster)
+{
+	if (Monster)
+	{
+		OverlappedMonsters.Add(Monster);
+	}
+}
+
+void AMPlayerCharacterBase::RemoveOverlappedMonster(AActor* Monster)
+{
+	if (Monster)
+	{
+		OverlappedMonsters.Remove(Monster);
+	}
+}
+
 void AMPlayerCharacterBase::InitCharacterDefaultSpec()
 {
 	UPMAbilitySystemComponent* AbilitySystemComponent = GetMAbilitySystemComponent();

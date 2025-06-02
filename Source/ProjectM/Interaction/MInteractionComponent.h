@@ -13,6 +13,7 @@ class USphereComponent;
 class UMInteractiveAction_OnInteractionBase;
 class UMInteractiveAction_OverlapActionBase;
 class APlayerController;
+class AMPlayerCharacterBase;
 
 UCLASS(meta = (BlueprintSpawnableComponent))
 class PROJECTM_API UMInteractionComponent : public USphereComponent
@@ -51,11 +52,12 @@ public:
 
 private:
 	void EnableInteraction(AActor* OtherActor);
-	void DisableInteraction();
+	void DisableInteraction(AActor* OtherActor);
 	void OnInteract(const FGameplayTag& Tag);
 	void Callback_OnSetInputComponent(UInputComponent* InInputComponent);
 	void BindDelegate();
 	void UnbindDelegate();
+	bool HasOwnerAuthority() const;
 
 	UPMInputComponent* GetInputComponent() const;
 /*
@@ -68,5 +70,5 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "ProjectM")
 	TArray<TObjectPtr<UMInteractiveAction_OnInteractionBase>> Action_OnInteract;
 
-	TWeakObjectPtr<APlayerController> WeakOverlappedController;
+	TWeakObjectPtr<AMPlayerCharacterBase> WeakOverlappedCharacter;
 };

@@ -10,12 +10,9 @@
 
 AMNpcBase::AMNpcBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	if (!IsRunningDedicatedServer())
-	{
-		InteractionComponent = CreateDefaultSubobject<UMInteractionComponent>(TEXT("InteractionComponent"));
-		InteractionComponent->SetupAttachment(GetRootComponent());
-		InteractionComponent->SetSphereRadius(300.f);
-	}
+	InteractionComponent = CreateDefaultSubobject<UMInteractionComponent>(TEXT("InteractionComponent"));
+	InteractionComponent->SetupAttachment(GetRootComponent());
+	InteractionComponent->SetSphereRadius(300.f);
 
 	GetCapsuleComponent()->SetCollisionProfileName(*UEnum::GetDisplayValueAsText(EMCollisionChannel::NPC).ToString());
 	bReplicates = true;

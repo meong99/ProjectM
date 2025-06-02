@@ -13,6 +13,8 @@
 #include "MInteractiveAction_OverlapActionBase.h"
 #include "MInteractiveAction_OnInteractionBase.h"
 #include "GameFramework/PlayerController.h"
+#include "GameFramework/Actor.h"
+#include "Character/Monster/MMonsterBase.h"
 
 UMInteractionComponent::UMInteractionComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -34,18 +36,21 @@ void UMInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (UMInteractiveAction_OverlapActionBase* Action : Action_OnBeginOverlap)
+	if (!HasOwnerAuthority())
 	{
-		if (Action)
+		for (UMInteractiveAction_OverlapActionBase* Action : Action_OnBeginOverlap)
 		{
-			Action->InitAction(this, GetOwner());
+			if (Action)
+			{
+				Action->InitAction(this, GetOwner());
+			}
 		}
-	}
-	for (UMInteractiveAction_OnInteractionBase* Action : Action_OnInteract)
-	{
-		if (Action)
+		for (UMInteractiveAction_OnInteractionBase* Action : Action_OnInteract)
 		{
-			Action->InitAction(this, GetOwner());
+			if (Action)
+			{
+				Action->InitAction(this, GetOwner());
+			}
 		}
 	}
 }
@@ -54,75 +59,103 @@ void UMInteractionComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (WeakOverlappedController.IsValid() && WeakOverlappedController->GetPawn())
+	if (WeakOverlappedCharacter.IsValid())
 	{
-		if (FVector::Dist(WeakOverlappedController->GetPawn()->GetActorLocation(), GetComponentLocation()) > SphereRadius * 2)
+		if (FVector::Dist(WeakOverlappedCharacter->GetActorLocation(), GetComponentLocation()) > SphereRadius * 2)
 		{
-			DisableInteraction();
+			DisableInteraction(WeakOverlappedCharacter.Get());
 		}
 	}
 	else
 	{
-		DisableInteraction();
+		DisableInteraction(nullptr);
 	}
 }
 
 void UMInteractionComponent::SetNewInteractions(const TArray<UMInteractiveAction_OverlapActionBase*>& OnBeginOverlap, const TArray<UMInteractiveAction_OnInteractionBase*>& OnInteract)
 {
-	Action_OnBeginOverlap.Empty();
-	Action_OnInteract.Empty();
-	for (UMInteractiveAction_OverlapActionBase* NewAction : OnBeginOverlap)
+	if (!HasOwnerAuthority())
 	{
-		if (IsValid(NewAction))
+		Action_OnBeginOverlap.Empty();
+		Action_OnInteract.Empty();
+		for (UMInteractiveAction_OverlapActionBase* NewAction : OnBeginOverlap)
 		{
-			Action_OnBeginOverlap.Add(NewAction);
+			if (IsValid(NewAction))
+			{
+				Action_OnBeginOverlap.Add(NewAction);
+			}
 		}
-	}
 
-	for (UMInteractiveAction_OnInteractionBase* NewAction : OnInteract)
-	{
-		if (IsValid(NewAction))
+		for (UMInteractiveAction_OnInteractionBase* NewAction : OnInteract)
 		{
-			Action_OnInteract.Add(NewAction);
+			if (IsValid(NewAction))
+			{
+				Action_OnInteract.Add(NewAction);
+			}
 		}
 	}
 }
 
 void UMInteractionComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (!OtherActor || OtherActor->GetLocalRole() == ENetRole::ROLE_SimulatedProxy)
+	{
+		return;
+	}
+
 	EnableInteraction(OtherActor);
 }
 
 void UMInteractionComponent::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	DisableInteraction();
+	if (!OtherActor || OtherActor->GetLocalRole() == ENetRole::ROLE_SimulatedProxy)
+	{
+		return;
+	}
+
+	DisableInteraction(OtherActor);
 }
 
 void UMInteractionComponent::EnableInteraction(AActor* OtherActor)
 {
-	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
-	if (Controller && Controller->GetPawn() == OtherActor)
-	{
-		ActivateAllOverlapAction();
-	}
-
-	ACharacter* Character = Cast<ACharacter>(OtherActor);
+	AMPlayerCharacterBase* Character = Cast<AMPlayerCharacterBase>(OtherActor);
 	if (Character)
 	{
-		WeakOverlappedController = Cast<APlayerController>(Character->GetController());
+		if (GetOwner()->IsA(AMMonsterBase::StaticClass()))
+		{
+			Character->AddOverlappedMonster(GetOwner());
+		}
+		WeakOverlappedCharacter = Character;
 	}
-	SetComponentTickEnabled(true);
 
-	BindDelegate();
+	if (!HasOwnerAuthority())
+	{
+		ActivateAllOverlapAction();
+		SetComponentTickEnabled(true);
+
+		BindDelegate();
+	}
 }
 
-void UMInteractionComponent::DisableInteraction()
+void UMInteractionComponent::DisableInteraction(AActor* OtherActor)
 {
-	DeactivateAllOverlapAction();
-	SetComponentTickEnabled(false);
-	WeakOverlappedController = nullptr;
+	AMPlayerCharacterBase* Character = Cast<AMPlayerCharacterBase>(OtherActor);
+	if (Character)
+	{
+		if (GetOwner()->IsA(AMMonsterBase::StaticClass()))
+		{
+			Character->RemoveOverlappedMonster(GetOwner());
+		}
+	}
 
-	UnbindDelegate();
+	WeakOverlappedCharacter = nullptr;
+	if (!HasOwnerAuthority())
+	{
+		DeactivateAllOverlapAction();
+		SetComponentTickEnabled(false);
+
+		UnbindDelegate();
+	}
 }
 
 void UMInteractionComponent::OnInteract(const FGameplayTag& Tag)
@@ -165,6 +198,11 @@ void UMInteractionComponent::UnbindDelegate()
 	{
 		ViewportClient->RemoveWidgetFromLayer(FPMGameplayTags::Get().UI_Registry_Game_InteractionList);
 	}
+}
+
+bool UMInteractionComponent::HasOwnerAuthority() const
+{
+	return GetOwner() && GetOwner()->HasAuthority();
 }
 
 void UMInteractionComponent::ActivateAllOverlapAction()
