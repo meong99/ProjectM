@@ -80,7 +80,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
 	int32 BuyPrice = 0;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(MultiLine = true), Category = "Item")
 	FText ItemContext;
 
 	// 아이템의 컴포넌트라고 생각할 수 있다.

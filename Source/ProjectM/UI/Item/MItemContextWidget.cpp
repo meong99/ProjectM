@@ -60,7 +60,6 @@ void UMItemContextWidget::SetWidgetPosition()
 		FVector2D WidgetSize = FloatingTarget->GetDesiredSize();
 		FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(this);
 		FVector2D WidgetPosition = MousePosition;
-		const float NewPositionPadding = 10.f;
 
 		if (WidgetPosition.X < 0)
 		{
@@ -68,7 +67,7 @@ void UMItemContextWidget::SetWidgetPosition()
 		}
 		else if (WidgetPosition.X + WidgetSize.X > ViewportSize.X)
 		{
-			WidgetPosition.X = ViewportSize.X - WidgetSize.X - NewPositionPadding;
+			WidgetPosition.X = MousePosition.X - WidgetSize.X;
 		}
 		if (WidgetPosition.Y < 0)
 		{
@@ -76,7 +75,7 @@ void UMItemContextWidget::SetWidgetPosition()
 		}
 		else if (WidgetPosition.Y + WidgetSize.Y > ViewportSize.Y)
 		{
-			WidgetPosition.Y = ViewportSize.Y - WidgetSize.Y - NewPositionPadding;
+			WidgetPosition.Y = MousePosition.Y - WidgetSize.Y;
 		}
 
 		CanvasSlot->SetPosition(WidgetPosition);
