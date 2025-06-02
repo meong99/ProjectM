@@ -139,7 +139,7 @@ void UMViewportClient::RemoveWidgetFromParent(const FGameplayTag& WidgetTag)
 void UMViewportClient::AddWidgetToLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo, const int32 LayerId)
 {
 	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
-	if (WidgetLayout && Widget)
+	if (WidgetLayout && Widget && !Widget->IsInLayer())
 	{
 		Widget->SetWidgetInfo(InWidgetInfo);
 		if (!Widget->IsInitialized())
@@ -147,10 +147,6 @@ void UMViewportClient::AddWidgetToLayer(const FGameplayTag& WidgetTag, const FMW
 			Widget->CallPreAddToLayer();
 		}
 		WidgetLayout->AddWidgetToLayer(GetWidgetInstance(WidgetTag), (EMWidgetLayout)LayerId);
-	}
-	else
-	{
-		MCHAE_WARNING("WidgetLayout or WidgetInstance is null!");
 	}
 }
 
@@ -169,6 +165,22 @@ void UMViewportClient::RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, cons
 	else
 	{
 		MCHAE_WARNING("WidgetLayout or WidgetInstance is null!");
+	}
+}
+
+void UMViewportClient::ToggleWidgetOnLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo, const int32 LayerId /*= 0/*GameLayer*/)
+{
+	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
+	if (WidgetLayout && Widget)
+	{
+		if (Widget->IsInLayer())
+		{
+			RemoveWidgetFromLayer(WidgetTag, LayerId);
+		}
+		else
+		{
+			AddWidgetToLayer(WidgetTag, InWidgetInfo, LayerId);
+		}
 	}
 }
 

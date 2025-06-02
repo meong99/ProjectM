@@ -48,7 +48,9 @@ public:
 	UPMAbilitySystemComponent* GetAbilitySystemComponent() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure=false)
-	void Debug_WidgetControl(const FGameplayTag& WidgetTag, bool bAddWidget, UObject* WidgetInstigator = nullptr);
+	void AddOrRemoveWidget(const FGameplayTag& WidgetTag, bool bAddWidget, UObject* WidgetInstigator = nullptr);
+	UFUNCTION(BlueprintCallable, BlueprintPure=false)
+	void ToggleWidget(const FGameplayTag& WidgetTag, UObject* WidgetInstigator = nullptr);
 protected:
 	void OnExperienceLoaded(const UPMExperienceDefinition* LoadedExperienceDefinition);
 

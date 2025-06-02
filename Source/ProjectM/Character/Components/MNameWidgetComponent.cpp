@@ -22,10 +22,6 @@ void UMNameWidgetComponent::InitWidget()
 
 	NameWidget = Cast<UMNameWidget>(GetWidget());
 	WeakOwnerCharacter = Cast<ACharacter>(GetOwner());
-	if (WeakOwnerCharacter.IsValid())
-	{
-		AdjustNameWidgetCompLocation();
-	}
 }
 
 void UMNameWidgetComponent::EnableNameWidget()
