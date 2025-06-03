@@ -43,18 +43,18 @@ void UPMEquipmentManagerComponent::OnSetNewPawn(APawn* NewPawn, APawn* OldPawn)
 	}
 }
 
+void UPMEquipmentManagerComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
+{
+	Super::OnComponentDestroyed(bDestroyingHierarchy);
+
+	UnequipAllItems();
+}
+
 void UPMEquipmentManagerComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, EquippedItemList);
-}
-
-void UPMEquipmentManagerComponent::BeginDestroy()
-{
-	Super::BeginDestroy();
-
-	UnequipAllItems();
 }
 
 void UPMEquipmentManagerComponent::EquipItem(const int32 ItemRowId)

@@ -30,8 +30,8 @@ class PROJECTM_API UPMEquipmentManagerComponent : public UMPlayerStateComponentB
 */
 public:
 	UPMEquipmentManagerComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-	virtual void OnSetNewPawn(APawn* NewPawn, APawn* OldPawn);
-	virtual void BeginDestroy() override;
+	virtual void OnSetNewPawn(APawn* NewPawn, APawn* OldPawn) override;
+	virtual void OnComponentDestroyed(bool bDestroyingHierarchy) override;
 
 /*
 * Member Functions
