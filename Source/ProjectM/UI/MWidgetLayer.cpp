@@ -51,9 +51,11 @@ void UMWidgetLayer::RemoveWidgetFromLayer(UMWidgetBase* Widget)
 	SetInputMode();
 }
 
-void UMWidgetLayer::ActivateLayer() const
+void UMWidgetLayer::ActivateLayer()
 {
 	SetInputMode();
+	OldTopInputMode = CurrentTopInputMode;
+	CurrentTopInputMode = GetTopInputMode();
 }
 
 void UMWidgetLayer::ClearAllWidget()

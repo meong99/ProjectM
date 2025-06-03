@@ -9,6 +9,16 @@
 UMWidgetLayout::UMWidgetLayout(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {}
 
+void UMWidgetLayout::PreAddToLayer()
+{
+	Super::PreAddToLayer();
+	UMWidgetLayer* CurrentLayer = GetLayer((EMWidgetLayout)LayoutSwitcher->GetActiveWidgetIndex());
+	if (CurrentLayer)
+	{
+		CurrentLayer->ActivateLayer();
+	}
+}
+
 void UMWidgetLayout::ChangeWidgetLayer(EMWidgetLayout WidgetLayout) const
 {
 	LayoutSwitcher->SetActiveWidgetIndex((int32)WidgetLayout);

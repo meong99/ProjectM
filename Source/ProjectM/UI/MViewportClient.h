@@ -51,7 +51,7 @@ public:
 	void RemoveWidgetFromParent(const FGameplayTag& WidgetTag);
 
 	// Layer에 Widget을 설정한다.
-	UMWidgetBase* AddWidgetToLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo = {}, const int32 LayerId = 0/*GameLayer*/);
+	UMWidgetBase*	AddWidgetToLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo = {}, const int32 LayerId = 0/*GameLayer*/);
 	void			RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, const int32 LayerId = 0/*GameLayer*/);
 	UMWidgetBase*	ToggleWidgetOnLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo = {}, const int32 LayerId = 0/*GameLayer*/);
 

@@ -26,7 +26,7 @@ public:
 public:
 	void AddWidgetToLayer(UMWidgetBase* Widget);
 	void RemoveWidgetFromLayer(UMWidgetBase* Widget);
-	void ActivateLayer() const;
+	void ActivateLayer();
 	void ClearAllWidget();
 
 protected:
