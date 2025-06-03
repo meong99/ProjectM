@@ -53,9 +53,16 @@ void UMWidgetLayer::RemoveWidgetFromLayer(UMWidgetBase* Widget)
 
 void UMWidgetLayer::ActivateLayer()
 {
-	SetInputMode();
-	OldTopInputMode = CurrentTopInputMode;
-	CurrentTopInputMode = GetTopInputMode();
+	APlayerController* PlayerController = GetOwningPlayer();
+	if (PlayerController)
+	{
+		FInputModeGameAndUI NewMode;
+		NewMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+		PlayerController->SetInputMode(NewMode);
+		PlayerController->bShowMouseCursor = true;
+		OldTopInputMode = CurrentTopInputMode;
+		CurrentTopInputMode = GetTopInputMode();
+	}
 }
 
 void UMWidgetLayer::ClearAllWidget()

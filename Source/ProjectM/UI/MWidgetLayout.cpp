@@ -9,9 +9,9 @@
 UMWidgetLayout::UMWidgetLayout(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {}
 
-void UMWidgetLayout::PreAddToLayer()
+void UMWidgetLayout::NativeConstruct()
 {
-	Super::PreAddToLayer();
+	Super::NativeConstruct();
 	UMWidgetLayer* CurrentLayer = GetLayer((EMWidgetLayout)LayoutSwitcher->GetActiveWidgetIndex());
 	if (CurrentLayer)
 	{

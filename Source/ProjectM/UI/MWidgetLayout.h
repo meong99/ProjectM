@@ -32,7 +32,7 @@ class PROJECTM_API UMWidgetLayout : public UMWidgetBase
 */
 public:
 	UMWidgetLayout(const FObjectInitializer& ObjectInitializer);
-	virtual void PreAddToLayer() override;
+	virtual void NativeConstruct() override;
 
 /*
 * Member Functions

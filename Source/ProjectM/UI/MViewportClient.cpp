@@ -261,7 +261,6 @@ void UMViewportClient::ApplyWidgetLayout()
 	{
 		if (!WidgetLayout->IsInViewport())
 		{
-			WidgetLayout->PreAddToLayer();
 			WidgetLayout->AddToViewport();
 		}
 		return;
@@ -277,6 +276,5 @@ void UMViewportClient::ApplyWidgetLayout()
 		return;
 	}
 
-	WidgetLayout->PreAddToLayer();
 	WidgetLayout->AddToViewport();
 }
