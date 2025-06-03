@@ -43,10 +43,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Equipment")
 	APawn*		GetPawn() const;
 
-	// DeterminesOutputType을 지정해주면 BP에서 내가 원하는 Type으로 형변환해서 돌려준다
-	UFUNCTION(BlueprintPure, Category = "Equipment", meta = (DeterminesOutputType = PawnType))
-	APawn*		GetTypedPawn(TSubclassOf<APawn> PawnType) const;
-
 	UFUNCTION(BlueprintPure, Category = "Equipment")
 	AActor*		GetSpawnedActor() const { return SpawnedActor; }
 

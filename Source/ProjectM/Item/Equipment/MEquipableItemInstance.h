@@ -8,6 +8,7 @@
 
 class UPMAbilitySystemComponent;
 class UAnimMontage;
+class APlayerState;
 
 /**
  *	Inventory에서 아직 장착하지 않은 장비들의 Instance.
@@ -28,7 +29,7 @@ public:
 	virtual bool	ActivateItem() override;
 	virtual bool	CanUseItem() const override;
 
-	/*
+/*
 * Member Functions
 */
 public:
@@ -36,11 +37,7 @@ public:
 	UObject*				GetInstigator() { return this; }
 
 	UFUNCTION(BlueprintPure, Category = "Equipment")
-	APawn*					GetPawn() const;
-
-	// DeterminesOutputType을 지정해주면 BP에서 내가 원하는 Type으로 형변환해서 돌려준다
-	UFUNCTION(BlueprintPure, Category = "Equipment", meta = (DeterminesOutputType = PawnType))
-	APawn*					GetTypedPawn(TSubclassOf<APawn> PawnType) const;
+	APlayerState*			GetPlayerState() const;
 
 	EMEquipmentItemType		GetEquipmentItemType() const { return EquipmentItemType; }
 

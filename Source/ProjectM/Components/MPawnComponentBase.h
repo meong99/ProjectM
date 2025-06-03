@@ -25,6 +25,8 @@ public:
 */
 public:
 	bool IsNetConnectionReady() const;
+	virtual void PawnClientRestart(){}
+	virtual void PossessedBy(AController* NewController){ }
 
 protected:
 /*

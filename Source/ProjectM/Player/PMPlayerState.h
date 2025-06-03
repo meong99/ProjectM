@@ -8,6 +8,7 @@ class UPMPawnData;
 class UPMAbilitySystemComponent;
 class UAbilitySystemComponent;
 class UMPlayerSaveGame;
+class UPMEquipmentManagerComponent;
 
 UCLASS()
 class PROJECTM_API APMPlayerState : public APlayerState
@@ -43,6 +44,9 @@ protected:
 	void UpdateCurrentData();
 	void ApplyLoadedData();
 
+	UFUNCTION()
+	void OnSetNewPawn(APlayerState* Player, APawn* NewPawn, APawn* OldPawn);
+
 /*
 * Member Variables
 */
@@ -56,6 +60,9 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess))
 	TObjectPtr<UMPlayerSaveGame> PlayerSaveData;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess))
+	TObjectPtr<UPMEquipmentManagerComponent> EquipmentManager;
 
 //DEBUG
 public:

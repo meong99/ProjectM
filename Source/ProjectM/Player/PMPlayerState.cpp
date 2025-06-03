@@ -2,24 +2,23 @@
 #include "GameFramework/GameStateBase.h"
 #include "GameModes/PMExperienceManagerComponent.h"
 #include "GameModes/PMGameModeBase.h"
+#include "GameModes/AsyncAction_ExperienceReady.h"
 #include "Character/PMPawnData.h"
 #include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "AbilitySystem/PMAbilitySet.h"
 #include "AbilitySystem/Attributes/PMHealthSet.h"
 #include "AbilitySystem/Attributes/PMCombatSet.h"
-
-#include "Kismet/GameplayStatics.h"
-#include "Player/MPlayerSaveGame.h"
-#include "GameFramework/PlayerState.h"
 #include "Inventory/PMInventoryManagerComponent.h"
-#include "Equipment/PMQuickBarComponent.h"
 #include "Inventory/PMInventoryItemInstance.h"
-#include "GameModes/AsyncAction_ExperienceReady.h"
-
+#include "Equipment/PMQuickBarComponent.h"
 #include "Equipment/PMEquipmentManagerComponent.h"
-#include "Engine/Engine.h"
 #include "System/MDataTableManager.h"
 #include "PMGameplayTags.h"
+#include "Player/MPlayerSaveGame.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/PlayerState.h"
+#include "Engine/Engine.h"
+#include "Components/MPlayerStateComponentBase.h"
 
 #define PLAYER_ID 1
 #define PLAYER_NAME TEXT("PlayerName")
@@ -27,15 +26,14 @@
 APMPlayerState::APMPlayerState()
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UPMAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
-	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
+	EquipmentManager = CreateDefaultSubobject<UPMEquipmentManagerComponent>(TEXT("EquipmentManager"));
 	CreateDefaultSubobject<UPMHealthSet>(TEXT("HealthSet"));
 	CreateDefaultSubobject<UPMCombatSet>(TEXT("CombatSet"));
 
 	NetUpdateFrequency = 100.0f;
 	bReplicates = true;
-	AbilitySystemComponent->SetIsReplicated(true);
 }
 
 void APMPlayerState::PostInitializeComponents()
@@ -55,6 +53,8 @@ void APMPlayerState::PostInitializeComponents()
 
 		ExperienceManagerComp->CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
 	}
+
+	OnPawnSet.AddDynamic(this, &APMPlayerState::OnSetNewPawn);
 }
 
 void APMPlayerState::BeginPlay()
@@ -193,6 +193,19 @@ void APMPlayerState::ApplyLoadedData()
 	else
 	{
 		MCHAE_WARNING("InventoryManager or QuickBarComp is null. Check the controller is created currectly");
+	}
+}
+
+void APMPlayerState::OnSetNewPawn(APlayerState* Player, APawn* NewPawn, APawn* OldPawn)
+{
+	const TSet<UActorComponent*>& SubComponents = GetComponents();
+	for (UActorComponent* Component : SubComponents)
+	{
+		UMPlayerStateComponentBase* SubComponent = Cast<UMPlayerStateComponentBase>(Component);
+		if (SubComponent)
+		{
+			SubComponent->OnSetNewPawn(NewPawn, OldPawn);
+		}
 	}
 }
 

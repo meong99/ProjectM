@@ -9,6 +9,7 @@
 #include "Engine/World.h"
 #include "MEquipmentItemDefinition.h"
 #include "GameplayTagContainer.h"
+#include "Player/PMPlayerState.h"
 
 UMEquipmentItemInstance::UMEquipmentItemInstance(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -94,37 +95,21 @@ void UMEquipmentItemInstance::OnUnequipped()
 
 APawn* UMEquipmentItemInstance::GetPawn() const
 {
-	APlayerController* Controller = Cast<APlayerController>(GetOuter());
-	if (Controller)
+	APMPlayerState* PlayerState = Cast<APMPlayerState>(GetOuter());
+	if (PlayerState)
 	{
-		return Controller->GetPawn();
+		return PlayerState->GetPawn();
 	}
 
-	// 이전 코드가 PawnComponent에서 생성됐기때문에 이전 코드들 호환용. 현재코드에서는 null
-	return Cast<APawn>(GetOuter());
-}
-
-APawn* UMEquipmentItemInstance::GetTypedPawn(TSubclassOf<APawn> PawnType) const
-{
-	APawn* Result = nullptr;
-	if (UClass* ActualPawnType = PawnType)
-	{
-		APawn* CurrentPawn = GetPawn();
-		if (CurrentPawn && CurrentPawn->IsA(ActualPawnType))
-		{
-			Result = CurrentPawn;
-		}
-	}
-
-	return Result;
+	return nullptr;
 }
 
 UPMAbilitySystemComponent* UMEquipmentItemInstance::GetAbilitySystemComponent() const
 {
-	APMPlayerControllerBase* Controller = Cast<APMPlayerControllerBase>(GetOuter());
-	if (Controller)
+	APMPlayerState* PlayerState = Cast<APMPlayerState>(GetOuter());
+	if (PlayerState)
 	{
-		return Controller->GetAbilitySystemComponent();
+		return PlayerState->GetPMAbilitySystemComponent();
 	}
 
 	return nullptr;

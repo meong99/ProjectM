@@ -26,6 +26,23 @@ UPMEquipmentManagerComponent::UPMEquipmentManagerComponent(const FObjectInitiali
 	SetIsReplicatedByDefault(true);
 }
 
+void UPMEquipmentManagerComponent::OnSetNewPawn(APawn* NewPawn, APawn* OldPawn)
+{
+	if (IsValid(NewPawn))
+	{
+		if (!IsEquipped(EMEquipmentItemType::Weapon))
+		{
+			bIsInitialized = true;
+			EquipDefaultWeapon();
+		}
+		else
+		{
+			UnequipAllItems();
+			EquipAllItems();
+		}
+	}
+}
+
 void UPMEquipmentManagerComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -38,21 +55,6 @@ void UPMEquipmentManagerComponent::BeginDestroy()
 	Super::BeginDestroy();
 
 	UnequipAllItems();
-}
-
-void UPMEquipmentManagerComponent::OnPossess(APawn* aPawn)
-{
-	if (!bIsInitialized)
-	{
-		bIsInitialized = true;
-		EquipDefaultWeapon();
-	}
-}
-
-void UPMEquipmentManagerComponent::OnServerRestartPlayer()
-{
-	UnequipAllItems();
-	EquipAllItems();
 }
 
 void UPMEquipmentManagerComponent::EquipItem(const int32 ItemRowId)
@@ -80,7 +82,7 @@ void UPMEquipmentManagerComponent::UnequipItem(EMEquipmentItemType EquipmentItem
 
 	if (UnEquippedItem)
 	{
-		AActor* Controller = GetOwner();
+		AController* Controller = GetPlayerController<AController>();
 		UPMInventoryManagerComponent* InvenManager = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
 		if (InvenManager)
 		{
@@ -206,7 +208,7 @@ void UPMEquipmentManagerComponent::UnequipAllItems()
 
 void UPMEquipmentManagerComponent::EquipDefaultWeapon()
 {
-	APMPlayerControllerBase* Controller = GetOwner<APMPlayerControllerBase>();
+	APMPlayerControllerBase* Controller = GetPlayerController<APMPlayerControllerBase>();
 	APMPlayerState* PlayerState = Controller ? Controller->GetPlayerState() : nullptr;
 	if (PlayerState)
 	{
@@ -220,7 +222,7 @@ void UPMEquipmentManagerComponent::EquipDefaultWeapon()
 
 UPMAbilitySystemComponent* UPMEquipmentManagerComponent::GetAbilitySystemComponent() const
 {
-	APMPlayerControllerBase* Controller = GetOwner<APMPlayerControllerBase>();
+	APMPlayerControllerBase* Controller = GetPlayerController<APMPlayerControllerBase>();
 	if (Controller)
 	{
 		return Controller->GetAbilitySystemComponent();

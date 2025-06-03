@@ -9,6 +9,7 @@
 
 UPMAbilitySystemComponent::UPMAbilitySystemComponent()
 {
+	SetIsReplicatedByDefault(true);
 }
 
 void UPMAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor)

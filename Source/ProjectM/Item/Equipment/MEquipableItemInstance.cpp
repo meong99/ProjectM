@@ -11,6 +11,7 @@
 #include "Equipment/MEquipableActorBase.h"
 #include "GameplayTagContainer.h"
 #include "Equipment/PMEquipmentManagerComponent.h"
+#include "GameFramework/PlayerState.h"
 
 UMEquipableItemInstance::UMEquipableItemInstance(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -31,8 +32,8 @@ bool UMEquipableItemInstance::ActivateItem()
 
 	if (bIsActivated)
 	{
-		AActor* Controller = Cast<AActor>(GetOuter());
-		UPMEquipmentManagerComponent* EquipmentManager = Controller ? Controller->FindComponentByClass<UPMEquipmentManagerComponent>() : nullptr;
+		APlayerState* PlayerState = GetPlayerState();
+		UPMEquipmentManagerComponent* EquipmentManager = PlayerState ? PlayerState->FindComponentByClass<UPMEquipmentManagerComponent>() : nullptr;
 		if (EquipmentManager)
 		{
 			EquipmentManager->EquipItem(ItemRowId);
@@ -63,30 +64,15 @@ bool UMEquipableItemInstance::CanUseItem() const
 	return bCanUseItem;
 }
 
-APawn* UMEquipableItemInstance::GetPawn() const
+APlayerState* UMEquipableItemInstance::GetPlayerState() const
 {
 	APlayerController* Controller = Cast<APlayerController>(GetOuter());
 	if (Controller)
 	{
-		return Controller->GetPawn();
+		return Controller->GetPlayerState<APlayerState>();
 	}
 
 	return nullptr;
-}
-
-APawn* UMEquipableItemInstance::GetTypedPawn(TSubclassOf<APawn> PawnType) const
-{
-	APawn* Result = nullptr;
-	if (UClass* ActualPawnType = PawnType)
-	{
-		APawn* CurrentPawn = GetPawn();
-		if (CurrentPawn && CurrentPawn->IsA(ActualPawnType))
-		{
-			Result = CurrentPawn;
-		}
-	}
-
-	return Result;
 }
 
 UPMAbilitySystemComponent* UMEquipableItemInstance::GetAbilitySystemComponent() const

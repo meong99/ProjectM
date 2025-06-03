@@ -33,7 +33,6 @@ void UPMHealthSet::PostAttributeChange(const FGameplayAttribute& Attribute, floa
 
 	if (Attribute == GetMaxHealthAttribute())
 	{
-		CheckZeroHealth();
 		AdjustAttributeForMaxChange(GetHealth(), OldValue, NewValue, GetHealthAttribute());
 	}
 }
@@ -42,13 +41,17 @@ void UPMHealthSet::AdjustAttributeForMaxChange(const float CurrentValue, const f
 {
 	UAbilitySystemComponent*	AbilityComp = GetOwningAbilitySystemComponent();
 
-	if (!FMath::IsNearlyEqual(OldMaxValue, NewMaxValue) && IsValid(AbilityComp))
+	if (!FMath::IsNearlyEqual(OldMaxValue, NewMaxValue) && CurrentValue > 0.f && IsValid(AbilityComp))
 	{
 		float	NewDelta = (OldMaxValue > 0.f) ? (CurrentValue * NewMaxValue / OldMaxValue) - CurrentValue : NewMaxValue;
 		if (!FMath::IsNearlyEqual(NewDelta, 0.f))
 		{
 			AbilityComp->ApplyModToAttribute(AffectedAttributeProperty, EGameplayModOp::Additive, NewDelta);
 		}
+	}
+	else if (FMath::IsNearlyEqual(CurrentValue, 0))
+	{
+		AbilityComp->ApplyModToAttribute(AffectedAttributeProperty, EGameplayModOp::Override, NewMaxValue);
 	}
 }
 
@@ -57,14 +60,5 @@ void UPMHealthSet::ClampAttribute(const FGameplayAttribute& Attribute, float& Ne
 	if (Attribute == GetHealthAttribute())
 	{
 		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxHealth());
-	}
-}
-
-void UPMHealthSet::CheckZeroHealth()
-{
-	UAbilitySystemComponent* AbilityComp = GetOwningAbilitySystemComponent();
-	if (FMath::IsNearlyEqual(GetHealth(), 0.f))
-	{
-		AbilityComp->ApplyModToAttribute(GetHealthAttribute(), EGameplayModOp::Override, GetMaxHealth());
 	}
 }

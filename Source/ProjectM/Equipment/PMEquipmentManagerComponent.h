@@ -3,9 +3,11 @@
 #include "CoreMinimal.h"
 #include "AbilitySystem/PMAbilitySet.h"
 #include "Net/Serialization/FastArraySerializer.h"
-#include "Components/MControllerComponentBase.h"
 #include "MEquipmentItemList.h"
 #include "Types/MItemTypes.h"
+#include "GameFramework/Pawn.h"
+#include "Components/MPawnComponentBase.h"
+#include "Components/MPlayerStateComponentBase.h"
 
 #include "PMEquipmentManagerComponent.generated.h"
 
@@ -13,12 +15,13 @@ class UMEquipmentItemDefinition;
 class UMEquipmentItemInstance;
 class UPMAbilitySystemComponent;
 class UPMAbilitySet;
+class APlayerController;
 
 /**
  *
  */
 UCLASS(BlueprintType)
-class PROJECTM_API UPMEquipmentManagerComponent : public UMControllerComponentBase
+class PROJECTM_API UPMEquipmentManagerComponent : public UMPlayerStateComponentBase
 {
 	GENERATED_BODY()
 
@@ -27,9 +30,8 @@ class PROJECTM_API UPMEquipmentManagerComponent : public UMControllerComponentBa
 */
 public:
 	UPMEquipmentManagerComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-	virtual void OnServerRestartPlayer() override;
+	virtual void OnSetNewPawn(APawn* NewPawn, APawn* OldPawn);
 	virtual void BeginDestroy() override;
-	virtual void OnPossess(APawn* aPawn) override;
 
 /*
 * Member Functions
@@ -37,6 +39,7 @@ public:
 public:
 	void EquipItem(const int32 ItemRowId);
 	void UnequipItem(EMEquipmentItemType EquipmentItemType);
+	bool IsEquipped(EMEquipmentItemType EquipmentItemType) { return FindEntry(EquipmentItemType) != nullptr; }
 
 protected:
 	UMEquipmentItemInstance*	FindEquippedItemInstance(EMEquipmentItemType EquipmentItemType);

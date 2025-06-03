@@ -17,6 +17,7 @@
 #include "Player/PMPlayerState.h"
 #include "GameplayEffect.h"
 #include "Types/MTeamTypes.h"
+#include "Components/MPawnComponentBase.h"
 
 AMPlayerCharacterBase::AMPlayerCharacterBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UMCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -97,13 +98,15 @@ void AMPlayerCharacterBase::Restart()
 void AMPlayerCharacterBase::PawnClientRestart()
 {
 	Super::PawnClientRestart();
-	if (HasAuthority())
+
+	const TSet<UActorComponent*>& SubComponents = GetComponents();
+	for (UActorComponent* Component : SubComponents)
 	{
-		MCHAE_LOG("PawnClientRestart Authority");
-	}
-	else
-	{
-		MCHAE_LOG("PawnClientRestart");
+		UMPawnComponentBase* SubComponent = Cast<UMPawnComponentBase>(Component);
+		if (SubComponent)
+		{
+			SubComponent->PawnClientRestart();
+		}
 	}
 }
 
@@ -123,6 +126,16 @@ void AMPlayerCharacterBase::PossessedBy(AController* NewController)
 	if (GetNetMode() == ENetMode::NM_DedicatedServer)
 	{
 		PawnExtComp->HandleControllerChanged();
+	}
+
+	const TSet<UActorComponent*>& SubComponents = GetComponents();
+	for (UActorComponent* Component : SubComponents)
+	{
+		UMPawnComponentBase* SubComponent = Cast<UMPawnComponentBase>(Component);
+		if (SubComponent)
+		{
+			SubComponent->PossessedBy(NewController);
+		}
 	}
 }
 

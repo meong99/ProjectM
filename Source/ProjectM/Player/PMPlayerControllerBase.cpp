@@ -15,7 +15,6 @@ APMPlayerControllerBase::APMPlayerControllerBase()
 	InventoryManagerComponent = CreateDefaultSubobject<UPMInventoryManagerComponent>(TEXT("InventoryManagerComponent"));
 	PlayerTradeComponent = CreateDefaultSubobject<UMPlayerTradeComponent>(TEXT("PlayerTradeComponent"));
 	PlayerQuestComponent = CreateDefaultSubobject<UMPlayerQuestComponent>(TEXT("PlayerQuestComponent"));
-	
 	bReplicates = true;
 }
 
