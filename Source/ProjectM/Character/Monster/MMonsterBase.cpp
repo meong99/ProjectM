@@ -23,6 +23,8 @@
 #include "GameplayEffectExtension.h"
 #include "Components/WidgetComponent.h"
 #include "UI/Text/MDamageTextWidget.h"
+#include "Perception/AISense_Damage.h"
+#include "Character/MPlayerCharacterBase.h"
 
 AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -94,7 +96,7 @@ void AMMonsterBase::PostInitializeComponents()
 	if (HasAuthority())
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
-		SetCharacterLifeState(EMCharacterLiftState::Spawned);
+		Server_SetCharacterLifeState(EMCharacterLiftState::Spawned);
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UPMHealthSet::GetHealthAttribute()).AddUObject(this, &AMMonsterBase::Callback_OnDamaged);
 
 		if (MonsterDefinition)
@@ -126,7 +128,7 @@ void AMMonsterBase::BeginPlay()
 
 	if (HasAuthority())
 	{
-		SetCharacterLifeState(EMCharacterLiftState::Alive);
+		Server_SetCharacterLifeState(EMCharacterLiftState::Alive);
 	}
 
 	SetGenericTeamId((int32)EMGenericTeamId::Monster);
@@ -139,7 +141,7 @@ void AMMonsterBase::Tick(float DeltaSeconds)
 	{
 		if (HealthSet->GetHealth() <= 0.0f && CharacterLifeState == EMCharacterLiftState::Alive)
 		{
-			SetCharacterLifeState(EMCharacterLiftState::ReadyToDead);
+			Server_SetCharacterLifeState(EMCharacterLiftState::ReadyToDead);
 			OnDead();
 		}
 	}
@@ -158,7 +160,7 @@ void AMMonsterBase::OnDead()
 {
 	Super::OnDead();
 
-	SetCharacterLifeState(EMCharacterLiftState::Dead);
+	Server_SetCharacterLifeState(EMCharacterLiftState::Dead);
 	GiveRewardToPlayer();
 
 	if (HasAuthority())
@@ -169,7 +171,7 @@ void AMMonsterBase::OnDead()
 			AIController->UnPossess();
 		}
 
-		SetCharacterLifeState(EMCharacterLiftState::ReadyToDestroy);
+		Server_SetCharacterLifeState(EMCharacterLiftState::ReadyToDestroy);
 
 		if (MonsterDefinition->DeathAnimation.Montage)
 		{
@@ -202,14 +204,15 @@ void AMMonsterBase::Callback_OnDamaged(const FOnAttributeChangeData& ChangeData)
 {
 	if (ChangeData.GEModData != nullptr)
 	{
-		const FGameplayEffectContextHandle& EffectContext = ChangeData.GEModData->EffectSpec.GetEffectContext();
-		LastAttacker = EffectContext.GetOriginalInstigator();
-
-		//UMDamageTextWidget* Widget = Cast<UMDamageTextWidget>(DamageWidgetComponent->GetWidget());
-		//if (Widget)
-		//{
-		//	Widget->OnDamaged(FMath::Abs(ChangeData.GEModData->EvaluatedData.Magnitude));
-		//}
+		const FGameplayEffectContextHandle& EffectContextHandle = ChangeData.GEModData->EffectSpec.GetEffectContext();
+		const FGameplayEffectContext* Context = EffectContextHandle.Get();
+		UAbilitySystemComponent* PlayerAsc = Context ? Context->GetInstigatorAbilitySystemComponent() : nullptr;
+		AMPlayerCharacterBase* PlayerCharacter = PlayerAsc ? Cast<AMPlayerCharacterBase>(PlayerAsc->GetAvatarActor()) : nullptr;
+		if (PlayerCharacter)
+		{
+			LastAttacker = EffectContextHandle.GetOriginalInstigator();
+			UAISense_Damage::ReportDamageEvent(this, this, PlayerCharacter, ChangeData.GEModData->EvaluatedData.Magnitude, GetActorLocation(), GetActorLocation());
+		}
 	}
 }
 

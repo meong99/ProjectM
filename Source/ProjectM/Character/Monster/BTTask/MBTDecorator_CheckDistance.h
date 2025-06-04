@@ -29,4 +29,9 @@ public:
 * Member Variables
 */
 private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProjectM", meta = (AllowPrivateAccess = true))
+    float MaxDistance = 4000.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProjectM", meta = (AllowPrivateAccess = true))
+	bool bIsSet = true;
 };

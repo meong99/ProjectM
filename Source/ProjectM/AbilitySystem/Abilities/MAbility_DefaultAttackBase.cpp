@@ -264,9 +264,10 @@ AActor* UMAbility_DefaultAttackBase::FindNearlestTarget() const
 	AActor* Nearlest = nullptr;
 	if (Player)
 	{
-		for (AActor* Monster : Player->GetOverlappedMonsters())
+		for (AActor* Actor : Player->GetOverlappedMonsters())
 		{
-			if (Monster)
+			AMMonsterBase* Monster = Cast<AMMonsterBase>(Actor);
+			if (Monster && Monster->GetCharacterLifeState() == EMCharacterLiftState::Alive)
 			{
 				if (!Nearlest)
 				{

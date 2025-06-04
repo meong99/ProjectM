@@ -30,8 +30,8 @@ AMAIControllerBase::AMAIControllerBase()
 	DamageConfig->SetStartsEnabled(true);
 
 	PerceptionComponent->ConfigureSense(*SightConfig);
-	PerceptionComponent->SetDominantSense(SightConfig->GetSenseImplementation());
 	PerceptionComponent->ConfigureSense(*DamageConfig);
+	PerceptionComponent->SetDominantSense(SightConfig->GetSenseImplementation());
 
 	PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AMAIControllerBase::OnTargetDetectedDelegated);
 	PerceptionComponent->OnTargetPerceptionForgotten.AddDynamic(this, &AMAIControllerBase::OnTargetForgotDelegated);

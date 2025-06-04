@@ -23,7 +23,6 @@ void UPMHealthSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, f
 void UPMHealthSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
-
 	ClampAttribute(Attribute, NewValue);
 }
 

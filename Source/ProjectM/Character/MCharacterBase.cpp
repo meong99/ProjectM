@@ -54,7 +54,7 @@ const FName& AMCharacterBase::GetCharacterName() const
 	return CharacterName;
 }
 
-void AMCharacterBase::SetCharacterLifeState_Implementation(const EMCharacterLiftState InState)
+void AMCharacterBase::Server_SetCharacterLifeState_Implementation(const EMCharacterLiftState InState)
 {
 	if (InState > CharacterLifeState)
 	{

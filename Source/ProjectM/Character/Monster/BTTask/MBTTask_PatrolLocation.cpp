@@ -18,15 +18,15 @@ EBTNodeResult::Type UMBTTask_PatrolLocation::ExecuteTask(UBehaviorTreeComponent&
 		return EBTNodeResult::Failed;
 	}
 
-	UBlackboardComponent* blackboard = AIController->GetBlackboardComponent();
+	UBlackboardComponent* Blackboard = AIController->GetBlackboardComponent();
 	const APawn* AIPawn = AIController->GetPawn();
 
-	if (IsValid(AIPawn) == false || IsValid(blackboard) == false)
+	if (IsValid(AIPawn) == false || IsValid(Blackboard) == false)
 	{
 		return EBTNodeResult::Failed;
 	}
 
-	FVector origin = blackboard->GetValueAsVector(BBKey::ORIGIN_LOCATION);
+	FVector origin = Blackboard->GetValueAsVector(BBKey::ORIGIN_LOCATION);
 	if (origin == FVector::ZeroVector)
 	{
 		origin = AIPawn->GetActorLocation();
@@ -43,7 +43,7 @@ EBTNodeResult::Type UMBTTask_PatrolLocation::ExecuteTask(UBehaviorTreeComponent&
 
 	if (navSystem->GetRandomPointInNavigableRadius(origin, SearchRadius, location))
 	{
-		blackboard->SetValueAsVector(BBKey::DESTINATION, location.Location);
+		Blackboard->SetValueAsVector(BBKey::DESTINATION, location.Location);
 
 		return EBTNodeResult::Succeeded;
 	}

@@ -38,7 +38,9 @@ public:
 	const FName&	GetCharacterName() const;
 	
 	UFUNCTION(Server, Reliable, BlueprintCallable)
-	void	SetCharacterLifeState(const EMCharacterLiftState InState);
+	void	Server_SetCharacterLifeState(const EMCharacterLiftState InState);
+	UFUNCTION(BlueprintCallable)
+	const EMCharacterLiftState& GetCharacterLifeState() const { return CharacterLifeState; }
 	UFUNCTION(BlueprintCallable)
 	bool	IsOnCharacterStateFlags(const int64& InState)	{ return CharacterStateFlag & InState; }
 	UFUNCTION(BlueprintCallable)
