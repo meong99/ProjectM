@@ -9,6 +9,8 @@
 class UImage;
 class UTextBlock;
 class UTexture2D;
+class UMContextableItemWidget;
+class UPMInventoryItemDefinition;
 
 UCLASS()
 class PROJECTM_API UMItemWithTextWidget : public UMWidgetBase
@@ -25,14 +27,14 @@ public:
 	* Member Functions
 	*/
 public:
-	void SetItemTexture(UTexture2D* ItemTexture);
+	void SetItem(UPMInventoryItemDefinition* ItemDef);
 	void SetItemContextText(const FText& ItemContext);
 	/*
 	* Member Variables
 	*/
 protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
-	TObjectPtr<UImage> ItemImage;
+	TObjectPtr<UMContextableItemWidget> ItemImage;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
 	TObjectPtr<UTextBlock> ItemContextText;

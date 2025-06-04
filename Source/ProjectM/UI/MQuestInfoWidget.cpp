@@ -151,7 +151,7 @@ void UMQuestInfoWidget::SetRequiredItem(const TMap<int32, FMQuestItem>& Required
 			UMItemWithTextWidget* ItemContextWidget = CreateWidget<UMItemWithTextWidget>(GetOwningPlayer(), ItemContextClass);
 			if (ItemContextWidget)
 			{
-				ItemContextWidget->SetItemTexture(ItemDef->ItemIcon);
+				ItemContextWidget->SetItem(ItemDef);
 
 				FText Template = FText::FromString("{CurrentItemNum} / {GoaldItemNum}");
 				FFormatNamedArguments Args;
@@ -189,7 +189,7 @@ void UMQuestInfoWidget::SetRewardItem(const TArray<FMQuestItem>& RewardItems)
 			UMItemWithTextWidget* ItemContextWidget = CreateWidget<UMItemWithTextWidget>(GetOwningPlayer(), ItemContextClass);
 			if (ItemContextWidget)
 			{
-				ItemContextWidget->SetItemTexture(ItemDef->ItemIcon);
+				ItemContextWidget->SetItem(ItemDef);
 				ItemContextWidget->SetItemContextText(FText::AsNumber(Item.ItemQuentity));
 				UHorizontalBoxSlot* NewSlot = RewardItemBox->AddChildToHorizontalBox(ItemContextWidget);
 				if (NewSlot)
@@ -209,7 +209,7 @@ void UMQuestInfoWidget::SetRewardGold(int32 Gold)
 
 		if (ItemContextWidget)
 		{
-			ItemContextWidget->SetItemTexture(GoldDefinition->ItemIcon);
+			ItemContextWidget->SetItem(GoldDefinition);
 			ItemContextWidget->SetItemContextText(FText::AsNumber(Gold));
 			UHorizontalBoxSlot* NewSlot = RewardItemBox->AddChildToHorizontalBox(ItemContextWidget);
 			if (NewSlot)
