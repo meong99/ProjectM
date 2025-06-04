@@ -18,6 +18,7 @@ void UPMHealthSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 void UPMHealthSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
 {
 	Super::PreAttributeBaseChange(Attribute, NewValue);
+	ClampAttribute(Attribute, NewValue);
 }
 
 void UPMHealthSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
