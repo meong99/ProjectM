@@ -8,7 +8,6 @@
 #include "Inventory/PMInventoryManagerComponent.h"
 #include "Character/Components/MWalletComponent.h"
 #include "AIController.h"
-#include "MMonsterSpawner.h"
 #include "Definitions/MMonsterDefinition.h"
 #include "PMGameplayTags.h"
 #include "Net/UnrealNetwork.h"
@@ -178,9 +177,9 @@ void AMMonsterBase::OnDead()
 			Multicast_PlayMontage(MonsterDefinition->DeathAnimation.Montage);
 			UMGameplayStatics::SetTimer(this, [this]()->void
 			{
-				if (Spawner.IsValid())
+				if (WeakMonsterSpawner.IsValid())
 				{
-					Spawner->OnDeadMonster(this);
+					WeakMonsterSpawner->OnDeadMonster(this);
 				}
 
 				Destroy();
@@ -191,7 +190,7 @@ void AMMonsterBase::OnDead()
 
 void AMMonsterBase::SetSpawner(AMMonsterSpawner* InSpawner)
 {
-	Spawner = InSpawner;
+	WeakMonsterSpawner = InSpawner;
 }
 
 UPMAbilitySystemComponent* AMMonsterBase::GetMAbilitySystemComponent() const

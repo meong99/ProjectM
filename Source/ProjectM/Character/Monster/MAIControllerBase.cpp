@@ -61,6 +61,12 @@ void AMAIControllerBase::OnPossess(APawn* InPawn)
 		{
 			MCHAE_ERROR("Monster BehaviorTree is not valid!!!");
 		}
+
+		AActor* MonsterSpawner = Monster->GetMonsterSpawner();
+		if (MonsterSpawner)
+		{
+			Blackboard->SetValueAsVector(BBKey::ORIGIN_LOCATION, MonsterSpawner->GetActorLocation());
+		}
 	}
 }
 

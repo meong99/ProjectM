@@ -26,7 +26,12 @@ EBTNodeResult::Type UMBTTask_PatrolLocation::ExecuteTask(UBehaviorTreeComponent&
 		return EBTNodeResult::Failed;
 	}
 
-	const FVector              origin = AIPawn->GetActorLocation();
+	FVector origin = blackboard->GetValueAsVector(BBKey::ORIGIN_LOCATION);
+	if (origin == FVector::ZeroVector)
+	{
+		origin = AIPawn->GetActorLocation();
+	}
+
 	const UNavigationSystemV1* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
 
 	if (IsValid(navSystem) == false)

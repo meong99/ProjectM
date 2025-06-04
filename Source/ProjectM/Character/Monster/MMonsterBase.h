@@ -4,6 +4,7 @@
 #include "Character/Monster/MMonsterTypes.h"
 #include "AbilitySystem/PMAbilitySet.h"
 #include "GameplayEffectTypes.h"
+#include "MMonsterSpawner.h"
 #include "MMonsterBase.generated.h"
 
 class UMInteractionComponent;
@@ -49,6 +50,7 @@ public:
 
 	UMMonsterDefinition*	GetMonsterDefinition() { return MonsterDefinition; }
 	const int32				GetMonsterRowId() const { return MonsterRowId; }
+	AActor*					GetMonsterSpawner() const { return WeakMonsterSpawner.Get(); }
 
 #if WITH_EDITOR
 	void	SetMonsterRowId(const int32 InRowId) { MonsterRowId = InRowId; }
@@ -90,5 +92,5 @@ protected:
 	UPROPERTY()
 	TMap<int32, FMAbilitySet_GrantedHandles> GrantedHandles;
 
-	TWeakObjectPtr<AMMonsterSpawner> Spawner;
+	TWeakObjectPtr<AMMonsterSpawner> WeakMonsterSpawner;
 };

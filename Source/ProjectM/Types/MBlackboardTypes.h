@@ -12,4 +12,5 @@ namespace BBKey
 	const TCHAR* const DESTINATION	= TEXT("Destination");
 	const TCHAR* const CAN_MOVE		= TEXT("CanMove");
 	const TCHAR* const FOUND_PLAYER = TEXT("FoundPlayer");
+	const TCHAR* const ORIGIN_LOCATION = TEXT("OriginLocation");
 }
