@@ -20,7 +20,7 @@ enum class EMCharacterLiftState : uint8
 
 enum EMCharacterStateFlag : uint64
 {
-	None =						0x0000000000000000,
+	None_M =					0x0000000000000000,
 	BlockMovement =				0x0000000000000001,
 	ControlledFromNavigation =	0x0000000000000002,
 	BlockAll =					0x0000000000000005,

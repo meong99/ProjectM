@@ -1,7 +1,7 @@
 #include "PMCombatSet.h"
 #include "Net/UnrealNetwork.h"
 
-UPMCombatSet::UPMCombatSet() : Super() , AttackPower(0.0f), DefensePower(0.f)
+UPMCombatSet::UPMCombatSet() : Super(), DefensePower(0.f), AttackPower(0.0f)
 {
 }
 

@@ -165,15 +165,12 @@ void UPMEquipmentManagerComponent::TakeAbilitiesFromAsc(UMEquipmentItemInstance*
 	UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
 	if (ASC == nullptr)
 	{
-		ensure(false);
-		MCHAE_ERROR("Can't access to abilitysystem when equip item. So item equip sequence will be canceled.");
 		return;
 	}
 
 	FMAbilitySet_GrantedHandles TempGrantedHandles;
 	GrantedHandles.RemoveAndCopyValue(Instance->ItemHandle.ItemUid, TempGrantedHandles);
 	TempGrantedHandles.TakeFromAbilitySystem(ASC);
-
 }
 
 void UPMEquipmentManagerComponent::EquipAllItems()

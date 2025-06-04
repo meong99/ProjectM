@@ -75,7 +75,7 @@ protected:
 	EMCharacterLiftState CharacterLifeState = EMCharacterLiftState::WaitToSpawn;
 
 	UPROPERTY(ReplicatedUsing = OnRep_OnChangeStateFlags, BlueprintReadWrite)
-	int64 CharacterStateFlag = EMCharacterStateFlag::None;
+	int64 CharacterStateFlag = EMCharacterStateFlag::None_M;
 
 	UPROPERTY()
 	FGenericTeamId TeamId;

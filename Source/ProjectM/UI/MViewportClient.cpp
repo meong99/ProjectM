@@ -170,7 +170,7 @@ void UMViewportClient::RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, cons
 	}
 }
 
-UMWidgetBase* UMViewportClient::ToggleWidgetOnLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo, const int32 LayerId /*= 0/*GameLayer*/)
+UMWidgetBase* UMViewportClient::ToggleWidgetOnLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo, const int32 LayerId /*= 0*/)
 {
 	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
 	if (WidgetLayout && Widget)
@@ -267,7 +267,6 @@ void UMViewportClient::ApplyWidgetLayout()
 	}
 
 	UMWidgetRegister* WidgetRegister = GetWidgetRegister(FPMGameplayTags::Get().UI_Registry_Layout_DefaultLayout.RequestDirectParent());
-	check(WidgetRegister);
 
 	WidgetLayout = Cast<UMWidgetLayout>(GetWidgetInstance(FPMGameplayTags::Get().UI_Registry_Layout_DefaultLayout));
 	if (WidgetLayout == nullptr)
