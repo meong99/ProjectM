@@ -84,7 +84,7 @@ void UMQuestInfoWidget::UpdateHandle(const FMQuestHandle& InQuestHandle)
 
 void UMQuestInfoWidget::OnClick_FinishButton()
 {
-	if (QuestHandle && QuestHandle.Slot && bOnActivatedNavigation)
+	if (QuestHandle && QuestHandle.Slot)
 	{
 		QuestHandle.Slot->OnClick_FinishButton();
 		StopNavigation();
