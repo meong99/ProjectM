@@ -20,35 +20,11 @@ AMMonsterSpawner::AMMonsterSpawner(const FObjectInitializer& ObjectInitializer)
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-#if WITH_EDITOR
-void AMMonsterSpawner::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-{
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-
-	FName PropertyName = PropertyChangedEvent.Property->GetFName();
-	if (GEngine && !HasAnyFlags(RF_ClassDefaultObject | RF_Transient) && \
-		PropertyName == GET_MEMBER_NAME_CHECKED(AMMonsterSpawner, MonsterRowId) &&
-		!IsRunningGame())
-	{
-		Modify();
-		ChangeMonsterDefinition();
-	}
-}
-#endif
-
-void AMMonsterSpawner::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-
-	if (!HasAnyFlags(RF_ClassDefaultObject | RF_Transient) && !MonsterDefinition)
-	{
-		ChangeMonsterDefinition();
-	}
-}
-
 void AMMonsterSpawner::BeginPlay()
 {
 	Super::BeginPlay();
+
+	MonsterDefinition = UMDataTableManager::GetDefinitionObject<UMMonsterDefinition>(this, MonsterRowId);
 
 	if (HasAuthority() && MonsterDefinition)
 	{
@@ -98,20 +74,6 @@ void AMMonsterSpawner::OnDeadMonster(AMMonsterBase* DeadMonster)
 	}
 }
 
-void AMMonsterSpawner::ChangeMonsterDefinition()
-{
-	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
-	if (TableManager)
-	{
-		MonsterDefinition = TableManager->GetMonsterDefinition(MonsterRowId);
-	}
-
-	if (!MonsterDefinition && !IsRunningGame())
-	{
-		UMGameplayStatics::ShowErrorOrLog(TEXT("MonsterDefinition is not valid!MonsterSpawner must be set MonsterRawId!!!!!"));
-	}
-}
-
 void AMMonsterSpawner::SpawnMonster()
 {
 	if (MonsterDefinition->GetMaximumSpawnNum() <= SpawnedMonsters.Num() || !HasAuthority())
@@ -119,16 +81,18 @@ void AMMonsterSpawner::SpawnMonster()
 		return;
 	}
 
-	FTransform			Transform;
-	int32				PointIndex	= FMath::RandHelper(SplineComponent->GetNumberOfSplinePoints());
-	const FSplinePoint& Point		= SplineComponent->GetSplinePointAt(PointIndex, ESplineCoordinateSpace::World);
-	FVector				Location	= Point.Position + GetActorLocation();
-	Transform.SetLocation(Location);
-
-	AMMonsterBase* SpawnedMonster = GetWorld()->SpawnActor<AMMonsterBase>(MonsterDefinition->GetMonsterClass(), Transform);
+	AMMonsterBase* SpawnedMonster = GetWorld()->SpawnActorDeferred<AMMonsterBase>(MonsterDefinition->GetMonsterClass(), FTransform::Identity);
 	if (SpawnedMonster)
 	{
+		FTransform			Transform;
+		int32				PointIndex = FMath::RandHelper(SplineComponent->GetNumberOfSplinePoints());
+		const FSplinePoint& Point = SplineComponent->GetSplinePointAt(PointIndex, ESplineCoordinateSpace::World);
+		FVector				Location = Point.Position + GetActorLocation();
+		Transform.SetLocation(Location);
+
 		SpawnedMonster->SetSpawner(this);
+		SpawnedMonster->FinishSpawning(Transform);
+		SpawnedMonster->SpawnDefaultController();
 		SpawnedMonsters.Add(SpawnedMonster);
 	}
 }

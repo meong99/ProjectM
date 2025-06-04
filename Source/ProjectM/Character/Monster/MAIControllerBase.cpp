@@ -23,6 +23,7 @@ AMAIControllerBase::AMAIControllerBase()
 	SightConfig->SetMaxAge(5.f);
 	SightConfig->SetStartsEnabled(true);
 	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
+	SightConfig->SetStartsEnabled(false);
 
 	DamageConfig = CreateDefaultSubobject<UAISenseConfig_Damage>(TEXT("DamageConfig"));
 	DamageConfig->SetMaxAge(5.0f);
@@ -31,7 +32,6 @@ AMAIControllerBase::AMAIControllerBase()
 	PerceptionComponent->ConfigureSense(*SightConfig);
 	PerceptionComponent->SetDominantSense(SightConfig->GetSenseImplementation());
 	PerceptionComponent->ConfigureSense(*DamageConfig);
-	PerceptionComponent->SetDominantSense(DamageConfig->GetSenseImplementation());
 
 	PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AMAIControllerBase::OnTargetDetectedDelegated);
 	PerceptionComponent->OnTargetPerceptionForgotten.AddDynamic(this, &AMAIControllerBase::OnTargetForgotDelegated);
@@ -55,6 +55,7 @@ void AMAIControllerBase::OnPossess(APawn* InPawn)
 		if (Def && Def->GetBehaviorTree())
 		{
 			RunBehaviorTree(Def->GetBehaviorTree());
+			PerceptionComponent->SetSenseEnabled(SightConfig->GetSenseImplementation(), true);
 		}
 		else
 		{
