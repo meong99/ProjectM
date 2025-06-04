@@ -18,6 +18,7 @@ class PROJECTM_API UMDialogueBoxWidget : public UMWidgetBase
 */
 public:
 	UMDialogueBoxWidget(const FObjectInitializer& ObjectInitializer);
+	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
@@ -39,6 +40,8 @@ protected:
 	void OnClick_Button1();
 	UFUNCTION()
 	void OnClick_Button2();
+	UFUNCTION()
+	void OnClick_ExitButton();
 
 	void SetOwnerName(const FText InOwnerName);
 	void SetButton1_Text(const FText& InText);
@@ -79,4 +82,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
 	TObjectPtr<UButton> CallbackButton2;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "ProjectM")
+	TObjectPtr<UButton> ExitButton;
 };

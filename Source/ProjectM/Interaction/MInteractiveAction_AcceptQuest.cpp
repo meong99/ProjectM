@@ -72,10 +72,8 @@ void UMInteractiveAction_AcceptQuest::OnClick_Accept()
 	}
 
 	bShouldActivate = false;
-	DeactivateAction();
 }
 
 void UMInteractiveAction_AcceptQuest::OnClick_Refuse()
 {
-	DeactivateAction();
 }

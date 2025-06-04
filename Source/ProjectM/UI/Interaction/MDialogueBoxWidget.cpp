@@ -36,6 +36,14 @@ FReply UMDialogueBoxWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 	return FReply::Handled();
 }
 
+void UMDialogueBoxWidget::NativeOnInitialized()
+{
+	Super::NativeOnInitialized();
+	CallbackButton1->OnClicked.AddDynamic(this, &UMDialogueBoxWidget::OnClick_Button1);
+	CallbackButton2->OnClicked.AddDynamic(this, &UMDialogueBoxWidget::OnClick_Button2);
+	ExitButton->OnClicked.AddDynamic(this, &UMDialogueBoxWidget::OnClick_ExitButton);
+}
+
 void UMDialogueBoxWidget::InitDialogueWidget(const int32 DialogueRowId)
 {
 	UMDataTableManager* TableManager = UMGameplayStatics::GetDataTableManager();
@@ -72,7 +80,6 @@ void UMDialogueBoxWidget::SetCallback1(TFunction<void()> Callback)
 	if (Callback)
 	{
 		Callback1 = Callback;
-		CallbackButton1->OnClicked.AddDynamic(this, &UMDialogueBoxWidget::OnClick_Button1);
 		CallbackButton1->SetVisibility(ESlateVisibility::Visible);
 	}
 	else
@@ -86,7 +93,6 @@ void UMDialogueBoxWidget::SetCallback2(TFunction<void()> Callback)
 	if (Callback)
 	{
 		Callback2 = Callback;
-		CallbackButton2->OnClicked.AddDynamic(this, &UMDialogueBoxWidget::OnClick_Button2);
 		CallbackButton2->SetVisibility(ESlateVisibility::Visible);
 	}
 	else
@@ -112,20 +118,7 @@ void UMDialogueBoxWidget::SetDialogue()
 void UMDialogueBoxWidget::TurnOverPage()
 {
 	CurrentPage++;
-	if (!DialogTextArray.IsValidIndex(CurrentPage))
-	{
-		ClearDialogue();
-		UMInteractiveAction_AcceptQuest* Action = Cast<UMInteractiveAction_AcceptQuest>(WidgetInfo.WidgetInstigator);
-		if (Action)
-		{
-			Action->DeactivateAction();
-		}
-		else
-		{
-			RemoveWidgetFromLayer();
-		}
-	}
-	else
+	if (DialogTextArray.IsValidIndex(CurrentPage))
 	{
 		if (DialogTextArray.Num() - 1 == CurrentPage)
 		{
@@ -140,8 +133,17 @@ void UMDialogueBoxWidget::ClearDialogue()
 	CurrentPage = 0;
 	DialogTextArray.Empty();
 	ButtonBox->SetVisibility(ESlateVisibility::Collapsed);
-	CallbackButton1->OnClicked.RemoveDynamic(this, &UMDialogueBoxWidget::OnClick_Button1);
-	CallbackButton2->OnClicked.RemoveDynamic(this, &UMDialogueBoxWidget::OnClick_Button2);
+	UMInteractiveAction_AcceptQuest* Action = Cast<UMInteractiveAction_AcceptQuest>(WidgetInfo.WidgetInstigator);
+	Callback1.Reset();
+	Callback2.Reset();
+	if (Action)
+	{
+		Action->DeactivateAction();
+	}
+	else
+	{
+		RemoveWidgetFromLayer();
+	}
 }
 
 void UMDialogueBoxWidget::OnClick_Button1()
@@ -160,6 +162,11 @@ void UMDialogueBoxWidget::OnClick_Button2()
 		Callback2();
 		ClearDialogue();
 	}
+}
+
+void UMDialogueBoxWidget::OnClick_ExitButton()
+{
+	ClearDialogue();
 }
 
 void UMDialogueBoxWidget::SetOwnerName(const FText InOwnerName)
