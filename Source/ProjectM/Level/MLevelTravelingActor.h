@@ -11,6 +11,7 @@ class UBoxComponent;
 class UPrimitiveComponent;
 class UMLevelManager;
 struct FMTable_Level;
+class AMPlayerCharacterBase;
 
 /**
  *
@@ -35,8 +36,13 @@ public:
 	void OnBeginOverlap_LevelTravel(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 protected:
-
-	/*
+	AActor* FindDestPlayerStart() const;
+	AActor* FindDestTravelActor() const;
+	void	TeleportToDestination(AMPlayerCharacterBase* OverlapedPlayer) const;
+	void	SetPlayerCollisionToTravel(AMPlayerCharacterBase* OverlapedPlayer) const;
+	void	SetPlayerCollisionToOrigin(AMPlayerCharacterBase* OverlapedPlayer) const;
+	void	RequestOngoingNavigation(AMPlayerCharacterBase* OverlapedPlayer) const;
+/*
 * Member Variables
 */
 public:
