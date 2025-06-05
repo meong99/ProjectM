@@ -3,6 +3,8 @@
 #include "MConsumableItemDefinition.h"
 #include "Player/PMPlayerControllerBase.h"
 #include "AbilitySystem/PMAbilitySystemComponent.h"
+#include "AbilitySystem/MGameplayEffectSet.h"
+#include "GameFramework/Actor.h"
 
 UMConsumableItemInstance::UMConsumableItemInstance(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -12,43 +14,32 @@ bool UMConsumableItemInstance::ActivateItem()
 {
 	const bool bIsActivated = Super::ActivateItem();
 
-	if (bIsActivated)
+	if (!bIsActivated)
 	{
-		const UMConsumableItemDefinition* ItemDefCDO = GetDefault<UMConsumableItemDefinition>(ItemDef);
-		UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
-		if (ItemDefCDO && ASC)
-		{
-			for (const FMApplyEffectDefinition& EffectDef : ItemDefCDO->ApplyEffectToSelf)
-			{
-				if (EffectDef.EffectClass)
-				{
-					FGameplayEffectContextHandle EffectContextHandle = ASC->MakeGameplayEffectContext(Cast<APMPlayerControllerBase>(GetOuter()), nullptr);
-					EffectContextHandle.AddSourceObject(this);
-
-					TMap<FGameplayTag, float> SetbyCallerMap;
-					for (const FMSetbyCallerFloat& Value : EffectDef.EffectValues)
-					{
-						if (Value.SetByCallerTag.IsValid())
-						{
-							SetbyCallerMap.Add(Value.SetByCallerTag, Value.Value);
-						}
-					}
-
-					const FGameplayEffectSpec& Spec = ASC->MakeGameplayEffectSpecWithSetByCaller(EffectContextHandle, EffectDef.EffectClass, SetbyCallerMap);
-
-					ASC->ApplyGameplayEffectSpecToSelf(Spec);
-				}
-				else
-				{
-					MCHAE_ERROR("Effect class is not defined! check item definition! Definition name is %s", *ItemDefCDO->GetName());
-				}
-			}
-
-			MCHAE_TEST("ItemUse");
-		
-		}
+		return bIsActivated;
 	}
 
+	const UMConsumableItemDefinition* ItemDefCDO = GetDefault<UMConsumableItemDefinition>(ItemDef);
+	UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	if (!ItemDefCDO || !ASC)
+	{
+		MCHAE_ERROR("Can't Find Item Information or not Accessable to Asc");
+		check(false);
+	}
+
+	for (const UMGameplayEffectSet* EffectSet : ItemDefCDO->EffectSet)
+	{
+		if (EffectSet)
+		{
+			FMAbilitySet_AppliedEffectHandles TempHandles;
+			EffectSet->ApplyGameplayEffectsToAsc(ASC, &TempHandles, Cast<AActor>(GetOuter()), nullptr, this);
+		}
+		else
+		{
+			MCHAE_ERROR("EffectSet is not defined! check item definition! Definition name is %s", *ItemDefCDO->GetName());
+		}
+	}
+		
 	return bIsActivated;
 }
 

@@ -7,6 +7,7 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "PMGameplayTags.h"
+#include "AbilitySystem/MGameplayEffectSet.h"
 UMItemContextWidget::UMItemContextWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 }
@@ -28,17 +29,26 @@ void UMItemContextWidget::UpdateContextWidget(const int32 RowId)
 		SetItemName(ItemDef->DisplayName);
 
 		bool bExistStat = false;
-		for (const FMApplyEffectDefinition& EffectDef : ItemDef->ApplyEffectToSelf)
+		for (const UMGameplayEffectSet* EffectSet : ItemDef->EffectSet)
 		{
-			for (const FMSetbyCallerFloat& SetbyCallerInfo : EffectDef.EffectValues)
+			if (!EffectSet)
 			{
-				UTextBlock* OutTextBlock;
-				FText OutName;
-				GetTextBlockByTag(SetbyCallerInfo.SetByCallerTag, OutTextBlock, OutName);
-				if (OutTextBlock)
+				continue;
+			}
+			const TArray<FMAbilitySet_GameplayEffect>& EffectsToApply = EffectSet->GetEffectToApply();
+
+			for (const FMAbilitySet_GameplayEffect& EffectInfo : EffectsToApply)
+			{
+				for (const FMSetbyCallerFloat& SetbyCallerInfo : EffectInfo.SetbyCallers)
 				{
-					SetSpecText(OutTextBlock, OutName, SetbyCallerInfo.Value);
-					bExistStat = true;
+					UTextBlock* OutTextBlock;
+					FText OutName;
+					GetTextBlockByTag(SetbyCallerInfo.SetByCallerTag, OutTextBlock, OutName);
+					if (OutTextBlock)
+					{
+						SetSpecText(OutTextBlock, OutName, SetbyCallerInfo.Value);
+						bExistStat = true;
+					}
 				}
 			}
 		}

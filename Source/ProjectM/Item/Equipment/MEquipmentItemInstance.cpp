@@ -10,6 +10,7 @@
 #include "MEquipmentItemDefinition.h"
 #include "GameplayTagContainer.h"
 #include "Player/PMPlayerState.h"
+#include "AbilitySystem/MGameplayEffectSet.h"
 
 UMEquipmentItemInstance::UMEquipmentItemInstance(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -50,36 +51,20 @@ void UMEquipmentItemInstance::OnEquipped()
 {
 	const UMEquipmentItemDefinition* ItemDefCDO = GetDefault<UMEquipmentItemDefinition>(ItemDef);
 	UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent();
-	if (ItemDefCDO && ASC)
+	if (!ItemDefCDO || !ASC)
 	{
-		for (const FMApplyEffectDefinition& EffectDef : ItemDefCDO->ApplyEffectToSelf)
+		return;
+	}
+
+	for (const UMGameplayEffectSet* EffectSet : ItemDefCDO->EffectSet)
+	{
+		if (EffectSet)
 		{
-			if (EffectDef.EffectClass)
-			{
-				FGameplayEffectContextHandle EffectContextHandle = ASC->MakeGameplayEffectContext(Cast<APMPlayerControllerBase>(GetOuter()), nullptr);
-				EffectContextHandle.AddSourceObject(this);
-
-				TMap<FGameplayTag, float> SetbyCallerMap;
-				for (const FMSetbyCallerFloat& Value : EffectDef.EffectValues)
-				{
-					if (Value.SetByCallerTag.IsValid())
-					{
-						SetbyCallerMap.Add(Value.SetByCallerTag, Value.Value);
-					}
-				}
-
-				const FGameplayEffectSpec& Spec = ASC->MakeGameplayEffectSpecWithSetByCaller(EffectContextHandle, EffectDef.EffectClass, SetbyCallerMap);
-
-				FActiveGameplayEffectHandle AppliedEffectHandle = ASC->ApplyGameplayEffectSpecToSelf(Spec);
-				if (AppliedEffectHandle.IsValid())
-				{
-					AppliedEffectHandles.AddAppliedEffectHandle(AppliedEffectHandle);
-				}
-			}
-			else
-			{
-				MCHAE_ERROR("Effect class is not defined! check item definition! Definition name is %s", *ItemDefCDO->GetName());
-			}
+			EffectSet->ApplyGameplayEffectsToAsc(ASC, &AppliedEffectHandles, Cast<AActor>(GetOuter()), nullptr, this);
+		}
+		else
+		{
+			MCHAE_ERROR("EffectSet is not defined! check item definition! Definition name is %s", *ItemDefCDO->GetName());
 		}
 	}
 }

@@ -63,5 +63,5 @@ public:
 	EMEquipmentItemType EquipmentItemType = EMEquipmentItemType::None;
 
 	UPROPERTY()
-	FPMAbilitySet_AppliedEffectHandles AppliedEffectHandles;
+	FMAbilitySet_AppliedEffectHandles AppliedEffectHandles;
 };

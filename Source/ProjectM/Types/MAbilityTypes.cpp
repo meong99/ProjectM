@@ -31,12 +31,12 @@ void FMAbilitySet_GrantedHandles::TakeFromAbilitySystem(UPMAbilitySystemComponen
 	}
 }
 
-void FPMAbilitySet_AppliedEffectHandles::AddAppliedEffectHandle(const FActiveGameplayEffectHandle& Handle)
+void FMAbilitySet_AppliedEffectHandles::AddAppliedEffectHandle(const FActiveGameplayEffectHandle& Handle)
 {
 	AppliedEffectHandles.Add(Handle);
 }
 
-void FPMAbilitySet_AppliedEffectHandles::RemoveAppliedEffects(UPMAbilitySystemComponent* AbilitySystemComp)
+void FMAbilitySet_AppliedEffectHandles::RemoveAppliedEffects(UPMAbilitySystemComponent* AbilitySystemComp)
 {
 	if (AbilitySystemComp)
 	{

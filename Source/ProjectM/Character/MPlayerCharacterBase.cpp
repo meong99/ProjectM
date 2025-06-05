@@ -18,6 +18,7 @@
 #include "GameplayEffect.h"
 #include "Types/MTeamTypes.h"
 #include "Components/MPawnComponentBase.h"
+#include "AbilitySystem/MGameplayEffectSet.h"
 
 AMPlayerCharacterBase::AMPlayerCharacterBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UMCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -219,10 +220,14 @@ void AMPlayerCharacterBase::InitCharacterDefaultSpec()
 		const UPMPawnData* PawnData = CurPlayerState ? CurPlayerState->GetPawnData() : nullptr;
 		if (PawnData)
 		{
-			FGameplayEffectContextHandle Handle;
-			FGameplayEffectSpec Spec(PawnData->DefaultCharacterStatEffect->GetDefaultObject<UGameplayEffect>(), Handle);
-			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(Spec);
-
+			for (const UMGameplayEffectSet* EffectSet : PawnData->EffectSets)
+			{
+				if (EffectSet)
+				{
+					FMAbilitySet_AppliedEffectHandles TempHandles;
+					EffectSet->ApplyGameplayEffectsToAsc(AbilitySystemComponent, &TempHandles, AbilitySystemComponent->GetOwner(), this, nullptr);
+				}
+			}
 		}
 		else
 		{

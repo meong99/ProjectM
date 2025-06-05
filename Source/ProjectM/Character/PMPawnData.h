@@ -10,6 +10,7 @@ class UPMInventoryItemDefinition;
 class UGameplayEffect;
 class UAnimMontage;
 class UMEquipmentItemDefinition;
+class UMGameplayEffectSet;
 
 UCLASS()
 class PROJECTM_API UPMPawnData : public UPrimaryDataAsset
@@ -43,15 +44,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Camera")
 	TSubclassOf<UPMCameraMode> DefaultCameraMode;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Stat")
-	TSubclassOf<UGameplayEffect> DefaultCharacterStatEffect;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Input")
 	TObjectPtr<UPMInputConfig> InputConfig;
 
 	// Character가 기본적으로 사용하게 될 Ability
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Abilities")
 	TArray<TObjectPtr<UPMAbilitySet>> AbilitySets;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Abilities")
+	TArray<TObjectPtr<UMGameplayEffectSet>> EffectSets;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ProjectM | Equipment")
 	int32 DefaultEquipmentRowId;

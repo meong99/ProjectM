@@ -23,6 +23,18 @@ UE_DECLARE_GAMEPLAY_TAG_EXTERN(Animation_Notify_EndDead);
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayCue_Combat_Hit);
 
 
+USTRUCT(BlueprintType)
+struct FMSetbyCallerFloat 
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTag SetByCallerTag;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float Value = 0.0f;
+};
+
 USTRUCT(BlueprintType, Blueprintable)
 struct FMAbilityInfo
 {
@@ -67,7 +79,19 @@ protected:
 };
 
 USTRUCT(BlueprintType)
-struct FPMAbilitySet_AppliedEffectHandles 
+struct FMAbilitySet_GameplayEffect
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> Effect = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<FMSetbyCallerFloat> SetbyCallers;
+};
+
+USTRUCT(BlueprintType)
+struct FMAbilitySet_AppliedEffectHandles
 {
 	GENERATED_BODY()
 

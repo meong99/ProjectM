@@ -13,6 +13,7 @@ class UPMInventoryItemInstance;
 class UTexture2D;
 class UGameplayEffect;
 class UCurveTable;
+class UMGameplayEffectSet;
 
 /* Remind
 * Item의 Component라고 이해하면 편하다.
@@ -71,8 +72,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	TSubclassOf<UPMInventoryItemInstance> InstanceType;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
-	TArray<FMApplyEffectDefinition> ApplyEffectToSelf;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "Item")
+	TArray<TObjectPtr<UMGameplayEffectSet>> EffectSet;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
 	int32 SellPrice = 0;

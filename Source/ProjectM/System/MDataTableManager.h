@@ -27,7 +27,6 @@ enum class EMTableKey : uint8
 	Quest,
 	Dialogue,
 	MiscellaneousItem,
-	GameplayEffectTable,
 };
 
 /**
