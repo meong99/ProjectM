@@ -14,9 +14,10 @@ UENUM(BlueprintType)
 enum class EMCollisionChannel : uint8
 {
     Monster		UMETA(DisplayName = "Monster"),
-    NPC			UMETA(DisplayName = "NPC"),
     Interaction	UMETA(DisplayName = "Interaction"),
 	Player		UMETA(DisplayName = "Player"),
+	NPC			UMETA(DisplayName = "NPC"),
+	LavelTavel	UMETA(DisplayName = "LavelTavel"),
 };
 
 UCLASS()

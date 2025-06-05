@@ -65,6 +65,7 @@ ECollisionChannel UMGameplayStatics::GetCollisionChannel(EMCollisionChannel Chan
 		case EMCollisionChannel::Interaction:	return ECollisionChannel::ECC_GameTraceChannel2;
 		case EMCollisionChannel::Player		:	return ECollisionChannel::ECC_GameTraceChannel3;
 		case EMCollisionChannel::NPC		:	return ECollisionChannel::ECC_GameTraceChannel4;
+		case EMCollisionChannel::LavelTavel	:	return ECollisionChannel::ECC_GameTraceChannel5;
 		default								:	return ECC_Visibility;
 	}
 }
