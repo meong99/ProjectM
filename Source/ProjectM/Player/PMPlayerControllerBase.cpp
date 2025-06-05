@@ -178,6 +178,17 @@ UMWidgetBase* APMPlayerControllerBase::ToggleWidget(const FGameplayTag& WidgetTa
 	return nullptr;
 }
 
+UMWidgetBase* APMPlayerControllerBase::GetWidgetInstance(const FGameplayTag& WidgetTag)
+{
+	UMViewportClient* VC = Cast<UMViewportClient>(GetGameInstance()->GetGameViewportClient());
+	if (VC)
+	{
+		return VC->GetWidgetInstance(WidgetTag);
+	}
+
+	return nullptr;
+}
+
 void APMPlayerControllerBase::OnExperienceLoaded(const UPMExperienceDefinition* LoadedExperienceDefinition)
 {
 	const TSet<UActorComponent*>& SubComponents = GetComponents();

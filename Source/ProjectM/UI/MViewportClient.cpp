@@ -152,7 +152,7 @@ UMWidgetBase* UMViewportClient::AddWidgetToLayer(const FGameplayTag& WidgetTag, 
 	return Widget;
 }
 
-void UMViewportClient::RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, const int32 LayerId)
+UMWidgetBase* UMViewportClient::RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, const int32 LayerId)
 {
 	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
 	if (WidgetLayout && Widget)
@@ -168,6 +168,8 @@ void UMViewportClient::RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, cons
 	{
 		MCHAE_WARNING("WidgetLayout or WidgetInstance is null!");
 	}
+
+	return Widget;
 }
 
 UMWidgetBase* UMViewportClient::ToggleWidgetOnLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo, const int32 LayerId /*= 0*/)

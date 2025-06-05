@@ -52,7 +52,7 @@ public:
 
 	// Layer에 Widget을 설정한다.
 	UMWidgetBase*	AddWidgetToLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo = {}, const int32 LayerId = 0/*GameLayer*/);
-	void			RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, const int32 LayerId = 0/*GameLayer*/);
+	UMWidgetBase*	RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, const int32 LayerId = 0/*GameLayer*/);
 	UMWidgetBase*	ToggleWidgetOnLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo = {}, const int32 LayerId = 0/*GameLayer*/);
 
 	// Widget의 Instance를 반환한다. 만약 Instancing되지 않았다면 Class를 찾아 Instancing후 반환한다.

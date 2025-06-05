@@ -67,6 +67,7 @@ void FPMGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(UI_Registry_Game_InteractionList, "UI.Registry.Game.InteractionList", "");
 	AddTag(UI_Registry_Game_Shop, "UI.Registry.Game.Shop", "");
 	AddTag(UI_Registry_Game_Restart, "UI.Registry.Game.Restart", "");
+	AddTag(UI_Registry_Game_Loading, "UI.Registry.Game.Loading", "");
 
 	AddTag(Character_State_Dead, "Character.State.Dead", "");
 	/*

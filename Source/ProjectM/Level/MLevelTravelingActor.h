@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Engine/TriggerBox.h"
+#include "Animation/WidgetAnimationEvents.h"
 #include "MLevelTravelingActor.generated.h"
 
 class UBoxComponent;
@@ -36,12 +37,21 @@ public:
 	void OnBeginOverlap_LevelTravel(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 protected:
+	void	PlayLoadingFadeOut(FWidgetAnimationDynamicEvent&& Callback) const;
+	void	PlayLoadingFadeIn(FWidgetAnimationDynamicEvent&& Callback) const;
+
+	UFUNCTION()
+	void	OnFinishedFadeOut();
+	UFUNCTION()
+	void	OnFinishedFadeIn();
+
 	AActor* FindDestPlayerStart() const;
 	AActor* FindDestTravelActor() const;
-	void	TeleportToDestination(AMPlayerCharacterBase* OverlapedPlayer) const;
-	void	SetPlayerCollisionToTravel(AMPlayerCharacterBase* OverlapedPlayer) const;
-	void	SetPlayerCollisionToOrigin(AMPlayerCharacterBase* OverlapedPlayer) const;
-	void	RequestOngoingNavigation(AMPlayerCharacterBase* OverlapedPlayer) const;
+	void	TeleportToDestination() const;
+	void	SetPlayerCollisionToTravel() const;
+	void	SetPlayerCollisionToOrigin() const;
+	void	RequestOngoingNavigation() const;
+
 /*
 * Member Variables
 */
@@ -53,4 +63,6 @@ public:
 	FGameplayTag OriginLevelTag;
 
 	const FMTable_Level* LevelInfo;
+
+	TWeakObjectPtr<AMPlayerCharacterBase> WeakPlayer;
 };

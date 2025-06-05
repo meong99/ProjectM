@@ -62,7 +62,8 @@ struct FPMGameplayTags
 	FGameplayTag UI_Registry_Game_Shop;
 	FGameplayTag UI_Registry_Game_Restart;
 	FGameplayTag UI_Registry_Game_ItemContext;
-
+	FGameplayTag UI_Registry_Game_Loading;
+	
 	FGameplayTag Character_State_Dead;
 
 	/*

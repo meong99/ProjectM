@@ -15,6 +15,9 @@
 #include "TimerManager.h"
 #include "Character/MPlayerCharacterBase.h"
 #include "Components/CapsuleComponent.h"
+#include "UI/MViewportClient.h"
+#include "PMGameplayTags.h"
+#include "UI/Level/MLoadingWidget.h"
 
 AMLevelTravelingActor::AMLevelTravelingActor()
 {
@@ -69,21 +72,75 @@ void AMLevelTravelingActor::BeginPlay()
 
 void AMLevelTravelingActor::OnBeginOverlap_LevelTravel(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	AMPlayerCharacterBase*	OverlapedPlayer			= Cast<AMPlayerCharacterBase>(OtherActor);
-	APlayerController*	OverlapedPlayerController	= OverlapedPlayer ? Cast<APlayerController>(OverlapedPlayer->GetController()) : nullptr;
+	WeakPlayer = Cast<AMPlayerCharacterBase>(OtherActor);
 
-	if (OverlapedPlayer)
+	if (WeakPlayer.IsValid())
 	{
-		OverlapedPlayer->Server_AddCharacterStateFlag(EMCharacterStateFlag::BlockMovement);
-		FTimerHandle Handle;
-		GetWorld()->GetTimerManager().SetTimer(Handle, [this, OverlapedPlayer]()->void
-		{
-			TeleportToDestination(OverlapedPlayer);
-			RequestOngoingNavigation(OverlapedPlayer);
-			OverlapedPlayer->SetCurrentLevelTag(DestLevelTag);
-			OverlapedPlayer->Server_RemoveCharacterStateFlag(EMCharacterStateFlag::BlockMovement);
-		}, 1, false);
+		FWidgetAnimationDynamicEvent FadeOut;
+		FadeOut.BindDynamic(this, &AMLevelTravelingActor::OnFinishedFadeOut);
+		PlayLoadingFadeOut(MoveTemp(FadeOut));
 	}
+}
+
+void AMLevelTravelingActor::PlayLoadingFadeOut(FWidgetAnimationDynamicEvent&& Callback) const
+{
+	UMViewportClient* ViewClient = UMViewportClient::Get(this);
+	if (ViewClient)
+	{
+		UMLoadingWidget* LoadingWidget = Cast<UMLoadingWidget>(ViewClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_Game_Loading));
+		if (LoadingWidget && WeakPlayer.IsValid())
+		{
+			WeakPlayer->Server_AddCharacterStateFlag(EMCharacterStateFlag::BlockMovement);
+			LoadingWidget->PlayFadeOut(MoveTemp(Callback));
+		}
+	}
+}
+
+void AMLevelTravelingActor::PlayLoadingFadeIn(FWidgetAnimationDynamicEvent&& Callback) const
+{
+	UMViewportClient* ViewClient = UMViewportClient::Get(this);
+	if (ViewClient)
+	{
+		UMLoadingWidget* LoadingWidget = Cast<UMLoadingWidget>(ViewClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_Game_Loading));
+		if (LoadingWidget)
+		{
+			LoadingWidget->PlayFadeIn(MoveTemp(Callback));
+		}
+	}
+}
+
+void AMLevelTravelingActor::OnFinishedFadeOut()
+{
+	if (WeakPlayer.IsValid())
+	{
+		TeleportToDestination();
+
+		FWidgetAnimationDynamicEvent FadeIn;
+		FadeIn.BindDynamic(this, &AMLevelTravelingActor::OnFinishedFadeIn);
+		PlayLoadingFadeIn(MoveTemp(FadeIn));
+	}
+}
+
+void AMLevelTravelingActor::OnFinishedFadeIn()
+{
+	if (WeakPlayer.IsValid())
+	{
+		RequestOngoingNavigation();
+		WeakPlayer->SetCurrentLevelTag(DestLevelTag);
+		WeakPlayer->Server_RemoveCharacterStateFlag(EMCharacterStateFlag::BlockMovement);
+
+		UMViewportClient* ViewClient = UMViewportClient::Get(this);
+		if (ViewClient)
+		{
+			UMLoadingWidget* LoadingWidget = Cast<UMLoadingWidget>(ViewClient->RemoveWidgetFromLayer(FPMGameplayTags::Get().UI_Registry_Game_Loading));
+			if (LoadingWidget)
+			{
+				LoadingWidget->UnbindAnimationBind();
+			}
+		}
+	}
+
+	WeakPlayer = nullptr;
 }
 
 AActor* AMLevelTravelingActor::FindDestPlayerStart() const
@@ -124,22 +181,22 @@ AActor* AMLevelTravelingActor::FindDestTravelActor() const
 	return nullptr;
 }
 
-void AMLevelTravelingActor::TeleportToDestination(AMPlayerCharacterBase* OverlapedPlayer) const
+void AMLevelTravelingActor::TeleportToDestination() const
 {
 	AActor* DestPlayerStart = FindDestPlayerStart();
-	if (DestPlayerStart)
+	if (DestPlayerStart && WeakPlayer.IsValid())
 	{
-		SetPlayerCollisionToTravel(OverlapedPlayer);
-		OverlapedPlayer->TeleportTo(DestPlayerStart->GetActorLocation(), DestPlayerStart->GetActorRotation());
-		SetPlayerCollisionToOrigin(OverlapedPlayer);
+		SetPlayerCollisionToTravel();
+		WeakPlayer->TeleportTo(DestPlayerStart->GetActorLocation(), DestPlayerStart->GetActorRotation());
+		SetPlayerCollisionToOrigin();
 	}
 }
 
-void AMLevelTravelingActor::SetPlayerCollisionToTravel(AMPlayerCharacterBase* OverlapedPlayer) const
+void AMLevelTravelingActor::SetPlayerCollisionToTravel() const
 {
-	if (OverlapedPlayer)
+	if (WeakPlayer.IsValid())
 	{
-		UCapsuleComponent* PlayerCapsule = OverlapedPlayer->GetCapsuleComponent();
+		UCapsuleComponent* PlayerCapsule = WeakPlayer->GetCapsuleComponent();
 		if (PlayerCapsule)
 		{
 			PlayerCapsule->SetCollisionProfileName(*UEnum::GetDisplayValueAsText(EMCollisionChannel::LavelTavel).ToString());
@@ -147,11 +204,11 @@ void AMLevelTravelingActor::SetPlayerCollisionToTravel(AMPlayerCharacterBase* Ov
 	}
 }
 
-void AMLevelTravelingActor::SetPlayerCollisionToOrigin(AMPlayerCharacterBase* OverlapedPlayer) const
+void AMLevelTravelingActor::SetPlayerCollisionToOrigin() const
 {
-	if (OverlapedPlayer)
+	if (WeakPlayer.IsValid())
 	{
-		UCapsuleComponent* PlayerCapsule = OverlapedPlayer->GetCapsuleComponent();
+		UCapsuleComponent* PlayerCapsule = WeakPlayer->GetCapsuleComponent();
 		if (PlayerCapsule)
 		{
 			PlayerCapsule->SetCollisionProfileName(*UEnum::GetDisplayValueAsText(EMCollisionChannel::Player).ToString());
@@ -159,13 +216,13 @@ void AMLevelTravelingActor::SetPlayerCollisionToOrigin(AMPlayerCharacterBase* Ov
 	}
 }
 
-void AMLevelTravelingActor::RequestOngoingNavigation(AMPlayerCharacterBase* OverlapedPlayer) const
+void AMLevelTravelingActor::RequestOngoingNavigation() const
 {
-	if (OverlapedPlayer)
+	if (WeakPlayer.IsValid())
 	{
-		if (OverlapedPlayer->IsOnCharacterStateFlags(EMCharacterStateFlag::ControlledFromNavigation))
+		if (WeakPlayer->IsOnCharacterStateFlags(EMCharacterStateFlag::ControlledFromNavigation))
 		{
-			UMNavigationComponent* NavComp = OverlapedPlayer->FindComponentByClass<UMNavigationComponent>();
+			UMNavigationComponent* NavComp = WeakPlayer->FindComponentByClass<UMNavigationComponent>();
 			if (NavComp)
 			{
 				NavComp->RequestOngoingNavigation();
