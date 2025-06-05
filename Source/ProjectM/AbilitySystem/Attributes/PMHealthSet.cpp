@@ -2,6 +2,7 @@
 #include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
 #include "Util/MGameplayStatics.h"
+#include "Character/MCharacterBase.h"
 
 UPMHealthSet::UPMHealthSet() : Super(), Health(1.f), MaxHealth(1.f)
 {
@@ -18,12 +19,14 @@ void UPMHealthSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 void UPMHealthSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
 {
 	Super::PreAttributeBaseChange(Attribute, NewValue);
+	ClampToZeroIfDead(NewValue);
 	ClampAttribute(Attribute, NewValue);
 }
 
 void UPMHealthSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
+	ClampToZeroIfDead(NewValue);
 	ClampAttribute(Attribute, NewValue);
 }
 
@@ -60,5 +63,17 @@ void UPMHealthSet::ClampAttribute(const FGameplayAttribute& Attribute, float& Ne
 	if (Attribute == GetHealthAttribute())
 	{
 		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxHealth());
+	}
+}
+
+void UPMHealthSet::ClampToZeroIfDead(float& Value) const
+{
+	if (GetActorInfo())
+	{
+		AMCharacterBase* Character = Cast<AMCharacterBase>(GetActorInfo()->AvatarActor);
+		if (Character && Character->GetCharacterLifeState() > EMCharacterLiftState::Alive)
+		{
+			Value = 0;
+		}
 	}
 }

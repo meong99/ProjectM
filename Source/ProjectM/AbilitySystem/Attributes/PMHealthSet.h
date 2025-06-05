@@ -31,6 +31,7 @@ public:
 protected:
 	void AdjustAttributeForMaxChange(const float CurrentValue, const float OldMaxValue, float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty);
 	void ClampAttribute(const FGameplayAttribute& Attribute, float& NewValue) const;
+	void ClampToZeroIfDead(float& Value) const;
 public:
 	UPROPERTY(BlueprintReadWrite, Replicated, Category = "ProjectM | Health")
 	FGameplayAttributeData Health;

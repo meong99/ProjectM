@@ -10,4 +10,5 @@ enum class EMGenericTeamId : uint8
 	Player,
 	Monster,
 	Npc,
+	None,
 };

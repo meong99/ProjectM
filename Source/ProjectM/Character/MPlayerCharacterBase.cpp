@@ -60,7 +60,6 @@ void AMPlayerCharacterBase::OnDead()
 	{
 		Super::OnDead();
 		CharacterLifeState = EMCharacterLiftState::Dead;
-		ClearAbilityActorInfo();
 
 		const UPMPawnData* PawnData = PawnExtComp->GetPawnData();
 		Multicast_PlayMontage(PawnData->DeathAnimation);
@@ -114,7 +113,6 @@ void AMPlayerCharacterBase::PawnClientRestart()
 void AMPlayerCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-
 	SetGenericTeamId((int32)EMGenericTeamId::Player);
 }
 
