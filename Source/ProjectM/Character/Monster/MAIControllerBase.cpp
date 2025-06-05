@@ -19,22 +19,12 @@ AMAIControllerBase::AMAIControllerBase()
 
 	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception Component"));
 
-	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
-	SightConfig->SightRadius = 1500.f;
-	SightConfig->LoseSightRadius = SightConfig->SightRadius * 1.2;
-	SightConfig->PeripheralVisionAngleDegrees = 90.f;
-	SightConfig->SetMaxAge(5.f);
-	SightConfig->SetStartsEnabled(true);
-	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
-	SightConfig->SetStartsEnabled(false);
-
 	DamageConfig = CreateDefaultSubobject<UAISenseConfig_Damage>(TEXT("DamageConfig"));
 	DamageConfig->SetMaxAge(5.0f);
 	DamageConfig->SetStartsEnabled(true);
 
-	PerceptionComponent->ConfigureSense(*SightConfig);
 	PerceptionComponent->ConfigureSense(*DamageConfig);
-	PerceptionComponent->SetDominantSense(SightConfig->GetSenseImplementation());
+	PerceptionComponent->SetDominantSense(DamageConfig->GetSenseImplementation());
 
 	PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AMAIControllerBase::OnTargetDetectedDelegated);
 	PerceptionComponent->OnTargetPerceptionForgotten.AddDynamic(this, &AMAIControllerBase::OnTargetForgotDelegated);
@@ -142,7 +132,6 @@ void AMAIControllerBase::SetBehaviorTree(AMMonsterBase* Monster)
 	if (Def && Def->GetBehaviorTree())
 	{
 		RunBehaviorTree(Def->GetBehaviorTree());
-		PerceptionComponent->SetSenseEnabled(SightConfig->GetSenseImplementation(), true);
 	}
 	else
 	{

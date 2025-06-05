@@ -49,9 +49,6 @@ protected:
 */
 protected:
 	UPROPERTY()
-	TObjectPtr<UAISenseConfig_Sight> SightConfig;
-
-	UPROPERTY()
 	TObjectPtr<UAISenseConfig_Damage> DamageConfig;
 
 	FDelegateHandle DelegateHandle_MonsterStateChange;
