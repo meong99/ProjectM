@@ -9,6 +9,9 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Types/MTeamTypes.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "AbilitySystem/PMAbilitySystemComponent.h"
+#include "PMGameplayTags.h"
+#include "GameplayEffectTypes.h"
 
 AMAIControllerBase::AMAIControllerBase()
 {
@@ -40,39 +43,20 @@ AMAIControllerBase::AMAIControllerBase()
 void AMAIControllerBase::OnPossess(APawn* InPawn)
 {
 	AMCharacterBase* OldCharacter = Cast<AMCharacterBase>(GetPawn());
-	if (OldCharacter && Handle.IsValid())
+	if (OldCharacter && DelegateHandle_MonsterStateChange.IsValid())
 	{
-		OldCharacter->Delegate_OnChangeCharacterStateFlags.Remove(Handle);
-		Handle.Reset();
+		OldCharacter->Delegate_OnChangeCharacterStateFlags.Remove(DelegateHandle_MonsterStateChange);
+		DelegateHandle_MonsterStateChange.Reset();
 	}
 
 	Super::OnPossess(InPawn);
 
 	if (AMMonsterBase* Monster = Cast<AMMonsterBase>(InPawn))
 	{
-		Handle = Monster->Delegate_OnChangeCharacterStateFlags.AddUObject(this, &AMAIControllerBase::OnChange_CharacterStateFlag);
-		UMMonsterDefinition* Def = Monster->GetMonsterDefinition();
-		if (Def && Def->GetBehaviorTree())
-		{
-			RunBehaviorTree(Def->GetBehaviorTree());
-			PerceptionComponent->SetSenseEnabled(SightConfig->GetSenseImplementation(), true);
-		}
-		else
-		{
-			MCHAE_ERROR("Monster BehaviorTree is not valid!!!");
-		}
-
-		AActor* MonsterSpawner = Monster->GetMonsterSpawner();
-		if (MonsterSpawner)
-		{
-			Blackboard->SetValueAsVector(BBKey::ORIGIN_LOCATION, MonsterSpawner->GetActorLocation());
-		}
+		AbilitySystemComponent = Monster->GetMAbilitySystemComponent();
+		DelegateHandle_MonsterStateChange = Monster->Delegate_OnChangeCharacterStateFlags.AddUObject(this, &AMAIControllerBase::OnChange_CharacterStateFlag);
+		SetBehaviorTree(Monster);
 	}
-}
-
-void AMAIControllerBase::BeginPlay()
-{
-	Super::BeginPlay();
 }
 
 void AMAIControllerBase::OnUnPossess()
@@ -95,14 +79,23 @@ void AMAIControllerBase::OnChange_CharacterStateFlag(const int64& OldFlag, const
 
 void AMAIControllerBase::OnTargetDetectedDelegated(AActor* Actor, struct FAIStimulus Stimulus)
 {
-	if (Stimulus.WasSuccessfullySensed())
+	IGenericTeamAgentInterface* TeamInterface = Cast<IGenericTeamAgentInterface>(Actor);
+	if (!TeamInterface || DelegateHandle_TargetLiftStateChange.IsValid())
 	{
-		UBlackboardComponent* BlackboardComp = GetBlackboardComponent();
-		if (BlackboardComp && UseBlackboard(BlackboardComp->GetBlackboardAsset(), BlackboardComp))
-		{
-			BlackboardComp->SetValueAsObject(BBKey::TARGET_ACTOR, Actor);
-			BlackboardComp->SetValueAsBool(BBKey::FOUND_PLAYER, true);
-		}
+		return;
+	}
+
+	if (TeamInterface->GetGenericTeamId() == FGenericTeamId::NoTeam)
+	{
+		return;
+	}
+
+	UBlackboardComponent* BlackboardComp = GetBlackboardComponent();
+	if (BlackboardComp && UseBlackboard(BlackboardComp->GetBlackboardAsset(), BlackboardComp))
+	{
+		BlackboardComp->SetValueAsObject(BBKey::TARGET_ACTOR, Actor);
+		BlackboardComp->SetValueAsBool(BBKey::FOUND_PLAYER, true);
+		BindTargetDeathCallback();
 	}
 }
 
@@ -113,6 +106,7 @@ void AMAIControllerBase::OnTargetForgotDelegated(AActor* Actor)
 	{
 		BlackboardComp->SetValueAsObject(BBKey::TARGET_ACTOR, nullptr);
 		BlackboardComp->SetValueAsBool(BBKey::FOUND_PLAYER, false);
+		RemoveTargetDeathCallback();
 	}
 }
 
@@ -140,4 +134,52 @@ ETeamAttitude::Type AMAIControllerBase::GetTeamAttitudeTowards(const AActor& Oth
 	}
 
 	return ETeamAttitude::Neutral;
+}
+
+void AMAIControllerBase::SetBehaviorTree(AMMonsterBase* Monster)
+{
+	UMMonsterDefinition* Def = Monster->GetMonsterDefinition();
+	if (Def && Def->GetBehaviorTree())
+	{
+		RunBehaviorTree(Def->GetBehaviorTree());
+		PerceptionComponent->SetSenseEnabled(SightConfig->GetSenseImplementation(), true);
+	}
+	else
+	{
+		MCHAE_ERROR("Monster BehaviorTree is not valid!!!");
+	}
+
+	AActor* MonsterSpawner = Monster->GetMonsterSpawner();
+	if (MonsterSpawner)
+	{
+		Blackboard->SetValueAsVector(BBKey::ORIGIN_LOCATION, MonsterSpawner->GetActorLocation());
+	}
+}
+
+void AMAIControllerBase::BindTargetDeathCallback()
+{
+	if (AbilitySystemComponent && !DelegateHandle_TargetLiftStateChange.IsValid())
+	{
+		DelegateHandle_TargetLiftStateChange = AbilitySystemComponent->AddGameplayEventTagContainerDelegate(
+			FGameplayTagContainer(FPMGameplayTags::Get().Character_State_Dead), 
+			FGameplayEventTagMulticastDelegate::FDelegate::CreateUObject(this, &AMAIControllerBase::OnTargetDead));
+	}
+}
+
+void AMAIControllerBase::RemoveTargetDeathCallback()
+{
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->RemoveGameplayEventTagContainerDelegate(
+			FGameplayTagContainer(FPMGameplayTags::Get().Character_State_Dead),
+			DelegateHandle_TargetLiftStateChange);
+		DelegateHandle_TargetLiftStateChange.Reset();
+	}
+}
+
+void AMAIControllerBase::OnTargetDead(FGameplayTag Tag, const FGameplayEventData* EventData)
+{
+	PerceptionComponent->ForgetAll();
+	RemoveTargetDeathCallback();
+	OnTargetForgotDelegated(nullptr);
 }

@@ -59,7 +59,7 @@ private:
 
 	void	HandleHealthChanged(const FOnAttributeChangeData& ChangeData);
 	void	OnChangeHealth(const FGameplayAttribute& Attribute, float OldValue, float NewValue, AActor* Instigator);
-	void	CheckAndNotifyDeath(float OldValue, float NewValue);
+	void	CheckAndNotifyDeath(float OldValue, float NewValue, AActor* Instigator);
 
 /*
 * Member Variables

@@ -10,6 +10,8 @@
 #include "Character/MPlayerCharacterBase.h"
 #include "TimerManager.h"
 #include "Engine/World.h"
+#include "PMGameplayTags.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 UPMHealthComponent::UPMHealthComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -124,7 +126,7 @@ void UPMHealthComponent::OnChangeHealth(const FGameplayAttribute& Attribute, flo
 	OnHealthChanged.Broadcast(Attribute, this, OldValue, NewValue, Instigator);
 	if (Attribute == UPMHealthSet::GetHealthAttribute())
 	{
-		CheckAndNotifyDeath(OldValue, NewValue);
+		CheckAndNotifyDeath(OldValue, NewValue, Instigator);
 	}
 }
 
@@ -133,7 +135,7 @@ void UPMHealthComponent::Client_HandleHealthChanged_Implementation(const FGamepl
 	OnChangeHealth(Attribute, OldValue, NewValue, Instigator);
 }
 
-void UPMHealthComponent::CheckAndNotifyDeath(float OldValue, float NewValue)
+void UPMHealthComponent::CheckAndNotifyDeath(float OldValue, float NewValue, AActor* Instigator)
 {
 	if (OldValue > 0 && NewValue <= 0)
 	{
@@ -141,6 +143,14 @@ void UPMHealthComponent::CheckAndNotifyDeath(float OldValue, float NewValue)
 		if (Owner)
 		{
 			Owner->OnDead();
+		}
+		if (AbilitySystemComponent)
+		{
+			FGameplayEventData EventData;
+			EventData.Target = Instigator;
+			EventData.Instigator = AbilitySystemComponent->GetOwner();
+			EventData.EventTag = FPMGameplayTags::Get().Character_State_Dead;
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Instigator, FPMGameplayTags::Get().Character_State_Dead, EventData);
 		}
 	}
 }

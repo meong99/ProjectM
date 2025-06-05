@@ -2,12 +2,16 @@
 
 #include "GameFramework/Actor.h"
 #include "AIController.h"
+#include "GameplayTagContainer.h"
+#include "Abilities/GameplayAbilityTypes.h"
 #include "MAIControllerBase.generated.h"
 
 class UMMonsterDefinition;
 class UAISenseConfig_Sight;
 class UBehaviorTree;
 class UAISenseConfig_Damage;
+class AMMonsterBase;
+class UPMAbilitySystemComponent;
 
 UCLASS()
 class PROJECTM_API AMAIControllerBase : public AAIController
@@ -19,8 +23,10 @@ class PROJECTM_API AMAIControllerBase : public AAIController
 */
 public:
 	AMAIControllerBase();
+
+	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
+
 	virtual void OnPossess(APawn* InPawn) override;
-	virtual void BeginPlay() override;
 	virtual void OnUnPossess() override;
 /*
 * Member Functions
@@ -34,17 +40,23 @@ public:
     void    OnTargetForgotDelegated(AActor* Actor);
 
 protected:
-	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
-
+	void SetBehaviorTree(AMMonsterBase* Monster);
+	void BindTargetDeathCallback();
+	void RemoveTargetDeathCallback();
+	void OnTargetDead(FGameplayTag Tag, const FGameplayEventData* EventData);
 /*
 * Member Variables
 */
 protected:
 	UPROPERTY()
-    UAISenseConfig_Sight* SightConfig;
+	TObjectPtr<UAISenseConfig_Sight> SightConfig;
 
 	UPROPERTY()
-    UAISenseConfig_Damage* DamageConfig;
+	TObjectPtr<UAISenseConfig_Damage> DamageConfig;
 
-	FDelegateHandle Handle;
+	FDelegateHandle DelegateHandle_MonsterStateChange;
+	FDelegateHandle DelegateHandle_TargetLiftStateChange;
+
+	UPROPERTY()
+	TObjectPtr<UPMAbilitySystemComponent> AbilitySystemComponent;
 };

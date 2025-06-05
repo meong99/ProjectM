@@ -68,6 +68,7 @@ void FPMGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(UI_Registry_Game_Shop, "UI.Registry.Game.Shop", "");
 	AddTag(UI_Registry_Game_Restart, "UI.Registry.Game.Restart", "");
 
+	AddTag(Character_State_Dead, "Character.State.Dead", "");
 	/*
 	* WorldTag
 	*/

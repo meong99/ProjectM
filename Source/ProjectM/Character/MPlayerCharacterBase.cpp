@@ -74,6 +74,7 @@ void AMPlayerCharacterBase::OnDead()
 			ViewportClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_Game_Restart, Info);
 		}
 	}
+	SetGenericTeamId(FGenericTeamId::NoTeam);
 }
 
 void AMPlayerCharacterBase::Restart()
@@ -93,6 +94,7 @@ void AMPlayerCharacterBase::Restart()
 			AnimInstance->StopAllMontages(false);
 		}
 	}
+	SetGenericTeamId((int32)EMGenericTeamId::Player);
 }
 
 void AMPlayerCharacterBase::PawnClientRestart()
@@ -108,12 +110,12 @@ void AMPlayerCharacterBase::PawnClientRestart()
 			SubComponent->PawnClientRestart();
 		}
 	}
+	SetGenericTeamId((int32)EMGenericTeamId::Player);
 }
 
 void AMPlayerCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-	SetGenericTeamId((int32)EMGenericTeamId::Player);
 }
 
 void AMPlayerCharacterBase::PossessedBy(AController* NewController)
