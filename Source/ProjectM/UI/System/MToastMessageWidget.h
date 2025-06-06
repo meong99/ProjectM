@@ -2,10 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "UI/MWidgetBase.h"
+#include "NativeGameplayTags.h"
 #include "MToastMessageWidget.generated.h"
 
 class UTextBlock;
 class UWidgetAnimation;
+
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(UI_Registry_Game_ToastMessage);
 
 UCLASS()
 class PROJECTM_API UMToastMessageWidget : public UMWidgetBase
@@ -23,6 +26,8 @@ public:
 	* Member Functions
 	*/
 public:
+	static void RequestToastMessage(const UObject* WorldContext, const FText& NewMessage);
+
 	UFUNCTION(BlueprintCallable)
 	void AddToastMessage(const FText& NewMessage);
 
