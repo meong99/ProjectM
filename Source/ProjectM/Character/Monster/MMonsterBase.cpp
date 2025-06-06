@@ -25,6 +25,7 @@
 #include "UI/Text/MDamageTextWidget.h"
 #include "Perception/AISense_Damage.h"
 #include "Character/MPlayerCharacterBase.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -228,6 +229,11 @@ void AMMonsterBase::GiveRewardToPlayer()
 			FMTradeRequest Request = MonsterDefinition->CreateTradeRequest();
 			PlayerTradeComponent->Server_OnRequestSimpleDataGrant(this, Request);
 		}
+
+		FGameplayEventData EventData;
+		EventData.Target = LastAttacker;
+		EventData.EventMagnitude = MonsterDefinition->MonsterInfo.ExperiencePoint;
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(LastAttacker, FPMGameplayTags::Get().GameplayEvent_Character_ChangeExp, EventData);
 	}
 }
 

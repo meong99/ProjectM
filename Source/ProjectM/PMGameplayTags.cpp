@@ -69,7 +69,6 @@ void FPMGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(UI_Registry_Game_Restart, "UI.Registry.Game.Restart", "");
 	AddTag(UI_Registry_Game_Loading, "UI.Registry.Game.Loading", "");
 
-	AddTag(Character_State_Dead, "Character.State.Dead", "");
 	/*
 	* WorldTag
 	*/
@@ -77,4 +76,10 @@ void FPMGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Level_Persistent_MainLevel, "Level.Persistent.MainLevel", "");
 	AddTag(Level_Square, "Level.Square", "");
 	AddTag(Level_Field, "Level.Field", "");
+
+	/*
+	* GameplayEvent
+	*/
+	AddTag(GameplayEvent_Character_State_Dead, "GameplayEvent.Character.State.Dead", "");
+	AddTag(GameplayEvent_Character_ChangeExp, "GameplayEvent.Character.ChangeExp", "");
 }

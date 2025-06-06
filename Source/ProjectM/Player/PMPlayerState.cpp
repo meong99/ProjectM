@@ -19,6 +19,7 @@
 #include "GameFramework/PlayerState.h"
 #include "Engine/Engine.h"
 #include "Components/MPlayerStateComponentBase.h"
+#include "Components/MLevelComponent.h"
 
 #define PLAYER_ID 1
 #define PLAYER_NAME TEXT("PlayerName")
@@ -29,6 +30,7 @@ APMPlayerState::APMPlayerState()
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
 	EquipmentManager = CreateDefaultSubobject<UPMEquipmentManagerComponent>(TEXT("EquipmentManager"));
+	LevelComponent = CreateDefaultSubobject<UMLevelComponent>(TEXT("LevelComponent"));
 	CreateDefaultSubobject<UPMHealthSet>(TEXT("HealthSet"));
 	CreateDefaultSubobject<UPMCombatSet>(TEXT("CombatSet"));
 
@@ -77,6 +79,16 @@ void APMPlayerState::OnExperienceLoaded(const UPMExperienceDefinition* CurrentEx
 				ExperienceReady->OnReady.AddDynamic(this, &ThisClass::Server_LoadPlayerData);
 				ExperienceReady->Activate();
 			}
+		}
+	}
+
+	const TSet<UActorComponent*>& SubComponents = GetComponents();
+	for (UActorComponent* Component : SubComponents)
+	{
+		UMPlayerStateComponentBase* SubComponent = Cast<UMPlayerStateComponentBase>(Component);
+		if (SubComponent)
+		{
+			SubComponent->OnExperienceLoaded(CurrentExperience);
 		}
 	}
 }

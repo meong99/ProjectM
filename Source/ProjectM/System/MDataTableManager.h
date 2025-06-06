@@ -23,10 +23,11 @@ enum class EMTableKey : uint8
 	Shop,
 	Monster,
 	NPC,
-	Level,
+	MapTable,
 	Quest,
 	Dialogue,
 	MiscellaneousItem,
+	LevelTable,
 };
 
 /**
@@ -57,6 +58,7 @@ public:
 
 	static int32 ChangeRowIdToKey(int32 RowId);
 	static int32 ChangeRowIdToElementId(int32 RowId);
+	static int32 MakeRowId(const int32 Key, const int32 ElementId);
 
 	const UDataTable* GetDataTable(int32 RowId) const;
 	const UDataTable* GetDataTable(EMTableKey Key) const;

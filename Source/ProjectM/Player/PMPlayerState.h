@@ -9,6 +9,7 @@ class UPMAbilitySystemComponent;
 class UAbilitySystemComponent;
 class UMPlayerSaveGame;
 class UPMEquipmentManagerComponent;
+class UMLevelComponent;
 
 UCLASS()
 class PROJECTM_API APMPlayerState : public APlayerState
@@ -63,6 +64,9 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess))
 	TObjectPtr<UPMEquipmentManagerComponent> EquipmentManager;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess))
+	TObjectPtr<UMLevelComponent> LevelComponent;
 
 //DEBUG
 public:

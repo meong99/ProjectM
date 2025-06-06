@@ -64,7 +64,6 @@ struct FPMGameplayTags
 	FGameplayTag UI_Registry_Game_ItemContext;
 	FGameplayTag UI_Registry_Game_Loading;
 	
-	FGameplayTag Character_State_Dead;
 
 	/*
 	* WorldTag
@@ -73,6 +72,12 @@ struct FPMGameplayTags
 	FGameplayTag Level_Persistent_MainLevel;
 	FGameplayTag Level_Square;
 	FGameplayTag Level_Field;
+
+	/*
+	* GameplayEvent
+	*/
+	FGameplayTag GameplayEvent_Character_State_Dead;
+	FGameplayTag GameplayEvent_Character_ChangeExp;
 
 private:
 	static FPMGameplayTags GameplayTags;

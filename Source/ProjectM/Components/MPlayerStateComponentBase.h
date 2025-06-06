@@ -7,6 +7,9 @@
 #include "GameFramework/PlayerState.h"
 #include "MPlayerStateComponentBase.generated.h"
 
+class UPMExperienceDefinition;
+class UAbilitySystemComponent;
+
 /**
  *
  */
@@ -20,6 +23,8 @@ class PROJECTM_API UMPlayerStateComponentBase : public UPlayerStateComponent
 */
 public:
 	UMPlayerStateComponentBase(const FObjectInitializer& ObjectInitializer);
+	virtual void OnExperienceLoaded(const UPMExperienceDefinition* CurrentExperience){}
+	virtual void OnSetNewPawn(APawn* NewPawn, APawn* OldPawn){}
 
 /*
 * Member Functions
@@ -37,7 +42,17 @@ public:
 		return nullptr;
 	}
 
-	virtual void OnSetNewPawn(APawn* NewPawn, APawn* OldPawn){}
+	template <class T = UAbilitySystemComponent>
+	T* GetAbilitySystemComponent() const
+	{
+		APlayerState* PlayerState = GetPlayerState<APlayerState>();
+		if (PlayerState)
+		{
+			return PlayerState->FindComponentByClass<T>();
+		}
+
+		return nullptr;
+	}
 protected:
 /*
 * Member Variables

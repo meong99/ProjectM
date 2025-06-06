@@ -150,7 +150,7 @@ void AMAIControllerBase::BindTargetDeathCallback()
 	if (AbilitySystemComponent && !DelegateHandle_TargetLiftStateChange.IsValid())
 	{
 		DelegateHandle_TargetLiftStateChange = AbilitySystemComponent->AddGameplayEventTagContainerDelegate(
-			FGameplayTagContainer(FPMGameplayTags::Get().Character_State_Dead), 
+			FGameplayTagContainer(FPMGameplayTags::Get().GameplayEvent_Character_State_Dead), 
 			FGameplayEventTagMulticastDelegate::FDelegate::CreateUObject(this, &AMAIControllerBase::OnTargetDead));
 	}
 }
@@ -160,7 +160,7 @@ void AMAIControllerBase::RemoveTargetDeathCallback()
 	if (AbilitySystemComponent)
 	{
 		AbilitySystemComponent->RemoveGameplayEventTagContainerDelegate(
-			FGameplayTagContainer(FPMGameplayTags::Get().Character_State_Dead),
+			FGameplayTagContainer(FPMGameplayTags::Get().GameplayEvent_Character_State_Dead),
 			DelegateHandle_TargetLiftStateChange);
 		DelegateHandle_TargetLiftStateChange.Reset();
 	}

@@ -41,7 +41,7 @@ void AMLevelTravelingActor::PostInitializeComponents()
 	UMDataTableManager* TableManager = GEngine->GetEngineSubsystem<UMDataTableManager>();
 	if (TableManager)
 	{
-		const UDataTable* LevelTable = TableManager->GetDataTable(EMTableKey::Level);
+		const UDataTable* LevelTable = TableManager->GetDataTable(EMTableKey::MapTable);
 		if (LevelTable)
 		{
 			const TArray<FName>& Names = LevelTable->GetRowNames();

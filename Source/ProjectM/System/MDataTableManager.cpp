@@ -84,6 +84,30 @@ int32 UMDataTableManager::ChangeRowIdToElementId(int32 RowId)
 	return ElementId;
 }
 
+int32 UMDataTableManager::MakeRowId(const int32 Key, const int32 ElementId)
+{
+	if (ElementId > 99999)
+	{
+		ensure(false);
+		return -1;
+	}
+
+	// 자릿수 계산
+	int32 Digit = 1;
+	int32 Times = 10;
+	int32 Temp = Key;
+	while (Temp >= 10)
+	{
+		Temp /= 10;
+		++Digit;
+		Times *= 10;
+	}
+
+	int32 Ret = (Digit * Times + Key) * 100000;
+
+	return Ret + ElementId;
+}
+
 void UMDataTableManager::LoadDataTables()
 {
 	UPMAssetManager& AssetManager = UPMAssetManager::Get();

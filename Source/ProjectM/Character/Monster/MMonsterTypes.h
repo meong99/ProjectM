@@ -44,6 +44,9 @@ struct FMMonsterInfo
 	int32 MonsterReward = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float ExperiencePoint = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float MonsterMaxSpeed = 300.f;
 
 	// Key = ItemId, Value = 확률
