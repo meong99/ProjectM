@@ -2,7 +2,7 @@
 #include "Util/MGameplayStatics.h"
 #include "System/MDataTableManager.h"
 #include "Engine/Engine.h"
-#include "Table/MTable_Level.h"
+#include "Table/MTable_MapTable.h"
 #include "System/MLevelManager.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/GameInstance.h"
@@ -48,7 +48,7 @@ void AMLevelTravelingActor::PostInitializeComponents()
 
 			for (const auto& Name : Names)
 			{
-				const FMTable_Level* TempLevelInfo = LevelTable->FindRow<FMTable_Level>(Name, Name.ToString());
+				const FMTable_MapTable* TempLevelInfo = LevelTable->FindRow<FMTable_MapTable>(Name, Name.ToString());
 				if (TempLevelInfo && TempLevelInfo->LevelTag == DestLevelTag)
 				{
 					LevelInfo = TempLevelInfo;

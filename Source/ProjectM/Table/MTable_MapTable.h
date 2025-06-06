@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Table/MTable_TableBase.h"
 #include "GameplayTagContainer.h"
-#include "MTable_Level.generated.h"
+#include "MTable_MapTable.generated.h"
 
 class UPMUserFacingExperienceDefinition;
 
@@ -11,7 +11,7 @@ class UPMUserFacingExperienceDefinition;
  *
  */
 USTRUCT(BlueprintType, Blueprintable)
-struct FMTable_Level : public FMTable_TableBase
+struct FMTable_MapTable : public FMTable_TableBase
 {
 	GENERATED_BODY()
 

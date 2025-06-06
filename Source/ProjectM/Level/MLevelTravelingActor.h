@@ -11,7 +11,7 @@
 class UBoxComponent;
 class UPrimitiveComponent;
 class UMLevelManager;
-struct FMTable_Level;
+struct FMTable_MapTable;
 class AMPlayerCharacterBase;
 
 /**
@@ -62,7 +62,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="ProjectM")
 	FGameplayTag OriginLevelTag;
 
-	const FMTable_Level* LevelInfo;
+	const FMTable_MapTable* LevelInfo;
 
 	TWeakObjectPtr<AMPlayerCharacterBase> WeakPlayer;
 };
