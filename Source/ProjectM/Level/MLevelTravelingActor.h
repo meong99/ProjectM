@@ -47,7 +47,7 @@ protected:
 
 	AActor* FindDestPlayerStart() const;
 	AActor* FindDestTravelActor() const;
-	void	TeleportToDestination() const;
+	void	TeleportToDestination();
 	void	SetPlayerCollisionToTravel() const;
 	void	SetPlayerCollisionToOrigin() const;
 	void	RequestOngoingNavigation() const;
@@ -64,5 +64,6 @@ public:
 
 	const FMTable_MapTable* LevelInfo;
 
-	TWeakObjectPtr<AMPlayerCharacterBase> WeakPlayer;
+	UPROPERTY()
+	TObjectPtr<AMPlayerCharacterBase> PlayerCharacter;
 };
