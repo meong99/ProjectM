@@ -9,6 +9,8 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 UMLevelComponent::UMLevelComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -109,7 +111,7 @@ void UMLevelComponent::OnRep_OnChangeLevel(const int32 OldLevel)
 
 			if (CurrentLevelTableRow->LevelUpSound)
 			{
-				CurrentLevelTableRow->LevelUpSound;
+				UGameplayStatics::PlaySoundAtLocation(this, CurrentLevelTableRow->LevelUpSound, Character->GetActorLocation());
 			}
 		}
 	}
