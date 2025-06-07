@@ -69,7 +69,7 @@ void AMLevelTravelingActor::OnBeginOverlap_LevelTravel(UPrimitiveComponent* Over
 {
 	PlayerCharacter = Cast<AMPlayerCharacterBase>(OtherActor);
 
-	if (PlayerCharacter)
+	if (PlayerCharacter && PlayerCharacter->GetLocalRole() != ROLE_SimulatedProxy)
 	{
 		if (HasAuthority())
 		{
