@@ -6,6 +6,7 @@
 #include "MPlayerStateComponentBase.h"
 #include "GameplayTagContainer.h"
 #include "Abilities/GameplayAbilityTypes.h"
+#include "Table/MTable_LevelTable.h"
 #include "MLevelComponent.generated.h"
 
 class UPMAbilitySystemComponent;
@@ -33,14 +34,23 @@ public:
 public:
 	
 protected:
+	void SetMaxExperiencePoint(const int32 Level);
+
 	void OnChange_ExperiencePoint(FGameplayTag Tag, const FGameplayEventData* EventData);
 
-	void SetMaxExperiencePoint(const int32 Level);
+	void LevelUp();
 
 	UFUNCTION()
 	void OnRep_OnChangeLevel(const int32 OldLevel);
 	UFUNCTION()
 	void OnRep_OnChangeExperience(const int64 OldExperiencePoint);
+
+#if WITH_EDITOR
+	UFUNCTION(Exec)
+	void Debug_LevelUp();
+	UFUNCTION(Server, Reliable)
+	void Debug_LevelUpServer();
+#endif
 /*
 * Member Variables
 */
@@ -57,4 +67,6 @@ protected:
 
 	UPROPERTY()
 	UPMAbilitySystemComponent* AbilitySystemComp;
+
+	FMTable_LevelTable* CurrentLevelTableRow;
 };

@@ -43,6 +43,7 @@ public class ProjectM : ModuleRules
 			"AIModule",
 
 			"NavigationSystem",
+			"Niagara",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

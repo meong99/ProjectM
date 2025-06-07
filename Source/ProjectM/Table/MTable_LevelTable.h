@@ -5,6 +5,9 @@
 #include "GameplayTagContainer.h"
 #include "MTable_LevelTable.generated.h"
 
+class UNiagaraSystem;
+class USoundCue;
+
 /**
  *
  */
@@ -29,4 +32,10 @@ public:
 public:
 	UPROPERTY(EditDefaultsOnly, meta=(ClampMin=0.f), Category = "ProjectM")
 	int64	MaxExperiencePoint = 1;
+
+	UPROPERTY(EditDefaultsOnly, Category = "ProjectM")
+	TObjectPtr<UNiagaraSystem> LevelUpParticle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "ProjectM")
+	TObjectPtr<USoundCue> LevelUpSound;
 };

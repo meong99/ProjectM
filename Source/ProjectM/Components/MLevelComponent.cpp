@@ -4,7 +4,11 @@
 #include "AbilitySystem/PMAbilitySystemComponent.h"
 #include "PMGameplayTags.h"
 #include "System/MDataTableManager.h"
-#include "Table/MTable_LevelTable.h"
+#include "GameFramework/Character.h"
+#include "NiagaraSystem.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 
 UMLevelComponent::UMLevelComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -43,21 +47,41 @@ void UMLevelComponent::InitializeComponent()
 	SetMaxExperiencePoint(CurrentLevel);
 }
 
+void UMLevelComponent::SetMaxExperiencePoint(const int32 Level)
+{
+	int32 RowId = UMDataTableManager::MakeRowId((int32)EMTableKey::LevelTable, Level);
+	CurrentLevelTableRow = UMDataTableManager::GetTableRowData<FMTable_LevelTable>(this, RowId);
+	if (CurrentLevelTableRow)
+	{
+		CurrentMaxExperiencePoint = CurrentLevelTableRow->MaxExperiencePoint;
+	}
+}
+
 void UMLevelComponent::OnChange_ExperiencePoint(FGameplayTag Tag, const FGameplayEventData* EventData)
 {
 	if (AbilitySystemComp && EventData)
 	{
 		CurrentExperiencePoint += EventData->EventMagnitude;
+		if (CurrentExperiencePoint >= CurrentMaxExperiencePoint)
+		{
+			LevelUp();
+		}
 	}
 }
 
-void UMLevelComponent::SetMaxExperiencePoint(const int32 Level)
+void UMLevelComponent::LevelUp()
 {
-	int32 RowId = UMDataTableManager::MakeRowId((int32)EMTableKey::LevelTable, Level);
-	FMTable_LevelTable* TableRow = UMDataTableManager::GetTableRowData<FMTable_LevelTable>(this, RowId);
-	if (TableRow)
+	CurrentLevel++;
+	if (GetNetMode() == ENetMode::NM_Standalone)
 	{
-		CurrentMaxExperiencePoint = TableRow->MaxExperiencePoint;
+		OnRep_OnChangeLevel(CurrentLevel - 1);
+	}
+
+	int64 OldExp = CurrentExperiencePoint;
+	CurrentExperiencePoint = CurrentExperiencePoint - CurrentMaxExperiencePoint;
+	if (GetNetMode() == ENetMode::NM_Standalone)
+	{
+		OnRep_OnChangeExperience(OldExp);
 	}
 }
 
@@ -65,7 +89,29 @@ void UMLevelComponent::OnRep_OnChangeLevel(const int32 OldLevel)
 {
 	if (OldLevel < CurrentLevel)
 	{
+		ACharacter* Character = GetPawn<ACharacter>();
+		if (Character && CurrentLevelTableRow)
+		{
+			if (CurrentLevelTableRow->LevelUpParticle)
+			{
+				UNiagaraFunctionLibrary::SpawnSystemAttached(
+					CurrentLevelTableRow->LevelUpParticle,
+					Character->GetMesh(),
+					FName("root"),
+					FVector::ZeroVector,
+					FRotator::ZeroRotator,
+					FVector(.5f),
+					EAttachLocation::Type::SnapToTargetIncludingScale,
+					true,
+					ENCPoolMethod::AutoRelease
+				);
+			}
 
+			if (CurrentLevelTableRow->LevelUpSound)
+			{
+				CurrentLevelTableRow->LevelUpSound;
+			}
+		}
 	}
 
 	SetMaxExperiencePoint(CurrentLevel);
@@ -74,4 +120,14 @@ void UMLevelComponent::OnRep_OnChangeLevel(const int32 OldLevel)
 void UMLevelComponent::OnRep_OnChangeExperience(const int64 OldExperiencePoint)
 {
 
+}
+
+void UMLevelComponent::Debug_LevelUp()
+{
+	Debug_LevelUpServer();
+}
+
+void UMLevelComponent::Debug_LevelUpServer_Implementation()
+{
+	LevelUp();
 }
