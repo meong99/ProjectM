@@ -52,6 +52,14 @@ void APMPlayerControllerBase::BeginPlay()
 	CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate::CreateUObject(this, &APMPlayerControllerBase::OnExperienceLoaded));
 }
 
+void APMPlayerControllerBase::BeginPlayingState()
+{
+	Super::BeginPlayingState();
+
+	Delegate_OnReadyPlayerState.Broadcast(PlayerState);
+	Delegate_OnReadyPlayerState.Clear();
+}
+
 void APMPlayerControllerBase::PostProcessInput(const float DeltaTime, const bool bGamePaused)
 {
 	if (UPMAbilitySystemComponent* ASC = GetAbilitySystemComponent())
@@ -137,6 +145,18 @@ void APMPlayerControllerBase::CallOrRegister_OnPossessed(FOnPossessed::FDelegate
 	else
 	{
 		Delegate_OnPossessed.Add(MoveTemp(Delegate));
+	}
+}
+
+void APMPlayerControllerBase::CallOrRegister_OnReadyPlayerState(FOnReadyPlayState::FDelegate&& Delegate)
+{
+	if (PlayerState)
+	{
+		Delegate.Execute(PlayerState);
+	}
+	else
+	{
+		Delegate_OnReadyPlayerState.Add(MoveTemp(Delegate));
 	}
 }
 

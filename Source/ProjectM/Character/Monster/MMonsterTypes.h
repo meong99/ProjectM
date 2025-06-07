@@ -44,7 +44,7 @@ struct FMMonsterInfo
 	int32 MonsterReward = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float ExperiencePoint = 0.f;
+	int64 ExperiencePoint = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float MonsterMaxSpeed = 300.f;

@@ -26,27 +26,61 @@ void UMLevelComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME_CONDITION(UMLevelComponent, CurrentExperiencePoint, COND_OwnerOnly);
 }
 
-void UMLevelComponent::OnExperienceLoaded(const UPMExperienceDefinition* LoadedExperienceDefinition)
+void UMLevelComponent::BeginPlay()
 {
+	Super::BeginPlay();
+
 	AbilitySystemComp = GetAbilitySystemComponent<UPMAbilitySystemComponent>();
-	if (AbilitySystemComp)
+	if (!AbilitySystemComp)
+	{
+		MCHAE_ERROR("AbilitySystem is not initialized!!! Level system requires gameplay event!!");
+		check(false);
+	}
+	if (HasAuthority())
 	{
 		AbilitySystemComp->AddGameplayEventTagContainerDelegate(
 			FGameplayTagContainer(FPMGameplayTags::Get().GameplayEvent_Character_ChangeExp),
 			FGameplayEventTagMulticastDelegate::FDelegate::CreateUObject(this, &UMLevelComponent::OnChange_ExperiencePoint));
 	}
-	else
-	{
-		MCHAE_ERROR("AbilitySystem is not initialized!!! Level system requires gameplay event!!")
-		check(false);
-	}
+
+	InitLevel();
 }
 
-void UMLevelComponent::InitializeComponent()
+FDelegateHandle UMLevelComponent::CallAndRegister_OnChangeLevel(FOnChange_Level::FDelegate&& Delegate)
 {
-	Super::InitializeComponent();
+	if (AbilitySystemComp)
+	{
+		Delegate.ExecuteIfBound(CurrentLevel - 1, CurrentLevel, CurrentMaxExperiencePoint);
+	}
 
+	return Delegate_OnChangeLevel.Add(MoveTemp(Delegate));
+}
+
+FDelegateHandle UMLevelComponent::CallAndRegister_OnChangeExp(FOnChange_Exp::FDelegate&& Delegate)
+{
+	if (AbilitySystemComp)
+	{
+		Delegate.ExecuteIfBound(0, CurrentExperiencePoint);
+	}
+
+	return Delegate_OnChangeExp.Add(MoveTemp(Delegate));
+}
+
+void UMLevelComponent::RemoveDelegate_OnChangeLevel(const FDelegateHandle& Handle)
+{
+	Delegate_OnChangeLevel.Remove(Handle);
+}
+
+void UMLevelComponent::RemoveDelegate_OnChangeExp(const FDelegateHandle& Handle)
+{
+	Delegate_OnChangeExp.Remove(Handle);
+}
+
+void UMLevelComponent::InitLevel()
+{
 	SetMaxExperiencePoint(CurrentLevel);
+	BroadcastOnChangeLevel(CurrentLevel);
+	BroadcastOnChangeExp(0);
 }
 
 void UMLevelComponent::SetMaxExperiencePoint(const int32 Level)
@@ -74,16 +108,34 @@ void UMLevelComponent::OnChange_ExperiencePoint(FGameplayTag Tag, const FGamepla
 void UMLevelComponent::LevelUp()
 {
 	CurrentLevel++;
+	int64 OldExp = CurrentExperiencePoint;
+	int64 NewExp = CurrentExperiencePoint - CurrentMaxExperiencePoint;
+	CurrentExperiencePoint = NewExp < 0 ? 0 : NewExp;
+
 	if (GetNetMode() == ENetMode::NM_Standalone)
 	{
 		OnRep_OnChangeLevel(CurrentLevel - 1);
 	}
+	else
+	{
+		// Server broadcasting
+		SetMaxExperiencePoint(CurrentLevel);
+		BroadcastOnChangeLevel(CurrentLevel - 1);
+	}
 
-	int64 OldExp = CurrentExperiencePoint;
-	CurrentExperiencePoint = CurrentExperiencePoint - CurrentMaxExperiencePoint;
 	if (GetNetMode() == ENetMode::NM_Standalone)
 	{
 		OnRep_OnChangeExperience(OldExp);
+	}
+	else
+	{
+		// Server broadcasting
+		BroadcastOnChangeExp(OldExp);
+	}
+
+	if (CurrentExperiencePoint >= CurrentMaxExperiencePoint)
+	{
+		LevelUp();
 	}
 }
 
@@ -117,13 +169,31 @@ void UMLevelComponent::OnRep_OnChangeLevel(const int32 OldLevel)
 	}
 
 	SetMaxExperiencePoint(CurrentLevel);
+	BroadcastOnChangeLevel(OldLevel);
 }
 
 void UMLevelComponent::OnRep_OnChangeExperience(const int64 OldExperiencePoint)
 {
-
+	BroadcastOnChangeExp(OldExperiencePoint);
 }
 
+void UMLevelComponent::BroadcastOnChangeLevel(const int32 OldLevel)
+{
+	if (Delegate_OnChangeLevel.IsBound())
+	{
+		Delegate_OnChangeLevel.Broadcast(OldLevel, CurrentLevel, CurrentMaxExperiencePoint);
+	}
+}
+
+void UMLevelComponent::BroadcastOnChangeExp(const int64 OldExperiencePoint)
+{
+	if (Delegate_OnChangeExp.IsBound())
+	{
+		Delegate_OnChangeExp.Broadcast(OldExperiencePoint, CurrentExperiencePoint);
+	}
+}
+
+#if WITH_EDITOR
 void UMLevelComponent::Debug_LevelUp()
 {
 	Debug_LevelUpServer();
@@ -133,3 +203,4 @@ void UMLevelComponent::Debug_LevelUpServer_Implementation()
 {
 	LevelUp();
 }
+#endif

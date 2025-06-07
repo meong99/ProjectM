@@ -13,7 +13,8 @@ class UMPlayerQuestComponent;
 class UPMExperienceDefinition;
 class UMWidgetBase;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnPossessed, AMPlayerCharacterBase* /*Character*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPossessed, AMPlayerCharacterBase* Character);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReadyPlayState, APlayerState* PlayerState);
 
 UCLASS()
 class PROJECTM_API APMPlayerControllerBase : public ACommonPlayerController
@@ -28,17 +29,19 @@ public:
 
 	virtual void OnPossess(APawn* aPawn) override;
 	virtual void BeginPlay() override;
+	virtual void BeginPlayingState() override;
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 	virtual void ServerRestartPlayer_Implementation() override;
 	virtual void ClientRestart_Implementation(APawn* NewPawn) override;
 	virtual void BeginDestroy() override;
 
-	/*
+/*
 * Member Functions
 */
 public:
 	void CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate&& Delegate);
 	void CallOrRegister_OnPossessed(FOnPossessed::FDelegate&& Delegate);
+	void CallOrRegister_OnReadyPlayerState(FOnReadyPlayState::FDelegate&& Delegate);
 
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void Server_RespawnPlayer();
@@ -57,7 +60,7 @@ public:
 protected:
 	void OnExperienceLoaded(const UPMExperienceDefinition* LoadedExperienceDefinition);
 
-/*
+	/*
 * Member Variables
 */
 protected:
@@ -73,5 +76,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<APawn> OldPawn;
 
-	FOnPossessed Delegate_OnPossessed;
+	FOnPossessed		Delegate_OnPossessed;
+	FOnReadyPlayState	Delegate_OnReadyPlayerState;
 };

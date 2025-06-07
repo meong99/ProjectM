@@ -11,6 +11,9 @@
 
 class UPMAbilitySystemComponent;
 
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnChange_Level, const int32 OldLevel, const int32 NewLevel, const int64 MaxExp);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnChange_Exp, const int64 OldExp, const int64 NewExp);
+
 /**
  *
  */
@@ -25,25 +28,33 @@ class PROJECTM_API UMLevelComponent : public UMPlayerStateComponentBase
 public:
 	UMLevelComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	virtual void OnExperienceLoaded(const UPMExperienceDefinition* LoadedExperienceDefinition) override;
-	virtual void InitializeComponent() override;
+	virtual void BeginPlay() override;
 
 	/*
 * Member Functions
 */
 public:
-	
-protected:
+	FDelegateHandle	CallAndRegister_OnChangeLevel(FOnChange_Level::FDelegate&& Delegate);
+	FDelegateHandle	CallAndRegister_OnChangeExp(FOnChange_Exp::FDelegate&& Delegate);
+	void			RemoveDelegate_OnChangeLevel(const FDelegateHandle& Handle);
+	void			RemoveDelegate_OnChangeExp(const FDelegateHandle& Handle);
+
+private:
+	void InitLevel();
 	void SetMaxExperiencePoint(const int32 Level);
-
 	void OnChange_ExperiencePoint(FGameplayTag Tag, const FGameplayEventData* EventData);
-
 	void LevelUp();
 
 	UFUNCTION()
 	void OnRep_OnChangeLevel(const int32 OldLevel);
 	UFUNCTION()
 	void OnRep_OnChangeExperience(const int64 OldExperiencePoint);
+	void BroadcastOnChangeLevel(const int32 OldLevel);
+	void BroadcastOnChangeExp(const int64 OldExperiencePoint);
+
+	const int32 GetCurrentLevel() const { return CurrentLevel; }
+	const int64 GetCurrentExp() const { return CurrentExperiencePoint; }
+	const int64 GetCurrentMaxExp() const { return CurrentMaxExperiencePoint; }
 
 #if WITH_EDITOR
 	UFUNCTION(Exec)
@@ -54,6 +65,9 @@ protected:
 /*
 * Member Variables
 */
+protected:
+	FOnChange_Level	Delegate_OnChangeLevel;
+	FOnChange_Exp	Delegate_OnChangeExp;
 
 protected:
 	UPROPERTY(ReplicatedUsing = "OnRep_OnChangeLevel", BlueprintReadOnly, meta = (ClampMin = 0), Category = "ProjectM")
