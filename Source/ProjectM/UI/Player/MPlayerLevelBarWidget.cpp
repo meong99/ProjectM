@@ -54,6 +54,6 @@ void UMPlayerLevelBarWidget::OnChange_Exp(const int64 OldExp, const int64 InCurr
 	CurrentExp = InCurrentExp;
 	CurrentExpText->SetText(FText::AsNumber(CurrentExp));
 
-	float Percent = CurrentExp / MaxExp;
+	float Percent = MaxExp > 0 ? (double)CurrentExp / MaxExp : 0.f;
 	LevelBar->SetPercent(Percent);
 }
