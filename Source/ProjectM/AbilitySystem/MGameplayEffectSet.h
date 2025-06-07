@@ -29,6 +29,12 @@ public:
 */
 public:
 	void ApplyGameplayEffectsToAsc(UPMAbilitySystemComponent* AbilitySystemComp, OUT FMAbilitySet_AppliedEffectHandles* OutAppliedEffectHandles, AActor* Instigator, AActor* EffectCausor, UObject* SourceObject) const;
+	void ApplyGameplayEffectsToAsc(UPMAbilitySystemComponent* AbilitySystemComp, 
+								   OUT FMAbilitySet_AppliedEffectHandles* OutAppliedEffectHandles, 
+								   TFunctionRef<float (const FGameplayTag& SetTag, const float DefaultValue)> Calculate,
+								   AActor* Instigator, 
+								   AActor* EffectCausor,
+								   UObject* SourceObject) const;
 
 	const TArray<FMAbilitySet_GameplayEffect>& GetEffectToApply() const { return EffectToApply; }
 /*

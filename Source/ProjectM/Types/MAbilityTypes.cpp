@@ -49,3 +49,8 @@ void FMAbilitySet_AppliedEffectHandles::RemoveAppliedEffects(UPMAbilitySystemCom
 	}
 }
 
+bool FMAbilitySet_AppliedEffectHandles::WasApplied() const
+{
+	return !AppliedEffectHandles.IsEmpty();
+}
+

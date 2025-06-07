@@ -99,6 +99,8 @@ struct FMAbilitySet_AppliedEffectHandles
 
 	void RemoveAppliedEffects(UPMAbilitySystemComponent* AbilitySystemComp);
 
+	bool WasApplied() const;
+
 protected:
 	UPROPERTY()
 	TArray<FActiveGameplayEffectHandle> AppliedEffectHandles;

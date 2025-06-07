@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "Abilities/GameplayAbilityTypes.h"
 #include "Table/MTable_LevelTable.h"
+#include "Types/MAbilityTypes.h"
 #include "MLevelComponent.generated.h"
 
 class UPMAbilitySystemComponent;
@@ -40,10 +41,12 @@ public:
 	void			RemoveDelegate_OnChangeExp(const FDelegateHandle& Handle);
 
 private:
-	void InitLevel();
-	void SetMaxExperiencePoint(const int32 Level);
-	void OnChange_ExperiencePoint(FGameplayTag Tag, const FGameplayEventData* EventData);
-	void LevelUp();
+	void	InitLevel();
+	void	SetMaxExperiencePoint(const int32 Level);
+	void	OnChange_ExperiencePoint(FGameplayTag Tag, const FGameplayEventData* EventData);
+	void	LevelUp();
+	void	ApplyLevelUpStat();
+	float	CalculateAdditiveStatByLevel(const FGameplayTag& StatTag, const float DefaultValue);
 
 	UFUNCTION()
 	void OnRep_OnChangeLevel(const int32 OldLevel);
@@ -83,4 +86,6 @@ protected:
 	UPMAbilitySystemComponent* AbilitySystemComp;
 
 	FMTable_LevelTable* CurrentLevelTableRow;
+
+	FMAbilitySet_AppliedEffectHandles AppliedEffectHandles;
 };

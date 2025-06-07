@@ -59,6 +59,8 @@ void FPMGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Ability_Effect_SetByCaller_MaxHealth, "Ability.Effect.SetByCaller.MaxHealth", "");
 	AddTag(Ability_Effect_SetByCaller_DefensePower, "Ability.Effect.SetByCaller.DefensePower", "");
 	AddTag(Ability_Effect_SetByCaller_AttackPower, "Ability.Effect.SetByCaller.AttackPower", "");
+	AddTag(Ability_Effect_SetByCaller_HealthRecovery, "Ability.Effect.SetByCaller.HealthRecovery", "");
+
 	/*
 	* Gameplay
 	*/

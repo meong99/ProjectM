@@ -7,6 +7,7 @@
 
 class UNiagaraSystem;
 class USoundCue;
+class UMGameplayEffectSet;
 
 /**
  *
@@ -38,4 +39,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "ProjectM")
 	TObjectPtr<USoundCue> LevelUpSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "ProjectM")
+	TSoftObjectPtr<UMGameplayEffectSet> EffectSet;
 };

@@ -11,6 +11,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
+#include "AbilitySystem/MGameplayEffectSet.h"
 
 UMLevelComponent::UMLevelComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -112,6 +113,8 @@ void UMLevelComponent::LevelUp()
 	int64 NewExp = CurrentExperiencePoint - CurrentMaxExperiencePoint;
 	CurrentExperiencePoint = NewExp < 0 ? 0 : NewExp;
 
+	ApplyLevelUpStat();
+
 	if (GetNetMode() == ENetMode::NM_Standalone)
 	{
 		OnRep_OnChangeLevel(CurrentLevel - 1);
@@ -137,6 +140,53 @@ void UMLevelComponent::LevelUp()
 	{
 		LevelUp();
 	}
+}
+
+void UMLevelComponent::ApplyLevelUpStat()
+{
+	if (CurrentLevelTableRow)
+	{
+		if (AppliedEffectHandles.WasApplied())
+		{
+			AppliedEffectHandles.RemoveAppliedEffects(AbilitySystemComp);
+		}
+
+		UMGameplayEffectSet* EffectSet = CurrentLevelTableRow->EffectSet.LoadSynchronous();
+		if (EffectSet && AbilitySystemComp)
+		{
+			auto Callback = [this](const FGameplayTag& StatTag, const float DefaultValue)->float
+			{
+				return CalculateAdditiveStatByLevel(StatTag, DefaultValue);
+			};
+			EffectSet->ApplyGameplayEffectsToAsc(AbilitySystemComp, &AppliedEffectHandles, Callback, AbilitySystemComp->GetOwner(), nullptr, this);
+		}
+	}
+}
+
+float UMLevelComponent::CalculateAdditiveStatByLevel(const FGameplayTag& StatTag, const float DefaultValue)
+{
+	if (StatTag == FPMGameplayTags::Get().Ability_Effect_SetByCaller_MaxHealth)
+	{
+		return (CurrentLevel - 1) * DefaultValue + CurrentLevel * 1.1;
+	}
+	else if (StatTag == FPMGameplayTags::Get().Ability_Effect_SetByCaller_Health)
+	{
+		return (CurrentLevel - 1) * DefaultValue + CurrentLevel * 1.1;
+	}
+	else if (StatTag == FPMGameplayTags::Get().Ability_Effect_SetByCaller_AttackPower)
+	{
+		return (CurrentLevel - 1) * DefaultValue + FMath::Floor(CurrentLevel / 5);
+	}
+	else if (StatTag == FPMGameplayTags::Get().Ability_Effect_SetByCaller_DefensePower)
+	{
+		return (CurrentLevel - 1) * DefaultValue;
+	}
+	else if (StatTag == FPMGameplayTags::Get().Ability_Effect_SetByCaller_HealthRecovery)
+	{
+		return (CurrentLevel - 1) * DefaultValue;
+	}
+
+	return 0.0f;
 }
 
 void UMLevelComponent::OnRep_OnChangeLevel(const int32 OldLevel)

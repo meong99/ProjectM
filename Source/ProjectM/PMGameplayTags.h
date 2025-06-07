@@ -53,6 +53,7 @@ struct FPMGameplayTags
 	FGameplayTag Ability_Effect_SetByCaller_MaxHealth;
 	FGameplayTag Ability_Effect_SetByCaller_DefensePower;
 	FGameplayTag Ability_Effect_SetByCaller_AttackPower;
+	FGameplayTag Ability_Effect_SetByCaller_HealthRecovery;
 
 	/*
 	* Gameplay
