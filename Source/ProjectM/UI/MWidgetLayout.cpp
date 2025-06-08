@@ -10,9 +10,9 @@
 UMWidgetLayout::UMWidgetLayout(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {}
 
-void UMWidgetLayout::NativeOnInitialized()
+void UMWidgetLayout::PreAddToLayer()
 {
-	Super::NativeOnInitialized();
+	Super::PreAddToLayer();
 
 	MakeLayerById(GameLayer);
 	MakeLayerById(IndependentLayer);

@@ -32,12 +32,12 @@ class PROJECTM_API UMWidgetLayout : public UMWidgetBase
 */
 public:
 	UMWidgetLayout(const FObjectInitializer& ObjectInitializer);
-	virtual void NativeOnInitialized() override;
+	virtual void PreAddToLayer() override;
 	virtual void NativeConstruct() override;
 	virtual FReply	NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual FReply	NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
-/*
+	/*
 * Member Functions
 */
 public:

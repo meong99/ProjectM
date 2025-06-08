@@ -326,6 +326,11 @@ void UMViewportClient::ApplyWidgetLayout()
 	UMWidgetRegister* WidgetRegister = GetWidgetRegister(FPMGameplayTags::Get().UI_Registry_Layout_DefaultLayout.RequestDirectParent());
 
 	WidgetLayout = Cast<UMWidgetLayout>(GetWidgetInstance(FPMGameplayTags::Get().UI_Registry_Layout_DefaultLayout));
+	if (!WidgetLayout->IsInitialized())
+	{
+		WidgetLayout->PreAddToLayer();
+	}
+
 	if (WidgetLayout == nullptr)
 	{
 		MCHAE_WARNING("WidgetLayout is null");
