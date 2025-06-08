@@ -99,6 +99,10 @@ void UMLevelComponent::OnChange_ExperiencePoint(FGameplayTag Tag, const FGamepla
 	if (AbilitySystemComp && EventData)
 	{
 		CurrentExperiencePoint += EventData->EventMagnitude;
+		if (GetNetMode() == ENetMode::NM_Standalone)
+		{
+			OnRep_OnChangeExperience(CurrentExperiencePoint - EventData->EventMagnitude);
+		}
 		if (CurrentExperiencePoint >= CurrentMaxExperiencePoint)
 		{
 			LevelUp();
