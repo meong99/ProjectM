@@ -5,6 +5,20 @@ UMLoadingWidget::UMLoadingWidget(const FObjectInitializer& ObjectInitializer) : 
 {
 }
 
+FReply UMLoadingWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+
+	return FReply::Unhandled();
+}
+
+FReply UMLoadingWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
+
+	return FReply::Unhandled();
+}
+
 void UMLoadingWidget::PlayFadeIn(FWidgetAnimationDynamicEvent&& Callback)
 {
 	if (!Callback.IsBound())

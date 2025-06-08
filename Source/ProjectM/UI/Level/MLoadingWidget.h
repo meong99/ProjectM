@@ -18,7 +18,13 @@ class PROJECTM_API UMLoadingWidget : public UMWidgetBase
 */
 public:
 	UMLoadingWidget(const FObjectInitializer& ObjectInitializer);
+	virtual FReply	NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual FReply	NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
+/*
+* Member Functions
+*/
+public:
 	// Bind하지 않고 호출 시 자동으로 Remove됨
 	void PlayFadeIn(FWidgetAnimationDynamicEvent&& Callback);
 	// Bind하지 않고 호출 시 자동으로 Remove됨
@@ -30,10 +36,6 @@ public:
 
 	UFUNCTION()
 	void OnFinished_FadeOut();
-/*
-* Member Functions
-*/
-public:
 /*
 * Member Variables
 */
