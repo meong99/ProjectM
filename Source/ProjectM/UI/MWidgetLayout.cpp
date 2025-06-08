@@ -53,7 +53,12 @@ void UMWidgetLayout::MakeLayerById(UMWidgetLayer* MainLayer)
 	for (int32 i = 0; i < (int32)EMWidgetLayerId::None; i++)
 	{
 		UOverlay* Overlay = WidgetTree->ConstructWidget<UOverlay>();
-		MainLayer->AddChildToOverlay(Overlay);
+		UOverlaySlot* OverlaySlot = MainLayer->AddChildToOverlay(Overlay);
+		if (OverlaySlot)
+		{
+			OverlaySlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Fill);
+			OverlaySlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Fill);
+		}
 	}
 }
 
