@@ -51,7 +51,7 @@ protected:
 	USplineComponent* SplineComponent;
 
 	UPROPERTY()
-	TSet<AMMonsterBase*> SpawnedMonsters;
+	TArray<AMMonsterBase*> SpawnedMonsters;
 
 	float SpawnTimer = 0.0f;
 };

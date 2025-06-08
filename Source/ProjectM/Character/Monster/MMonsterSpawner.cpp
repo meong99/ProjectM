@@ -82,12 +82,14 @@ void AMMonsterSpawner::SpawnMonster()
 	}
 
 	AMMonsterBase* SpawnedMonster = GetWorld()->SpawnActorDeferred<AMMonsterBase>(MonsterDefinition->GetMonsterClass(), FTransform::Identity);
-	if (SpawnedMonster)
+	if (IsValid(SpawnedMonster))
 	{
 		FTransform			Transform;
 		int32				PointIndex = FMath::RandHelper(SplineComponent->GetNumberOfSplinePoints());
-		const FSplinePoint& Point = SplineComponent->GetSplinePointAt(PointIndex, ESplineCoordinateSpace::World);
-		FVector				Location = Point.Position + GetActorLocation();
+		const FSplinePoint& Point = SplineComponent->GetSplinePointAt(PointIndex, ESplineCoordinateSpace::Local);
+		FHitResult			FloorHit = UMGameplayStatics::GetFloorLocation(this, Point.Position + GetActorLocation(), { this }, 1500.f);
+		FVector				Location = FloorHit.bBlockingHit ? FloorHit.Location : Point.Position;
+
 		Transform.SetLocation(Location);
 
 		SpawnedMonster->SetSpawner(this);

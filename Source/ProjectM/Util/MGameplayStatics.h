@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/EngineTypes.h"
 #include "GameplayTagContainer.h"
+#include "Engine/HitResult.h"
 #include "MGameplayStatics.generated.h"
 
 class UMViewportClient;
@@ -34,6 +35,7 @@ public:
 	static void								SetTimerForNextTick(const UObject* WorldContext, TFunction<void()> Callback);
 	static void								SetTimer(const UObject* WorldContext, TFunction<void()> Callback, float InRate, bool InbLoop, float InFirstDelay = -1.f);
 	static bool								CheckNetGuid(const UObject* WorldContext, const UObject* Object);
+	static FHitResult						GetFloorLocation(const UObject* WorldContext, const FVector& StartLocation, const TArray<AActor*>& ActorsToIgnore, const float Layrange = 1000.f);
 
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"))
 	static UMWidgetBase*	AddWidgetToLayer(const UObject* WorldContextObject, FGameplayTag WidgetTag);

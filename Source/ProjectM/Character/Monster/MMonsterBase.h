@@ -35,9 +35,11 @@ public:
 	virtual void InitCharacterName() override;
 
 	virtual void OnDead() override;
+	virtual void Destroyed() override;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-/*
+
+	/*
 * Member Functions
 */
 public:
@@ -50,7 +52,7 @@ public:
 
 	UMMonsterDefinition*	GetMonsterDefinition() { return MonsterDefinition; }
 	const int32				GetMonsterRowId() const { return MonsterRowId; }
-	AActor*					GetMonsterSpawner() const { return WeakMonsterSpawner.Get(); }
+	AActor*					GetMonsterSpawner() const { return MonsterSpawner.Get(); }
 
 #if WITH_EDITOR
 	void	SetMonsterRowId(const int32 InRowId) { MonsterRowId = InRowId; }
@@ -58,6 +60,7 @@ public:
 protected:
 	void Callback_OnDamaged(const FOnAttributeChangeData& ChangeData);
 	void GiveRewardToPlayer();
+	void RequestRemoveToSpawner();
 /*
 * Member Variables
 */
@@ -92,5 +95,6 @@ protected:
 	UPROPERTY()
 	TMap<int32, FMAbilitySet_GrantedHandles> GrantedHandles;
 
-	TWeakObjectPtr<AMMonsterSpawner> WeakMonsterSpawner;
+	UPROPERTY()
+	TObjectPtr<AMMonsterSpawner> MonsterSpawner;
 };

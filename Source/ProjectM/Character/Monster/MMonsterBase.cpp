@@ -145,6 +145,12 @@ void AMMonsterBase::Tick(float DeltaSeconds)
 			Server_SetCharacterLifeState(EMCharacterLiftState::ReadyToDead);
 			OnDead();
 		}
+
+		FVector Location = GetActorLocation();
+		if (Location.Z < -10000.f)
+		{
+			Destroy();
+		}
 	}
 }
 
@@ -180,20 +186,22 @@ void AMMonsterBase::OnDead()
 			Multicast_PlayMontage(MonsterDefinition->DeathAnimation.Montage);
 			UMGameplayStatics::SetTimer(this, [this]()->void
 			{
-				if (WeakMonsterSpawner.IsValid())
-				{
-					WeakMonsterSpawner->OnDeadMonster(this);
-				}
-
 				Destroy();
 			}, Duration, false);
 		}
 	}
 }
 
+void AMMonsterBase::Destroyed()
+{
+	Super::Destroyed();
+
+	RequestRemoveToSpawner();
+}
+
 void AMMonsterBase::SetSpawner(AMMonsterSpawner* InSpawner)
 {
-	WeakMonsterSpawner = InSpawner;
+	MonsterSpawner = InSpawner;
 }
 
 UPMAbilitySystemComponent* AMMonsterBase::GetMAbilitySystemComponent() const
@@ -234,6 +242,15 @@ void AMMonsterBase::GiveRewardToPlayer()
 		EventData.Target = LastAttacker;
 		EventData.EventMagnitude = MonsterDefinition->MonsterInfo.ExperiencePoint;
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(LastAttacker, FPMGameplayTags::Get().GameplayEvent_Character_ChangeExp, EventData);
+	}
+}
+
+void AMMonsterBase::RequestRemoveToSpawner()
+{
+	if (MonsterSpawner)
+	{
+		MonsterSpawner->OnDeadMonster(this);
+		MonsterSpawner = nullptr;
 	}
 }
 

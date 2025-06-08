@@ -11,6 +11,7 @@
 #include "TimerManager.h"
 #include "Engine/NetDriver.h"
 #include "Engine/PackageMapClient.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 bool UMGameplayStatics::bShowDebug_Console = false;
 static FAutoConsoleVariableRef CVarMyBoolVar(
@@ -100,6 +101,21 @@ bool UMGameplayStatics::CheckNetGuid(const UObject* WorldContext, const UObject*
 
 	FNetworkGUID Guid = GuidCache->GetNetGUID(Object);
 	return Guid.IsValid();
+}
+
+FHitResult UMGameplayStatics::GetFloorLocation(const UObject* WorldContext, const FVector& StartLocation, const TArray<AActor*>& ActorsToIgnore, const float Layrange /*= 1000.f*/)
+{
+	EDrawDebugTrace::Type DebugType = EDrawDebugTrace::None;
+	if (UMGameplayStatics::bShowDebug_Console)
+	{
+		DebugType = EDrawDebugTrace::ForDuration;
+	}
+
+	FHitResult OutHit;
+	UKismetSystemLibrary::LineTraceSingle(WorldContext, StartLocation,
+										  StartLocation + FVector::DownVector * Layrange, UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_WorldStatic),
+										  false, ActorsToIgnore, DebugType, OutHit, true);
+	return OutHit;
 }
 
 UMWidgetBase* UMGameplayStatics::AddWidgetToLayer(const UObject* WorldContextObject, FGameplayTag WidgetTag)
