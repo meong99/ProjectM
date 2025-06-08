@@ -1,5 +1,6 @@
 #include "MLoadingWidget.h"
 #include "Animation/WidgetAnimation.h"
+#include "UI/MViewportClient.h"
 
 UMLoadingWidget::UMLoadingWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -21,7 +22,27 @@ FReply UMLoadingWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGeomet
 
 void UMLoadingWidget::PlayFadeIn(FWidgetAnimationDynamicEvent&& Callback)
 {
+	if (!IsInLayer())
+	{
+		AddWidgetToLayer(WidgetInfo);
+	}
+
 	if (!Callback.IsBound())
+	{
+		Callback.BindDynamic(this, &UMLoadingWidget::OnFinished_FadeIn);
+	}
+	BindToAnimationFinished(FadeIn, MoveTemp(Callback));
+	PlayAnimation(FadeIn);
+}
+
+void UMLoadingWidget::PlayFadeIn(FWidgetAnimationDynamicEvent Callback, bool bAutoRemove)
+{
+	if (!IsInLayer())
+	{
+		AddWidgetToLayer(WidgetInfo);
+	}
+
+	if (!Callback.IsBound() && bAutoRemove)
 	{
 		Callback.BindDynamic(this, &UMLoadingWidget::OnFinished_FadeIn);
 	}
@@ -31,6 +52,11 @@ void UMLoadingWidget::PlayFadeIn(FWidgetAnimationDynamicEvent&& Callback)
 
 void UMLoadingWidget::PlayFadeOut(FWidgetAnimationDynamicEvent&& Callback)
 {
+	if (!IsInLayer())
+	{
+		AddWidgetToLayer(WidgetInfo);
+	}
+
 	if (!Callback.IsBound())
 	{
 		Callback.BindDynamic(this, &UMLoadingWidget::OnFinished_FadeOut);
@@ -38,6 +64,22 @@ void UMLoadingWidget::PlayFadeOut(FWidgetAnimationDynamicEvent&& Callback)
 	BindToAnimationFinished(FadeOut, MoveTemp(Callback));
 	PlayAnimation(FadeOut);
 }
+
+void UMLoadingWidget::PlayFadeOut(FWidgetAnimationDynamicEvent Callback, bool bAutoRemove)
+{
+	if (!IsInLayer())
+	{
+		AddWidgetToLayer(WidgetInfo);
+	}
+
+	if (!Callback.IsBound() && bAutoRemove)
+	{
+		Callback.BindDynamic(this, &UMLoadingWidget::OnFinished_FadeOut);
+	}
+	BindToAnimationFinished(FadeOut, MoveTemp(Callback));
+	PlayAnimation(FadeOut);
+}
+
 
 void UMLoadingWidget::UnbindAnimationBind()
 {

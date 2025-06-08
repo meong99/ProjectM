@@ -25,7 +25,7 @@ void UMInteractiveAction_AcceptQuest::ActivateAction()
 {
 	Super::ActivateAction();
 
-	UMViewportClient* ViewportClient = UMGameplayStatics::GetViewportClient(this);
+	UMViewportClient* ViewportClient = UMViewportClient::Get(this);
 	if (ViewportClient)
 	{
 		UMDialogueBoxWidget* DialogWidget = Cast<UMDialogueBoxWidget>(ViewportClient->GetWidgetInstance(FPMGameplayTags::Get().UI_Registry_Game_Dialogue));
@@ -49,7 +49,7 @@ void UMInteractiveAction_AcceptQuest::DeactivateAction()
 {
 	Super::DeactivateAction();
 
-	UMViewportClient* ViewportClient = UMGameplayStatics::GetViewportClient(this);
+	UMViewportClient* ViewportClient = UMViewportClient::Get(this);
 	if (ViewportClient)
 	{
 		ViewportClient->RemoveWidgetFromLayer(FPMGameplayTags::Get().UI_Registry_Game_Dialogue);

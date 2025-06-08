@@ -160,7 +160,7 @@ void UMInteractionComponent::DisableInteraction(AActor* OtherActor)
 
 void UMInteractionComponent::OnInteract(const FGameplayTag& Tag)
 {
-	UMViewportClient* ViewportClient = UMGameplayStatics::GetViewportClient(this);
+	UMViewportClient* ViewportClient = UMViewportClient::Get(this);
 	if (ViewportClient && ExistActivatableAction())
 	{
 		ViewportClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_Game_InteractionList, { this, GetOwner() });
@@ -193,7 +193,7 @@ void UMInteractionComponent::UnbindDelegate()
 		InputComponent->InputActionDelegateMap.Remove(FPMGameplayTags::Get().InputTag_Togle_Interaction);
 	}
 
-	UMViewportClient* ViewportClient = UMGameplayStatics::GetViewportClient(this);
+	UMViewportClient* ViewportClient = UMViewportClient::Get(this);
 	if (ViewportClient)
 	{
 		ViewportClient->RemoveWidgetFromLayer(FPMGameplayTags::Get().UI_Registry_Game_InteractionList);

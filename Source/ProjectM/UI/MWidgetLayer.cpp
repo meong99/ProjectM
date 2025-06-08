@@ -45,7 +45,8 @@ void UMWidgetLayer::RemoveWidgetFromLayer(UMWidgetBase* Widget)
 		return;
 	}
 
-	UOverlay* LayerAt = GetAppropriateOverlay((int32)Widget->GetWidgetLayerId());
+	int32 WidgetLayerId = (int32)Widget->GetWidgetLayerId();
+	UOverlay* LayerAt = GetAppropriateOverlay(WidgetLayerId);
 	if (!LayerAt)
 	{
 		// Layer가 비정상임

@@ -27,21 +27,6 @@ UWorld* GetWorldFromContext(const UObject* WorldContext)
 	return World;
 }
 
-UMViewportClient* UMGameplayStatics::GetViewportClient(const UObject* WorldContext)
-{
-	UWorld* World = GEngine ? GEngine->GetWorldFromContextObject(WorldContext, EGetWorldErrorMode::LogAndReturnNull) : nullptr;
-	if (World)
-	{
-		UGameInstance* GameInstance = World->GetGameInstance();
-		if (GameInstance)
-		{
-			return Cast<UMViewportClient>(GameInstance->GetGameViewportClient());
-		}
-	}
-
-	return nullptr;
-}
-
 UPMExperienceManagerComponent* UMGameplayStatics::GetExperienceManagerComponent(const UObject* WorldContext)
 {
 	UWorld* World = GEngine ? GEngine->GetWorldFromContextObject(WorldContext, EGetWorldErrorMode::LogAndReturnNull) : nullptr;
@@ -115,6 +100,57 @@ bool UMGameplayStatics::CheckNetGuid(const UObject* WorldContext, const UObject*
 
 	FNetworkGUID Guid = GuidCache->GetNetGUID(Object);
 	return Guid.IsValid();
+}
+
+UMWidgetBase* UMGameplayStatics::AddWidgetToLayer(const UObject* WorldContextObject, FGameplayTag WidgetTag)
+{
+	UMViewportClient* ViewportClient = UMViewportClient::Get(WorldContextObject);
+	if (ViewportClient)
+	{
+		return ViewportClient->AddWidgetToLayer(WidgetTag);
+	}
+
+	return nullptr;
+}
+
+UMWidgetBase* UMGameplayStatics::RemoveWidgetFromLayer(const UObject* WorldContextObject, FGameplayTag WidgetTag)
+{
+	UMViewportClient* ViewportClient = UMViewportClient::Get(WorldContextObject);
+	if (ViewportClient)
+	{
+		return ViewportClient->RemoveWidgetFromLayer(WidgetTag);
+	}
+
+	return nullptr;
+}
+
+UMWidgetBase* UMGameplayStatics::GetWidgetInstance(const UObject* WorldContextObject, FGameplayTag WidgetTag)
+{
+	UMViewportClient* ViewportClient = UMViewportClient::Get(WorldContextObject);
+	if (ViewportClient)
+	{
+		return ViewportClient->GetWidgetInstance(WidgetTag);
+	}
+
+	return nullptr;
+}
+
+void UMGameplayStatics::FadeIn(const UObject* WorldContextObject, const float Duration, const float FadeDelay)
+{
+	UMViewportClient* ViewClient = UMViewportClient::Get(WorldContextObject);
+	if (ViewClient)
+	{
+		ViewClient->Fade(Duration, false, FadeDelay);
+	}
+}
+
+void UMGameplayStatics::FadeOut(const UObject* WorldContextObject, const float Duration, const float FadeDelay)
+{
+	UMViewportClient* ViewClient = UMViewportClient::Get(WorldContextObject);
+	if (ViewClient)
+	{
+		ViewClient->Fade(Duration, true, FadeDelay);
+	}
 }
 
 void UMGameplayStatics::ShowErrorOrLog(const FString& Error)

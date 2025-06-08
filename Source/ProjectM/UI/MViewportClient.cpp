@@ -10,11 +10,40 @@
 #include "UI/MWidgetBase.h"
 #include "PMGameplayTags.h"
 #include "UI/MWidgetLayout.h"
+#include "Engine/Canvas.h"
+#include "Engine/Texture2D.h"
 
 void UMViewportClient::Init(struct FWorldContext& WorldContext, UGameInstance* OwningGameInstance, bool bCreateNewAudioDevice /*= true*/)
 {
 	Super::Init(WorldContext, OwningGameInstance, true);
 	LoadDefaultWidgetRegister();
+}
+
+void UMViewportClient::PostRender(UCanvas* Canvas)
+{
+	Super::PostRender(Canvas);
+
+	if (bFading)
+	{
+		DrawScreenFade(Canvas);
+	}
+}
+
+void UMViewportClient::ClearFade()
+{
+	bFading = false;
+}
+
+void UMViewportClient::Fade(const float Duration, const bool InbToBlack, const float InFadeDelay)
+{
+	if (World)
+	{
+		bFading = true;
+		this->bToBlack = InbToBlack;
+		FadeDuration = Duration;
+		FadeStartTime = World->GetTimeSeconds();
+		FadeDelay = InFadeDelay;
+	}
 }
 
 UMViewportClient* UMViewportClient::Get(const UObject* WorldContext)
@@ -36,6 +65,32 @@ UMViewportClient* UMViewportClient::Get(const UObject* WorldContext)
 	}
 
 	return nullptr;
+}
+
+void UMViewportClient::DrawScreenFade(UCanvas* Canvas)
+{
+	if (bFading)
+	{
+		if (World)
+		{
+			const float Time = World->GetTimeSeconds();
+			const float Alpha = FMath::Clamp((Time - FadeStartTime - FadeDelay) / FadeDuration, 0.f, 1.f);
+
+			if (Alpha == 1.f && !bToBlack)
+			{
+				bFading = false;
+			}
+			else
+			{
+				FColor OldColor = Canvas->DrawColor;
+				FLinearColor FadeColor = FLinearColor::Black;
+				FadeColor.A = bToBlack ? Alpha : 1 - Alpha;
+				Canvas->DrawColor = FadeColor.ToFColor(true);
+				Canvas->DrawTile(Canvas->DefaultTexture, 0, 0, Canvas->ClipX, Canvas->ClipY, 0, 0, Canvas->DefaultTexture->GetSizeX(), Canvas->DefaultTexture->GetSizeY());
+				Canvas->DrawColor = OldColor;
+			}
+		}
+	}
 }
 
 void UMViewportClient::LoadDefaultWidgetRegister()

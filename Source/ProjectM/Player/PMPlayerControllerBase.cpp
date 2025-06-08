@@ -52,16 +52,7 @@ void APMPlayerControllerBase::BeginPlay()
 	Super::BeginPlay();
 
 	CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate::CreateUObject(this, &APMPlayerControllerBase::OnExperienceLoaded));
-	UMViewportClient* ViewClient = UMViewportClient::Get(this);
-	if (ViewClient)
-	{
-		UMLoadingWidget* LoadingWidget = Cast<UMLoadingWidget>(ViewClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_Game_Loading));
-		if (LoadingWidget)
-		{
-			FWidgetAnimationDynamicEvent Callback;
-			LoadingWidget->PlayFadeIn(MoveTemp(Callback));
-		}
-	}
+	UMGameplayStatics::FadeIn(this, 1.5f, 1.f);
 }
 
 void APMPlayerControllerBase::BeginPlayingState()

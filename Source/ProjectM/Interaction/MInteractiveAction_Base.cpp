@@ -19,7 +19,7 @@ void UMInteractiveAction_Base::InitAction(UMInteractionComponent* InInteractionC
 
 void UMInteractiveAction_Base::ActivateAction()
 {
-	UMViewportClient* ViewportClient = UMGameplayStatics::GetViewportClient(this);
+	UMViewportClient* ViewportClient = UMViewportClient::Get(this);
 	if (ViewportClient)
 	{
 		ViewportClient->RemoveWidgetFromLayer(FPMGameplayTags::Get().UI_Registry_Game_InteractionList);

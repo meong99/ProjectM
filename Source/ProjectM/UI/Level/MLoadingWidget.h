@@ -27,9 +27,16 @@ public:
 public:
 	// Bind하지 않고 호출 시 자동으로 Remove됨
 	void PlayFadeIn(FWidgetAnimationDynamicEvent&& Callback);
+	UFUNCTION(BlueprintCallable)
+	void PlayFadeIn(FWidgetAnimationDynamicEvent Callback, bool bAutoRemove);
+
 	// Bind하지 않고 호출 시 자동으로 Remove됨
 	void PlayFadeOut(FWidgetAnimationDynamicEvent&& Callback);
+	UFUNCTION(BlueprintCallable)
+	void PlayFadeOut(FWidgetAnimationDynamicEvent Callback, bool bAutoRemove);
+
 	void UnbindAnimationBind();
+protected:
 
 	UFUNCTION()
 	void OnFinished_FadeIn();

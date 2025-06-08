@@ -94,7 +94,7 @@ void AMLevelTravelingActor::PlayLoadingFadeOut(FWidgetAnimationDynamicEvent&& Ca
 	UMViewportClient* ViewClient = UMViewportClient::Get(this);
 	if (ViewClient)
 	{
-		UMLoadingWidget* LoadingWidget = Cast<UMLoadingWidget>(ViewClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_Game_Loading));
+		UMLoadingWidget* LoadingWidget = Cast<UMLoadingWidget>(ViewClient->GetWidgetInstance(FPMGameplayTags::Get().UI_Registry_Game_Loading));
 		if (LoadingWidget && PlayerCharacter)
 		{
 			LoadingWidget->PlayFadeOut(MoveTemp(Callback));
@@ -107,7 +107,7 @@ void AMLevelTravelingActor::PlayLoadingFadeIn(FWidgetAnimationDynamicEvent&& Cal
 	UMViewportClient* ViewClient = UMViewportClient::Get(this);
 	if (ViewClient)
 	{
-		UMLoadingWidget* LoadingWidget = Cast<UMLoadingWidget>(ViewClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_Game_Loading));
+		UMLoadingWidget* LoadingWidget = Cast<UMLoadingWidget>(ViewClient->GetWidgetInstance(FPMGameplayTags::Get().UI_Registry_Game_Loading));
 		if (LoadingWidget)
 		{
 			LoadingWidget->PlayFadeIn(MoveTemp(Callback));
@@ -134,7 +134,7 @@ void AMLevelTravelingActor::OnFinishedFadeIn()
 		UMViewportClient* ViewClient = UMViewportClient::Get(this);
 		if (ViewClient)
 		{
-			UMLoadingWidget* LoadingWidget = Cast<UMLoadingWidget>(ViewClient->RemoveWidgetFromLayer(FPMGameplayTags::Get().UI_Registry_Game_Loading));
+			UMLoadingWidget* LoadingWidget = Cast<UMLoadingWidget>(ViewClient->GetWidgetInstance(FPMGameplayTags::Get().UI_Registry_Game_Loading));
 			if (LoadingWidget)
 			{
 				LoadingWidget->UnbindAnimationBind();
@@ -196,7 +196,10 @@ void AMLevelTravelingActor::TeleportToDestination()
 		RequestOngoingNavigation();
 		PlayerCharacter->Server_RemoveCharacterStateFlag(EMCharacterStateFlag::BlockMovement);
 		PlayerCharacter->SetCurrentLevelTag(DestLevelTag);
-		PlayerCharacter = nullptr;
+		if (GetNetMode() != ENetMode::NM_Standalone)
+		{
+			PlayerCharacter = nullptr;
+		}
 	}
 }
 
