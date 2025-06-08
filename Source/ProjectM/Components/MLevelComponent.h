@@ -59,12 +59,10 @@ private:
 	const int64 GetCurrentExp() const { return CurrentExperiencePoint; }
 	const int64 GetCurrentMaxExp() const { return CurrentMaxExperiencePoint; }
 
-#if WITH_EDITOR
 	UFUNCTION(Exec)
 	void Debug_LevelUp();
 	UFUNCTION(Server, Reliable)
 	void Debug_LevelUpServer();
-#endif
 /*
 * Member Variables
 */

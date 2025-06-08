@@ -116,4 +116,11 @@ private:
 	bool bIsInitInventory = false;
 
 	FOnInitInventory Delegate_OnInitInventory;
+
+// DEBUG
+private:
+	UFUNCTION(Exec)
+	void Debug_AddItem(int32 RowId, int32 ItemQuentity = 1);
+	UFUNCTION(Server, Reliable)
+	void DebugServer_AddItem(int32 Rowid, int32 ItemQuentity);
 };

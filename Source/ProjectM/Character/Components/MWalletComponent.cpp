@@ -71,8 +71,6 @@ void UMWalletComponent::OnRep_OnChangeGold(const int64 OldGold)
 	Delegate_OnChangeGold.Broadcast(Gold - OldGold, Gold);
 }
 
-#if WITH_EDITOR
-
 void UMWalletComponent::ServerDebug_AddGold_Implementation(int64 AdjustGold)
 {
 	AddGold(AdjustGold);
@@ -92,4 +90,3 @@ void UMWalletComponent::Debug_SubtractGold(int64 AdjustGold)
 {
 	ServerDebug_SubtractGold(AdjustGold);
 }
-#endif

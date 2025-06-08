@@ -243,7 +243,6 @@ void UMLevelComponent::BroadcastOnChangeExp(const int64 OldExperiencePoint)
 	}
 }
 
-#if WITH_EDITOR
 void UMLevelComponent::Debug_LevelUp()
 {
 	Debug_LevelUpServer();
@@ -253,4 +252,3 @@ void UMLevelComponent::Debug_LevelUpServer_Implementation()
 {
 	LevelUp();
 }
-#endif
