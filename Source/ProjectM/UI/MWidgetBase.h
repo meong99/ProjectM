@@ -11,6 +11,18 @@ class AActor;
 class APMPlayerControllerBase;
 
 UENUM(BlueprintType)
+enum class EMWidgetLayerId : uint8
+{
+	// 가장 기본 레이어. 가장 뒤에 그려진다
+	Game UMETA(DisplayName = "Game"),
+
+	// 로딩에 사용. 가장 앞에 그려진다.
+	Loading UMETA(DisplayName = "Loading"),
+
+	None UMETA(DisplayName = "None"),
+};
+
+UENUM(BlueprintType)
 enum class EMWidgetInputMode : uint8
 {
 	GameOnly,
@@ -73,8 +85,9 @@ public:
 	void SetInitialized(bool bInIsInitialized) { bIsInitialized = bInIsInitialized; }
 	
 	UFUNCTION(BlueprintCallable)
-	bool IsInLayer() const { return bIsActivate; }
-	bool IsInitialized() const { return bIsInitialized; }
+	bool			IsInLayer() const { return bIsActivate; }
+	bool			IsInitialized() const { return bIsInitialized; }
+	EMWidgetLayerId GetWidgetLayerId() const { return WidgetLayerId; }
 
 	APMPlayerControllerBase* GetPlayerController() const;
 
@@ -85,19 +98,22 @@ protected:
 * Member Variables
 */
 protected:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="ProjectM")
 	EMWidgetInputMode InputMode = EMWidgetInputMode::GameAndUIWithShowMouse;
 
-	UPROPERTY(VisibleInstanceOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "ProjectM")
+	EMWidgetLayerId	WidgetLayerId = EMWidgetLayerId::Game;
+
+	UPROPERTY(VisibleInstanceOnly, Category = "ProjectM")
 	FGameplayTag WidgetTag;
 
 	// Layer에 등록된 위젯의 활성화 여부
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "ProjectM")
 	bool bIsActivate = false;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "ProjectM")
 	bool bIsInitialized = false;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category = "ProjectM")
 	FMWidgetInfo WidgetInfo;
 };

@@ -8,6 +8,8 @@
 #include "Components/MPlayerTradeComponent.h"
 #include "Components/MPlayerQuestComponent.h"
 #include "Util/MGameplayStatics.h"
+#include "UI/Level/MLoadingWidget.h"
+#include "PMGameplayTags.h"
 
 APMPlayerControllerBase::APMPlayerControllerBase()
 {
@@ -50,6 +52,16 @@ void APMPlayerControllerBase::BeginPlay()
 	Super::BeginPlay();
 
 	CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate::CreateUObject(this, &APMPlayerControllerBase::OnExperienceLoaded));
+	UMViewportClient* ViewClient = UMViewportClient::Get(this);
+	if (ViewClient)
+	{
+		UMLoadingWidget* LoadingWidget = Cast<UMLoadingWidget>(ViewClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_Game_Loading));
+		if (LoadingWidget)
+		{
+			FWidgetAnimationDynamicEvent Callback;
+			LoadingWidget->PlayFadeIn(MoveTemp(Callback));
+		}
+	}
 }
 
 void APMPlayerControllerBase::BeginPlayingState()

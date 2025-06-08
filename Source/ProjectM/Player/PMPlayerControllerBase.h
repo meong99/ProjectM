@@ -57,10 +57,11 @@ public:
 	UMWidgetBase* ToggleWidget(const FGameplayTag& WidgetTag, UObject* WidgetInstigator = nullptr);
 	UFUNCTION(BlueprintCallable, BlueprintPure=false)
 	UMWidgetBase* GetWidgetInstance(const FGameplayTag& WidgetTag);
+
 protected:
 	void OnExperienceLoaded(const UPMExperienceDefinition* LoadedExperienceDefinition);
 
-	/*
+/*
 * Member Variables
 */
 protected:

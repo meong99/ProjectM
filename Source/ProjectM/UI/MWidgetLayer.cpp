@@ -13,7 +13,8 @@ void UMWidgetLayer::AddWidgetToLayer(UMWidgetBase* Widget)
 		return;
 	}
 
-	UOverlaySlot* OverlaySlot = AddChildToOverlay(Widget);
+	UOverlay* LayerAt = GetAppropriateOverlay((int32)Widget->GetWidgetLayerId());
+	UOverlaySlot* OverlaySlot = LayerAt ? LayerAt->AddChildToOverlay(Widget) : AddChildToOverlay(Widget);
 	if (OverlaySlot)
 	{
 		OverlaySlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Fill);
@@ -44,7 +45,15 @@ void UMWidgetLayer::RemoveWidgetFromLayer(UMWidgetBase* Widget)
 		return;
 	}
 
-	RemoveChild(Widget);
+	UOverlay* LayerAt = GetAppropriateOverlay((int32)Widget->GetWidgetLayerId());
+	if (!LayerAt)
+	{
+		// Layer가 비정상임
+		ensure(false);
+		return;
+	}
+
+	LayerAt->RemoveChild(Widget);
 	Widget->SetActivate(false);
 	EMWidgetInputMode InputMode = Widget->GetInputMode();
 	PopInputMode(InputMode);
@@ -67,7 +76,21 @@ void UMWidgetLayer::ActivateLayer()
 
 void UMWidgetLayer::ClearAllWidget()
 {
-	ClearChildren();
+	for (int32 i = 0; i < (int32)EMWidgetLayerId::None; i++)
+	{
+		UOverlay* LayerAt = GetAppropriateOverlay(i);
+
+		if (LayerAt)
+		{
+			LayerAt->ClearChildren();
+		}
+	}
+}
+
+UOverlay* UMWidgetLayer::GetAppropriateOverlay(const int32 Id)
+{
+	UOverlay* LayerAt = Cast<UOverlay>(GetChildAt(Id));
+	return LayerAt ? LayerAt : this;
 }
 
 void UMWidgetLayer::SetInputMode(UMWidgetBase* Widget) const

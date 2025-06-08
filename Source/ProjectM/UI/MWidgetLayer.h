@@ -30,6 +30,7 @@ public:
 	void ClearAllWidget();
 
 protected:
+	UOverlay* GetAppropriateOverlay(const int32 Id);
 	void SetInputMode(UMWidgetBase* Widget = nullptr) const;
 	void PushInputMode(EMWidgetInputMode Input, const FGameplayTag& Tag);
 	void PopInputMode(EMWidgetInputMode Input);

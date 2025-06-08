@@ -19,9 +19,17 @@ class PROJECTM_API UMLoadingWidget : public UMWidgetBase
 public:
 	UMLoadingWidget(const FObjectInitializer& ObjectInitializer);
 
+	// Bind하지 않고 호출 시 자동으로 Remove됨
 	void PlayFadeIn(FWidgetAnimationDynamicEvent&& Callback);
+	// Bind하지 않고 호출 시 자동으로 Remove됨
 	void PlayFadeOut(FWidgetAnimationDynamicEvent&& Callback);
 	void UnbindAnimationBind();
+
+	UFUNCTION()
+	void OnFinished_FadeIn();
+
+	UFUNCTION()
+	void OnFinished_FadeOut();
 /*
 * Member Functions
 */

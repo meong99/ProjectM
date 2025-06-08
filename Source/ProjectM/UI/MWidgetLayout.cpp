@@ -5,9 +5,18 @@
 #include "GameFramework/PlayerController.h"
 #include "MWidgetBase.h"
 #include "MWidgetLayer.h"
+#include "Blueprint/WidgetTree.h"
 
 UMWidgetLayout::UMWidgetLayout(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {}
+
+void UMWidgetLayout::NativeOnInitialized()
+{
+	Super::NativeOnInitialized();
+
+	MakeLayerById(GameLayer);
+	MakeLayerById(IndependentLayer);
+}
 
 void UMWidgetLayout::NativeConstruct()
 {
@@ -16,6 +25,35 @@ void UMWidgetLayout::NativeConstruct()
 	if (CurrentLayer)
 	{
 		CurrentLayer->ActivateLayer();
+	}
+}
+
+FReply UMWidgetLayout::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+
+	return FReply::Unhandled();
+}
+
+FReply UMWidgetLayout::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
+
+	return FReply::Unhandled();
+}
+
+void UMWidgetLayout::MakeLayerById(UMWidgetLayer* MainLayer)
+{
+	if (!MainLayer)
+	{
+		ensure(false);
+		return;
+	}
+
+	for (int32 i = 0; i < (int32)EMWidgetLayerId::None; i++)
+	{
+		UOverlay* Overlay = WidgetTree->ConstructWidget<UOverlay>();
+		MainLayer->AddChildToOverlay(Overlay);
 	}
 }
 

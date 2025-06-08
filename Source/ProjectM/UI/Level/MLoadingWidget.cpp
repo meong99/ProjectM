@@ -7,12 +7,20 @@ UMLoadingWidget::UMLoadingWidget(const FObjectInitializer& ObjectInitializer) : 
 
 void UMLoadingWidget::PlayFadeIn(FWidgetAnimationDynamicEvent&& Callback)
 {
+	if (!Callback.IsBound())
+	{
+		Callback.BindDynamic(this, &UMLoadingWidget::OnFinished_FadeIn);
+	}
 	BindToAnimationFinished(FadeIn, MoveTemp(Callback));
 	PlayAnimation(FadeIn);
 }
 
 void UMLoadingWidget::PlayFadeOut(FWidgetAnimationDynamicEvent&& Callback)
 {
+	if (!Callback.IsBound())
+	{
+		Callback.BindDynamic(this, &UMLoadingWidget::OnFinished_FadeOut);
+	}
 	BindToAnimationFinished(FadeOut, MoveTemp(Callback));
 	PlayAnimation(FadeOut);
 }
@@ -21,4 +29,14 @@ void UMLoadingWidget::UnbindAnimationBind()
 {
 	UnbindAllFromAnimationFinished(FadeIn);
 	UnbindAllFromAnimationFinished(FadeOut);
+}
+
+void UMLoadingWidget::OnFinished_FadeIn()
+{
+	RemoveWidgetFromLayer();
+}
+
+void UMLoadingWidget::OnFinished_FadeOut()
+{
+	RemoveWidgetFromLayer();
 }
