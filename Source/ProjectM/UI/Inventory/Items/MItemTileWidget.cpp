@@ -205,6 +205,7 @@ void UMItemTileWidget::ResetItemSlot()
 	ItemImage->SetVisibility(ESlateVisibility::Hidden);
 
 	ItemHandle.ItemUid = INDEX_NONE;
+	ItemNum->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void UMItemTileWidget::SetItemNum(const FPMInventoryEntry& NewItemEntry)
