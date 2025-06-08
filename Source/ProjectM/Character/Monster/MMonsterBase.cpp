@@ -53,6 +53,8 @@ AMMonsterBase::AMMonsterBase(const FObjectInitializer& ObjectInitializer) : Supe
 	MonsterTradeComponent = CreateDefaultSubobject<UMMonsterTradeComponent>(TEXT("MonsterTradeComponent"));
 	DamageWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("DamageWidget"));
 	DamageWidgetComponent->SetupAttachment(RootComponent);
+
+	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 }
 
 void AMMonsterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -196,7 +198,10 @@ void AMMonsterBase::Destroyed()
 {
 	Super::Destroyed();
 
-	RequestRemoveToSpawner();
+	if (HasAuthority())
+	{
+		RequestRemoveToSpawner();
+	}
 }
 
 void AMMonsterBase::SetSpawner(AMMonsterSpawner* InSpawner)
