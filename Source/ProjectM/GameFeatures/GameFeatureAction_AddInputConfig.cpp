@@ -125,7 +125,7 @@ void UGameFeatureAction_AddInputConfig::Reset(FPerContextData& ActiveData)
 	while (!ActiveData.PawnsAddedTo.IsEmpty())
 	{
 		TWeakObjectPtr<APawn> Pawn = ActiveData.PawnsAddedTo.Top();
-		if (Pawn.IsValid())
+		if (Pawn.IsValid() && Pawn->GetController())
 		{
 			RemoveInputConfig(Pawn.Get(), ActiveData);
 		}

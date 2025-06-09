@@ -39,7 +39,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "ProjectM | Experience")
 	TArray<FString> GameFeaturesToEnable;
 
-protected:
+public:
 	UPROPERTY(EditDefaultsOnly, Category = "ProjectM | Experience")
 	TObjectPtr<UPMPawnData> DefaultPawnData;
 

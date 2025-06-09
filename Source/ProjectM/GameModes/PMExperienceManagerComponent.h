@@ -27,9 +27,10 @@ class PROJECTM_API UPMExperienceManagerComponent : public UGameStateComponent
 * Overrided Function
 */
 public:
- UPMExperienceManagerComponent(const FObjectInitializer& ObjectInitializer);
+	UPMExperienceManagerComponent(const FObjectInitializer& ObjectInitializer);
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-/*
+ /*
 * Member Functions
 */
 public:
@@ -56,6 +57,8 @@ private:
 
 	UFUNCTION()
 	void OnRep_CurrentExperience();
+	void OnActionDeactivationCompleted();
+	void OnAllActionsDeactivated();
 /*
 * Member Variables
 */
@@ -71,4 +74,7 @@ private:
 	TArray<FString> GameFeaturePluginURLs;
 
 	int32 NumGameFeaturePluginsLoading = 0;
+
+	int32 NumObservedPausers = 0;
+	int32 NumExpectedPausers = 0;
 };

@@ -12,6 +12,64 @@ UPMExperienceManagerComponent::UPMExperienceManagerComponent(const FObjectInitia
 	SetIsReplicatedByDefault(true);
 }
 
+void UPMExperienceManagerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	for (const FString& PluginURL : GameFeaturePluginURLs)
+	{
+		UGameFeaturesSubsystem::Get().DeactivateGameFeaturePlugin(PluginURL);
+	}
+
+	if (LoadState == EPMExperienceLoadState::Loaded)
+	{
+		LoadState = EPMExperienceLoadState::Deactivating;
+
+		NumExpectedPausers = INDEX_NONE;
+		NumObservedPausers = 0;
+		FGameFeatureDeactivatingContext Context(TEXT(""), [this](FStringView) { this->OnActionDeactivationCompleted(); });
+
+		const FWorldContext* ExistingWorldContext = GEngine->GetWorldContextFromWorld(GetWorld());
+		if (ExistingWorldContext)
+		{
+			Context.SetRequiredWorldContextHandle(ExistingWorldContext->ContextHandle);
+		}
+
+		auto DeactivateListOfActions = [&Context](const TArray<UGameFeatureAction*>& ActionList)
+		{
+			for (UGameFeatureAction* Action : ActionList)
+			{
+				if (Action)
+				{
+					Action->OnGameFeatureDeactivating(Context);
+					Action->OnGameFeatureUnregistering();
+				}
+			}
+		};
+
+		DeactivateListOfActions(CurrentExperience->Actions);
+		for (const TObjectPtr<UPMExperienceActionSet>& ActionSet : CurrentExperience->ActionSets)
+		{
+			if (ActionSet != nullptr)
+			{
+				DeactivateListOfActions(ActionSet->Actions);
+			}
+		}
+
+		NumExpectedPausers = Context.GetNumPausers();
+
+		if (NumExpectedPausers > 0)
+		{
+			MCHAE_ERROR("Actions that have asynchronous deactivation aren't fully supported yet in Lyra experiences");
+		}
+
+		if (NumExpectedPausers == NumObservedPausers)
+		{
+			OnAllActionsDeactivated();
+		}
+	}
+}
+
 void UPMExperienceManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -206,6 +264,23 @@ void UPMExperienceManagerComponent::OnExperienceFullLoadCompleted()
 void UPMExperienceManagerComponent::OnRep_CurrentExperience()
 {
 	StartExperienceLoad();
+}
+
+void UPMExperienceManagerComponent::OnActionDeactivationCompleted()
+{
+	check(IsInGameThread());
+	++NumObservedPausers;
+
+	if (NumObservedPausers == NumExpectedPausers)
+	{
+		OnAllActionsDeactivated();
+	}
+}
+
+void UPMExperienceManagerComponent::OnAllActionsDeactivated()
+{
+	LoadState = EPMExperienceLoadState::Unloaded;
+	CurrentExperience = nullptr;
 }
 
 const UPMExperienceDefinition* UPMExperienceManagerComponent::GetCurrentExperienceChecked() const
