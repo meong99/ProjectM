@@ -18,9 +18,10 @@ class PROJECTM_API UMDialogueBoxWidget : public UMWidgetBase
 */
 public:
 	UMDialogueBoxWidget(const FObjectInitializer& ObjectInitializer);
-	virtual void NativeOnInitialized() override;
-	virtual void NativeConstruct() override;
-	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void	NativeOnInitialized() override;
+	virtual void	NativeConstruct() override;
+	virtual void	NativeDestruct() override;
+	virtual FReply	NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 /*
 * Member Functions

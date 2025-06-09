@@ -21,7 +21,7 @@ void UMWidgetLayout::PreAddToLayer()
 void UMWidgetLayout::NativeConstruct()
 {
 	Super::NativeConstruct();
-	UMWidgetLayer* CurrentLayer = GetLayer((EMWidgetLayout)LayoutSwitcher->GetActiveWidgetIndex());
+	UMWidgetLayer* CurrentLayer = GetCurrentLayer();
 	if (CurrentLayer)
 	{
 		CurrentLayer->ActivateLayer();
@@ -65,10 +65,10 @@ void UMWidgetLayout::MakeLayerById(UMWidgetLayer* MainLayer)
 void UMWidgetLayout::ChangeWidgetLayer(EMWidgetLayout WidgetLayout) const
 {
 	LayoutSwitcher->SetActiveWidgetIndex((int32)WidgetLayout);
-	UMWidgetLayer* CurrentLayer = GetLayer(WidgetLayout);
-	if (CurrentLayer)
+	UMWidgetLayer* Layer = GetLayer(WidgetLayout);
+	if (Layer)
 	{
-		CurrentLayer->ActivateLayer();
+		Layer->ActivateLayer();
 	}
 }
 
@@ -96,24 +96,35 @@ void UMWidgetLayout::RemoveWidgetToCurrentLayer(UMWidgetBase* Widget) const
 
 void UMWidgetLayout::AddWidgetToLayer(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const
 {
-	UMWidgetLayer* CurrentLayout = GetLayer(WidgetLayout);
-	if (CurrentLayout)
+	UMWidgetLayer* Layout = GetLayer(WidgetLayout);
+	if (Layout)
 	{
-		CurrentLayout->AddWidgetToLayer(Widget);
+		Layout->AddWidgetToLayer(Widget);
 	}
 	else
 	{
-		MCHAE_WARNING("CurrentLayout is null");
+		MCHAE_WARNING("Layout is null");
 	}
 }
 
 void UMWidgetLayout::RemoveWidgetFromLayer(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const
 {
-	UMWidgetLayer* CurrentLayout = GetLayer(WidgetLayout);
+	UMWidgetLayer* Layout = GetLayer(WidgetLayout);
+	if (Layout)
+	{
+		Layout->RemoveWidgetFromLayer(Widget);
+	}
+}
+
+bool UMWidgetLayout::RemoveTopWidgetInGameLayer()
+{
+	UMWidgetLayer* CurrentLayout = GetCurrentLayer();
 	if (CurrentLayout)
 	{
-		CurrentLayout->RemoveWidgetFromLayer(Widget);
+		return CurrentLayout->RemoveTopWidgetInGameLayer();
 	}
+
+	return false;
 }
 
 UMWidgetLayer* UMWidgetLayout::GetLayer(EMWidgetLayout WidgetLayout) const
@@ -139,4 +150,9 @@ UMWidgetLayer* UMWidgetLayout::GetLayer(EMWidgetLayout WidgetLayout) const
 	ensure(false);
 	MCHAE_WARNING("Can't found Widget Layout!");
 	return nullptr;
+}
+
+UMWidgetLayer* UMWidgetLayout::GetCurrentLayer() const
+{
+	return GetLayer((EMWidgetLayout)LayoutSwitcher->GetActiveWidgetIndex());
 }

@@ -19,10 +19,9 @@ class PROJECTM_API UMInteractionListWidget : public UMWorldBaseWidget
 */
 public:
 	UMInteractionListWidget(const FObjectInitializer& ObjectInitializer);
-	virtual void NativeConstruct() override;
-	virtual void NativeDestruct() override;
-	FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-
+	virtual void	NativeConstruct() override;
+	virtual void	NativeDestruct() override;
+	virtual FReply	NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 /*
 * Member Functions
 */

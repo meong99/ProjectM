@@ -88,6 +88,24 @@ void UMWidgetLayer::ClearAllWidget()
 	}
 }
 
+bool UMWidgetLayer::RemoveTopWidgetInGameLayer()
+{
+	UOverlay* LayerAt = GetAppropriateOverlay((int32)EMWidgetLayerId::Game);
+	if (LayerAt)
+	{
+		TArray<UWidget*> Children = LayerAt->GetAllChildren();
+		UMWidgetBase* Widget = Children.Num() > 0 ? Cast<UMWidgetBase>(Children.Last()) : nullptr;
+		if (Widget)
+		{
+			RemoveWidgetFromLayer(Widget);
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
 UOverlay* UMWidgetLayer::GetAppropriateOverlay(const int32 Id)
 {
 	UOverlay* LayerAt = Cast<UOverlay>(GetChildAt(Id));

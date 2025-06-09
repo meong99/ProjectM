@@ -118,12 +118,12 @@ FHitResult UMGameplayStatics::GetFloorLocation(const UObject* WorldContext, cons
 	return OutHit;
 }
 
-UMWidgetBase* UMGameplayStatics::AddWidgetToLayer(const UObject* WorldContextObject, FGameplayTag WidgetTag)
+UMWidgetBase* UMGameplayStatics::AddWidgetToLayer(const UObject* WorldContextObject, FGameplayTag WidgetTag, FMWidgetInfo InWidgetInfo)
 {
 	UMViewportClient* ViewportClient = UMViewportClient::Get(WorldContextObject);
 	if (ViewportClient)
 	{
-		return ViewportClient->AddWidgetToLayer(WidgetTag);
+		return ViewportClient->AddWidgetToLayer(WidgetTag, InWidgetInfo);
 	}
 
 	return nullptr;

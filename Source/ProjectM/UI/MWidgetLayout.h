@@ -50,8 +50,10 @@ public:
 	void AddWidgetToLayer(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const;
 	void RemoveWidgetFromLayer(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const;
 
+	bool RemoveTopWidgetInGameLayer();
 private:
 	UMWidgetLayer* GetLayer(EMWidgetLayout WidgetLayout) const;
+	UMWidgetLayer* GetCurrentLayer() const;
 /*
 * Member Variables
 */

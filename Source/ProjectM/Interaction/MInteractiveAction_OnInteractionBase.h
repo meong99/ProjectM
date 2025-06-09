@@ -16,8 +16,10 @@ class PROJECTM_API UMInteractiveAction_OnInteractionBase : public UMInteractiveA
 */
 public:
 	UMInteractiveAction_OnInteractionBase(const FObjectInitializer& ObjectInitializer);
+	virtual void ActivateAction() override;
+	virtual void DeactivateAction() override;
 
-/*
+		/*
 * Member Functions
 */
 public:

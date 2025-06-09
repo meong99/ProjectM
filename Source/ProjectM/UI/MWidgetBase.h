@@ -13,7 +13,13 @@ class APMPlayerControllerBase;
 UENUM(BlueprintType)
 enum class EMWidgetLayerId : uint8
 {
-	// 가장 기본 레이어. 가장 뒤에 그려진다
+	// 가장 뒷단의 HUD위젯
+	Hud UMETA(DisplayName = "Hud"),
+
+	// 인터렉션 관련 위젯
+	Interaction UMETA(DisplayName = "Interaction"),
+
+	// 인게임에서 인터렉티브한 모든 UI. Esc로 제거 가능. Ex) Inventory, Quest...
 	Game UMETA(DisplayName = "Game"),
 
 	// 로딩에 사용. 가장 앞에 그려진다.
@@ -61,7 +67,6 @@ public:
 	virtual void	NativeOnInitialized() override;
 	virtual FReply	NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual FReply	NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-	// 	virtual bool	NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
 /*
 * Member Functions

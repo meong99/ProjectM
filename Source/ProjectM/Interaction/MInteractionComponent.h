@@ -40,17 +40,19 @@ public:
 	UFUNCTION()
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	
-	UFUNCTION(BlueprintCallable)
-	void ActivateAllOverlapAction();
-	UFUNCTION(BlueprintCallable)
-	void DeactivateAllOverlapAction();
-
 	bool ExistActivatableAction() const;
+	void OnActivatedInteractiveAction(UMInteractiveAction_OnInteractionBase* Action);
+	void OnDeactivatedInteractiveAction(UMInteractiveAction_OnInteractionBase* Action);
+	void OnAddedInteractionList();
+	void OnRemovedInteractionList();
 
 	const TArray<UMInteractiveAction_OverlapActionBase*>& GetOnBeginOverlapActions() const {return Action_OnBeginOverlap; }
-	const TArray<UMInteractiveAction_OnInteractionBase*>& GetOnOnInteractActions() const {return Action_OnInteract; }
+	const TArray<UMInteractiveAction_OnInteractionBase*>& GetOnInteractActions() const {return Action_OnInteract; }
 
 private:
+	void ActivateAllOverlapAction();
+	void DeactivateAllOverlapAction();
+
 	void EnableInteraction(AActor* OtherActor);
 	void DisableInteraction(AActor* OtherActor);
 	void OnInteract(const FGameplayTag& Tag);
@@ -69,6 +71,12 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "ProjectM")
 	TArray<TObjectPtr<UMInteractiveAction_OnInteractionBase>> Action_OnInteract;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ProjectM")
+	TSet<UMInteractiveAction_OnInteractionBase*> ActivatedInteractiveActions;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ProjectM")
+	bool bIsAddedInteractionList = false;
 
 	TWeakObjectPtr<AMPlayerCharacterBase> WeakOverlappedCharacter;
 };

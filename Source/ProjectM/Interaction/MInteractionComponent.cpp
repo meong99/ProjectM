@@ -146,6 +146,10 @@ void UMInteractionComponent::DisableInteraction(AActor* OtherActor)
 		{
 			Character->RemoveOverlappedMonster(GetOwner());
 		}
+		else
+		{
+			UMGameplayStatics::RemoveWidgetFromLayer(this, FPMGameplayTags::Get().UI_Registry_Game_InteractionList);
+		}
 	}
 
 	WeakOverlappedCharacter = nullptr;
@@ -160,10 +164,9 @@ void UMInteractionComponent::DisableInteraction(AActor* OtherActor)
 
 void UMInteractionComponent::OnInteract(const FGameplayTag& Tag)
 {
-	UMViewportClient* ViewportClient = UMViewportClient::Get(this);
-	if (ViewportClient && ExistActivatableAction())
+	if (ExistActivatableAction())
 	{
-		ViewportClient->AddWidgetToLayer(FPMGameplayTags::Get().UI_Registry_Game_InteractionList, { this, GetOwner() });
+		UMGameplayStatics::AddWidgetToLayer(this, FPMGameplayTags::Get().UI_Registry_Game_InteractionList, { this, GetOwner() });
 	}
 }
 
@@ -178,6 +181,11 @@ void UMInteractionComponent::Callback_OnSetInputComponent(UInputComponent* InInp
 
 void UMInteractionComponent::BindDelegate()
 {
+	if (GetOwner() && GetOwner()->IsA(AMMonsterBase::StaticClass()))
+	{
+		return;
+	}
+
 	UPMInputComponent* InputComponent = GetInputComponent();
 	if (InputComponent)
 	{
@@ -187,16 +195,15 @@ void UMInteractionComponent::BindDelegate()
 
 void UMInteractionComponent::UnbindDelegate()
 {
+	if (GetOwner() && GetOwner()->IsA(AMMonsterBase::StaticClass()))
+	{
+		return;
+	}
+
 	UPMInputComponent* InputComponent = GetInputComponent();
 	if (InputComponent)
 	{
 		InputComponent->InputActionDelegateMap.Remove(FPMGameplayTags::Get().InputTag_Togle_Interaction);
-	}
-
-	UMViewportClient* ViewportClient = UMViewportClient::Get(this);
-	if (ViewportClient)
-	{
-		ViewportClient->RemoveWidgetFromLayer(FPMGameplayTags::Get().UI_Registry_Game_InteractionList);
 	}
 }
 
@@ -207,11 +214,14 @@ bool UMInteractionComponent::IsItServer() const
 
 void UMInteractionComponent::ActivateAllOverlapAction()
 {
-	for (UMInteractiveAction_Base* Action : Action_OnBeginOverlap)
+	if (WeakOverlappedCharacter.IsValid() && !bIsAddedInteractionList && ActivatedInteractiveActions.IsEmpty())
 	{
-		if (Action)
+		for (UMInteractiveAction_Base* Action : Action_OnBeginOverlap)
 		{
-			Action->ActivateAction();
+			if (Action)
+			{
+				Action->ActivateAction();
+			}
 		}
 	}
 }
@@ -246,6 +256,33 @@ bool UMInteractionComponent::ExistActivatableAction() const
 	}
 
 	return bExistActivatableAction;
+}
+
+void UMInteractionComponent::OnActivatedInteractiveAction(UMInteractiveAction_OnInteractionBase* Action)
+{
+	ActivatedInteractiveActions.Add(Action);
+	DeactivateAllOverlapAction();
+}
+
+void UMInteractionComponent::OnDeactivatedInteractiveAction(UMInteractiveAction_OnInteractionBase* Action)
+{
+	ActivatedInteractiveActions.Remove(Action);
+	if (ActivatedInteractiveActions.IsEmpty())
+	{
+		ActivateAllOverlapAction();
+	}
+}
+
+void UMInteractionComponent::OnAddedInteractionList()
+{
+	bIsAddedInteractionList = true;
+	DeactivateAllOverlapAction();
+}
+
+void UMInteractionComponent::OnRemovedInteractionList()
+{
+	bIsAddedInteractionList = false;
+	ActivateAllOverlapAction();
 }
 
 UPMInputComponent* UMInteractionComponent::GetInputComponent() const

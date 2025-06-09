@@ -1,5 +1,4 @@
 #include "MBindWidgetByInputComponent.h"
-#include "Engine/GameInstance.h"
 #include "UI/MViewportClient.h"
 #include "PMGameplayTags.h"
 #include "UI/MWidgetInstanceList.h"
@@ -58,8 +57,7 @@ void UMBindWidgetByInputComponent::BindWidgetByInput(UInputComponent* InInputCom
 void UMBindWidgetByInputComponent::ToggleWidget(const FGameplayTag& Tag) const
 {
 	UMWidgetBase* Widget = WidgetInstanceMapWrapper->WidgetInstanceMap.FindRef(Tag);
-	UGameInstance* GameInstance = GetGameInstance<UGameInstance>();
-	UMViewportClient* ViewportClient = GameInstance ? Cast<UMViewportClient>(GameInstance->GetGameViewportClient()) : nullptr;
+	UMViewportClient* ViewportClient = UMViewportClient::Get(this);
 
 	if (IsValid(Widget) && IsValid(ViewportClient))
 	{
@@ -76,8 +74,7 @@ void UMBindWidgetByInputComponent::ToggleWidget(const FGameplayTag& Tag) const
 
 UMWidgetInstanceList* UMBindWidgetByInputComponent::GetWidgetInstanceList() const
 {
-	UGameInstance* GameInstance = GetGameInstance<UGameInstance>();
-	UMViewportClient* ViewportClient = GameInstance ? Cast<UMViewportClient>(GameInstance->GetGameViewportClient()) : nullptr;
+	UMViewportClient* ViewportClient = UMViewportClient::Get(this);
 	if (IsValid(ViewportClient))
 	{
 		return ViewportClient->CreateWidgetInRegister(FPMGameplayTags::Get().UI_Registry_InputTag);

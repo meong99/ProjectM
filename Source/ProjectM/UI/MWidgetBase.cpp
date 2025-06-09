@@ -30,8 +30,7 @@ FReply UMWidgetBase::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry,
 
 void UMWidgetBase::AddWidgetToLayer(const FMWidgetInfo& InWidgetInfo, const int32 LayerId)
 {
-	UGameInstance* GameInstance = GetGameInstance<UGameInstance>();
-	UMViewportClient* ViewportClient = GameInstance ? Cast<UMViewportClient>(GameInstance->GetGameViewportClient()) : nullptr;
+	UMViewportClient* ViewportClient = UMViewportClient::Get(this);
 	if (ViewportClient)
 	{
 		ViewportClient->AddWidgetToLayer(WidgetTag, InWidgetInfo, LayerId);

@@ -44,15 +44,24 @@ void UMDefaultShopWidget::NativeDestruct()
 	{
 		PlayerWalletComp->Delegate_OnChangeGold.RemoveDynamic(this, &UMDefaultShopWidget::OnChange_Gold);
 	}
+
+	DeactivateShop();
+
+	Super::NativeDestruct();
 }
 
-void UMDefaultShopWidget::OnClicked_ExitButton()
+void UMDefaultShopWidget::DeactivateShop()
 {
 	UMInteractiveAction_Base* ActionBase = Cast<UMInteractiveAction_Base>(WidgetInfo.WidgetInstigator);
 	if (ActionBase)
 	{
 		ActionBase->DeactivateAction();
 	}
+}
+
+void UMDefaultShopWidget::OnClicked_ExitButton()
+{
+	RemoveWidgetFromLayer();
 }
 
 void UMDefaultShopWidget::OnChange_Gold(int64 AdjustNum, int64 NewGold)

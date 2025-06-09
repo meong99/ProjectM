@@ -28,6 +28,7 @@ public:
 	void RemoveWidgetFromLayer(UMWidgetBase* Widget);
 	void ActivateLayer();
 	void ClearAllWidget();
+	bool RemoveTopWidgetInGameLayer();
 
 protected:
 	UOverlay* GetAppropriateOverlay(const int32 Id);

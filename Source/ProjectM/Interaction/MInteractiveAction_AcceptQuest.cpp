@@ -48,13 +48,6 @@ void UMInteractiveAction_AcceptQuest::ActivateAction()
 void UMInteractiveAction_AcceptQuest::DeactivateAction()
 {
 	Super::DeactivateAction();
-
-	UMViewportClient* ViewportClient = UMViewportClient::Get(this);
-	if (ViewportClient)
-	{
-		ViewportClient->RemoveWidgetFromLayer(FPMGameplayTags::Get().UI_Registry_Game_Dialogue);
-		InteractionComponent->ActivateAllOverlapAction();
-	}
 }
 
 void UMInteractiveAction_AcceptQuest::OnClick_Accept()

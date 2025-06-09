@@ -19,12 +19,17 @@ void UMDialogueBoxWidget::NativeConstruct()
 	if (DialogTextArray.IsEmpty())
 	{
 		ensure(false);
-		ClearDialogue();
 		RemoveWidgetFromLayer();
 		return;
 	}
 
 	StartDialogue();
+}
+
+void UMDialogueBoxWidget::NativeDestruct()
+{
+	ClearDialogue();
+	Super::NativeDestruct();
 }
 
 FReply UMDialogueBoxWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -140,10 +145,6 @@ void UMDialogueBoxWidget::ClearDialogue()
 	{
 		Action->DeactivateAction();
 	}
-	else
-	{
-		RemoveWidgetFromLayer();
-	}
 }
 
 void UMDialogueBoxWidget::OnClick_Button1()
@@ -151,7 +152,7 @@ void UMDialogueBoxWidget::OnClick_Button1()
 	if (Callback1)
 	{
 		Callback1();
-		ClearDialogue();
+		RemoveWidgetFromLayer();
 	}
 }
 
@@ -160,13 +161,13 @@ void UMDialogueBoxWidget::OnClick_Button2()
 	if (Callback2)
 	{
 		Callback2();
-		ClearDialogue();
+		RemoveWidgetFromLayer();
 	}
 }
 
 void UMDialogueBoxWidget::OnClick_ExitButton()
 {
-	ClearDialogue();
+	RemoveWidgetFromLayer();
 }
 
 void UMDialogueBoxWidget::SetOwnerName(const FText InOwnerName)

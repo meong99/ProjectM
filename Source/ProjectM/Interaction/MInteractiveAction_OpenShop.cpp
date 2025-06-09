@@ -56,7 +56,6 @@ void UMInteractiveAction_OpenShop::DeactivateAction()
 	if (ViewportClient && InteractionComponent)
 	{
 		ViewportClient->RemoveWidgetFromLayer(FPMGameplayTags::Get().UI_Registry_Game_Shop);
-		InteractionComponent->ActivateAllOverlapAction();
 	}
 	Super::DeactivateAction();
 }

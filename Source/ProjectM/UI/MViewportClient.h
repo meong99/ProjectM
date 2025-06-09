@@ -30,7 +30,9 @@ public:
 	virtual void PostRender(UCanvas* Canvas) override;
 	virtual void ClearFade();
 	virtual void Fade(const float Duration, const bool InbToBlack, const float InFadeDelay = 0.f);
-/*
+	virtual bool InputKey(const FInputKeyEventArgs& EventArgs) override;
+
+	/*
 * Member Functions
 */
 public:
@@ -53,6 +55,7 @@ public:
 	// 해당하는 위젯을 바로 viewport에 설정
 	void AddWidgetToViewport(const FGameplayTag& WidgetTag);
 	void RemoveWidgetFromParent(const FGameplayTag& WidgetTag);
+	void OnPressEsc();
 
 	// Layer에 Widget을 설정한다.
 	UMWidgetBase*	AddWidgetToLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo = {}, const int32 LayerId = 0/*GameLayer*/);
@@ -61,6 +64,7 @@ public:
 
 	// Widget의 Instance를 반환한다. 만약 Instancing되지 않았다면 Class를 찾아 Instancing후 반환한다.
 	UMWidgetBase* GetWidgetInstance(const FGameplayTag& WidgetTag);
+
 
 private:
 	UMWidgetInstanceList* CreateNewWidgetInstanceList(const FGameplayTag& RegisterTag);

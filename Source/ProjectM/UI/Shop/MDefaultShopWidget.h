@@ -28,8 +28,9 @@ protected:
 /*
 * Member Functions
 */
-public:
 protected:
+	void DeactivateShop();
+
 	UFUNCTION()
 	void OnClicked_ExitButton();
 

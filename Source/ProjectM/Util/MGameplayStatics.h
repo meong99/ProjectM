@@ -38,7 +38,7 @@ public:
 	static FHitResult						GetFloorLocation(const UObject* WorldContext, const FVector& StartLocation, const TArray<AActor*>& ActorsToIgnore, const float Layrange = 1000.f);
 
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"))
-	static UMWidgetBase*	AddWidgetToLayer(const UObject* WorldContextObject, FGameplayTag WidgetTag);
+	static UMWidgetBase*	AddWidgetToLayer(const UObject* WorldContextObject, FGameplayTag WidgetTag, FMWidgetInfo InWidgetInfo);
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"))
 	static UMWidgetBase*	RemoveWidgetFromLayer(const UObject* WorldContextObject, FGameplayTag WidgetTag);
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"))

@@ -12,6 +12,8 @@
 #include "UI/MWidgetLayout.h"
 #include "Engine/Canvas.h"
 #include "Engine/Texture2D.h"
+#include "InputKeyEventArgs.h"
+#include "GameModes/MWorldSettings.h"
 
 void UMViewportClient::Init(struct FWorldContext& WorldContext, UGameInstance* OwningGameInstance, bool bCreateNewAudioDevice /*= true*/)
 {
@@ -44,6 +46,28 @@ void UMViewportClient::Fade(const float Duration, const bool InbToBlack, const f
 		FadeStartTime = World->GetTimeSeconds();
 		FadeDelay = InFadeDelay;
 	}
+}
+
+bool UMViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
+{
+	if (GetWorld())
+	{
+		AMWorldSettings* WorldSetting = Cast<AMWorldSettings>(GetWorld()->GetWorldSettings());
+		if (WorldSetting && WorldSetting->WorldTag == FPMGameplayTags::Get().Level_Lobby)
+		{
+
+		}
+		else
+		{
+			if (EventArgs.Key == EKeys::Escape && EventArgs.Event == IE_Pressed)
+			{
+				OnPressEsc();
+				return true;
+			}
+		}
+	}
+
+	return Super::InputKey(EventArgs);
 }
 
 UMViewportClient* UMViewportClient::Get(const UObject* WorldContext)
@@ -188,6 +212,26 @@ void UMViewportClient::RemoveWidgetFromParent(const FGameplayTag& WidgetTag)
 	if (Widget && Widget->IsInViewport())
 	{
 		Widget->RemoveFromParent();
+	}
+}
+
+void UMViewportClient::OnPressEsc()
+{
+	FGameplayTag WidgetTag = FPMGameplayTags::Get().UI_Registry_Game_Option;
+	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
+
+	if (WidgetLayout && WidgetLayout->RemoveTopWidgetInGameLayer())
+	{
+		return;
+	}
+
+	if (Widget && Widget->IsActivate())
+	{
+		RemoveWidgetFromLayer(WidgetTag);
+	}
+	else
+	{
+		AddWidgetToLayer(WidgetTag);
 	}
 }
 

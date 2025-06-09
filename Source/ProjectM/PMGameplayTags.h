@@ -39,6 +39,7 @@ struct FPMGameplayTags
 
 	FGameplayTag UI_Registry_Layout_DefaultLayout;
 	FGameplayTag UI_Registry_HUD_MainHUD;
+	FGameplayTag UI_Registry_Game_Option;
 
 	FGameplayTag UI_Game_NameWidget;
 	/*
@@ -73,6 +74,7 @@ struct FPMGameplayTags
 	FGameplayTag Level_Persistent_MainLevel;
 	FGameplayTag Level_Square;
 	FGameplayTag Level_Field;
+	FGameplayTag Level_Lobby;
 
 	/*
 	* GameplayEvent

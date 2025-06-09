@@ -15,7 +15,7 @@ void UMInteractionListWidget::NativeConstruct()
 	InteractionComponent = WidgetInfo.WidgetOwnerActor ? WidgetInfo.WidgetOwnerActor->FindComponentByClass<UMInteractionComponent>() : nullptr;
 	if (InteractionComponent)
 	{
-		const TArray<UMInteractiveAction_OnInteractionBase*>& Actions = InteractionComponent->GetOnOnInteractActions();
+		const TArray<UMInteractiveAction_OnInteractionBase*>& Actions = InteractionComponent->GetOnInteractActions();
 		for (int32 i = 0; i < Actions.Num(); i++)
 		{
 			if (Actions[i] && Actions[i]->ShouldActivate())
@@ -29,13 +29,14 @@ void UMInteractionListWidget::NativeConstruct()
 			}
 		}
 
-		InteractionComponent->DeactivateAllOverlapAction();
+		InteractionComponent->OnAddedInteractionList();
 	}
 }
 
 void UMInteractionListWidget::NativeDestruct()
 {
 	InteractionList->ClearChildren();
+	DeactivateList();
 	Super::NativeDestruct();
 }
 
@@ -52,7 +53,7 @@ void UMInteractionListWidget::DeactivateList()
 {
 	if (InteractionComponent)
 	{
-		InteractionComponent->ActivateAllOverlapAction();
-		RemoveWidgetFromLayer();
+		InteractionComponent->OnRemovedInteractionList();
 	}
+	RemoveWidgetFromLayer();
 }

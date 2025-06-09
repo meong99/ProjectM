@@ -44,7 +44,8 @@ void FPMGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 
 	AddTag(UI_Registry_Layout_DefaultLayout, "UI.Registry.Layout.DefaultLayout", "");
 	AddTag(UI_Registry_HUD_MainHUD, "UI.Registry.HUD.MainHUD", "각 게임 모드 별 HUD. 등록한다면 Character가 초기화된 후 자동으로 위젯이 켜진다");
-
+	AddTag(UI_Registry_Game_Option, "UI.Registry.Game.Option", "");
+	
 	AddTag(UI_Game_NameWidget, "UI.Game.NameWidget", "");
 
 	/*
@@ -78,6 +79,7 @@ void FPMGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Level_Persistent_MainLevel, "Level.Persistent.MainLevel", "");
 	AddTag(Level_Square, "Level.Square", "");
 	AddTag(Level_Field, "Level.Field", "");
+	AddTag(Level_Lobby, "Level.Lobby", "");
 
 	/*
 	* GameplayEvent
