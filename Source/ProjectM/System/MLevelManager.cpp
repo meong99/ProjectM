@@ -19,24 +19,20 @@ void UMLevelManager::Initialize(FSubsystemCollectionBase& Collection)
 
 void UMLevelManager::TravelLevel(UPMUserFacingExperienceDefinition* UFED, const FString& Ip)
 {
-	if (UFED)
+	CurrentUFED = UFED;
+	if (CurrentUFED)
 	{
 		UCommonSessionSubSystem* Session = GetSessionSubsystem();
 		if (Session)
 		{
- 			Session->HostSession(GetPlayerController(), UFED->CreateHostingRequst(Ip));
+			UMViewportClient* ViewportClient = Cast<UMViewportClient>(GetWorld()->GetGameInstance()->GetGameViewportClient());
+			if (ViewportClient)
+			{
+				ViewportClient->ClearLayer();
+			}
+ 			Session->HostSession(GetPlayerController(), CurrentUFED->CreateHostingRequst(Ip));
 		}
 	}
-}
-
-void UMLevelManager::OpenLevel(const UObject* WorldContextObject, const TSoftObjectPtr<UWorld> Level, bool bAbsolute, FString Options)
-{
-	UMViewportClient* ViewportClient = Cast<UMViewportClient>(GetWorld()->GetGameInstance()->GetGameViewportClient());
-	if (ViewportClient)
-	{
-		ViewportClient->ClearLayer();
-	}
-	UGameplayStatics::OpenLevelBySoftObjectPtr(WorldContextObject, Level, bAbsolute, Options);
 }
 
 void UMLevelManager::OnLevelLoaded(UWorld* NewWorld)
