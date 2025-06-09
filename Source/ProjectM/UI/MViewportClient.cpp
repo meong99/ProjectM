@@ -14,6 +14,9 @@
 #include "Engine/Texture2D.h"
 #include "InputKeyEventArgs.h"
 #include "GameModes/MWorldSettings.h"
+#include "GenericPlatform/GenericPlatformMisc.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 void UMViewportClient::Init(struct FWorldContext& WorldContext, UGameInstance* OwningGameInstance, bool bCreateNewAudioDevice /*= true*/)
 {
@@ -68,6 +71,12 @@ bool UMViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
 	}
 
 	return Super::InputKey(EventArgs);
+}
+
+bool UMViewportClient::WindowCloseRequested()
+{
+	UKismetSystemLibrary::QuitGame(GetWorld(), nullptr, EQuitPreference::Quit, true);
+	return false;
 }
 
 UMViewportClient* UMViewportClient::Get(const UObject* WorldContext)

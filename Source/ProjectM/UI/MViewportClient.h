@@ -31,6 +31,7 @@ public:
 	virtual void ClearFade();
 	virtual void Fade(const float Duration, const bool InbToBlack, const float InFadeDelay = 0.f);
 	virtual bool InputKey(const FInputKeyEventArgs& EventArgs) override;
+	virtual bool WindowCloseRequested() override;
 
 	/*
 * Member Functions
