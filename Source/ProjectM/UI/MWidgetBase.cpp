@@ -14,6 +14,18 @@ void UMWidgetBase::NativeOnInitialized()
 	SetIsFocusable(false);
 }
 
+void UMWidgetBase::NativeConstruct()
+{
+	Super::NativeConstruct();
+	bIsActivate = true;
+}
+
+void UMWidgetBase::NativeDestruct()
+{
+	bIsActivate = false;
+	Super::NativeDestruct();
+}
+
 FReply UMWidgetBase::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);

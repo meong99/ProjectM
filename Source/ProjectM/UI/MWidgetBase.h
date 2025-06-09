@@ -65,6 +65,8 @@ public:
 	UMWidgetBase(const FObjectInitializer& ObjectInitializer);
 
 	virtual void	NativeOnInitialized() override;
+	virtual void	NativeConstruct();
+	virtual void	NativeDestruct();
 	virtual FReply	NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual FReply	NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
