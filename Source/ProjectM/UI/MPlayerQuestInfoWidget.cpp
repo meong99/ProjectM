@@ -11,7 +11,6 @@ UMPlayerQuestInfoWidget::UMPlayerQuestInfoWidget(const FObjectInitializer& Objec
 void UMPlayerQuestInfoWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
-	InitQuest();
 }
 
 void UMPlayerQuestInfoWidget::DisplayQuestInfo(const UMQuestDefinition* QuestDefinition, const FMQuestHandle& QuestHandle) const
