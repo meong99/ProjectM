@@ -196,10 +196,11 @@ UMWidgetInstanceList* UMViewportClient::CreateWidgetInRegister(const FGameplayTa
 	if (WidgetInstanceList == nullptr)
 	{
 		WidgetInstanceList = CreateNewWidgetInstanceList(RegisterTag);
-		if (WidgetInstanceList)
-		{
-			WidgetInstanceList->CreateNewWidgets(WidgetRegisterMap.FindRef(RegisterTag));
-		}
+	}
+
+	if (WidgetInstanceList)
+	{
+		WidgetInstanceList->CreateNewWidgets(WidgetRegisterMap.FindRef(RegisterTag));
 	}
 
 	return WidgetInstanceList;
@@ -339,8 +340,12 @@ UMWidgetBase* UMViewportClient::GetWidgetInstance(const FGameplayTag& WidgetTag)
 
 UMWidgetInstanceList* UMViewportClient::CreateNewWidgetInstanceList(const FGameplayTag& RegisterTag)
 {
-	UMWidgetInstanceList* WidgetInstanceList = UMWidgetInstanceList::CreateNewWidgetInstanceList(this, RegisterTag);
-	WidgetInstanceListMap.Add(RegisterTag, WidgetInstanceList);
+	UMWidgetInstanceList* WidgetInstanceList = WidgetInstanceListMap.FindRef(RegisterTag);
+	if (!WidgetInstanceList)
+	{
+		WidgetInstanceList = UMWidgetInstanceList::CreateNewWidgetInstanceList(this, RegisterTag);
+		WidgetInstanceListMap.Add(RegisterTag, WidgetInstanceList);
+	}
 
 	return WidgetInstanceList;
 }

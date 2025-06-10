@@ -66,10 +66,10 @@ public:
 	// Widget의 Instance를 반환한다. 만약 Instancing되지 않았다면 Class를 찾아 Instancing후 반환한다.
 	UMWidgetBase* GetWidgetInstance(const FGameplayTag& WidgetTag);
 
+	UMWidgetRegister* GetWidgetRegister(const FGameplayTag& Tag);
 
 private:
 	UMWidgetInstanceList* CreateNewWidgetInstanceList(const FGameplayTag& RegisterTag);
-	UMWidgetRegister* GetWidgetRegister(const FGameplayTag& Tag);
 /*
 * Member Variables
 */
