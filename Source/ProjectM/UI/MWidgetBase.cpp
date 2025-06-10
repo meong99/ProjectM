@@ -23,6 +23,7 @@ void UMWidgetBase::NativeConstruct()
 void UMWidgetBase::NativeDestruct()
 {
 	bIsActivate = false;
+	SetWidgetInfo({});
 	Super::NativeDestruct();
 }
 

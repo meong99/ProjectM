@@ -268,7 +268,6 @@ UMWidgetBase* UMViewportClient::RemoveWidgetFromLayer(const FGameplayTag& Widget
 	{
 		if (Widget->IsInLayer())
 		{
-			Widget->SetWidgetInfo({});
 			WidgetLayout->RemoveWidgetFromLayer(GetWidgetInstance(WidgetTag), (EMWidgetLayout)LayerId);
 			Widget->SetActivate(false);
 		}
