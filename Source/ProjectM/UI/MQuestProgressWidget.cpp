@@ -25,7 +25,7 @@ void UMQuestProgressWidget::PreAddToLayer()
 	FinishedButton_Deactivated->OnClicked.AddDynamic(this, &UMQuestProgressWidget::OnClick_Finished);
 }
 
-void UMQuestProgressWidget::InitQuest(UMQuestInfoWidget* InQuestInfo, UMPlayerQuestComponent* InPlayerQuestComponent)
+void UMQuestProgressWidget::InitQuest(UMQuestInfoWidget* InQuestInfo)
 {
 	if (!InQuestInfo)
 	{
@@ -34,12 +34,16 @@ void UMQuestProgressWidget::InitQuest(UMQuestInfoWidget* InQuestInfo, UMPlayerQu
 		return;
 	}
 
-	PlayerQuestComponent = InPlayerQuestComponent;
-	if (!PlayerQuestComponent)
+	APlayerController* Controller = GetOwningPlayer<APlayerController>();
+	if (Controller)
 	{
-		MCHAE_ERROR("QuestComponent is not valid");
-		ensure(false);
-		return;
+		PlayerQuestComponent = Controller->FindComponentByClass<UMPlayerQuestComponent>();
+		if (!PlayerQuestComponent)
+		{
+			MCHAE_ERROR("QuestComponent is not valid");
+			ensure(false);
+			return;
+		}
 	}
 
 	ClearQuestProgress();

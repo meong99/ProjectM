@@ -11,6 +11,7 @@ UMPlayerQuestInfoWidget::UMPlayerQuestInfoWidget(const FObjectInitializer& Objec
 void UMPlayerQuestInfoWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
+	InitQuest();
 }
 
 void UMPlayerQuestInfoWidget::DisplayQuestInfo(const UMQuestDefinition* QuestDefinition, const FMQuestHandle& QuestHandle) const
@@ -18,9 +19,9 @@ void UMPlayerQuestInfoWidget::DisplayQuestInfo(const UMQuestDefinition* QuestDef
 	QuestInfo->DisplayQuestInfo(QuestDefinition, QuestHandle);
 }
 
-void UMPlayerQuestInfoWidget::InitQuest(UMPlayerQuestComponent* InPlayerQuestComponent)
+void UMPlayerQuestInfoWidget::InitQuest()
 {
-	QuestProgress->InitQuest(QuestInfo, InPlayerQuestComponent);
+	QuestProgress->InitQuest(QuestInfo);
 	QuestInfo->SetVisibility(ESlateVisibility::Collapsed);
 	APlayerController* Controller = GetOwningPlayer();
 	UMPlayerQuestComponent* QuestComp = Controller ? Controller->FindComponentByClass<UMPlayerQuestComponent>() : nullptr;

@@ -51,13 +51,13 @@ class PROJECTM_API UMPlayerQuestComponent : public UMQuestComponentBase
 public:
 	UMPlayerQuestComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	virtual void InitializeComponent() override;
-	virtual void BeginPlay() override;
 
-	/*
+	void AcceptQuest(const int32 QuestRowId);
+
+/*
 * Member Functions
 */
 public:
-	void AcceptQuest(const int32 QuestRowId);
 	const TSet<int32>& GetInProgressingQuests() const { return InProgressingQuests; }
 	const TSet<int32>& GetStartableQuests() const { return StartableQuests; }
 	const TSet<int32>& GetFinishedQuests() const { return FinishedQuests; }
