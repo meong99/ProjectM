@@ -39,7 +39,7 @@ protected:
 	* Member Functions
 	*/
 public:
-	void	InitQuest(UMQuestInfoWidget* InQuestInfo);
+	void	InitQuest(UMQuestInfoWidget* InQuestInfo, UMPlayerQuestComponent* InPlayerQuestComponent);
 	void	UpdateQuest(const int32 QuestRowId, EMQuestState FromState, EMQuestState ToState);
 	void	SetInProgressQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMQuestInfoWidget* InQuestInfo);
 	void	SetStartableQuests(const TMap<int32, TObjectPtr<UMQuestDefinition>>& QuestDatas, UMQuestInfoWidget* InQuestInfo);

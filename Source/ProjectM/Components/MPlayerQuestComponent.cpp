@@ -25,6 +25,24 @@ void UMPlayerQuestComponent::InitializeComponent()
 	}
 }
 
+void UMPlayerQuestComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (GetNetMode() != NM_DedicatedServer)
+	{
+		UMViewportClient* ViewportClient = UMViewportClient::Get(this);
+		if (ViewportClient)
+		{
+			UMPlayerQuestInfoWidget* QuestInfoWidget = Cast<UMPlayerQuestInfoWidget>(ViewportClient->GetWidgetInstance(FPMGameplayTags::Get().UI_Registry_InputTag_PlayerQuest));
+			if (QuestInfoWidget)
+			{
+				QuestInfoWidget->InitQuest(this);
+			}
+		}
+	}
+}
+
 void UMPlayerQuestComponent::AcceptQuest(const int32 QuestRowId)
 {
 	int32 RemovedNum = StartableQuests.Remove(QuestRowId);

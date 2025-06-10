@@ -10,6 +10,7 @@
 class UMQuestProgressWidget;
 class UMQuestInfoWidget;
 class UMQuestDefinition;
+class UMPlayerQuestComponent;
 
 UCLASS()
 class PROJECTM_API UMPlayerQuestInfoWidget : public UMWidgetBase
@@ -28,7 +29,7 @@ public:
 * Member Functions
 */
 public:
-	void	InitQuest();
+	void	InitQuest(UMPlayerQuestComponent* InPlayerQuestComponent);
 	void	UpdateQuest(const int32 QuestRowId, EMQuestState FromState, EMQuestState ToState);
 	void	DisplayQuestInfo(const UMQuestDefinition* QuestDefinition, const FMQuestHandle& QuestHandle) const;
 
