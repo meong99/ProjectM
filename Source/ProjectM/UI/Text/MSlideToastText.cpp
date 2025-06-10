@@ -45,7 +45,7 @@ void UMSlideToastText::DisableSlideWidget()
 {
 	bIsActivatedText = false;
 	AppearancedTime = 0.f;
-	if (Visibility == ESlateVisibility::SelfHitTestInvisible)
+	if (GetVisibility() == ESlateVisibility::SelfHitTestInvisible)
 	{
 		SetVisibility(ESlateVisibility::Collapsed);
 	}

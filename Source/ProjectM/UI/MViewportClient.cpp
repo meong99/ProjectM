@@ -76,6 +76,7 @@ bool UMViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
 bool UMViewportClient::WindowCloseRequested()
 {
 	UKismetSystemLibrary::QuitGame(GetWorld(), nullptr, EQuitPreference::Quit, true);
+	// return true하면 패키징됐을 때 창이 먼저 꺼져서 정상적인 종료가 되지 않고, 백그라운드에 남아있음
 	return false;
 }
 

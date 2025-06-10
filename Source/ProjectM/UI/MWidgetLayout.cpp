@@ -86,12 +86,12 @@ void UMWidgetLayout::ClearAllWidget()
 
 void UMWidgetLayout::AddWidgetToCurrentLayer(UMWidgetBase* Widget) const
 {
-	AddWidgetToLayer(Widget, (EMWidgetLayout)LayoutSwitcher->ActiveWidgetIndex);
+	AddWidgetToLayer(Widget, (EMWidgetLayout)LayoutSwitcher->GetActiveWidgetIndex());
 }
 
 void UMWidgetLayout::RemoveWidgetToCurrentLayer(UMWidgetBase* Widget) const
 {
-	RemoveWidgetFromLayer(Widget, (EMWidgetLayout)LayoutSwitcher->ActiveWidgetIndex);
+	RemoveWidgetFromLayer(Widget, (EMWidgetLayout)LayoutSwitcher->GetActiveWidgetIndex());
 }
 
 void UMWidgetLayout::AddWidgetToLayer(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const
