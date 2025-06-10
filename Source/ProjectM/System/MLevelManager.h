@@ -30,7 +30,7 @@ public:
 */
 public:
 	UFUNCTION(BlueprintCallable)
-	void TravelLevel(UPMUserFacingExperienceDefinition* UFED, const FString& Ip);
+	void TravelLevel(UPMUserFacingExperienceDefinition* UFED, const FString& Ip, bool bIsSinglePlay);
 
 protected:
 	UFUNCTION()

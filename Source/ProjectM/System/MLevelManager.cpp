@@ -17,7 +17,7 @@ void UMLevelManager::Initialize(FSubsystemCollectionBase& Collection)
 	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UMLevelManager::OnLevelLoaded);
 }
 
-void UMLevelManager::TravelLevel(UPMUserFacingExperienceDefinition* UFED, const FString& Ip)
+void UMLevelManager::TravelLevel(UPMUserFacingExperienceDefinition* UFED, const FString& Ip, bool bIsSinglePlay)
 {
 	CurrentUFED = UFED;
 	if (CurrentUFED)
@@ -30,8 +30,13 @@ void UMLevelManager::TravelLevel(UPMUserFacingExperienceDefinition* UFED, const 
 			{
 				ViewportClient->ClearLayer();
 			}
- 			Session->HostSession(GetPlayerController(), CurrentUFED->CreateHostingRequst(Ip));
+ 			Session->HostSession(GetPlayerController(), CurrentUFED->CreateHostingRequst(Ip, bIsSinglePlay));
 		}
+	}
+	else
+	{
+		MCHAE_ERROR("UserFacingExperienceDefinition is not valid!!!!!!!");
+		ensure(false);
 	}
 }
 
