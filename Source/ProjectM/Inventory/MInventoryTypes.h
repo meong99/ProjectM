@@ -28,6 +28,17 @@ struct FMItemHandle
 		return ItemUid != INDEX_NONE;
 	}
 
+	bool operator==(const FMItemHandle& Other) const
+	{
+		return ItemUid == Other.ItemUid;
+	}
+
+	void Reset()
+	{
+		ItemUid = INDEX_NONE;
+		ItemType = EMItemType::None;
+	}
+
 	UPROPERTY(BlueprintReadWrite)
 	int32 ItemUid = INDEX_NONE;
 

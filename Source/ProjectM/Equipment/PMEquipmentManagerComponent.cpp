@@ -88,7 +88,7 @@ void UPMEquipmentManagerComponent::UnequipItem(EMEquipmentItemType EquipmentItem
 		{
 			FMItemRequest Request;
 			Request.SetItemRequest(EMItemRequestType::ReturnItemToInventory, UnEquippedItem->ItemRowId, 1, UnEquippedItem->ItemHandle);
-			InvenManager->RequestItemToInventory(Request);
+			InvenManager->RequestItemChange(Request);
 		}
 		UnEquippedItem->OnUnequipped();
 		TakeAbilitiesFromAsc(UnEquippedItem);

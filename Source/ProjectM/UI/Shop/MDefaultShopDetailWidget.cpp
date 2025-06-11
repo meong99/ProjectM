@@ -54,7 +54,7 @@ void UMDefaultShopDetailWidget::SetWidgetInfo(const FMWidgetInfo& InWidgetInfo)
 			{
 				if (ItemRespons.ResponsType == EMItemResponseType::TotallyNewItem)
 				{
-					CreateSlot(ItemRespons.ItemRequest.ItemRowId);
+					CreateSlot(ItemRespons.ItemRequest.ItemRowId, ItemRespons.ItemRequest.ItemHandle);
 				}
 			});
 		}
@@ -79,7 +79,7 @@ void UMDefaultShopDetailWidget::InitShopDetail()
 
 void UMDefaultShopDetailWidget::InitInventoryDetail()
 {
-	TArray<int32> ItemRowIds;
+	TArray<FPMInventoryEntry> ItemEntries;
 
 	UPMInventoryManagerComponent* InvenManager = GetOwningPlayer() ? GetOwningPlayer()->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
 	if (InvenManager)
@@ -89,7 +89,7 @@ void UMDefaultShopDetailWidget::InitInventoryDetail()
 		{
 			if (Entry.IsValid())
 			{
-				ItemRowIds.Add(Entry.GetItemRowId());
+				ItemEntries.Add(Entry);
 			}
 		}
 
@@ -98,7 +98,7 @@ void UMDefaultShopDetailWidget::InitInventoryDetail()
 		{
 			if (Entry.IsValid())
 			{
-				ItemRowIds.Add(Entry.GetItemRowId());
+				ItemEntries.Add(Entry);
 			}
 		}
 
@@ -107,12 +107,15 @@ void UMDefaultShopDetailWidget::InitInventoryDetail()
 		{
 			if (Entry.IsValid())
 			{
-				ItemRowIds.Add(Entry.GetItemRowId());
+				ItemEntries.Add(Entry);
 			}
 		}
 	}
 
-	CreateSlotsFromRowIds(ItemRowIds);
+	for (const FPMInventoryEntry& Entry : ItemEntries)
+	{
+		CreateSlot(Entry.GetItemRowId(), Entry.GetItemHandle());
+	}
 }
 
 void UMDefaultShopDetailWidget::CreateSlotsFromRowIds(const TArray<int32>& ItemRowIds)
@@ -123,7 +126,7 @@ void UMDefaultShopDetailWidget::CreateSlotsFromRowIds(const TArray<int32>& ItemR
 	}
 }
 
-void UMDefaultShopDetailWidget::CreateSlot(const int32 ItemRowId)
+void UMDefaultShopDetailWidget::CreateSlot(const int32 ItemRowId, const FMItemHandle& ItemHandle)
 {
 	UMDefaultShopSlotWidget* SlotWidget = CreateWidget<UMDefaultShopSlotWidget>(GetOwningPlayer(), ShopDefinition.SlotClass);
 	if (!SlotWidget)
@@ -132,6 +135,6 @@ void UMDefaultShopDetailWidget::CreateSlot(const int32 ItemRowId)
 		return;
 	}
 	SlotWidget->SetWidgetInfo(WidgetInfo);
-	SlotWidget->InitSlot(ItemRowId, Type);
+	SlotWidget->InitSlot(ItemRowId, Type, ItemHandle);
 	SlotVerticalBox->AddChildToVerticalBox(SlotWidget);
 }

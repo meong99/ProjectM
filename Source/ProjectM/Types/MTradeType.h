@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Inventory/MInventoryTypes.h"
 #include "MTradeType.generated.h"
 
 UENUM(BlueprintType)
@@ -24,6 +25,9 @@ struct FMTradeItemInfo
 
 	UPROPERTY()
 	int32 ItemCount;
+
+	UPROPERTY()
+	FMItemHandle Handle;
 };
 
 USTRUCT(BlueprintType)

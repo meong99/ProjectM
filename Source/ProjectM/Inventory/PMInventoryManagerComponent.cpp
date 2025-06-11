@@ -135,7 +135,7 @@ void UPMInventoryManagerComponent::ReadyForReplication()
 	}
 }
 
-FMItemHandle UPMInventoryManagerComponent::RequestItemToInventory(const FMItemRequest& ItemRequest)
+FMItemHandle UPMInventoryManagerComponent::RequestItemChange(const FMItemRequest& ItemRequest)
 {
 	FMItemHandle Handle = FMItemHandle{};
 
@@ -156,9 +156,12 @@ FMItemHandle UPMInventoryManagerComponent::RequestItemToInventory(const FMItemRe
 	FPMInventoryItemList* ItemList = GetItemList(ItemCDO->ItemType);
 	if (ItemList)
 	{
-		FPMInventoryEntry* Entry = ItemList->FindEntry(ItemCDO->GetClass());
-		if (Entry && ItemList->OwnedItemType != EMItemType::Equipment &&
-			(ItemRequest.RequestType == EMItemRequestType::AddItem || ItemRequest.RequestType == EMItemRequestType::RemoveItem))
+		FPMInventoryEntry* Entry = ItemRequest.ItemHandle.IsValid() ? ItemList->FindEntry(ItemRequest.ItemHandle) : ItemList->FindEntry(ItemCDO->GetClass());
+
+		if (Entry && 
+			((ItemList->OwnedItemType != EMItemType::Equipment && ItemRequest.RequestType == EMItemRequestType::AddItem )
+				|| ItemRequest.RequestType == EMItemRequestType::RemoveItem)
+			)
 		{
 			Handle = Entry->GetItemHandle();
 			ChangeItemQuantity(Entry->Instance, ItemRequest);
@@ -539,5 +542,5 @@ void UPMInventoryManagerComponent::DebugServer_AddItem_Implementation(int32 Rowi
 	FMItemRequest Request;
 
 	Request.SetItemRequest(EMItemRequestType::AddItem, Rowid, ItemQuentity);
-	RequestItemToInventory(Request);
+	RequestItemChange(Request);
 }

@@ -198,7 +198,7 @@ void APMPlayerState::ApplyLoadedData()
 			{
 				FMItemRequest Request;
 				Request.SetItemRequest(EMItemRequestType::InitItem, ItemDef->GetDefaultObject<UPMInventoryItemDefinition>()->RowId, 1);
-				InventoryManager->RequestItemToInventory(Request);
+				InventoryManager->RequestItemChange(Request);
 			}
 		}
 	}

@@ -32,11 +32,11 @@ void UMPlayerTradeComponent::Server_OnRequestSimpleDataGrant_Implementation(AAct
 		FMItemRequest ItemRequest;
 		ItemRequest.SetItemRequest(EMItemRequestType::AddItem, Request.GrantItems[i].ItemRowId, GrantItemNum);
 
-		InventoryManager->RequestItemToInventory(ItemRequest);
+		InventoryManager->RequestItemChange(ItemRequest);
 	}
 }
 
-void UMPlayerTradeComponent::Server_OnRequestSimpleTrading_Implementation(AActor* Requestor, const FMTradeRequest& Request)
+void UMPlayerTradeComponent::Server_OnRequestSimpleTrading_Implementation(AActor* Requestor, const FMTradeRequest& TradeRequest)
 {
 	if (GetOwnerRole() != ENetRole::ROLE_Authority)
 	{
@@ -53,43 +53,43 @@ void UMPlayerTradeComponent::Server_OnRequestSimpleTrading_Implementation(AActor
 		return;
 	}
 
-	if (Request.RequiredGold > 0)
+	if (TradeRequest.RequiredGold > 0)
 	{
-		if (Request.RequiredGold > WalletComponent->GetGold())
+		if (TradeRequest.RequiredGold > WalletComponent->GetGold())
 		{
 			return;
 		}
 
-		WalletComponent->SubtractGold(Request.RequiredGold);
+		WalletComponent->SubtractGold(TradeRequest.RequiredGold);
 	}
 
-	if (Request.RequiredItems.Num() > 0)
+	if (TradeRequest.RequiredItems.Num() > 0)
 	{
-		for (int32 i = 0; i < Request.RequiredItems.Num(); i++)
+		for (int32 i = 0; i < TradeRequest.RequiredItems.Num(); i++)
 		{
-			int32 RequirementNum = Request.RequiredItems[i].ItemCount;
-			if (RequirementNum > InventoryManager->GetItemQuantity(Request.RequiredItems[i].ItemRowId))
+			int32 RequirementNum = TradeRequest.RequiredItems[i].ItemCount;
+			if (RequirementNum > InventoryManager->GetItemQuantity(TradeRequest.RequiredItems[i].ItemRowId))
 			{
 				return;
 			}
 		}
 
-		for (int32 i = 0; i < Request.RequiredItems.Num(); i++)
+		for (int32 i = 0; i < TradeRequest.RequiredItems.Num(); i++)
 		{
-			int32 RequirementNum = Request.RequiredItems[i].ItemCount;
+			int32 RequirementNum = TradeRequest.RequiredItems[i].ItemCount;
 			FMItemRequest ItemRequest;
-			ItemRequest.SetItemRequest(EMItemRequestType::RemoveItem, Request.RequiredItems[i].ItemRowId, -RequirementNum);
-			InventoryManager->RequestItemToInventory(ItemRequest);
+			ItemRequest.SetItemRequest(EMItemRequestType::RemoveItem, TradeRequest.RequiredItems[i].ItemRowId, -RequirementNum, TradeRequest.RequiredItems[i].Handle);
+			InventoryManager->RequestItemChange(ItemRequest);
 		}
 	}
 
-	WalletComponent->AddGold(Request.GrantGold);
-	for (int32 i = 0; i < Request.GrantItems.Num(); i++)
+	WalletComponent->AddGold(TradeRequest.GrantGold);
+	for (int32 i = 0; i < TradeRequest.GrantItems.Num(); i++)
 	{
-		int32 GrantItemNum = Request.GrantItems[i].ItemCount;
+		int32 GrantItemNum = TradeRequest.GrantItems[i].ItemCount;
 
 		FMItemRequest ItemRequest;
-		ItemRequest.SetItemRequest(EMItemRequestType::AddItem, Request.GrantItems[i].ItemRowId, GrantItemNum);
-		InventoryManager->RequestItemToInventory(ItemRequest);
+		ItemRequest.SetItemRequest(EMItemRequestType::AddItem, TradeRequest.GrantItems[i].ItemRowId, GrantItemNum);
+		InventoryManager->RequestItemChange(ItemRequest);
 	}
 }

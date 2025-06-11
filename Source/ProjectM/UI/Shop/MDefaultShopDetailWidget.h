@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UI/MWidgetBase.h"
 #include "Types/MShopTypes.h"
+#include "Inventory/MInventoryTypes.h"
 #include "MDefaultShopDetailWidget.generated.h"
 
 class UMDefaultShopSlotWidget;
@@ -34,7 +35,7 @@ protected:
 	void InitShopDetail();
 	void InitInventoryDetail();
 	void CreateSlotsFromRowIds(const TArray<int32>& ItemRowIds);
-	void CreateSlot(const int32 ItemRowId);
+	void CreateSlot(const int32 ItemRowId, const FMItemHandle& ItemHandle = {});
 
 	/*
 	* Member Variables

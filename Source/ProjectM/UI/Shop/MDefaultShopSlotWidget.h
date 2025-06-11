@@ -36,11 +36,11 @@ protected:
 	* Member Functions
 	*/
 public:
-	void InitSlot(const int32 InRowId, EMShopDetailType InType);
+	void InitSlot(const int32 InRowId, EMShopDetailType InType, const FMItemHandle& ItemHandle = {});
 
 protected:
 	void SetShopSlot();
-	void SetUserSlot();
+	void SetUserSlot(const FMItemHandle& ItemHandle);
 
 	void SetPrice(int32 NewPrice);
 
@@ -59,7 +59,7 @@ protected:
 
 	TWeakObjectPtr<UMWalletComponent> PlayerWalletComp;
 
-	FPMInventoryEntry*	CachedEntry;
+	FMItemHandle		CachedItemHandle;
 	FDelegateHandle		OnChangeHandle;
 	FDelegateHandle		OnRemoveHandle;
 

@@ -43,7 +43,7 @@ public:
 
 	// 아이템을 추가하고 Instancing해서 저장한다.
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
-	FMItemHandle	RequestItemToInventory(const FMItemRequest& ItemRequest);
+	FMItemHandle	RequestItemChange(const FMItemRequest& ItemRequest);
 
 	FDelegateHandle AddDelegateOnChangeItemQuentity(const int32 ItemUid, FOnChangeItemQuentity::FDelegate&& Delegate);
 	void			RemoveDelegateOnChangeItemQuentity(const int32 ItemUid, const FDelegateHandle& DelegateHandle);
