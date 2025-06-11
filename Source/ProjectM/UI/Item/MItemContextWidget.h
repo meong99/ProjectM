@@ -70,4 +70,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
 	TObjectPtr<UTextBlock> DefencePower;
+
+	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
+	TObjectPtr<UTextBlock> HealthRecovery;
 };

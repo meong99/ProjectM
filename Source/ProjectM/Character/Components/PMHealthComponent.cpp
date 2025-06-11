@@ -62,6 +62,7 @@ void UPMHealthComponent::InitializeWithAbilitySystem(UPMAbilitySystemComponent* 
 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UPMHealthSet::GetHealthAttribute()).AddUObject(this, &ThisClass::HandleHealthChanged);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UPMHealthSet::GetMaxHealthAttribute()).AddUObject(this, &ThisClass::HandleHealthChanged);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UPMHealthSet::GetHealthRecoveryAttribute()).AddUObject(this, &ThisClass::HandleHealthChanged);
 	if (HasAuthority())
 	{
 		AMPlayerCharacterBase* Character = Cast<AMPlayerCharacterBase>(GetOwner());
@@ -72,7 +73,9 @@ void UPMHealthComponent::InitializeWithAbilitySystem(UPMAbilitySystemComponent* 
 	}
 
 	float CurrentHealth = HealthSet->GetHealth();
+	float CurrentHealthRecovery = HealthSet->GetHealthRecovery();
 	Delegate_OnInitHealth.Broadcast(HealthSet->GetHealthAttribute(), this, 0, CurrentHealth, nullptr);
+	Delegate_OnInitHealth.Broadcast(HealthSet->GetHealthRecoveryAttribute(), this, 0, CurrentHealthRecovery, nullptr);
 	Delegate_OnInitHealth.Clear();
 }
 

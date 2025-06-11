@@ -21,6 +21,7 @@ public:
 
 	ATTRIBUTE_ACCESSORS(UPMHealthSet, Health);
 	ATTRIBUTE_ACCESSORS(UPMHealthSet, MaxHealth);
+	ATTRIBUTE_ACCESSORS(UPMHealthSet, HealthRecovery);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -32,10 +33,14 @@ protected:
 	void AdjustAttributeForMaxChange(const float CurrentValue, const float OldMaxValue, float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty);
 	void ClampAttribute(const FGameplayAttribute& Attribute, float& NewValue) const;
 	void ClampToZeroIfDead(float& Value) const;
+
 public:
 	UPROPERTY(BlueprintReadWrite, Replicated, Category = "ProjectM | Health")
 	FGameplayAttributeData Health;
 
 	UPROPERTY(BlueprintReadWrite, Replicated, Category = "ProjectM | Health")
 	FGameplayAttributeData MaxHealth;
+
+	UPROPERTY(BlueprintReadWrite, Replicated, Category = "ProjectM | Health")
+	FGameplayAttributeData HealthRecovery;
 };

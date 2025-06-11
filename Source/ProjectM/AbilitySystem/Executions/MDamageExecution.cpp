@@ -1,7 +1,7 @@
 #include "MDamageExecution.h"
 #include "AbilitySystem/Attributes/PMCombatSet.h"
 #include "AbilitySystem/Attributes/PMHealthSet.h"
-#include "../../GameplayAbilities/Source/GameplayAbilities/Public/GameplayCueFunctionLibrary.h"
+#include "GameplayCueFunctionLibrary.h"
 
 struct FCombatStatics
 {

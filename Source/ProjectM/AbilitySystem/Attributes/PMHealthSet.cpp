@@ -4,7 +4,7 @@
 #include "Util/MGameplayStatics.h"
 #include "Character/MCharacterBase.h"
 
-UPMHealthSet::UPMHealthSet() : Super(), Health(1.f), MaxHealth(1.f)
+UPMHealthSet::UPMHealthSet() : Super(), Health(1.f), MaxHealth(1.f), HealthRecovery(0.f)
 {
 }
 
@@ -14,6 +14,7 @@ void UPMHealthSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 	DOREPLIFETIME(UPMHealthSet, Health);
 	DOREPLIFETIME(UPMHealthSet, MaxHealth);
+	DOREPLIFETIME(UPMHealthSet, HealthRecovery);
 }
 
 void UPMHealthSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const

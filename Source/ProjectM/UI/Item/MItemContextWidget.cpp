@@ -41,7 +41,7 @@ void UMItemContextWidget::UpdateContextWidget(const int32 RowId)
 			{
 				for (const FMSetbyCallerFloat& SetbyCallerInfo : EffectInfo.SetbyCallers)
 				{
-					UTextBlock* OutTextBlock;
+					UTextBlock* OutTextBlock = nullptr;
 					FText OutName;
 					GetTextBlockByTag(SetbyCallerInfo.SetByCallerTag, OutTextBlock, OutName);
 					if (OutTextBlock)
@@ -98,6 +98,7 @@ void UMItemContextWidget::DisableTexts()
 	MaxHealth->SetVisibility(ESlateVisibility::Collapsed);
 	AttackPower->SetVisibility(ESlateVisibility::Collapsed);
 	DefencePower->SetVisibility(ESlateVisibility::Collapsed);
+	HealthRecovery->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void UMItemContextWidget::SetItemImage(UTexture2D* NewTexture)
@@ -151,5 +152,14 @@ void UMItemContextWidget::GetTextBlockByTag(const FGameplayTag& AttributeTag, UT
 	{
 		OutTextBlock = DefencePower;
 		OutName = FText::FromString(TEXT("방어력"));
+	}
+	else if (AttributeTag == FPMGameplayTags::Get().Ability_Effect_SetByCaller_HealthRecovery)
+	{
+		OutTextBlock = HealthRecovery;
+		OutName = FText::FromString(TEXT("초당 체력 회복"));
+	}
+	else
+	{
+		OutTextBlock = nullptr;
 	}
 }

@@ -91,7 +91,8 @@ void UMInventoryWidget::BindDelegates()
 	{
 		ASC->GetGameplayAttributeValueChangeDelegate(UPMCombatSet::GetAttackPowerAttribute()).AddUObject(this, &UMInventoryWidget::Callback_CombatChange);
 		ASC->GetGameplayAttributeValueChangeDelegate(UPMCombatSet::GetDefensePowerAttribute()).AddUObject(this, &UMInventoryWidget::Callback_CombatChange);
-		ASC->GetGameplayAttributeValueChangeDelegate(UPMHealthSet::GetMaxHealthAttribute()).AddUObject(this, &UMInventoryWidget::Callback_MaxHealthChange);
+		ASC->GetGameplayAttributeValueChangeDelegate(UPMHealthSet::GetMaxHealthAttribute()).AddUObject(this, &UMInventoryWidget::Callback_HealthChange);
+		ASC->GetGameplayAttributeValueChangeDelegate(UPMHealthSet::GetHealthRecoveryAttribute()).AddUObject(this, &UMInventoryWidget::Callback_HealthChange);
 		const UPMCombatSet* CombatSet = ASC->GetSet<UPMCombatSet>();
 		if (CombatSet)
 		{
@@ -102,6 +103,7 @@ void UMInventoryWidget::BindDelegates()
 		if (HealthSet)
 		{
 			OnChange_MaxHealth(0, HealthSet->GetMaxHealth(), nullptr);
+			OnChange_HealthRecovery(0, HealthSet->GetHealthRecovery(), nullptr);
 		}
 	}
 
@@ -185,13 +187,16 @@ void UMInventoryWidget::Callback_CombatChange(const FOnAttributeChangeData& Chan
 	SetCombatStat(ChangeData.Attribute, OldValue, NewValue, Instigator);
 }
 
-void UMInventoryWidget::Callback_MaxHealthChange(const FOnAttributeChangeData& ChangeData)
+void UMInventoryWidget::Callback_HealthChange(const FOnAttributeChangeData& ChangeData)
 {
 	float OldValue = ChangeData.OldValue;
 	float NewValue = ChangeData.NewValue;
 	AActor* Instigator = UPMAbilitySystemComponent::GetInstigatorFromAttrChangeData(ChangeData);
 
-	OnChange_MaxHealth(OldValue, NewValue, Instigator);
+	if (ChangeData.Attribute == UPMHealthSet::GetMaxHealthAttribute())
+	{
+		OnChange_MaxHealth(OldValue, NewValue, Instigator);
+	}
 }
 
 void UMInventoryWidget::SetCombatStat(const FGameplayAttribute& Attribute, const float OldValue, const float NewValue, AActor* Instigator)
@@ -210,6 +215,12 @@ void UMInventoryWidget::OnChange_MaxHealth(const float OldValue, const float New
 {
 	const FText& NewText = MakeFormatText(TEXT("최대 체력"), NewValue);
 	MaxHealth->SetText(NewText);
+}
+
+void UMInventoryWidget::OnChange_HealthRecovery(const float OldValue, const float NewValue, AActor* Instigator)
+{
+	const FText& NewText = MakeFormatText(TEXT("초당 체력 회복"), NewValue);
+	HealthRecovery->SetText(NewText);
 }
 
 void UMInventoryWidget::OnChange_AttackPower(const float OldValue, const float NewValue, AActor* Instigator)
