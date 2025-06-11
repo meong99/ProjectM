@@ -176,10 +176,10 @@ void UMItemTileWidget::UpdateItemData()
 		const UPMInventoryItemDefinition* ItemDef = GetDefault<UPMInventoryItemDefinition>(NewItemEntry.Instance->ItemDef);
 		ItemImage->SetBrushFromTexture(ItemDef->ItemIcon);
 		ItemImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		ItemImage->SetItemRowId(ItemDef->RowId);
 
 		ItemHandle.ItemUid = NewItemEntry.ItemUid;
 		ItemHandle.ItemType = NewItemEntry.GetItemType();
+		ItemRowId = NewItemEntry.GetItemRowId();
 
 		SetItemNum(NewItemEntry);
 	}
@@ -206,6 +206,7 @@ void UMItemTileWidget::ResetItemSlot()
 
 	ItemHandle.ItemUid = INDEX_NONE;
 	ItemNum->SetVisibility(ESlateVisibility::Collapsed);
+	ItemRowId = INDEX_NONE;
 }
 
 void UMItemTileWidget::SetItemNum(const FPMInventoryEntry& NewItemEntry)

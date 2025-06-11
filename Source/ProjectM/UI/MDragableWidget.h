@@ -25,15 +25,23 @@ public:
 	virtual void	NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 	virtual bool	NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual void	NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	virtual void	NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void	NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+	virtual void	NativeDestruct() override;
 
-/*
+	/*
 * Member Functions
 */
-public:
+private:
+	void EnableContextWidget() const;
+	void DisableContextWidget() const;
 /*
 * Member Variables
 */
 protected:
 	UPROPERTY(EditDefaultsOnly, meta=(BindWidget))
-	UMContextableItemWidget* ItemImage;
+	TObjectPtr<UImage> ItemImage;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 ItemRowId = INDEX_NONE;
 };
