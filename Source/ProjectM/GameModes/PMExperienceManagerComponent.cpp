@@ -41,6 +41,7 @@ void UPMExperienceManagerComponent::EndPlay(const EEndPlayReason::Type EndPlayRe
 			{
 				if (Action)
 				{
+					MCHAE_LOG("Action Deactivate. ActionName = %s", *Action->GetName());
 					Action->OnGameFeatureDeactivating(Context);
 					Action->OnGameFeatureUnregistering();
 				}

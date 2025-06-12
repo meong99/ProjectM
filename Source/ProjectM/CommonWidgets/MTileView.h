@@ -31,6 +31,7 @@ public:
 */
 public:
 	void InitView(const FPMInventoryItemList& InventoryList, const int32 MaxInventoryCount);
+	void InitView(const int32 MaxInventoryCount, EMItemType ItemType = EMItemType::Consumable);
 	void AddNewItem(const FPMInventoryEntry& NewItemEntry);
 	void RemoveItem(const FMItemHandle& ItemHandle);
 	void UpdateEmptySlot(const int32 SlotIndex);

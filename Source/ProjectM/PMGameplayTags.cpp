@@ -34,6 +34,10 @@ void FPMGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Jump, "InputTag.Jump", "");
 	AddTag(InputTag_Look_Mouse, "InputTag.Look.Mouse", "");
 	AddTag(InputTag_Togle_Interaction, "InputTag.Togle.Interaction", "");
+	AddTag(InputTag_Key_1, "InputTag.Key.1", "");
+	AddTag(InputTag_Key_2, "InputTag.Key.2", "");
+	AddTag(InputTag_Key_3, "InputTag.Key.3", "");
+	AddTag(InputTag_Key_4, "InputTag.Key.4", "");
 
 	/*
 	* Widget Tags

@@ -175,7 +175,7 @@ void UMInteractionComponent::Callback_OnSetInputComponent(UInputComponent* InInp
 	UPMInputComponent* InputComponent = Cast<UPMInputComponent>(InInputComponent);
 	if (InputComponent)
 	{
-		InputComponent->InputActionDelegateMap.Emplace(FPMGameplayTags::Get().InputTag_Togle_Interaction, FInputActionDelegate::FDelegate::CreateUObject(this, &ThisClass::OnInteract));
+		InputComponent->Delegate_InputActionMap.Emplace(FPMGameplayTags::Get().InputTag_Togle_Interaction, FInputActionDelegate::FDelegate::CreateUObject(this, &ThisClass::OnInteract));
 	}
 }
 
@@ -189,7 +189,7 @@ void UMInteractionComponent::BindDelegate()
 	UPMInputComponent* InputComponent = GetInputComponent();
 	if (InputComponent)
 	{
-		InputComponent->InputActionDelegateMap.Emplace(FPMGameplayTags::Get().InputTag_Togle_Interaction, FInputActionDelegate::FDelegate::CreateUObject(this, &ThisClass::OnInteract));
+		InputComponent->Delegate_InputActionMap.Emplace(FPMGameplayTags::Get().InputTag_Togle_Interaction, FInputActionDelegate::FDelegate::CreateUObject(this, &ThisClass::OnInteract));
 	}
 }
 
@@ -203,7 +203,7 @@ void UMInteractionComponent::UnbindDelegate()
 	UPMInputComponent* InputComponent = GetInputComponent();
 	if (InputComponent)
 	{
-		InputComponent->InputActionDelegateMap.Remove(FPMGameplayTags::Get().InputTag_Togle_Interaction);
+		InputComponent->Delegate_InputActionMap.Remove(FPMGameplayTags::Get().InputTag_Togle_Interaction);
 	}
 }
 

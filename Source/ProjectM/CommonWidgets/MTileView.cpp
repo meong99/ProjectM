@@ -37,6 +37,20 @@ void UMTileView::InitView(const FPMInventoryItemList& InventoryList, const int32
 	}
 }
 
+void UMTileView::InitView(const int32 MaxInventoryCount, EMItemType ItemType /*= EMItemType::Consumable*/)
+{
+	for (int32 i = 0; i < MaxInventoryCount; i++)
+	{
+		UMItemDetailData* ItemDetailData = NewObject<UMItemDetailData>(this);
+		AddNewEmptySlot(i);
+		ItemDetailData->SlotIndex = i;
+		ItemDetailData->SlotType = ItemType;
+		ItemDetailData->EntryHeight = GetEntryHeight();
+		ItemDetailData->EntryWidth = GetEntryWidth();
+		AddItem(ItemDetailData);
+	}
+}
+
 void UMTileView::AddNewItem(const FPMInventoryEntry& NewItemEntry)
 {
 	if (EmptySlotHeap.IsEmpty())

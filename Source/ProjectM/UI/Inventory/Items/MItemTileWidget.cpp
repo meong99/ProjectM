@@ -12,62 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PMGameplayTags.h"
 #include "UI/Item/MContextableItemWidget.h"
-
-/*
-* UMItemDetailData
-*/
-void UMItemDetailData::SetNewEntry(const FPMInventoryEntry& NewItemEntry)
-{
-	InitDelegate(NewItemEntry);
-	ItemEntry = NewItemEntry;
-}
-
-void UMItemDetailData::SwapEntry(UMItemDetailData& Other)
-{
-	FPMInventoryEntry Tmp = Other.ItemEntry;
-	Other.SetNewEntry(ItemEntry);
-	SetNewEntry(Tmp);
-}
-
-void UMItemDetailData::SwapEntry(UMItemDetailData* Other)
-{
-	if (Other == nullptr || Other == this)
-	{
-		MCHAE_WARNING("ItemData is null or change with itself");
-		return;
-	}
-
-	FPMInventoryEntry Tmp = Other->ItemEntry;
-	Other->SetNewEntry(ItemEntry);
-	SetNewEntry(Tmp);
-}
-
-void UMItemDetailData::OnChangeItemQuantity(const FMItemResponse& ItemRespons)
-{
-	UMTileView* MtileView = Cast<UMTileView>(GetOuter());
-	if (MtileView)
-	{
-		MtileView->RegenerateAllEntries();
-	}
-}
-
-void UMItemDetailData::InitDelegate(const FPMInventoryEntry& NewItemEntry)
-{
-	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
-	UPMInventoryManagerComponent* InventoryManager = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
-	if (InventoryManager)
-	{
-		if (ItemEntry.IsValid())
-		{
-			InventoryManager->RemoveDelegateOnChangeItemQuentity(ItemEntry.GetItemHandle().ItemUid, DelegateHandle);
-		}
-
-		if (NewItemEntry.IsValid())
-		{
-			DelegateHandle = InventoryManager->AddDelegateOnChangeItemQuentity(NewItemEntry.GetItemHandle().ItemUid, FOnChangeItemQuentity::FDelegate::CreateUObject(this, &ThisClass::OnChangeItemQuantity));
-		}
-	}
-}
+#include "UI/MDragableWidget.h"
 
 /*
 * UMItemTileWidget
@@ -146,6 +91,17 @@ bool UMItemTileWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
 		return false;
 	}
 
+	UMItemDetailData* MyItemDatail = GetListItem<UMItemDetailData>();
+	UMItemDetailData* OtherItemDatail = Other->GetListItem<UMItemDetailData>();
+	if (!MyItemDatail || !OtherItemDatail)
+	{
+		return false;
+	}
+	if (MyItemDatail->SlotType != OtherItemDatail->SlotType)
+	{
+		return false;
+	}
+
 	SwapItemData(Other);
 	UpdateItemData();
 	Other->UpdateItemData();
@@ -177,8 +133,7 @@ void UMItemTileWidget::UpdateItemData()
 		ItemImage->SetBrushFromTexture(ItemDef->ItemIcon);
 		ItemImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
-		ItemHandle.ItemUid = NewItemEntry.ItemUid;
-		ItemHandle.ItemType = NewItemEntry.GetItemType();
+		ItemHandle = NewItemEntry.GetItemHandle();
 		ItemRowId = NewItemEntry.GetItemRowId();
 
 		SetItemNum(NewItemEntry);

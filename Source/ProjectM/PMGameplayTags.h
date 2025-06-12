@@ -29,6 +29,10 @@ struct FPMGameplayTags
 	FGameplayTag InputTag_Jump;
 	FGameplayTag InputTag_Look_Mouse;
 	FGameplayTag InputTag_Togle_Interaction;
+	FGameplayTag InputTag_Key_1;
+	FGameplayTag InputTag_Key_2;
+	FGameplayTag InputTag_Key_3;
+	FGameplayTag InputTag_Key_4;
 
 	/*
 	* Widget Tags

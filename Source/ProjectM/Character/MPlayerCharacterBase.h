@@ -46,8 +46,8 @@ public:
 
 	void Callback_OnAbilitySystemInitialized();
 	void Callback_OnAbilitySystemUninitialzed();
-
 	void CallOrRegister_OnSetInputComponent(FOnSetInputComponent::FDelegate&& Delegate);
+
 	void AddOverlappedMonster(AActor* Monster);
 	void RemoveOverlappedMonster(AActor* Monster);
 	
@@ -55,7 +55,7 @@ public:
 
 	const TArray<AActor*>&	GetOverlappedMonsters() const { return OverlappedMonsters; }
 	const FGameplayTag&		GetCurrentLevelTag() const { return CurrentLevelTag; }
-	
+
 protected:
 	void ClearAbilityActorInfo();
 	void InitAbilityActorInfo();

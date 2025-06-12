@@ -15,38 +15,7 @@ class UImage;
 class UMInventoryWidget;
 class UTextBlock;
 class UMTileView;
-
-UCLASS(BlueprintType)
-class UMItemDetailData : public UObject
-{
-	GENERATED_BODY()
-
-public:
-#pragma TODO("아이템 변경 델리게이트 적용")
-	bool IsValid() const { return ItemEntry.IsValid(); }
-	void SetNewEntry(const FPMInventoryEntry& NewItemEntry);
-	void SwapEntry(UMItemDetailData& Other);
-	void SwapEntry(UMItemDetailData* Other);
-	void OnChangeItemQuantity(const FMItemResponse& ItemRespons);
-	void InitDelegate(const FPMInventoryEntry& NewItemEntry);
-
-	UPROPERTY(BlueprintReadWrite)
-	FPMInventoryEntry ItemEntry;
-
-	UPROPERTY(BlueprintReadWrite)
-	int32 SlotIndex = INDEX_NONE;
-
-	UPROPERTY(BlueprintReadWrite)
-	EMItemType SlotType = EMItemType::None;
-
-	UPROPERTY(BlueprintReadWrite)
-	float EntryHeight;
-
-	UPROPERTY(BlueprintReadWrite)
-	float EntryWidth;
-
-	FDelegateHandle DelegateHandle;
-};
+class UMItemDetailData;
 
 UCLASS(BlueprintType)
 class PROJECTM_API UMItemTileWidget : public UMDragableWidget, public IUserObjectListEntry
@@ -75,7 +44,7 @@ public:
 	UMItemDetailData* GetItemDatailData() const;
 
 protected:
-	void UpdateItemData();
+	virtual void UpdateItemData();
 	void SetSlotIndex(const int32 InIndex);
 	void ResetItemSlot();
 	void SetItemNum(const FPMInventoryEntry& NewItemEntry);
@@ -85,16 +54,16 @@ protected:
 */
 protected:
 	UPROPERTY(BlueprintReadOnly)
-	UMTileView* OwnerWidget;
+	TObjectPtr<UMTileView> OwnerWidget;
 
 	UPROPERTY(BlueprintReadOnly)
 	int32 SlotIndex = INDEX_NONE;
 	
  	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
- 	UTextBlock* ItemNum;
+	TObjectPtr<UTextBlock> ItemNum;
 
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
-	UTextBlock* Index;
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UTextBlock> Index;
 
 	UPROPERTY(BlueprintReadOnly)
 	FMItemHandle ItemHandle;
