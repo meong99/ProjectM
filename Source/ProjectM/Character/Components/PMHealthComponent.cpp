@@ -28,6 +28,7 @@ void UPMHealthComponent::CallOrRegister_OnInitHealthComponent(FOnInitHealth::FDe
 	if (HealthSet)
 	{
 		Delegate.ExecuteIfBound(HealthSet->GetHealthAttribute(), this, 0, HealthSet->GetHealth(), nullptr);
+		Delegate.ExecuteIfBound(HealthSet->GetHealthRecoveryAttribute(), this, 0, HealthSet->GetHealthRecovery(), nullptr);
 	}
 	else
 	{
