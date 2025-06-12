@@ -351,9 +351,9 @@ void UPMCharacterInitComponent::Input_AbilityInputTagReleased(FGameplayTag Input
 void UPMCharacterInitComponent::Input_ToggleInputTag(FGameplayTag InputTag)
 {
 	AMCharacterBase* Character = GetPawn<AMCharacterBase>();
-	if (Character && !Character->IsOnCharacterStateFlags(EMCharacterStateFlag::BlockAll) && InputComponent)
+	if (Character && InputComponent)
 	{
-		FInputActionDelegate::FDelegate* Delegate = InputComponent->InputActionDelegateMap.Find(InputTag);
+		FInputActionDelegate::FDelegate* Delegate = InputComponent->Delegate_InputActionMap.Find(InputTag);
 		if (Delegate && Delegate->IsBound())
 		{
 			Delegate->Execute(InputTag);
