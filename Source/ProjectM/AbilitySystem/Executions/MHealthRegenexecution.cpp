@@ -7,7 +7,7 @@ struct FHealthRecoveryStatics
 
 	FHealthRecoveryStatics()
 	{
-		HealthRecovery = FGameplayEffectAttributeCaptureDefinition(UPMHealthSet::GetHealthRecoveryAttribute(), EGameplayEffectAttributeCaptureSource::Target, true);
+		HealthRecovery = FGameplayEffectAttributeCaptureDefinition(UPMHealthSet::GetHealthRecoveryAttribute(), EGameplayEffectAttributeCaptureSource::Target, false);
 	}
 };
 
