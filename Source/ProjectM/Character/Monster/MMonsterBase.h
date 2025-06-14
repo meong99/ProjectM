@@ -96,5 +96,8 @@ protected:
 	TMap<int32, FMAbilitySet_GrantedHandles> GrantedHandles;
 
 	UPROPERTY()
+	FMAbilitySet_AppliedEffectHandles AppliedDefaultEffects;
+
+	UPROPERTY()
 	TObjectPtr<AMMonsterSpawner> MonsterSpawner;
 };

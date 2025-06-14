@@ -18,6 +18,7 @@
 #include "Table/MTable_MonsterTable.h"
 #include "AbilitySystem/PMAbilitySet.h"
 #include "AbilitySystem/Attributes/PMCombatSet.h"
+#include "AbilitySystem/MGameplayEffectSet.h"
 #include "Types/MTeamTypes.h"
 #include "GameplayEffectTypes.h"
 #include "GameplayEffectExtension.h"
@@ -104,15 +105,11 @@ void AMMonsterBase::PostInitializeComponents()
 
 		if (MonsterDefinition)
 		{
-			TMap<FGameplayTag, float> SetMap;
-			SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_Health, MonsterDefinition->GetMonsterHp());
-			SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_MaxHealth, MonsterDefinition->GetMonsterHp());
-			SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_AttackPower, MonsterDefinition->MonsterCombatInfo.MonsterAttackPower);
-			SetMap.Add(FPMGameplayTags::Get().Ability_Effect_SetByCaller_DefensePower, MonsterDefinition->MonsterCombatInfo.MonsterDefensePower);
-
-			const FGameplayEffectContextHandle& ContextHandle = AbilitySystemComponent->MakeGameplayEffectContext(this, this, {});
-			const FGameplayEffectSpec& Spec = AbilitySystemComponent->MakeGameplayEffectSpecWithSetByCaller(ContextHandle, MonsterDefinition->GetMonsterInfo().DefaultApplyEffect, SetMap);
-			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(Spec);
+			UMGameplayEffectSet* EffectSet = MonsterDefinition->MonsterInfo.EffectSet;
+			if (EffectSet && AbilitySystemComponent)
+			{
+				EffectSet->ApplyGameplayEffectsToAsc(AbilitySystemComponent, &AppliedDefaultEffects, AbilitySystemComponent->GetOwner(), nullptr, this);
+			}
 
 			FMAbilitySet_GrantedHandles TempGrantedHandles;
 			for (const UPMAbilitySet* AbilitySet : MonsterDefinition->AbilitySets)

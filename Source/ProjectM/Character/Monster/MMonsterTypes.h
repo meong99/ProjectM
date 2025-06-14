@@ -7,6 +7,7 @@
 class UBehaviorTree;
 class AMMonsterBase;
 class UGameplayEffect;
+class UMGameplayEffectSet;
 
 USTRUCT(BlueprintType, Blueprintable)
 struct FMDropInfo
@@ -34,6 +35,9 @@ struct FMMonsterInfo
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UBehaviorTree> BehaviorTree;
 
+	UPROPERTY(EditDefaultsOnly, Category = "ProjectM")
+	TObjectPtr<UMGameplayEffectSet> EffectSet;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName MonsterName;
 
@@ -52,9 +56,6 @@ struct FMMonsterInfo
 	// Key = ItemId, Value = 확률
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<FMDropInfo> ItemDropTable;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect> DefaultApplyEffect;
 };
 
 USTRUCT(BlueprintType, Blueprintable)
