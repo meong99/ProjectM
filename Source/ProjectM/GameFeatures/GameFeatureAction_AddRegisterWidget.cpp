@@ -59,7 +59,7 @@ void UGameFeatureAction_AddRegisterWidget::AddWidgetRegister(FGameFeatureStateCh
 			{
 				for (const auto& Iter : WidgetRegister->MappedWidgetData.WidgetData)
 				{
-					ViewportClient->AddWidgetToLayer(Iter.Key, {}, LayerId);
+					ViewportClient->AddWidgetToLayer(Iter.Key, {});
 				}
 			}
 		}

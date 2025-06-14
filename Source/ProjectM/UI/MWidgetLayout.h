@@ -10,18 +10,6 @@ class UOverlay;
 class UWidgetSwitcher;
 class UMWidgetLayer;
 
-UENUM(BlueprintType)
-enum class EMWidgetLayout : uint8
-{
-	// 게임 플레이 중 나오는 Layout. (HUD, Inventory ...)
-	GameLayer UMETA(DisplayName = "GameLayer"),
-
-	// 다른 위젯 없이 단독으로 보여지는 위젯 레이아웃. 단 하나씩만 설정 가능하다.
-	IndependentLayer UMETA(DisplayName = "IndependentLayer"),
-
-	None UMETA(DisplayName = "None"),
-};
-
 UCLASS()
 class PROJECTM_API UMWidgetLayout : public UMWidgetBase
 {
@@ -42,17 +30,17 @@ public:
 */
 public:
 	void MakeLayerById(UMWidgetLayer* MainLayer);
-	void ChangeWidgetLayer(EMWidgetLayout WidgetLayout) const;
+	void ChangeWidgetLayer(EMWidgetLayout NewWidgetLayout) const;
 	void ClearAllWidget();
 
 	void AddWidgetToCurrentLayer(UMWidgetBase* Widget) const;
 	void RemoveWidgetToCurrentLayer(UMWidgetBase* Widget) const;
-	void AddWidgetToLayer(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const;
-	void RemoveWidgetFromLayer(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const;
+	void AddWidgetToLayer(UMWidgetBase* Widget) const;
+	void RemoveWidgetFromLayer(UMWidgetBase* Widget) const;
 
 	bool RemoveTopWidgetInGameLayer();
 private:
-	UMWidgetLayer* GetLayer(EMWidgetLayout WidgetLayout) const;
+	UMWidgetLayer* GetLayer(EMWidgetLayout InWidgetLayout) const;
 	UMWidgetLayer* GetCurrentLayer() const;
 /*
 * Member Variables

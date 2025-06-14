@@ -30,6 +30,8 @@ public:
 	virtual void PostRender(UCanvas* Canvas) override;
 	virtual bool InputKey(const FInputKeyEventArgs& EventArgs) override;
 	virtual bool WindowCloseRequested() override;
+	virtual void NotifyPlayerAdded(int32 PlayerIndex, class ULocalPlayer* AddedPlayer) override;
+	virtual void NotifyPlayerRemoved(int32 PlayerIndex, class ULocalPlayer* RemovedPlayer) override;
 
 	/*
 * Member Functions
@@ -59,12 +61,12 @@ public:
 	void OnPressEsc();
 
 	// Layer에 Widget을 설정한다.
-	UMWidgetBase*	AddWidgetToLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo = {}, const int32 LayerId = 0/*GameLayer*/);
-	UMWidgetBase*	RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, const int32 LayerId = 0/*GameLayer*/);
-	UMWidgetBase*	ToggleWidgetOnLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo = {}, const int32 LayerId = 0/*GameLayer*/);
+	UMWidgetBase*	AddWidgetToLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo = {});
+	UMWidgetBase*	RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, const bool bIsDelete = false);
+	UMWidgetBase*	ToggleWidgetOnLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo = {});
 
 	// Widget의 Instance를 반환한다. 만약 Instancing되지 않았다면 Class를 찾아 Instancing후 반환한다.
-	UMWidgetBase* GetWidgetInstance(const FGameplayTag& WidgetTag);
+	UMWidgetBase* GetWidgetInstance(const FGameplayTag& WidgetTag, const bool bIsDelete = false);
 
 	UMWidgetRegister* GetWidgetRegister(const FGameplayTag& Tag);
 

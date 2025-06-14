@@ -41,22 +41,22 @@ FReply UMWidgetBase::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry,
 	return FReply::Handled();
 }
 
-void UMWidgetBase::AddWidgetToLayer(const FMWidgetInfo& InWidgetInfo, const int32 LayerId)
+void UMWidgetBase::AddWidgetToLayer(const FMWidgetInfo& InWidgetInfo)
 {
 	UMViewportClient* ViewportClient = UMViewportClient::Get(this);
 	if (ViewportClient)
 	{
-		ViewportClient->AddWidgetToLayer(WidgetTag, InWidgetInfo, LayerId);
+		ViewportClient->AddWidgetToLayer(WidgetTag, InWidgetInfo);
 	}
 }
 
-void UMWidgetBase::RemoveWidgetFromLayer(const int32 LayerId)
+void UMWidgetBase::RemoveWidgetFromLayer()
 {
 	UGameInstance* GameInstance = GetGameInstance<UGameInstance>();
 	UMViewportClient* ViewportClient = GameInstance ? Cast<UMViewportClient>(GameInstance->GetGameViewportClient()) : nullptr;
 	if (ViewportClient)
 	{
-		ViewportClient->RemoveWidgetFromLayer(WidgetTag, LayerId);
+		ViewportClient->RemoveWidgetFromLayer(WidgetTag);
 	}
 }
 

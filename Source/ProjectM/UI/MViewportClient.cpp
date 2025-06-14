@@ -17,11 +17,11 @@
 #include "GenericPlatform/GenericPlatformMisc.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/Level.h"
 
 void UMViewportClient::Init(struct FWorldContext& WorldContext, UGameInstance* OwningGameInstance, bool bCreateNewAudioDevice /*= true*/)
 {
 	Super::Init(WorldContext, OwningGameInstance, true);
-	LoadDefaultWidgetRegister();
 }
 
 void UMViewportClient::PostRender(UCanvas* Canvas)
@@ -78,6 +78,17 @@ bool UMViewportClient::WindowCloseRequested()
 	UKismetSystemLibrary::QuitGame(GetWorld(), nullptr, EQuitPreference::Quit, true);
 	// return true하면 패키징됐을 때 창이 먼저 꺼져서 정상적인 종료가 되지 않고, 백그라운드에 남아있음
 	return false;
+}
+
+void UMViewportClient::NotifyPlayerAdded(int32 PlayerIndex, class ULocalPlayer* AddedPlayer)
+{
+	Super::NotifyPlayerAdded(PlayerIndex, AddedPlayer);
+	//LoadDefaultWidgetRegister();
+}
+
+void UMViewportClient::NotifyPlayerRemoved(int32 PlayerIndex, class ULocalPlayer* RemovedPlayer)
+{
+	Super::NotifyPlayerRemoved(PlayerIndex, RemovedPlayer);
 }
 
 UMViewportClient* UMViewportClient::Get(const UObject* WorldContext)
@@ -175,7 +186,7 @@ void UMViewportClient::RemoveWidgetRegister(const FGameplayTag& RegisterTag)
 	{
 		for (const auto& Iter : Register->MappedWidgetData.WidgetData)
 		{
-			RemoveWidgetFromLayer(Iter.Key);
+			RemoveWidgetFromLayer(Iter.Key, true);
 		}
 	}
 	WidgetRegisterMap.Remove(RegisterTag);
@@ -246,7 +257,7 @@ void UMViewportClient::OnPressEsc()
 	}
 }
 
-UMWidgetBase* UMViewportClient::AddWidgetToLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo, const int32 LayerId)
+UMWidgetBase* UMViewportClient::AddWidgetToLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo)
 {
 	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
 	if (WidgetLayout && Widget && !Widget->IsInLayer())
@@ -256,20 +267,20 @@ UMWidgetBase* UMViewportClient::AddWidgetToLayer(const FGameplayTag& WidgetTag, 
 		{
 			Widget->CallPreAddToLayer();
 		}
-		WidgetLayout->AddWidgetToLayer(GetWidgetInstance(WidgetTag), (EMWidgetLayout)LayerId);
+		WidgetLayout->AddWidgetToLayer(GetWidgetInstance(WidgetTag));
 	}
 
 	return Widget;
 }
 
-UMWidgetBase* UMViewportClient::RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, const int32 LayerId)
+UMWidgetBase* UMViewportClient::RemoveWidgetFromLayer(const FGameplayTag& WidgetTag, const bool bIsDelete)
 {
-	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
+	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag, bIsDelete);
 	if (WidgetLayout && Widget)
 	{
 		if (Widget->IsInLayer())
 		{
-			WidgetLayout->RemoveWidgetFromLayer(GetWidgetInstance(WidgetTag), (EMWidgetLayout)LayerId);
+			WidgetLayout->RemoveWidgetFromLayer(GetWidgetInstance(WidgetTag));
 			Widget->SetActivate(false);
 		}
 	}
@@ -281,26 +292,31 @@ UMWidgetBase* UMViewportClient::RemoveWidgetFromLayer(const FGameplayTag& Widget
 	return Widget;
 }
 
-UMWidgetBase* UMViewportClient::ToggleWidgetOnLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo, const int32 LayerId /*= 0*/)
+UMWidgetBase* UMViewportClient::ToggleWidgetOnLayer(const FGameplayTag& WidgetTag, const FMWidgetInfo& InWidgetInfo)
 {
 	UMWidgetBase* Widget = GetWidgetInstance(WidgetTag);
 	if (WidgetLayout && Widget)
 	{
 		if (Widget->IsInLayer())
 		{
-			RemoveWidgetFromLayer(WidgetTag, LayerId);
+			RemoveWidgetFromLayer(WidgetTag);
 		}
 		else
 		{
-			AddWidgetToLayer(WidgetTag, InWidgetInfo, LayerId);
+			AddWidgetToLayer(WidgetTag, InWidgetInfo);
 		}
 	}
 
 	return Widget;
 }
 
-UMWidgetBase* UMViewportClient::GetWidgetInstance(const FGameplayTag& WidgetTag)
+UMWidgetBase* UMViewportClient::GetWidgetInstance(const FGameplayTag& WidgetTag, const bool bIsDelete)
 {
+	if (bIsDelete)
+	{
+		return nullptr;
+	}
+
 	if (!WidgetTag.IsValid())
 	{
 		MCHAE_WARNING("RegisterTag or WidgetTag is not valid. WidgetTag = %s", *WidgetTag.ToString());
@@ -384,15 +400,16 @@ void UMViewportClient::ApplyWidgetLayout()
 	UMWidgetRegister* WidgetRegister = GetWidgetRegister(FPMGameplayTags::Get().UI_Registry_Layout_DefaultLayout.RequestDirectParent());
 
 	WidgetLayout = Cast<UMWidgetLayout>(GetWidgetInstance(FPMGameplayTags::Get().UI_Registry_Layout_DefaultLayout));
+	if (!WidgetLayout)
+	{
+		MCHAE_ERROR("Can't Found DefaultLayout!!!!!!");
+		check(false);
+		return;
+	}
+
 	if (!WidgetLayout->IsInitialized())
 	{
 		WidgetLayout->PreAddToLayer();
-	}
-
-	if (WidgetLayout == nullptr)
-	{
-		MCHAE_WARNING("WidgetLayout is null");
-		return;
 	}
 
 	WidgetLayout->AddToViewport();

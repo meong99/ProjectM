@@ -11,6 +11,18 @@ class AActor;
 class APMPlayerControllerBase;
 
 UENUM(BlueprintType)
+enum class EMWidgetLayout : uint8
+{
+	// 게임 플레이 중 나오는 Layout. (HUD, Inventory ...)
+	GameLayer UMETA(DisplayName = "GameLayer"),
+
+	// 다른 위젯 없이 단독으로 보여지는 위젯 레이아웃. 단 하나씩만 설정 가능하다.
+	IndependentLayer UMETA(DisplayName = "IndependentLayer"),
+
+	None UMETA(DisplayName = "None"),
+};
+
+UENUM(BlueprintType)
 enum class EMWidgetLayerId : uint8
 {
 	// 가장 뒷단의 HUD위젯
@@ -75,9 +87,9 @@ public:
 */
 public:
 	UFUNCTION(BlueprintCallable)
-	void AddWidgetToLayer(const FMWidgetInfo& InWidgetInfo, const int32 LayerId = 0/*GameLayer*/);
+	void AddWidgetToLayer(const FMWidgetInfo& InWidgetInfo);
 	UFUNCTION(BlueprintCallable)
-	void RemoveWidgetFromLayer(const int32 LayerId = 0/*GameLayer*/);
+	void RemoveWidgetFromLayer();
 
 	void CallPreAddToLayer();
 
@@ -95,6 +107,7 @@ public:
 	bool			IsInLayer() const { return bIsActivate; }
 	bool			IsInitialized() const { return bIsInitialized; }
 	EMWidgetLayerId GetWidgetLayerId() const { return WidgetLayerId; }
+	EMWidgetLayout	GetWidgetLayout() const { return WidgetLayout; }
 
 	APMPlayerControllerBase* GetPlayerController() const;
 
@@ -106,13 +119,19 @@ protected:
 */
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="ProjectM")
-	EMWidgetInputMode InputMode = EMWidgetInputMode::GameAndUIWithShowMouse;
+	EMWidgetInputMode	InputMode = EMWidgetInputMode::GameAndUIWithShowMouse;
 
 	UPROPERTY(EditDefaultsOnly, Category = "ProjectM")
-	EMWidgetLayerId	WidgetLayerId = EMWidgetLayerId::Game;
+	EMWidgetLayerId		WidgetLayerId = EMWidgetLayerId::Game;
+
+	UPROPERTY(EditDefaultsOnly, Category = "ProjectM")
+	EMWidgetLayout		WidgetLayout = EMWidgetLayout::GameLayer;
 
 	UPROPERTY(VisibleInstanceOnly, Category = "ProjectM")
-	FGameplayTag WidgetTag;
+	FGameplayTag		WidgetTag;
+
+	UPROPERTY(BlueprintReadWrite, Category = "ProjectM")
+	FMWidgetInfo		WidgetInfo;
 
 	// Layer에 등록된 위젯의 활성화 여부
 	UPROPERTY(BlueprintReadOnly, Category = "ProjectM")
@@ -120,7 +139,4 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "ProjectM")
 	bool bIsInitialized = false;
-
-	UPROPERTY(BlueprintReadWrite, Category = "ProjectM")
-	FMWidgetInfo WidgetInfo;
 };

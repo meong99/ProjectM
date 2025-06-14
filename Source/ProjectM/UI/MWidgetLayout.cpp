@@ -62,10 +62,10 @@ void UMWidgetLayout::MakeLayerById(UMWidgetLayer* MainLayer)
 	}
 }
 
-void UMWidgetLayout::ChangeWidgetLayer(EMWidgetLayout WidgetLayout) const
+void UMWidgetLayout::ChangeWidgetLayer(EMWidgetLayout NewWidgetLayout) const
 {
-	LayoutSwitcher->SetActiveWidgetIndex((int32)WidgetLayout);
-	UMWidgetLayer* Layer = GetLayer(WidgetLayout);
+	LayoutSwitcher->SetActiveWidgetIndex((int32)NewWidgetLayout);
+	UMWidgetLayer* Layer = GetLayer(NewWidgetLayout);
 	if (Layer)
 	{
 		Layer->ActivateLayer();
@@ -86,15 +86,18 @@ void UMWidgetLayout::ClearAllWidget()
 
 void UMWidgetLayout::AddWidgetToCurrentLayer(UMWidgetBase* Widget) const
 {
-	AddWidgetToLayer(Widget, (EMWidgetLayout)LayoutSwitcher->GetActiveWidgetIndex());
+	if (Widget)
+	{
+		AddWidgetToLayer(Widget);
+	}
 }
 
 void UMWidgetLayout::RemoveWidgetToCurrentLayer(UMWidgetBase* Widget) const
 {
-	RemoveWidgetFromLayer(Widget, (EMWidgetLayout)LayoutSwitcher->GetActiveWidgetIndex());
+	RemoveWidgetFromLayer(Widget);
 }
 
-void UMWidgetLayout::AddWidgetToLayer(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const
+void UMWidgetLayout::AddWidgetToLayer(UMWidgetBase* Widget) const
 {
 	UMWidgetLayer* Layout = GetLayer(WidgetLayout);
 	if (Layout)
@@ -107,7 +110,7 @@ void UMWidgetLayout::AddWidgetToLayer(UMWidgetBase* Widget, EMWidgetLayout Widge
 	}
 }
 
-void UMWidgetLayout::RemoveWidgetFromLayer(UMWidgetBase* Widget, EMWidgetLayout WidgetLayout) const
+void UMWidgetLayout::RemoveWidgetFromLayer(UMWidgetBase* Widget) const
 {
 	UMWidgetLayer* Layout = GetLayer(WidgetLayout);
 	if (Layout)
@@ -127,9 +130,9 @@ bool UMWidgetLayout::RemoveTopWidgetInGameLayer()
 	return false;
 }
 
-UMWidgetLayer* UMWidgetLayout::GetLayer(EMWidgetLayout WidgetLayout) const
+UMWidgetLayer* UMWidgetLayout::GetLayer(EMWidgetLayout InWidgetLayout) const
 {
-	switch (WidgetLayout)
+	switch (InWidgetLayout)
 	{
 		case EMWidgetLayout::GameLayer:
 		{
