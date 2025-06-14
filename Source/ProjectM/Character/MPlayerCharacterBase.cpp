@@ -19,6 +19,7 @@
 #include "Types/MTeamTypes.h"
 #include "Components/MPawnComponentBase.h"
 #include "AbilitySystem/MGameplayEffectSet.h"
+#include "GameFramework/PlayerController.h"
 
 AMPlayerCharacterBase::AMPlayerCharacterBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UMCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -116,6 +117,23 @@ void AMPlayerCharacterBase::PawnClientRestart()
 void AMPlayerCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AMPlayerCharacterBase::OnRep_PlayerState()
+{
+	InitCharacterName();
+}
+
+void AMPlayerCharacterBase::InitCharacterName()
+{
+	APMPlayerState* MyPlayerState = Cast<APMPlayerState>(GetPlayerState());
+	
+	if (MyPlayerState)
+	{
+		CharacterName = *MyPlayerState->GetPlayerName();
+	}
+
+	Super::InitCharacterName();
 }
 
 void AMPlayerCharacterBase::PossessedBy(AController* NewController)

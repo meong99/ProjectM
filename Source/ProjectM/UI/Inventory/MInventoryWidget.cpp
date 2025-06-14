@@ -197,6 +197,10 @@ void UMInventoryWidget::Callback_HealthChange(const FOnAttributeChangeData& Chan
 	{
 		OnChange_MaxHealth(OldValue, NewValue, Instigator);
 	}
+	else if (ChangeData.Attribute == UPMHealthSet::GetHealthRecoveryAttribute())
+	{
+		OnChange_HealthRecovery(OldValue, NewValue, Instigator);
+	}
 }
 
 void UMInventoryWidget::SetCombatStat(const FGameplayAttribute& Attribute, const float OldValue, const float NewValue, AActor* Instigator)

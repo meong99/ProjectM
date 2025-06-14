@@ -28,8 +28,6 @@ class PROJECTM_API UMViewportClient : public UGameViewportClient
 public:
 	virtual void Init(struct FWorldContext& WorldContext, UGameInstance* OwningGameInstance, bool bCreateNewAudioDevice = true) override;
 	virtual void PostRender(UCanvas* Canvas) override;
-	virtual void ClearFade();
-	virtual void Fade(const float Duration, const bool InbToBlack, const float InFadeDelay = 0.f);
 	virtual bool InputKey(const FInputKeyEventArgs& EventArgs) override;
 	virtual bool WindowCloseRequested() override;
 
@@ -38,7 +36,9 @@ public:
 */
 public:
 	static UMViewportClient* Get(const UObject* WorldContext);
-	
+
+	virtual void ClearFade();
+	virtual void Fade(const float Duration, const bool InbToBlack, const float InFadeDelay = 0.f);
 	void DrawScreenFade(UCanvas* Canvas);
 
 	// 월드 기준 없이 전역적으로 사용되는 위젯의 Register를 Load, Caching해둔다.
