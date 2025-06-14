@@ -16,7 +16,6 @@ class UMItemDetailData : public UObject
 	GENERATED_BODY()
 
 public:
-#pragma TODO("아이템 변경 델리게이트 적용")
 	bool IsValid() const { return ItemEntry.IsValid(); }
 	void SetNewEntry(const FPMInventoryEntry& NewItemEntry);
 	void SwapEntry(UMItemDetailData& Other);

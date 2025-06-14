@@ -79,7 +79,6 @@ void UMQuestSlotWidget::SetQuestName(const FText& InQuestName)
 
 void UMQuestSlotWidget::StartQuestTracking()
 {
-#pragma TODO("이거 최적화 해야함")
 	APMPlayerControllerBase* Controller = GetPlayerController();
 	UPMInventoryManagerComponent* InvenManager = Controller ? Controller->FindComponentByClass<UPMInventoryManagerComponent>() : nullptr;
 	if (InvenManager)

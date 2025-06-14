@@ -35,7 +35,6 @@ TArray<FFullLoadedWidgetData> UMWidgetRegister::LoadAllWidgetAndGetData()
 
 TSubclassOf<UMWidgetBase> UMWidgetRegister::GetWidgetClass_Impl(const TSoftClassPtr<UMWidgetBase>& SoftClass) const
 {
-#pragma TODO("이거 자동으로 load되도록 해야되는데...안되네 갑자기")
 	TSubclassOf<UMWidgetBase> WidgetClass = SoftClass.Get();
 	if (!WidgetClass)
 	{

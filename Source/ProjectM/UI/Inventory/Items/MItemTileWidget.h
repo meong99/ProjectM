@@ -6,7 +6,6 @@
 #include "Blueprint/IUserObjectListEntry.h"
 #include "UI/MDragableWidget.h"
 
-#pragma TODO("포인터로 변경하면 아래 헤더 바꿔")
 #include "Inventory/PMInventoryItemList.h"
 #include "MItemTileWidget.generated.h"
 
