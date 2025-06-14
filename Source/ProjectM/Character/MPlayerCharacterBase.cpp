@@ -121,6 +121,7 @@ void AMPlayerCharacterBase::BeginPlay()
 
 void AMPlayerCharacterBase::OnRep_PlayerState()
 {
+	Super::OnRep_PlayerState();
 	InitCharacterName();
 }
 
