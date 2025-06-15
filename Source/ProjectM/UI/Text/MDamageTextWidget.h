@@ -20,23 +20,28 @@ class PROJECTM_API UMDamageTextWidget : public UMWidgetBase
 */
 public:
 	UMDamageTextWidget(const FObjectInitializer& ObjectInitializer);
-
-	UFUNCTION(BlueprintCallable)
-	void OnDamaged(const float Damage);
+	virtual void NativeOnInitialized() override;
 
 /*
 * Member Functions
 */
 public:
+	UFUNCTION(BlueprintCallable)
+	void OnDamaged(const float Damage);
 
 protected:
-	UFUNCTION(BlueprintCallable)
-	UMSlideToastText* GetDeactivatedWidget() const;
+	UMSlideToastText* GetLastUsedWidget();
 
+	void				PushQue(UMSlideToastText* Widget);
+	UMSlideToastText*	PopQue();
 /*
 * Member Variables
 */
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(BindWidget), Category="ProjectM")
 	TObjectPtr<UOverlay> TextOverlay;
+
+	TQueue<UMSlideToastText*> ActivateWidgetQue;
+
+	int32 QueSize = 0;
 };

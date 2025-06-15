@@ -10,6 +10,8 @@
 class UPMInventoryManagerComponent;
 class UMWalletComponent;
 class UPMExperienceDefinition;
+class UMFadeOutTextWidget;
+class UVerticalBox;
 
 UCLASS()
 class PROJECTM_API UMInventoryToastWidget : public UMWidgetBase
@@ -30,24 +32,33 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void InitThisWidget();
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void K2_OnChangeGold(int64 AdjustPrice, int64 NewGold);
 	UFUNCTION()
 	void OnChangeGold(int64 AdjustPrice, int64 NewGold);
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void K2_NotifyNewItem(const FMItemResponse& ItemRespons);
 	void OnNotifyNewItem(const FMItemResponse& ItemRespons);
 
 protected:
 	void OnExperienceLoaded(const UPMExperienceDefinition* LoadedExperienceDefinition);
+	
+	UMFadeOutTextWidget* GetLastUsedWidget();
+
+	void					PushQue(UMFadeOutTextWidget* Widget);
+	UMFadeOutTextWidget*	PopQue();
+
 /*
 * Member Variables
 */
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(BindWidget), Category="ProjectM")
+	TObjectPtr<UVerticalBox> TextVerticalBox;
+
 	UPROPERTY(BlueprintReadOnly)
 	UPMInventoryManagerComponent* InvenManager;
 
 	UPROPERTY(BlueprintReadOnly)
 	UMWalletComponent* WalletComponent;
+
+	TQueue<UMFadeOutTextWidget*> ActivateWidgetQue;
+
+	int32 QueSize = 0;
 };

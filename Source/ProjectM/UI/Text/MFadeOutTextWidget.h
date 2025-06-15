@@ -4,27 +4,27 @@
 
 #include "CoreMinimal.h"
 #include "UI/MWidgetBase.h"
-#include "MSlideToastText.generated.h"
+#include "MFadeOutTextWidget.generated.h"
 
 class UTextBlock;
 class UWidgetAnimation;
 
 UCLASS()
-class PROJECTM_API UMSlideToastText : public UMWidgetBase
+class PROJECTM_API UMFadeOutTextWidget : public UMWidgetBase
 {
 	GENERATED_BODY()
 
-/*
-* Overrided Functions
-*/
+	/*
+	* Overrided Functions
+	*/
 public:
-	UMSlideToastText(const FObjectInitializer& ObjectInitializer);
+	UMFadeOutTextWidget(const FObjectInitializer& ObjectInitializer);
 
 /*
 * Member Functions
 */
 public:
-	void PlayDamageText(const FText& InText);
+	void PlayText(const FText& InText);
 	bool IsActivatedText() const { return bIsActivatedText; }
 
 protected:
@@ -44,5 +44,5 @@ protected:
 	TObjectPtr<UTextBlock> ToastText;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, meta=(BindWidgetAnim), Category = "ProjectM")
-	TObjectPtr<UWidgetAnimation> SlideWidgetAnim;
+	TObjectPtr<UWidgetAnimation> FadeOut;
 };
