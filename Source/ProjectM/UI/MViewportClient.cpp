@@ -80,17 +80,6 @@ bool UMViewportClient::WindowCloseRequested()
 	return false;
 }
 
-void UMViewportClient::NotifyPlayerAdded(int32 PlayerIndex, class ULocalPlayer* AddedPlayer)
-{
-	Super::NotifyPlayerAdded(PlayerIndex, AddedPlayer);
-	//LoadDefaultWidgetRegister();
-}
-
-void UMViewportClient::NotifyPlayerRemoved(int32 PlayerIndex, class ULocalPlayer* RemovedPlayer)
-{
-	Super::NotifyPlayerRemoved(PlayerIndex, RemovedPlayer);
-}
-
 UMViewportClient* UMViewportClient::Get(const UObject* WorldContext)
 {
 	if (!WorldContext)

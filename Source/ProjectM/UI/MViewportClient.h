@@ -30,8 +30,6 @@ public:
 	virtual void PostRender(UCanvas* Canvas) override;
 	virtual bool InputKey(const FInputKeyEventArgs& EventArgs) override;
 	virtual bool WindowCloseRequested() override;
-	virtual void NotifyPlayerAdded(int32 PlayerIndex, class ULocalPlayer* AddedPlayer) override;
-	virtual void NotifyPlayerRemoved(int32 PlayerIndex, class ULocalPlayer* RemovedPlayer) override;
 
 	/*
 * Member Functions
