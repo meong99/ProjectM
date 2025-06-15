@@ -3,8 +3,10 @@
 #include "Net/UnrealNetwork.h"
 #include "Animation/AnimInstance.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/MCharacterMovementComponent.h"
 
 AMCharacterBase::AMCharacterBase(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UMCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	NameComponent = CreateDefaultSubobject<UMNameWidgetComponent>(TEXT("NameComp"));
 	NameComponent->SetupAttachment(GetRootComponent());
@@ -34,6 +36,16 @@ void AMCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	InitCharacterName();
+}
+
+bool AMCharacterBase::IsMoveInputIgnored() const
+{
+	if (IsOnCharacterStateFlags(EMCharacterStateFlag::BlockMovement) || CharacterLifeState >= EMCharacterLiftState::ReadyToDead)
+	{
+		return false;
+	}
+
+	return Super::IsMoveInputIgnored();
 }
 
 void AMCharacterBase::InitCharacterName()

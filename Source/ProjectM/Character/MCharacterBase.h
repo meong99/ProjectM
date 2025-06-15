@@ -25,6 +25,7 @@ public:
 	virtual void PreInitializeComponents() override;
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
+	virtual bool IsMoveInputIgnored() const;
 
 /*
 * Member Functions
@@ -42,7 +43,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	const EMCharacterLiftState& GetCharacterLifeState() const { return CharacterLifeState; }
 	UFUNCTION(BlueprintCallable)
-	bool	IsOnCharacterStateFlags(const int64& InState)	{ return CharacterStateFlag & InState; }
+	bool	IsOnCharacterStateFlags(const int64& InState) const	{ return CharacterStateFlag & InState; }
 	UFUNCTION(BlueprintCallable)
 	int64	GetCharacterStateFlag() const					{ return CharacterStateFlag; }
 	UFUNCTION(Server, Reliable, BlueprintCallable)

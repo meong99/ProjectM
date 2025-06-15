@@ -1,5 +1,6 @@
 #include "Character/Components/MCharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Character/MCharacterBase.h"
 
 void UMCharacterMovementComponent::InitializeComponent()
 {

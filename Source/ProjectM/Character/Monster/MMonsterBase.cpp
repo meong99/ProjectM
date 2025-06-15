@@ -166,17 +166,11 @@ void AMMonsterBase::OnDead()
 {
 	Super::OnDead();
 
-	Server_SetCharacterLifeState(EMCharacterLiftState::Dead);
 	GiveRewardToPlayer();
 
 	if (HasAuthority())
 	{
-		AAIController* AIController = Cast<AAIController>(GetController());
-		if (AIController)
-		{
-			AIController->UnPossess();
-		}
-
+		Server_SetCharacterLifeState(EMCharacterLiftState::Dead);
 		Server_SetCharacterLifeState(EMCharacterLiftState::ReadyToDestroy);
 
 		if (MonsterDefinition->DeathAnimation.Montage)
@@ -185,6 +179,12 @@ void AMMonsterBase::OnDead()
 			Multicast_PlayMontage(MonsterDefinition->DeathAnimation.Montage);
 			UMGameplayStatics::SetTimer(this, [this]()->void
 			{
+				AAIController* AIController = Cast<AAIController>(GetController());
+				if (AIController)
+				{
+					AIController->UnPossess();
+				}
+
 				Destroy();
 			}, Duration, false);
 		}
