@@ -20,6 +20,7 @@
 #include "Components/MPawnComponentBase.h"
 #include "AbilitySystem/MGameplayEffectSet.h"
 #include "GameFramework/PlayerController.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 AMPlayerCharacterBase::AMPlayerCharacterBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UMCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -64,6 +65,19 @@ void AMPlayerCharacterBase::OnDead()
 
 		const UPMPawnData* PawnData = PawnExtComp->GetPawnData();
 		Multicast_PlayMontage(PawnData->DeathAnimation);
+
+		UAbilitySystemComponent* AbilitySystemComponent = GetAbilitySystemComponent();
+		if (AbilitySystemComponent)
+		{
+			for (AActor* Monster : OverlappedMonsters)
+			{
+				FGameplayEventData EventData;
+				EventData.Target = Monster;
+				EventData.Instigator = AbilitySystemComponent->GetOwner();
+				EventData.EventTag = FPMGameplayTags::Get().GameplayEvent_Character_State_Dead;
+				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Monster, FPMGameplayTags::Get().GameplayEvent_Character_State_Dead, EventData);
+			}
+		}
 	}
 
 	if (GetNetMode() != NM_DedicatedServer)

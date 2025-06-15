@@ -148,14 +148,6 @@ void UPMHealthComponent::CheckAndNotifyDeath(float OldValue, float NewValue, AAc
 		{
 			Owner->OnDead();
 		}
-		if (AbilitySystemComponent)
-		{
-			FGameplayEventData EventData;
-			EventData.Target = Instigator;
-			EventData.Instigator = AbilitySystemComponent->GetOwner();
-			EventData.EventTag = FPMGameplayTags::Get().GameplayEvent_Character_State_Dead;
-			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Instigator, FPMGameplayTags::Get().GameplayEvent_Character_State_Dead, EventData);
-		}
 	}
 }
 
