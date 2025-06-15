@@ -44,7 +44,7 @@ void UMItemContextWidget::UpdateContextWidget(const int32 RowId)
 					UTextBlock* OutTextBlock = nullptr;
 					FText OutName;
 					GetTextBlockByTag(SetbyCallerInfo.SetByCallerTag, OutTextBlock, OutName);
-					if (OutTextBlock)
+					if (OutTextBlock && SetbyCallerInfo.Value > 0.f)
 					{
 						SetSpecText(OutTextBlock, OutName, SetbyCallerInfo.Value);
 						bExistStat = true;
